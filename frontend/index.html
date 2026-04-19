@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ValetOS — Sistema de Valet Parking</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent2: #ff6b6b;
+    --gold: #f5c842;
+    --green: #2dce89;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* --- LOGIN --- */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 32px;
+  }
+  .login-logo {
+    font-family: var(--font-display);
+    font-size: 3rem; font-weight: 800;
+    letter-spacing: -2px;
+  }
+  .login-logo span { color: var(--accent); }
+  .login-subtitle { color: var(--muted); font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
+  .pin-display {
+    display: flex; gap: 12px; margin: 8px 0;
+  }
+  .pin-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-pad {
+    display: grid; grid-template-columns: repeat(3, 72px);
+    gap: 12px;
+  }
+  .pin-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text); font-size: 1.4rem;
+    font-family: var(--font-display); font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .pin-btn:hover { background: var(--surface); border-color: var(--accent); transform: scale(1.05); }
+  .pin-btn:active { transform: scale(0.95); }
+  .pin-btn.del { font-size: 1rem; color: var(--muted); }
+  .pin-error { color: var(--accent2); font-size: 0.85rem; min-height: 20px; }
+
+  /* --- LAYOUT --- */
+  #app { display: none; min-height: 100vh; flex-direction: column; }
+  #app.visible { display: flex; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 64px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem; font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .staff-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .staff-badge strong { color: var(--text); }
+  .btn-logout {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .btn-logout:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; padding: 0 24px; gap: 4px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 12px 20px;
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-family: var(--font-body); font-size: 0.85rem;
+    font-weight: 500; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { flex: 1; padding: 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
+
+  /* --- DASHBOARD --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent-color, var(--accent));
+  }
+  .stat-label {
+    font-size: 0.75rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.4rem; font-weight: 800;
+    line-height: 1;
+  }
+  .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+  /* --- VEHICLE LIST --- */
+  .list-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .list-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem; font-weight: 700;
+  }
+  .search-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px;
+    color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+    width: 240px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--accent); }
+  .filter-tabs {
+    display: flex; gap: 8px;
+  }
+  .filter-tab {
+    padding: 6px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; color: var(--muted);
+    cursor: pointer; font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .filter-tab:hover, .filter-tab.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff;
+  }
+
+  .vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .vehicle-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .vehicle-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .vehicle-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .plate-tag {
+    font-family: var(--font-mono);
+    font-size: 1.1rem; font-weight: 500;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px;
+    letter-spacing: 2px;
+  }
+  .status-badge {
+    font-size: 0.7rem; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .status-parked { background: #1a3a2a; color: var(--green); }
+  .status-retrieved { background: #2a2a3a; color: var(--muted); }
+  .status-pending_retrieval { background: #3a2a1a; color: var(--gold); }
+  .vehicle-name { font-size: 0.95rem; font-weight: 500; margin-bottom: 4px; }
+  .vehicle-meta { font-size: 0.8rem; color: var(--muted); }
+  .vehicle-ticket {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--accent); margin-top: 8px;
+  }
+  .spot-badge {
+    position: absolute; bottom: 14px; right: 14px;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px; color: var(--muted);
+  }
+
+  /* --- MODAL --- */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem; font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 1.2rem; cursor: pointer;
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+  /* --- FORMS --- */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 0.75rem; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .field input, .field select, .field textarea {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent);
+  }
+  .field select option { background: var(--surface2); }
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  /* Photo audit grid */
+  .photo-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    margin: 4px 0;
+  }
+  .photo-slot {
+    aspect-ratio: 4/3;
+    background: var(--surface2); border: 1px dashed var(--border);
+    border-radius: 8px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; cursor: pointer; font-size: 0.75rem; color: var(--muted);
+    transition: all 0.2s; overflow: hidden; position: relative;
+  }
+  .photo-slot:hover { border-color: var(--accent); }
+  .photo-slot img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  }
+  .photo-slot input[type=file] { display: none; }
+  .photo-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  /* --- BUTTONS --- */
+  .btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; border: none; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+  }
+  .btn-primary:hover { filter: brightness(1.15); }
+  .btn-secondary {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-success { background: var(--green); color: #0a2a1a; }
+  .btn-warning { background: var(--gold); color: #2a1a0a; }
+  .btn-danger { background: var(--accent2); color: #fff; }
+  .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* --- TICKET PRINT VIEW --- */
+  .ticket {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    font-family: var(--font-mono); font-size: 0.85rem;
+    text-align: center; margin: 16px 0;
+  }
+  .ticket-code {
+    font-size: 2rem; font-weight: 500;
+    color: var(--accent); letter-spacing: 4px;
+    margin: 8px 0;
+  }
+  .barcode {
+    font-size: 2.5rem; letter-spacing: 4px;
+    color: var(--text); margin: 4px 0;
+    font-family: 'Libre Barcode 128', cursive;
+  }
+  .ticket-divider { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
+
+  /* --- DETAIL PANEL --- */
+  .detail-section { margin-bottom: 20px; }
+  .detail-section-title {
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .detail-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; font-size: 0.875rem;
+  }
+  .detail-row .label { color: var(--muted); }
+  .detail-row .value { font-weight: 500; text-align: right; }
+  .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+  /* --- RESERVATIONS --- */
+  .reservation-list { display: flex; flex-direction: column; gap: 12px; }
+  .reservation-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .res-info { flex: 1; }
+  .res-name { font-weight: 600; margin-bottom: 4px; }
+  .res-meta { font-size: 0.8rem; color: var(--muted); }
+  .res-time {
+    font-family: var(--font-mono); font-size: 0.95rem;
+    color: var(--gold); white-space: nowrap;
+  }
+
+  /* --- TOAST --- */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px;
+    font-size: 0.875rem; min-width: 240px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: fadeInRight 0.3s ease;
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .toast-success { border-left: 3px solid var(--green); }
+  .toast-error { border-left: 3px solid var(--accent2); }
+  .toast-info { border-left: 3px solid var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .vehicle-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-text { font-size: 1rem; margin-bottom: 6px; color: var(--text); }
+  .empty-sub { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div>
+    <div class="login-logo">Valet<span>OS</span></div>
+    <div class="login-subtitle" style="text-align:center;margin-top:4px;">Sistema de Valet Parking</div>
+  </div>
+  <div class="pin-display" id="pin-display">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn del" onclick="pinClear()">✕</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="header-logo">Valet<span>OS</span></div>
+    <div class="header-right">
+      <div class="staff-badge">Operador: <strong id="staff-name">—</strong></div>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </header>
+  <nav>
+    <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showTab('vehicles')">🚗 Vehículos</button>
+    <button class="nav-tab" onclick="showTab('checkin')">📥 Check-In</button>
+    <button class="nav-tab" onclick="showTab('checkout')">📤 Check-Out</button>
+    <button class="nav-tab" onclick="showTab('reservations')">📅 Reservas</button>
+  </nav>
+  <main id="main-content"></main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-vehicle-detail">
+  <div class="modal">
+    <div class="modal-title">Detalle del Vehículo <button class="modal-close" onclick="closeModal('modal-vehicle-detail')">×</button></div>
+    <div id="vehicle-detail-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-ticket">
+  <div class="modal">
+    <div class="modal-title">🎫 Resguardo <button class="modal-close" onclick="closeModal('modal-ticket')">×</button></div>
+    <div id="ticket-content"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-ticket')">Listo</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ==================== CONFIG ====================
+const API_BASE = window.location.origin; // Change to your Cloudflare Worker URL in production
+// const API_BASE = 'https://valet-app.YOUR_SUBDOMAIN.workers.dev';
+
+// ==================== STATE ====================
+let currentStaff = null;
+let vehicles = [];
+let vehicleFilter = 'parked';
+let searchQuery = '';
+let currentTab = 'dashboard';
+
+// ==================== PIN LOGIN ====================
+let pinBuffer = '';
+
+function pinPress(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updatePinDisplay();
+  if (pinBuffer.length === 4) setTimeout(tryLogin, 200);
+}
+function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDisplay(); }
+function pinClear() { pinBuffer = ''; updatePinDisplay(); }
+function updatePinDisplay() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('d'+i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+async function tryLogin() {
+  try {
+    const res = await fetch(`${API_BASE}/api/staff/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({pin: pinBuffer})
+    });
+    if (!res.ok) throw new Error('PIN inválido');
+    currentStaff = await res.json();
+    document.getElementById('staff-name').textContent = currentStaff.name;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    showTab('dashboard');
+    toast('Bienvenido, ' + currentStaff.name, 'success');
+  } catch(e) {
+    document.getElementById('pin-error').textContent = 'PIN incorrecto. Intente nuevamente.';
+    pinBuffer = '';
+    updatePinDisplay();
+    setTimeout(() => document.getElementById('pin-error').textContent = '', 2000);
+  }
+}
+function logout() {
+  currentStaff = null; pinBuffer = ''; updatePinDisplay();
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+}
+
+// Demo login bypass (remove in production)
+window.demoLogin = function() {
+  currentStaff = {id:1, name:'Demo Admin', role:'admin'};
+  document.getElementById('staff-name').textContent = currentStaff.name;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  showTab('dashboard');
+};
+// Auto demo login for preview
+setTimeout(() => { if(!currentStaff) demoLogin(); }, 800);
+
+// ==================== NAVIGATION ====================
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['dashboard','vehicles','checkin','checkout','reservations'][i] === tab);
+  });
+  const main = document.getElementById('main-content');
+  if (tab === 'dashboard') renderDashboard(main);
+  else if (tab === 'vehicles') renderVehicles(main);
+  else if (tab === 'checkin') renderCheckin(main);
+  else if (tab === 'checkout') renderCheckout(main);
+  else if (tab === 'reservations') renderReservations(main);
+}
+
+// ==================== DASHBOARD ====================
+async function renderDashboard(el) {
+  el.innerHTML = `<div class="stats-grid" id="stats-grid">
+    ${['parked','retrieved_today','checked_in_today','revenue_today'].map(k => `
+      <div class="stat-card" style="--accent-color:${k==='revenue_today'?'var(--gold)':k==='parked'?'var(--green)':k==='retrieved_today'?'var(--muted)':'var(--accent)'}">
+        <div class="stat-label">${{parked:'Estacionados',retrieved_today:'Entregados Hoy',checked_in_today:'Ingresos Hoy',revenue_today:'Ingresos $'}[k]}</div>
+        <div class="stat-value" id="stat-${k}">—</div>
+      </div>`).join('')}
+  </div>
+  <div class="list-title" style="margin-bottom:16px">Vehículos Activos</div>
+  <div id="dashboard-vehicles"></div>`;
+  try {
+    const [stats, vehs] = await Promise.all([
+      fetch(`${API_BASE}/api/stats`).then(r=>r.json()).catch(()=>({parked:0,retrieved_today:0,checked_in_today:0,revenue_today:0})),
+      fetch(`${API_BASE}/api/vehicles?status=parked`).then(r=>r.json()).catch(()=>mockVehicles())
+    ]);
+    document.getElementById('stat-parked').textContent = stats.parked ?? 0;
+    document.getElementById('stat-retrieved_today').textContent = stats.retrieved_today ?? 0;
+    document.getElementById('stat-checked_in_today').textContent = stats.checked_in_today ?? 0;
+    document.getElementById('stat-revenue_today').textContent = '$' + (stats.revenue_today||0).toFixed(2);
+    vehicles = vehs;
+    renderVehicleCards(document.getElementById('dashboard-vehicles'), vehicles.slice(0,6));
+  } catch(e) {
+    vehicles = mockVehicles();
+    renderVehicleCards(document.getElementById('dashboard-vehicles'), vehicles.slice(0,6));
+  }
+}
+
+// ==================== VEHICLES ====================
+async function renderVehicles(el) {
+  el.innerHTML = `
+    <div class="list-header">
+      <div class="list-title">Vehículos</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input class="search-box" id="search-input" placeholder="Buscar placa, nombre, ticket…" oninput="onSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="filter-tabs" style="margin-bottom:16px">
+      <button class="filter-tab ${vehicleFilter==='parked'?'active':''}" onclick="setFilter('parked')">Estacionados</button>
+      <button class="filter-tab ${vehicleFilter==='pending_retrieval'?'active':''}" onclick="setFilter('pending_retrieval')">Por Entregar</button>
+      <button class="filter-tab ${vehicleFilter==='retrieved'?'active':''}" onclick="setFilter('retrieved')">Entregados</button>
+      <button class="filter-tab ${vehicleFilter===''?'active':''}" onclick="setFilter('')">Todos</button>
+    </div>
+    <div class="vehicle-grid" id="vehicles-grid"></div>`;
+  await loadVehicles();
+}
+
+async function loadVehicles() {
+  const grid = document.getElementById('vehicles-grid');
+  if (!grid) return;
+  try {
+    let url = `${API_BASE}/api/vehicles?`;
+    if (vehicleFilter) url += `status=${vehicleFilter}&`;
+    if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}`;
+    const data = await fetch(url).then(r=>r.json());
+    vehicles = Array.isArray(data) ? data : mockVehicles();
+  } catch {
+    vehicles = mockVehicles().filter(v => !vehicleFilter || v.status === vehicleFilter);
+  }
+  renderVehicleCards(grid, vehicles);
+}
+
+function renderVehicleCards(el, list) {
+  if (!list.length) {
+    el.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🚗</div><div class="empty-text">Sin vehículos</div><div class="empty-sub">No hay registros que mostrar</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(v => `
+    <div class="vehicle-card" onclick="showVehicleDetail(${v.id})">
+      <div class="vehicle-card-top">
+        <div class="plate-tag">${v.plate}</div>
+        <span class="status-badge status-${v.status}">${{parked:'🟢 Estacionado',retrieved:'⚪ Entregado',pending_retrieval:'🟡 Por Entregar'}[v.status]||v.status}</span>
+      </div>
+      <div class="vehicle-name">${v.brand||''} ${v.model||''} ${v.color ? '· '+v.color : ''}</div>
+      <div class="vehicle-meta">${v.owner_name} ${v.owner_phone?'· '+v.owner_phone:''}</div>
+      <div class="vehicle-ticket">${v.ticket_code}</div>
+      ${v.parking_spot?`<div class="spot-badge">Lugar: ${v.parking_spot}</div>`:''}
+    </div>`).join('');
+}
+
+function setFilter(f) {
+  vehicleFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  loadVehicles();
+}
+
+let searchTimer;
+function onSearch(v) {
+  searchQuery = v;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadVehicles, 300);
+}
+
+// ==================== VEHICLE DETAIL ====================
+async function showVehicleDetail(id) {
+  let v = vehicles.find(x => x.id === id);
+  if (!v) {
+    try { v = await fetch(`${API_BASE}/api/vehicles/${id}`).then(r=>r.json()); } catch {}
+  }
+  if (!v) return;
+  const el = document.getElementById('vehicle-detail-content');
+  el.innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Vehículo</div>
+      ${dRow('Placa', `<span class="plate-tag">${v.plate}</span>`)}
+      ${dRow('Marca / Modelo', `${v.brand||'—'} ${v.model||''}`)}
+      ${dRow('Color', v.color||'—')}
+      ${dRow('Lugar', v.parking_spot||'—')}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Propietario</div>
+      ${dRow('Nombre', v.owner_name)}
+      ${dRow('Teléfono', v.owner_phone||'—')}
+      ${dRow('ID Ref.', v.owner_id_ref||'—')}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Registro</div>
+      ${dRow('Ticket', `<span style="font-family:var(--font-mono);color:var(--accent)">${v.ticket_code}</span>`)}
+      ${dRow('Estado', `<span class="status-badge status-${v.status}">${v.status}</span>`)}
+      ${dRow('Entrada', fmtDate(v.check_in_at))}
+      ${dRow('Salida', v.check_out_at ? fmtDate(v.check_out_at) : '—')}
+      ${dRow('Valet Entrada', v.valet_in||'—')}
+      ${dRow('Cobro', v.fee_amount ? '$'+v.fee_amount : '—')}
+      ${dRow('Pagado', v.fee_paid ? '✅ Sí' : '❌ No')}
+    </div>
+    ${v.damage_notes ? `<div class="detail-section"><div class="detail-section-title">Notas de daños</div><p style="font-size:0.875rem;color:var(--muted)">${v.damage_notes}</p></div>` : ''}
+    <div class="detail-actions">
+      <button class="btn btn-secondary btn-sm" onclick="showTicket(${JSON.stringify(v).replace(/"/g,'&quot;')})">🎫 Ver Resguardo</button>
+      ${v.status==='parked' ? `<button class="btn btn-warning btn-sm" onclick="markPendingPickup(${v.id})">📞 Aviso Recolección</button>` : ''}
+      ${v.status!=='retrieved' ? `<button class="btn btn-success btn-sm" onclick="doCheckout(${v.id})">📤 Entregar</button>` : ''}
+    </div>`;
+  openModal('modal-vehicle-detail');
+}
+function dRow(label, value) {
+  return `<div class="detail-row"><span class="label">${label}</span><span class="value">${value}</span></div>`;
+}
+
+async function markPendingPickup(id) {
+  await apiPatch(id, {status:'pending_retrieval', action:'PENDING_PICKUP', actor: currentStaff?.name});
+  toast('Marcado como pendiente de recolección', 'info');
+  closeModal('modal-vehicle-detail');
+  if (currentTab === 'vehicles') loadVehicles();
+}
+
+async function doCheckout(id) {
+  const fee = prompt('¿Monto a cobrar? (0 si ya fue prepagado)', '0');
+  if (fee === null) return;
+  const method = prompt('Método de pago: efectivo / tarjeta / app', 'efectivo');
+  await apiPatch(id, {
+    status: 'retrieved',
+    check_out_at: new Date().toISOString(),
+    valet_out: currentStaff?.name,
+    fee_amount: parseFloat(fee)||0,
+    fee_paid: 1,
+    payment_method: method,
+    action: 'CHECK_OUT',
+    actor: currentStaff?.name
+  });
+  toast('Vehículo entregado exitosamente ✅', 'success');
+  closeModal('modal-vehicle-detail');
+  if (currentTab === 'vehicles') loadVehicles();
+  if (currentTab === 'dashboard') showTab('dashboard');
+}
+
+async function apiPatch(id, data) {
+  try {
+    await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+
+// ==================== CHECK-IN ====================
+function renderCheckin(el) {
+  el.innerHTML = `
+    <div style="max-width:640px;margin:0 auto">
+      <div class="list-title" style="margin-bottom:24px">📥 Registrar Ingreso</div>
+      <div class="form-grid">
+        <div class="field"><label>Placa *</label><input id="ci-plate" placeholder="ABC-1234" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="field"><label>Lugar de Estacionamiento</label><input id="ci-spot" placeholder="A-12"/></div>
+        <div class="field"><label>Marca</label><input id="ci-brand" placeholder="Toyota"/></div>
+        <div class="field"><label>Modelo</label><input id="ci-model" placeholder="Corolla"/></div>
+        <div class="field"><label>Color</label><input id="ci-color" placeholder="Rojo"/></div>
+        <div class="field full"><label>Propietario *</label><input id="ci-owner" placeholder="Nombre completo"/></div>
+        <div class="field"><label>Teléfono</label><input id="ci-phone" type="tel" placeholder="+1 555 0000"/></div>
+        <div class="field"><label>ID Referencia</label><input id="ci-id" placeholder="Núm. identificación"/></div>
+        <div class="field"><label>Tarifa</label><input id="ci-fee" type="number" placeholder="0.00" step="0.01"/></div>
+        <div class="field full">
+          <label>Auditoría Fotográfica</label>
+          <div class="photo-grid">
+            ${['Frente','Trasera','Lateral Izq.','Lateral Der.'].map((side,i) => `
+              <div class="photo-slot" onclick="triggerPhoto(${i})" id="photo-slot-${i}">
+                <input type="file" accept="image/*" capture="environment" id="photo-input-${i}" onchange="loadPhoto(${i},this)"/>
+                <span style="font-size:1.5rem">📷</span>
+                <span class="photo-label">${side}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="field full"><label>Notas de daños preexistentes</label><textarea id="ci-damage" placeholder="Describa cualquier daño visible al momento del ingreso…"></textarea></div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="submitCheckin()" style="flex:1">✅ Registrar Ingreso</button>
+        <button class="btn btn-secondary" onclick="showTab('dashboard')">Cancelar</button>
+      </div>
+    </div>`;
+  photoData = {};
+}
+
+let photoData = {};
+function triggerPhoto(i) { document.getElementById('photo-input-'+i).click(); }
+function loadPhoto(i, inp) {
+  const file = inp.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoData[i] = e.target.result;
+    const slot = document.getElementById('photo-slot-'+i);
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+    img.src = e.target.result;
+    slot.querySelectorAll('span').forEach(s => s.style.display='none');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitCheckin() {
+  const plate = document.getElementById('ci-plate').value.trim();
+  const owner_name = document.getElementById('ci-owner').value.trim();
+  if (!plate || !owner_name) { toast('Placa y propietario son requeridos', 'error'); return; }
+  const body = {
+    plate, owner_name,
+    brand: document.getElementById('ci-brand').value,
+    model: document.getElementById('ci-model').value,
+    color: document.getElementById('ci-color').value,
+    owner_phone: document.getElementById('ci-phone').value,
+    owner_id_ref: document.getElementById('ci-id').value,
+    parking_spot: document.getElementById('ci-spot').value,
+    damage_notes: document.getElementById('ci-damage').value,
+    fee_amount: parseFloat(document.getElementById('ci-fee').value)||0,
+    valet_in: currentStaff?.name || 'Sistema',
+    photo_front: photoData[0]||null,
+    photo_rear: photoData[1]||null,
+    photo_left: photoData[2]||null,
+    photo_right: photoData[3]||null,
+  };
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const created = await res.json();
+    toast('Vehículo registrado: ' + created.ticket_code, 'success');
+    showTicket(created);
+  } catch {
+    // Demo mode: generate local ticket
+    const ticket_code = 'V' + Date.now().toString(36).toUpperCase();
+    const barcode = Math.random().toString(36).substring(2,10).toUpperCase();
+    toast('Vehículo registrado (demo): ' + ticket_code, 'success');
+    showTicket({...body, ticket_code, barcode, check_in_at: new Date().toISOString()});
+  }
+}
+
+// ==================== CHECK-OUT ====================
+function renderCheckout(el) {
+  el.innerHTML = `
+    <div style="max-width:560px;margin:0 auto">
+      <div class="list-title" style="margin-bottom:24px">📤 Entrega de Vehículo</div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Buscar por Ticket, Placa o Código</label>
+        <div style="display:flex;gap:10px">
+          <input id="co-search" class="search-box" style="flex:1" placeholder="V1A2B3 / ABC-1234" oninput="searchCheckout(this.value)"/>
+          <button class="btn btn-primary" onclick="doLookup()">🔍 Buscar</button>
+        </div>
+      </div>
+      <div id="co-result"></div>
+    </div>`;
+}
+
+async function doLookup() {
+  const q = document.getElementById('co-search').value.trim();
+  if (!q) return;
+  const el = document.getElementById('co-result');
+  el.innerHTML = `<div style="color:var(--muted);text-align:center;padding:20px">Buscando…</div>`;
+  try {
+    const v = await fetch(`${API_BASE}/api/vehicles/lookup?q=${encodeURIComponent(q)}`).then(r=>{if(!r.ok)throw r;return r.json();});
+    renderCheckoutCard(el, v);
+  } catch {
+    // Demo: find in mock
+    const v = mockVehicles().find(x => x.plate === q.toUpperCase() || x.ticket_code === q.toUpperCase());
+    if (v) renderCheckoutCard(el, v);
+    else el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No encontrado</div><div class="empty-sub">Verifique el ticket o placa</div></div>`;
+  }
+}
+
+function renderCheckoutCard(el, v) {
+  if (v.status === 'retrieved') {
+    el.innerHTML = `<div class="vehicle-card" style="border-color:var(--muted)"><div class="vehicle-card-top"><div class="plate-tag">${v.plate}</div><span class="status-badge status-retrieved">Ya Entregado</span></div><div class="vehicle-name">${v.owner_name}</div></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="vehicle-card" style="cursor:default">
+      <div class="vehicle-card-top">
+        <div class="plate-tag">${v.plate}</div>
+        <span class="status-badge status-${v.status}">${v.status==='pending_retrieval'?'🟡 Por Entregar':'🟢 Estacionado'}</span>
+      </div>
+      <div class="vehicle-name">${v.brand||''} ${v.model||''} ${v.color?'· '+v.color:''}</div>
+      <div class="vehicle-meta">${v.owner_name} · Entrada: ${fmtDate(v.check_in_at)}</div>
+      <div class="vehicle-ticket">${v.ticket_code}</div>
+      ${v.parking_spot?`<div class="spot-badge">Lugar: ${v.parking_spot}</div>`:''}
+    </div>
+    <div class="form-grid" style="margin-top:16px">
+      <div class="field"><label>Monto a Cobrar</label><input type="number" id="co-fee" value="${v.fee_amount||0}" step="0.01"/></div>
+      <div class="field"><label>Método de Pago</label>
+        <select id="co-method"><option>Efectivo</option><option>Tarjeta</option><option>App Móvil</option><option>Prepagado</option></select>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button class="btn btn-success" style="flex:1" onclick="finalizeCheckout(${v.id})">✅ Confirmar Entrega</button>
+    </div>`;
+}
+
+async function finalizeCheckout(id) {
+  const fee = parseFloat(document.getElementById('co-fee').value)||0;
+  const method = document.getElementById('co-method').value;
+  await apiPatch(id, {
+    status:'retrieved', check_out_at: new Date().toISOString(),
+    valet_out: currentStaff?.name, fee_amount: fee, fee_paid:1,
+    payment_method: method, action:'CHECK_OUT', actor: currentStaff?.name
+  });
+  toast('Vehículo entregado ✅ · $'+fee.toFixed(2)+' cobrado', 'success');
+  document.getElementById('co-result').innerHTML = '';
+  document.getElementById('co-search').value = '';
+}
+
+// ==================== RESERVATIONS ====================
+async function renderReservations(el) {
+  el.innerHTML = `
+    <div class="list-header">
+      <div class="list-title">📅 Reservaciones</div>
+      <button class="btn btn-primary" onclick="openNewReservation()">+ Nueva Reserva</button>
+    </div>
+    <div class="reservation-list" id="res-list"><div style="color:var(--muted)">Cargando…</div></div>`;
+  try {
+    const data = await fetch(`${API_BASE}/api/reservations`).then(r=>r.json());
+    renderResList(Array.isArray(data)?data:mockReservations());
+  } catch {
+    renderResList(mockReservations());
+  }
+}
+function renderResList(list) {
+  const el = document.getElementById('res-list');
+  if (!list.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Sin reservas</div></div>`; return; }
+  el.innerHTML = list.map(r => `
+    <div class="reservation-card">
+      <div class="res-info">
+        <div class="res-name">${r.owner_name}</div>
+        <div class="res-meta">${r.owner_phone} ${r.plate?'· '+r.plate:''} ${r.brand?'· '+r.brand:''} ${r.model?r.model:''}</div>
+        ${r.notes?`<div class="res-meta" style="margin-top:4px;font-style:italic">${r.notes}</div>`:''}
+      </div>
+      <div>
+        <div class="res-time">${fmtDate(r.expected_arrival)}</div>
+        <span class="status-badge status-${r.status==='pending'?'pending_retrieval':r.status}" style="display:block;text-align:center;margin-top:6px">${r.status}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openNewReservation() {
+  const el = document.getElementById('vehicle-detail-content');
+  el.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Nombre Propietario *</label><input id="nr-name" placeholder="Nombre completo"/></div>
+      <div class="field"><label>Teléfono *</label><input id="nr-phone" type="tel" placeholder="+1 555 0000"/></div>
+      <div class="field"><label>Llegada Esperada *</label><input id="nr-arrival" type="datetime-local"/></div>
+      <div class="field"><label>Placa</label><input id="nr-plate" placeholder="ABC-1234"/></div>
+      <div class="field"><label>Marca</label><input id="nr-brand" placeholder="Toyota"/></div>
+      <div class="field"><label>Modelo</label><input id="nr-model" placeholder="Corolla"/></div>
+      <div class="field full"><label>Notas</label><textarea id="nr-notes" placeholder="Instrucciones especiales…"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-vehicle-detail')">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitReservation()">Confirmar Reserva</button>
+    </div>`;
+  document.getElementById('modal-vehicle-detail').querySelector('.modal-title').innerHTML =
+    '📅 Nueva Reservación <button class="modal-close" onclick="closeModal(\'modal-vehicle-detail\')">×</button>';
+  openModal('modal-vehicle-detail');
+}
+async function submitReservation() {
+  const name = document.getElementById('nr-name').value.trim();
+  const phone = document.getElementById('nr-phone').value.trim();
+  const arrival = document.getElementById('nr-arrival').value;
+  if (!name||!phone||!arrival) { toast('Nombre, teléfono y llegada son requeridos','error'); return; }
+  const body = { owner_name:name, owner_phone:phone, expected_arrival:arrival,
+    plate:document.getElementById('nr-plate').value,
+    brand:document.getElementById('nr-brand').value,
+    model:document.getElementById('nr-model').value,
+    notes:document.getElementById('nr-notes').value };
+  try {
+    const res = await fetch(`${API_BASE}/api/reservations`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const created = await res.json();
+    toast('Reserva confirmada: '+created.confirm_code,'success');
+  } catch { toast('Reserva registrada (demo)','success'); }
+  closeModal('modal-vehicle-detail');
+  showTab('reservations');
+}
+
+// ==================== TICKET ====================
+function showTicket(v) {
+  const since = v.check_in_at ? Math.round((Date.now() - new Date(v.check_in_at))/60000) : 0;
+  document.getElementById('ticket-content').innerHTML = `
+    <div class="ticket">
+      <div style="font-size:0.7rem;letter-spacing:3px;color:var(--muted)">VALET OS — RESGUARDO</div>
+      <div class="ticket-code">${v.ticket_code||'—'}</div>
+      <hr class="ticket-divider"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
+        <div><div style="color:var(--muted);font-size:0.7rem">PLACA</div><div style="font-size:1rem">${v.plate}</div></div>
+        <div><div style="color:var(--muted);font-size:0.7rem">LUGAR</div><div>${v.parking_spot||'POR ASIGNAR'}</div></div>
+        <div><div style="color:var(--muted);font-size:0.7rem">PROPIETARIO</div><div>${v.owner_name}</div></div>
+        <div><div style="color:var(--muted);font-size:0.7rem">VEHÍCULO</div><div>${v.brand||''} ${v.model||''}</div></div>
+        <div><div style="color:var(--muted);font-size:0.7rem">ENTRADA</div><div>${fmtDate(v.check_in_at)}</div></div>
+        <div><div style="color:var(--muted);font-size:0.7rem">TARIFA</div><div>${v.fee_amount ? '$'+v.fee_amount : 'Por determinar'}</div></div>
+      </div>
+      <hr class="ticket-divider"/>
+      <div style="font-size:0.65rem;color:var(--muted);margin-top:6px">Presente este resguardo al retirar su vehículo.<br/>Custodia bajo vigilancia permanente.</div>
+    </div>`;
+  closeModal('modal-vehicle-detail');
+  openModal('modal-ticket');
+}
+
+// ==================== UTILS ====================
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('es', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast-item toast-${type}`;
+  t.textContent = msg;
+  document.getElementById('toast').appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); });
+});
+
+// ==================== MOCK DATA ====================
+function mockVehicles() {
+  return [
+    {id:1,ticket_code:'V1A2B3C',barcode:'XK9P2M',plate:'ABC-1234',brand:'Toyota',model:'Corolla',color:'Blanco',owner_name:'Carlos Méndez',owner_phone:'+1 555 0101',status:'parked',parking_spot:'A-03',check_in_at:new Date(Date.now()-3600000).toISOString(),fee_amount:25,fee_paid:0,valet_in:'Juan'},
+    {id:2,ticket_code:'V4D5E6F',barcode:'YL3Q5N',plate:'XYZ-5678',brand:'Honda',model:'Civic',color:'Gris',owner_name:'María López',owner_phone:'+1 555 0202',status:'parked',parking_spot:'B-07',check_in_at:new Date(Date.now()-7200000).toISOString(),fee_amount:30,fee_paid:0,valet_in:'Pedro'},
+    {id:3,ticket_code:'V7G8H9I',barcode:'ZM4R6O',plate:'LMN-9012',brand:'BMW',model:'320i',color:'Negro',owner_name:'Roberto García',owner_phone:'+1 555 0303',status:'pending_retrieval',parking_spot:'C-12',check_in_at:new Date(Date.now()-10800000).toISOString(),fee_amount:50,fee_paid:0,valet_in:'Ana'},
+    {id:4,ticket_code:'V1J2K3L',barcode:'AN5S7P',plate:'DEF-3456',brand:'Mercedes',model:'C200',color:'Plata',owner_name:'Laura Jiménez',owner_phone:'+1 555 0404',status:'retrieved',parking_spot:'A-01',check_in_at:new Date(Date.now()-86400000).toISOString(),check_out_at:new Date(Date.now()-3600000).toISOString(),fee_amount:45,fee_paid:1,valet_in:'Juan',valet_out:'Pedro'},
+  ];
+}
+function mockReservations() {
+  return [
+    {id:1,confirm_code:'R1A2B3',owner_name:'Sandra Torres',owner_phone:'+1 555 1001',plate:'GHI-7890',brand:'Audi',model:'A4',expected_arrival:new Date(Date.now()+3600000).toISOString(),status:'pending'},
+    {id:2,confirm_code:'R4C5D6',owner_name:'Miguel Ángel Ruiz',owner_phone:'+1 555 1002',plate:'JKL-2345',brand:'Volkswagen',model:'Jetta',expected_arrival:new Date(Date.now()+7200000).toISOString(),status:'pending',notes:'Lleva equipaje grande'},
+  ];
+}
+</script>
+</body>
+</html>
+
