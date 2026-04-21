@@ -448,8 +448,8 @@
 <!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div>
-    <div class="login-logo">Valet<span>OS</span></div>
-    <div class="login-subtitle" style="text-align:center;margin-top:4px;">Sistema de Valet Parking</div>
+    <div class="login-logo" id="login-brand">Valet<span>OS</span></div>
+    <div class="login-subtitle" style="text-align:center;margin-top:4px;">Sistema de Gestión de Estacionamiento</div>
   </div>
   <div class="pin-display" id="pin-display">
     <div class="pin-dot" id="d0"></div>
@@ -477,7 +477,7 @@
 <!-- MAIN APP -->
 <div id="app">
   <header>
-    <div class="header-logo">Valet<span>OS</span></div>
+    <div class="header-logo" id="header-brand">Valet<span>OS</span></div>
     <div class="header-right">
       <div class="staff-badge">Operador: <strong id="staff-name">—</strong></div>
       <button class="btn-logout" onclick="logout()">Salir</button>
@@ -648,6 +648,13 @@ initDB().then(() => { updateOfflineBanner(); syncPendingActions(); }); // Produc
 
 // ==================== STATE ====================
 let currentStaff = null;
+let settings = {
+  company_name: 'Eye Staff',
+  company_logo: 'https://cdn-icons-png.flaticon.com/512/2343/2343894.png',
+  company_address: '',
+  company_phone: '',
+  terms_conditions: 'No nos hacemos responsables por objetos de valor no declarados.'
+};
 let vehicles = [];
 let vehicleFilter = 'parked';
 let searchQuery = '';
@@ -815,16 +822,6 @@ async function loadHistory() {
     `).join('');
   } catch (e) {}
 }
-function renderSettings() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `
-    <div class="view-header">
-      <h2 class="view-title">⚙️ Configuración del Sistema</h2>
-    </div>
-    
-    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
-      <!-- Gestión de Espacios -->
-      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
         <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🗺️ Gestión de Espacios</h3>
         <p style="color:var(--muted); font-size:0.8rem; margin-bottom:20px;">Crea nuevos lugares de estacionamiento de forma masiva.</p>
         
@@ -1811,19 +1808,25 @@ function showTicket(v) {
   const since = v.check_in_at ? Math.round((Date.now() - new Date(v.check_in_at))/60000) : 0;
   document.getElementById('ticket-content').innerHTML = `
     <div class="ticket">
-      <div style="font-size:0.7rem;letter-spacing:3px;color:var(--muted)">VALET OS — RESGUARDO</div>
+      <div style="text-align:center; margin-bottom:15px;">
+        ${settings.company_logo ? `<img src="${settings.company_logo}" style="width:70px; height:auto; margin-bottom:10px; border-radius:10px;">` : ''}
+        <div style="font-family:'Syne', sans-serif; font-size:1.4rem; font-weight:800; letter-spacing:-0.5px; color:#000;">${settings.company_name}</div>
+        <div style="font-size:0.6rem; letter-spacing:2px; color:#666; margin-top:2px;">COMPROBANTE DE RESGUARDO</div>
+      </div>
       <div class="ticket-code">${v.ticket_code||'—'}</div>
       <hr class="ticket-divider"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
-        <div><div style="color:var(--muted);font-size:0.7rem">PLACA</div><div style="font-size:1rem">${v.plate}</div></div>
-        <div><div style="color:var(--muted);font-size:0.7rem">LUGAR</div><div>${v.parking_spot||'POR ASIGNAR'}</div></div>
-        <div><div style="color:var(--muted);font-size:0.7rem">PROPIETARIO</div><div>${v.owner_name}</div></div>
-        <div><div style="color:var(--muted);font-size:0.7rem">VEHÍCULO</div><div>${v.brand||''} ${v.model||''}</div></div>
-        <div><div style="color:var(--muted);font-size:0.7rem">ENTRADA</div><div>${fmtDate(v.check_in_at)}</div></div>
-        <div><div style="color:var(--muted);font-size:0.7rem">TARIFA</div><div>${v.fee_amount ? '$'+v.fee_amount : 'Por determinar'}</div></div>
+        <div><div style="color:#666;font-size:0.6rem">PLACA</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>
+        <div><div style="color:#666;font-size:0.6rem">LUGAR</div><div style="color:#000;">${v.parking_spot||'P-A'}</div></div>
+        <div><div style="color:#666;font-size:0.6rem">PROPIETARIO</div><div style="color:#000;">${v.owner_name}</div></div>
+        <div><div style="color:#666;font-size:0.6rem">VEHÍCULO</div><div style="color:#000;">${v.brand||''}</div></div>
       </div>
       <hr class="ticket-divider"/>
-      <div style="font-size:0.65rem;color:var(--muted);margin-top:6px">Presente este resguardo al retirar su vehículo.<br/>Custodia bajo vigilancia permanente.</div>
+      <div style="font-size:0.65rem; color:#666; line-height:1.4; margin-top:10px;">
+        ${settings.terms_conditions}
+        ${settings.company_address ? `<br><br>📍 ${settings.company_address}` : ''}
+        ${settings.company_phone ? `<br>📞 ${settings.company_phone}` : ''}
+      </div>
     </div>`;
   
   // Mostrar/ocultar botón WhatsApp según si hay teléfono

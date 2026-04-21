@@ -641,5 +641,29 @@ app.patch('/api/reservations/:id', async (c) => {
   return c.json({ message: 'Reserva actualizada' });
 });
 
+// ===============================
+// AJUSTES (Settings)
+// ===============================
+app.get('/api/settings', async (c) => {
+  const result = await c.env.DB.prepare('SELECT * FROM settings').all();
+  const settings = result.results.reduce((acc: any, curr: any) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {});
+  return c.json(settings);
+});
+
+app.patch('/api/settings', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'Solo el Director puede cambiar los ajustes' }, 403);
+  
+  const body = await c.req.json();
+  const queries = Object.entries(body).map(([key, value]) => 
+    c.env.DB.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?').bind(key, value, value)
+  );
+  await c.env.DB.batch(queries);
+  return c.json({ message: 'Ajustes actualizados' });
+});
+
 export default app;
 
