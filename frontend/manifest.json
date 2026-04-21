@@ -1,8 +1,8 @@
 {
-  "name": "Valet Eye Pro",
-  "short_name": "ValetEye",
-  "description": "Sistema profesional de gestión de Valet Parking",
-  "start_url": "index.html",
+  "name": "Valet Eye Staff",
+  "short_name": "Eye Staff",
+  "description": "Sistema de Gestión de Valet Parking Profesional",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#6366f1",

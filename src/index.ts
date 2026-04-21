@@ -44,8 +44,12 @@ app.get('/ticket/:code', async (c) => {
     <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mi Ticket - Valet Eye</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#0f172a">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <link rel="manifest" href="/manifest.json">
+        <title>Valet Eye Staff</title>
         <style>
             :root { --primary: #6366f1; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
             body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; padding: 20px; }
@@ -113,6 +117,43 @@ app.get('/ticket/:code', async (c) => {
         </script>
     </body>
     </html>
+  `);
+});
+
+// PWA Assets
+app.get('/manifest.json', (c) => {
+  return c.json({
+    "name": "Valet Eye Staff",
+    "short_name": "Eye Staff",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#6366f1",
+    "icons": [{
+      "src": "https://cdn-icons-png.flaticon.com/512/2343/2343894.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }]
+  });
+});
+
+app.get('/sw.js', (c) => {
+  c.header('Content-Type', 'application/javascript');
+  return c.body(`
+    const CACHE_NAME = 'valet-eye-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+    });
+    self.addEventListener('push', e => {
+      const data = e.data.json();
+      self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/2343/2343894.png'
+      });
+    });
   `);
 });
 
@@ -646,6 +687,20 @@ app.patch('/api/reservations/:id', async (c) => {
   const { status } = await c.req.json();
   await c.env.DB.prepare('UPDATE reservations SET status = ? WHERE id = ?').bind(status, id).run();
   return c.json({ message: 'Reserva actualizada' });
+});
+
+// ===============================
+// PUSH NOTIFICATIONS
+// ===============================
+app.post('/api/push/subscribe', async (c) => {
+  const user = c.get('user');
+  const { endpoint, keys } = await c.req.json();
+  
+  await c.env.DB.prepare('INSERT OR REPLACE INTO subscriptions (user_id, endpoint, keys_p256dh, keys_auth) VALUES (?, ?, ?, ?)')
+    .bind(user.id, endpoint, keys.p256dh, keys.auth)
+    .run();
+    
+  return c.json({ success: true });
 });
 
 // ===============================
