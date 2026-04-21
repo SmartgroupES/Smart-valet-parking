@@ -577,6 +577,29 @@ let searchQuery = '';
 let currentTab = 'dashboard';
 let lastTicket = null;
 let pendingReservationId = null;
+let currentDamageMarks = [];
+
+function addDamageMark(e) {
+  const svg = document.getElementById('car-diagram');
+  const rect = svg.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 200;
+  const y = ((e.clientY - rect.top) / rect.height) * 400;
+  currentDamageMarks.push({ x, y });
+  renderDamageMarks();
+}
+
+function renderDamageMarks() {
+  const g = document.getElementById('damage-marks');
+  if (!g) return;
+  g.innerHTML = currentDamageMarks.map(m => `
+    <circle cx="${m.x}" cy="${m.y}" r="8" fill="var(--accent2)" stroke="white" stroke-width="2" />
+  `).join('');
+}
+
+function clearDamageMarks() {
+  currentDamageMarks = [];
+  renderDamageMarks();
+}
 
 // ==================== PIN LOGIN ====================
 let pinBuffer = '';
@@ -1150,6 +1173,19 @@ async function showVehicleDetail(id) {
       ${dRow('Pagado', v.fee_paid ? '✅ Sí' : '❌ No')}
     </div>
     ${v.damage_notes ? `<div class="detail-section"><div class="detail-section-title">Notas de daños</div><p style="font-size:0.875rem;color:var(--muted)">${v.damage_notes}</p></div>` : ''}
+    
+    ${v.damage_json ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Mapa Visual de Daños</div>
+      <div style="width:100%; max-width:180px; margin:0 auto; background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border);">
+        <svg viewBox="0 0 200 400" style="width:100%; height:auto;">
+          <path d="M50,40 Q50,20 100,20 Q150,20 150,40 L150,360 Q150,380 100,380 Q50,380 50,360 Z" fill="none" stroke="var(--muted)" stroke-width="2"/>
+          <path d="M60,100 L140,100 Q130,70 100,70 Q70,70 60,100" fill="none" stroke="var(--muted)" stroke-width="1"/>
+          <path d="M60,300 L140,300 Q130,330 100,330 Q70,330 60,300" fill="none" stroke="var(--muted)" stroke-width="1"/>
+          ${JSON.parse(v.damage_json).map(m => `<circle cx="${m.x}" cy="${m.y}" r="7" fill="var(--accent2)" stroke="white" stroke-width="2" />`).join('')}
+        </svg>
+      </div>
+    </div>` : ''}
     <div class="detail-actions">
       <button class="btn btn-secondary btn-sm" onclick="showTicket(${JSON.stringify(v).replace(/"/g,'&quot;')})">🎫 Ver Resguardo</button>
       <button class="btn btn-primary btn-sm" onclick="openPhotos(${v.id})">📸 Ver Fotos</button>
@@ -1261,6 +1297,21 @@ function renderCheckin(el) {
         <div class="field full"><label>Propietario *</label><input id="ci-owner" placeholder="Nombre completo"/></div>
         <div class="field"><label>Teléfono</label><input id="ci-phone" type="tel" placeholder="+1 555 0000"/></div>
         <div class="field"><label>Tarifa</label><input id="ci-fee" type="number" placeholder="0.00" step="0.01"/></div>
+        
+        <div class="field full">
+          <label>Mapa de Daños (Toca el auto para marcar)</label>
+          <div style="position:relative; width:100%; max-width:280px; margin:10px auto; background:var(--surface2); border-radius:16px; padding:20px; border:1px solid var(--border);">
+            <svg viewBox="0 0 200 400" id="car-diagram" style="width:100%; height:auto; cursor:crosshair; display:block;" onclick="addDamageMark(event)">
+              <path d="M50,40 Q50,20 100,20 Q150,20 150,40 L150,360 Q150,380 100,380 Q50,380 50,360 Z" fill="none" stroke="var(--muted)" stroke-width="2"/>
+              <path d="M60,100 L140,100 Q130,70 100,70 Q70,70 60,100" fill="none" stroke="var(--muted)" stroke-width="1"/>
+              <path d="M60,300 L140,300 Q130,330 100,330 Q70,330 60,300" fill="none" stroke="var(--muted)" stroke-width="1"/>
+              <g id="damage-marks"></g>
+            </svg>
+            <button class="btn btn-secondary btn-sm" style="position:absolute; top:10px; right:10px; padding:4px 8px; font-size:0.7rem;" onclick="clearDamageMarks()">Limpiar</button>
+          </div>
+        </div>
+        <div class="field full"><label>Notas de Daños (Texto)</label><textarea id="ci-damage" placeholder="Rayón en puerta trasera, etc..." style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:8px; height:60px"></textarea></div>
+
         <div class="field full">
           <label>Auditoría Fotográfica</label>
           <div class="photo-grid">
@@ -1302,22 +1353,23 @@ async function submitCheckin() {
   const plate = document.getElementById('ci-plate').value.trim();
   const owner_name = document.getElementById('ci-owner').value.trim();
   if (!plate || !owner_name) { toast('Placa y propietario son requeridos', 'error'); return; }
-  const body = {
-    plate, owner_name,
-    brand: document.getElementById('ci-brand').value,
-    model: document.getElementById('ci-model').value,
-    color: document.getElementById('ci-color').value,
-    owner_phone: document.getElementById('ci-phone').value,
-    key_hook: document.getElementById('ci-hook').value,
-    parking_spot: document.getElementById('ci-spot').value,
-    damage_notes: document.getElementById('ci-damage').value,
-    fee_amount: parseFloat(document.getElementById('ci-fee').value)||0,
-    valet_in: currentStaff?.name || 'Sistema',
-    photo_front: photoData[0]||null,
-    photo_rear: photoData[1]||null,
-    photo_left: photoData[2]||null,
-    photo_right: photoData[3]||null,
-  };
+    const body = {
+      plate, owner_name,
+      brand: document.getElementById('ci-brand').value,
+      model: document.getElementById('ci-model').value,
+      color: document.getElementById('ci-color').value,
+      owner_phone: document.getElementById('ci-phone').value,
+      key_hook: document.getElementById('ci-hook').value,
+      parking_spot: document.getElementById('ci-spot').value,
+      damage_notes: document.getElementById('ci-damage').value,
+      damage_json: JSON.stringify(currentDamageMarks),
+      fee_amount: parseFloat(document.getElementById('ci-fee').value)||0,
+      valet_in: currentStaff?.name || 'Sistema',
+      photo_front: photoData[0]||null,
+      photo_rear: photoData[1]||null,
+      photo_left: photoData[2]||null,
+      photo_right: photoData[3]||null,
+    };
   try {
     const res = await fetch(`${API_BASE}/api/events/checkin`, {
       method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')}, body: JSON.stringify(body)
