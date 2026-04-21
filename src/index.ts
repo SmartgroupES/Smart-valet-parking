@@ -690,6 +690,55 @@ app.patch('/api/reservations/:id', async (c) => {
 });
 
 // ===============================
+// SHIFTS (CLOCK-IN/OUT)
+// ===============================
+app.get('/api/shifts/status', async (c) => {
+  const user = c.get('user');
+  const shift = await c.env.DB.prepare('SELECT * FROM shifts WHERE user_id = ? AND status = ? ORDER BY start_at DESC LIMIT 1')
+    .bind(user.id, 'active').first();
+  return c.json(shift || { status: 'inactive' });
+});
+
+app.post('/api/shifts/clock-in', async (c) => {
+  const user = c.get('user');
+  const active = await c.env.DB.prepare('SELECT id FROM shifts WHERE user_id = ? AND status = ?').bind(user.id, 'active').first();
+  if (active) return c.json({ error: 'Ya tienes un turno activo' }, 400);
+
+  await c.env.DB.prepare('INSERT INTO shifts (user_id) VALUES (?)').bind(user.id).run();
+  return c.json({ success: true });
+});
+
+app.post('/api/shifts/clock-out', async (c) => {
+  const user = c.get('user');
+  const active: any = await c.env.DB.prepare('SELECT id, start_at FROM shifts WHERE user_id = ? AND status = ?').bind(user.id, 'active').first();
+  if (!active) return c.json({ error: 'No tienes turnos activos' }, 400);
+
+  const start = new Date(active.start_at).getTime();
+  const end = Date.now();
+  const minutes = Math.round((end - start) / 60000);
+
+  await c.env.DB.prepare('UPDATE shifts SET end_at = CURRENT_TIMESTAMP, total_minutes = ?, status = ? WHERE id = ?')
+    .bind(minutes, 'completed', active.id).run();
+    
+  return c.json({ success: true, total_minutes: minutes });
+});
+
+app.get('/api/reports/shifts', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+  
+  const { results } = await c.env.DB.prepare(`
+    SELECT u.name, SUM(s.total_minutes) as total_min, COUNT(s.id) as total_shifts
+    FROM users u
+    JOIN shifts s ON s.user_id = u.id
+    WHERE s.status = 'completed' AND s.start_at >= date('now', '-30 days')
+    GROUP BY u.name
+    ORDER BY total_min DESC
+  `).all();
+  return c.json(results);
+});
+
+// ===============================
 // PUSH NOTIFICATIONS
 // ===============================
 app.post('/api/push/subscribe', async (c) => {

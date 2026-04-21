@@ -506,7 +506,10 @@
       <button class="btn-ghost" onclick="toggleLang()" style="margin-right:15px; font-weight:700; font-size:0.8rem; color:var(--accent1)">
         ${lang.toUpperCase()} 🌐
       </button>
-      <div class="staff-badge"><span id="txt-operator">Operador</span>: <strong id="staff-name">—</strong></div>
+      <div class="staff-badge">
+        <button id="btn-clock" class="btn btn-secondary btn-sm" onclick="toggleShift()" style="margin-right:10px; border-radius:15px; font-weight:700;">🕒 ...</button>
+        <span id="txt-operator">Operador</span>: <strong id="staff-name">—</strong>
+      </div>
       <button class="btn-logout" onclick="logout()" id="btn-logout-txt">Salir</button>
     </div>
   </header>
@@ -833,6 +836,7 @@ async function tryLogin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     initPushNotifications();
+    checkShiftStatus();
     showTab('dashboard');
     toast(t('welcome') + ', ' + currentStaff.name, 'success');
   } catch(e) {
@@ -862,6 +866,39 @@ async function initPushNotifications() {
       body: JSON.stringify(subscription)
     });
   } catch (e) { console.error('Push Error:', e); }
+}
+
+async function checkShiftStatus() {
+  const res = await fetch(`${API_BASE}/api/shifts/status`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+  const shift = await res.json();
+  const btn = document.getElementById('btn-clock');
+  if (shift.status === 'active') {
+    btn.textContent = '🏁 Finalizar Turno';
+    btn.className = 'btn btn-danger btn-sm';
+    btn.style.animation = 'pulse 2s infinite';
+  } else {
+    btn.textContent = '🕒 Iniciar Turno';
+    btn.className = 'btn btn-success btn-sm';
+    btn.style.animation = 'none';
+  }
+}
+
+async function toggleShift() {
+  const resStatus = await fetch(`${API_BASE}/api/shifts/status`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+  const shift = await resStatus.json();
+  const endpoint = shift.status === 'active' ? '/api/shifts/clock-out' : '/api/shifts/clock-in';
+  
+  try {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    if (!res.ok) throw new Error();
+    toast(shift.status === 'active' ? 'Turno finalizado' : 'Turno iniciado', 'success');
+    checkShiftStatus();
+  } catch (e) {
+    toast('Error al marcar turno', 'error');
+  }
 }
 
 function logout() {
@@ -1181,6 +1218,11 @@ function renderReports() {
       <div class="stat-label" style="margin-bottom:16px;">📜 Detalle de Ingresos Diarios</div>
       <div id="reports-table-container" style="overflow-x:auto">Cargando datos...</div>
     </div>
+
+    <div class="stat-card" style="padding:24px; margin-top:24px;">
+      <div class="stat-label" style="margin-bottom:16px;">🕒 Control de Nómina (30d)</div>
+      <div id="shifts-report-container" style="overflow-x:auto">Cargando horas...</div>
+    </div>
   `;
 
   loadAdvancedAnalytics();
@@ -1212,9 +1254,32 @@ async function loadAdvancedAnalytics() {
           `).join('')}
         </tbody>
       </table>`;
-  } catch(e) {
+    } catch(e) {
     toast('Error al cargar analítica', 'error');
   }
+
+  try {
+    const shifts = await fetch(`${API_BASE}/api/reports/shifts`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+    document.getElementById('shifts-report-container').innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted); text-align:left;">
+            <th style="padding:12px;">Empleado</th>
+            <th style="padding:12px;">Turnos</th>
+            <th style="padding:12px; text-align:right;">Total Horas</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${shifts.map(s => `
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:12px; font-weight:600;">${s.name}</td>
+              <td style="padding:12px;">${s.total_shifts}</td>
+              <td style="padding:12px; text-align:right; font-weight:700; color:var(--accent)">${(s.total_min/60).toFixed(1)}h</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {}
 }
 
 function initCharts(fin, aly) {
