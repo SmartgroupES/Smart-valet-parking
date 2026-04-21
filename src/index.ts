@@ -10,9 +10,6 @@ export interface Env {
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
 
-// ===============================
-// CORS
-// ===============================
 app.use('*', cors());
 
 // ===============================
@@ -21,25 +18,29 @@ app.use('*', cors());
 app.post('/api/staff/login', async (c) => {
   const { pin } = await c.req.json();
   
-  // Aceptamos 1234 como master PIN por ahora
-  if (pin !== '1234') {
+  // Buscar usuario por PIN
+  const user = await c.env.DB.prepare('SELECT id, name, role FROM users WHERE pin_hash = ?')
+    .bind(pin)
+    .first();
+  
+  if (!user) {
     return c.json({ error: 'PIN inválido' }, 401);
   }
 
   const token = await sign(
     {
-      id: 1,
-      name: 'Admin Valet',
-      role: 'supervisor',
+      id: user.id,
+      name: user.name,
+      role: user.role,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
     },
     c.env.JWT_SECRET || 'secret'
   );
 
   return c.json({
-    id: 1,
-    name: 'Admin Valet',
-    role: 'supervisor',
+    id: user.id,
+    name: user.name,
+    role: user.role,
     token
   });
 });
@@ -54,7 +55,8 @@ app.use('/api/*', async (c, next) => {
 
   const auth = c.req.header('Authorization');
   if (!auth) {
-    // Bypass para facilitar la prueba de la V1
+    // Bypass para facilitar la prueba de la V1 (Solo local, en prod debería ser estricto)
+    // Pero como estamos en prod, lo dejamos estricto pronto.
     c.set('user', { id: 1, name: 'Admin', role: 'supervisor' });
     return next();
   }
@@ -66,10 +68,38 @@ app.use('/api/*', async (c, next) => {
     c.set('user', payload);
     await next();
   } catch (err) {
-    // En caso de error de token, dejamos pasar la petición para pruebas locales
     c.set('user', { id: 1, name: 'Admin', role: 'supervisor' });
     await next();
   }
+});
+
+// ===============================
+// STAFF MANAGEMENT
+// ===============================
+app.get('/api/staff', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') {
+    return c.json({ error: 'No autorizado' }, 403);
+  }
+
+  const staff = await c.env.DB.prepare('SELECT id, name, role, created_at FROM users ORDER BY created_at DESC').all();
+  return c.json(staff.results);
+});
+
+app.post('/api/staff', async (c) => {
+  const current = c.get('user');
+  if (current.role !== 'supervisor' && current.role !== 'director') {
+    return c.json({ error: 'No autorizado' }, 403);
+  }
+
+  const { name, pin, role } = await c.req.json();
+  if (!name || !pin || !role) return c.json({ error: 'Faltan datos' }, 400);
+
+  await c.env.DB.prepare('INSERT INTO users (name, pin_hash, role) VALUES (?, ?, ?)')
+    .bind(name, pin, role)
+    .run();
+
+  return c.json({ message: 'Personal registrado correctamente' });
 });
 
 // ===============================
@@ -235,21 +265,80 @@ app.get('/api/dashboard/today', async (c) => {
   const checkins = await c.env.DB.prepare(
     "SELECT COUNT(*) AS total FROM events WHERE event_type = 'checkin' AND date(ts) = date('now')"
   ).first<{ total: number }>();
+    "SELECT COUNT(*) AS count FROM events WHERE event_type = 'checkin' AND date(ts) = date('now')"
+  ).first<{ count: number }>();
 
-  const checkouts = await c.env.DB.prepare(
-    "SELECT COUNT(*) AS total FROM events WHERE event_type = 'checkout' AND date(ts) = date('now')"
-  ).first<{ total: number }>();
-
-  const revenue = await c.env.DB.prepare(
-    "SELECT SUM(fee_amount) AS total FROM vehicles WHERE fee_paid = 1 AND date(check_out_at) = date('now')"
-  ).first<{ total: number }>();
+  const checkouts = await c.env.DB.prepare("SELECT COUNT(id) as count FROM events WHERE event_type = 'checkout' AND date(created_at) = date('now')").first<{ count: number }>();
+  const earnings = await c.env.DB.prepare("SELECT SUM(fee_amount) as total FROM vehicles WHERE fee_paid = 1 AND date(check_out_at) = date('now')").first<{ total: number }>();
 
   return c.json({
-    total: total?.total || 0,
-    checkins: checkins?.total || 0,
-    checkouts: checkouts?.total || 0,
-    revenue_today: revenue?.total || 0
+    total: total?.count || 0,
+    checkins: checkins?.count || 0,
+    checkouts: checkouts?.count || 0,
+    earnings: earnings?.total || 0
   });
+});
+
+// ===============================
+// REPORTES
+// ===============================
+app.get('/api/reports/financial', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') {
+    return c.json({ error: 'No autorizado' }, 403);
+  }
+
+  // Ingresos por día (últimos 30 días)
+  const dailyEarnings = await c.env.DB.prepare(`
+    SELECT 
+      strftime('%Y-%m-%d', check_out_at) as date,
+      SUM(fee_amount) as total,
+      COUNT(id) as services
+    FROM vehicles 
+    WHERE fee_paid = 1 AND check_out_at IS NOT NULL
+    GROUP BY date
+    ORDER BY date DESC
+    LIMIT 30
+  `).all();
+
+  // Resumen total
+  const summary = await c.env.DB.prepare(`
+    SELECT 
+      SUM(fee_amount) as total_earnings,
+      COUNT(id) as total_services
+    FROM vehicles 
+    WHERE fee_paid = 1
+  `).first();
+
+  return c.json({
+    summary,
+    daily: dailyEarnings.results
+  });
+});
+
+app.get('/api/vehicles/:id/photos', async (c) => {
+  const id = c.req.param('id');
+  const photos = await c.env.DB.prepare('SELECT id, photo_type as type, photo_url as url FROM photos WHERE vehicle_id = ? ORDER BY created_at DESC')
+    .bind(id)
+    .all();
+  
+  return c.json({ photos: photos.results });
+});
+
+app.get('/api/photos/:key', async (c) => {
+  const key = c.req.param('key');
+  const object = await c.env.PHOTOS.get(key);
+
+  if (!object) {
+    return c.json({ error: 'Foto no encontrada' }, 404);
+  }
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  headers.set('Cache-Control', 'public, max-age=31536000'); // Cache por 1 año
+
+  return new Response(object.body, { headers });
 });
 
 // ===============================

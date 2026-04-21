@@ -480,6 +480,8 @@
     <button class="nav-tab" onclick="showTab('checkin')">📥 Check-In</button>
     <button class="nav-tab" onclick="showTab('checkout')">📤 Check-Out</button>
     <button class="nav-tab" onclick="showTab('reservations')">📅 Reservas</button>
+    <button class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 Personal</button>
+    <button class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📊 Reportes</button>
   </nav>
   <main id="main-content"></main>
 </div>
@@ -496,14 +498,42 @@
   <div class="modal">
     <div class="modal-title">🎫 Resguardo <button class="modal-close" onclick="closeModal('modal-ticket')">×</button></div>
     <div id="ticket-content"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
-      <button class="btn btn-primary" onclick="closeModal('modal-ticket')">Listo</button>
+    <div style="margin-top:20px; text-align:center; display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-success" id="btn-wa" style="background:#25D366; border:none;" onclick="sendWhatsApp()">
+        <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" style="width:16px; margin-right:8px; vertical-align:middle; filter:brightness(0) invert(1)"> Enviar Ticket WhatsApp
+      </button>
+      <button class="btn btn-primary" onclick="closeModal('modal-ticket')">Cerrar</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-photos">
+<div class="modal-overlay" id="modal-add-staff">
+  <div class="modal">
+    <div class="modal-title">Registrar Nuevo Personal <button class="modal-close" onclick="closeModal('modal-add-staff')">×</button></div>
+    <div style="padding:20px;">
+      <div class="form-group" style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">Nombre Completo</label>
+        <input type="text" id="ns-name" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+      </div>
+      <div class="form-group" style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">PIN de Acceso (4 dígitos)</label>
+        <input type="password" id="ns-pin" maxlength="4" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">Rol</label>
+        <select id="ns-role" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+          <option value="driver">Chofer (Driver)</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="director">Director</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-add-staff')">Cancelar</button>
+        <button class="btn btn-primary" style="flex:1" onclick="submitAddStaff()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
   <div class="modal" style="max-width: 800px;">
     <div class="modal-title">📸 Inspección Fotográfica <button class="modal-close" onclick="closeModal('modal-photos')">×</button></div>
     <div id="photos-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px;">
@@ -526,6 +556,7 @@ let vehicles = [];
 let vehicleFilter = 'parked';
 let searchQuery = '';
 let currentTab = 'dashboard';
+let lastTicket = null;
 
 // ==================== PIN LOGIN ====================
 let pinBuffer = '';
@@ -553,6 +584,16 @@ async function tryLogin() {
     if (!res.ok) throw new Error('PIN inválido');
     currentStaff = await res.json();
     localStorage.setItem('token', currentStaff.token);
+    
+    // Mostrar pestañas si es admin
+    if (currentStaff.role === 'supervisor' || currentStaff.role === 'director') {
+      document.getElementById('tab-staff').style.display = 'block';
+      document.getElementById('tab-reports').style.display = 'block';
+    } else {
+      document.getElementById('tab-staff').style.display = 'none';
+      document.getElementById('tab-reports').style.display = 'none';
+    }
+    
     document.getElementById('staff-name').textContent = currentStaff.name;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
@@ -586,12 +627,134 @@ function showTab(tab) {
   document.querySelectorAll('.nav-tab').forEach((t,i) => {
     t.classList.toggle('active', ['dashboard','vehicles','checkin','checkout','reservations'][i] === tab);
   });
+    t.classList.toggle('active', ['dashboard','vehicles','checkin','checkout','reservations','staff'][i] === tab);
+  });
   const main = document.getElementById('main-content');
-  if (tab === 'dashboard') renderDashboard(main);
-  else if (tab === 'vehicles') renderVehicles(main);
-  else if (tab === 'checkin') renderCheckin(main);
-  else if (tab === 'checkout') renderCheckout(main);
-  else if (tab === 'reservations') renderReservations(main);
+  switch(tab) {
+    case 'dashboard': renderDashboard(main); break;
+    case 'vehicles': renderVehicles(main); break;
+    case 'checkin': renderCheckin(main); break;
+    case 'checkout': renderCheckout(main); break;
+    case 'reservations': renderReservations(main); break;
+    case 'staff': renderStaff(); break;
+    case 'reports': renderReports(); break;
+  }
+}
+
+// ==================== VIEWS ====================
+function renderReports() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📈 Reportes Financieros</h2>
+    </div>
+    <div class="grid" id="reports-summary" style="margin-bottom:30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      <div class="stat-card">
+        <div class="stat-label">Ingresos Totales (Histórico)</div>
+        <div class="stat-value" id="rep-total-earnings" style="color:var(--accent1)">$0.00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Servicios Realizados</div>
+        <div class="stat-value" id="rep-total-services">0</div>
+      </div>
+    </div>
+    <div class="view-header" style="margin-top:40px;"><h3 class="view-title">Histórico de Ingresos (Últimos 30 días)</h3></div>
+    <div class="grid" id="reports-daily-list" style="gap:15px; grid-template-columns: 1fr;">
+      <div style="color:var(--muted); text-align:center; padding:40px;">Cargando historial...</div>
+    </div>
+  `;
+  loadReports();
+}
+
+async function loadReports() {
+  try {
+    const res = await fetch(`${API_BASE}/api/reports/financial`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    
+    document.getElementById('rep-total-earnings').textContent = '$' + (data.summary.total_earnings || 0).toLocaleString();
+    document.getElementById('rep-total-services').textContent = data.summary.total_services || 0;
+    
+    const list = document.getElementById('reports-daily-list');
+    if (!data.daily || !data.daily.length) {
+      list.innerHTML = '<div style="color:var(--muted); text-align:center; padding:40px;">No hay historial disponible todavía.</div>';
+      return;
+    }
+    list.innerHTML = data.daily.map(d => `
+      <div class="vehicle-card" style="cursor:default; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--accent1);">
+        <div>
+          <div style="font-weight:600; font-size:1.1rem">${d.date}</div>
+          <div style="font-size:0.85rem; color:var(--muted)">${d.services} servicios completados</div>
+        </div>
+        <div style="font-size:1.4rem; font-weight:700; color:var(--accent1)">$${d.total.toLocaleString()}</div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('reports-daily-list').innerHTML = '<div style="color:var(--accent2); text-align:center;">No tienes permisos para ver reportes.</div>';
+  }
+}
+function renderStaff() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">👥 Gestión de Personal</h2>
+      <button class="btn btn-primary" onclick="openModal('modal-add-staff')">+ Nuevo Miembro</button>
+    </div>
+    <div class="grid" id="staff-list-content" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+      <div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">Cargando personal...</div>
+    </div>
+  `;
+  loadStaff();
+}
+
+async function loadStaff() {
+  try {
+    const res = await fetch(`${API_BASE}/api/staff`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    const el = document.getElementById('staff-list-content');
+    if (!Array.isArray(data)) throw new Error();
+    
+    el.innerHTML = data.map(s => `
+      <div class="vehicle-card" style="cursor:default; border-left:4px solid var(--accent1);">
+        <div class="vehicle-card-top">
+          <div style="font-weight:600;font-size:1.1rem">${s.name}</div>
+          <span class="status-badge" style="background:var(--surface2); color:var(--text);">${s.role.toUpperCase()}</span>
+        </div>
+        <div class="vehicle-meta" style="margin-top:8px; font-size:0.85rem">Registrado: ${fmtDate(s.created_at)}</div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('staff-list-content').innerHTML = '<div style="color:var(--accent2); grid-column:1/-1; text-align:center;">No tienes permisos o hubo un error.</div>';
+  }
+}
+
+async function submitAddStaff() {
+  const name = document.getElementById('ns-name').value;
+  const pin = document.getElementById('ns-pin').value;
+  const role = document.getElementById('ns-role').value;
+  
+  if (!name || pin.length < 4) {
+    toast('Nombre y PIN de 4 dígitos requeridos', 'error');
+    return;
+  }
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/staff`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify({ name, pin, role })
+    });
+    if (!res.ok) throw new Error();
+    
+    toast('Personal registrado correctamente', 'success');
+    closeModal('modal-add-staff');
+    renderStaff();
+  } catch {
+    toast('Error al registrar personal', 'error');
+  }
 }
 
 // ==================== DASHBOARD ====================
@@ -613,7 +776,7 @@ async function renderDashboard(el) {
     document.getElementById('stat-parked').textContent = stats.total ?? 0;
     document.getElementById('stat-retrieved_today').textContent = stats.checkouts ?? 0;
     document.getElementById('stat-checked_in_today').textContent = stats.checkins ?? 0;
-    document.getElementById('stat-revenue_today').textContent = '$' + (stats.revenue_today||0).toFixed(2);
+    document.getElementById('stat-revenue_today').textContent = '$' + (stats.earnings ?? 0).toLocaleString();
     vehicles = vehs.vehicles || [];
     renderVehicleCards(document.getElementById('dashboard-vehicles'), vehicles.slice(0,6));
   } catch(e) {
@@ -750,7 +913,7 @@ async function openPhotos(id) {
     } else {
       el.innerHTML = photos.map(p => `
         <div class="stat-card" style="padding:0; height:300px; border:none; background:var(--surface2);">
-          <img src="${API_BASE}/api/${p.url}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;" onerror="this.src='https://placehold.co/400x300?text=Error+al+cargar'">
+          <img src="${API_BASE}/api/photos/${p.url}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;" onerror="this.src='https://placehold.co/400x300?text=Error+al+cargar'">
         </div>
       `).join('');
     }
