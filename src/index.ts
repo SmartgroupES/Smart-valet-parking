@@ -223,11 +223,11 @@ app.post('/api/events/checkin', async (c) => {
 
     const result = await c.env.DB.prepare(
       `INSERT INTO vehicles 
-        (plate, status, ticket_code, owner_name, owner_phone, owner_id_ref, brand, model, color, parking_spot, damage_notes, fee_amount, valet_in) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        (plate, status, ticket_code, owner_name, owner_phone, owner_id_ref, brand, model, color, parking_spot, key_hook, damage_notes, fee_amount, valet_in) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       data.plate, 'parked', ticketCode, data.owner_name, data.owner_phone || null, data.owner_id_ref || null,
-      data.brand || null, data.model || null, data.color || null, data.parking_spot || null, data.damage_notes || null, data.fee_amount || 0, data.valet_in || null
+      data.brand || null, data.model || null, data.color || null, data.parking_spot || null, data.key_hook || null, data.damage_notes || null, data.fee_amount || 0, data.valet_in || null
     ).run();
 
     const vehicleId = result.meta.last_row_id;
@@ -338,7 +338,7 @@ app.patch('/api/vehicles/:id', async (c) => {
   const updates: string[] = [];
   const params: any[] = [];
 
-  const allowedFields = ['status', 'check_out_at', 'valet_out', 'fee_amount', 'fee_paid', 'payment_method'];
+  const allowedFields = ['status', 'check_out_at', 'valet_out', 'fee_amount', 'fee_paid', 'payment_method', 'key_hook', 'parking_spot'];
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updates.push(`${field} = ?`);

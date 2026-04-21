@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ValetOS — Sistema de Valet Parking</title>
+<title>Valet Eye — Smart Parking</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2343/2343894.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -551,6 +556,17 @@
 // ==================== CONFIG ====================
 // const API_BASE = window.location.origin; // Usar esto cuando el frontend esté servido desde el mismo dominio
 // const API_BASE = 'http://localhost:8787'; // Para pruebas locales con Wrangler
+// Registrar Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('SW registrado', reg);
+    }).catch(err => {
+      console.log('SW falló', err);
+    });
+  });
+}
+
 const API_BASE = 'https://valet-parking-api.smart-group.workers.dev'; // Producción real
 
 // ==================== STATE ====================
@@ -1063,8 +1079,13 @@ function renderVehicleCards(el, list) {
       </div>
       <div class="vehicle-name">${v.brand||''} ${v.model||''} ${v.color ? '· '+v.color : ''}</div>
       <div class="vehicle-meta">${v.owner_name} ${v.owner_phone?'· '+v.owner_phone:''}</div>
-      <div class="vehicle-ticket">${v.ticket_code}</div>
-      ${v.parking_spot?`<div class="spot-badge">Lugar: ${v.parking_spot}</div>`:''}
+      <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
+        <div class="vehicle-ticket">${v.ticket_code}</div>
+        <div style="display:flex; gap:6px;">
+          ${v.key_hook ? `<span style="background:var(--accent2); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">🔑 ${v.key_hook}</span>` : ''}
+          ${v.parking_spot ? `<span style="background:var(--accent1); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">📍 ${v.parking_spot}</span>` : ''}
+        </div>
+      </div>
     </div>`).join('');
 }
 
@@ -1099,7 +1120,18 @@ async function showVehicleDetail(id) {
       ${dRow('Placa', `<span class="plate-tag">${v.plate}</span>`)}
       ${dRow('Marca / Modelo', `${v.brand||'—'} ${v.model||''}`)}
       ${dRow('Color', v.color||'—')}
-      ${dRow('Lugar', v.parking_spot||'—')}
+      ${dRow('Lugar 🗺️', `
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent1); font-weight:700">${v.parking_spot||'—'}</span>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.65rem; border-radius:6px;" onclick="editField(${v.id}, 'parking_spot', 'Nuevo Lugar (Ej: A-12)', '${v.parking_spot||''}')">✏️</button>
+        </div>
+      `)}
+      ${dRow('Gancho Llave 🔑', `
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-weight:700">${v.key_hook||'—'}</span>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.65rem; border-radius:6px;" onclick="editField(${v.id}, 'key_hook', 'Número de Gancho', '${v.key_hook||''}')">✏️</button>
+        </div>
+      `)}
     </div>
     <div class="detail-section">
       <div class="detail-section-title">Propietario</div>
@@ -1162,6 +1194,28 @@ async function markPendingPickup(id) {
   if (currentTab === 'vehicles') loadVehicles();
 }
 
+async function editField(id, field, label, current) {
+  const val = prompt(`${label}:`, current);
+  if (val === null) return;
+  const data = {};
+  data[field] = val;
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error();
+    toast('Actualizado correctamente', 'success');
+    showVehicleDetail(id);
+    if (currentTab === 'vehicles') loadVehicles();
+    if (currentTab === 'dashboard') loadDashboard();
+    if (currentTab === 'slots') loadSlots();
+  } catch (e) {
+    toast('Error al actualizar', 'error');
+  }
+}
+
 async function doCheckout(id) {
   const fee = prompt('¿Monto a cobrar? (0 si ya fue prepagado)', '0');
   if (fee === null) return;
@@ -1199,13 +1253,13 @@ function renderCheckin(el) {
       <div class="list-title" style="margin-bottom:24px">📥 Registrar Ingreso</div>
       <div class="form-grid">
         <div class="field"><label>Placa *</label><input id="ci-plate" placeholder="ABC-1234" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/></div>
-        <div class="field"><label>Lugar de Estacionamiento</label><input id="ci-spot" placeholder="A-12"/></div>
+        <div class="field"><label>Gancho Llave 🔑</label><input id="ci-hook" placeholder="Gancho #"/></div>
+        <div class="field"><label>Lugar Estacionamiento</label><input id="ci-spot" placeholder="A-12"/></div>
         <div class="field"><label>Marca</label><input id="ci-brand" placeholder="Toyota"/></div>
         <div class="field"><label>Modelo</label><input id="ci-model" placeholder="Corolla"/></div>
         <div class="field"><label>Color</label><input id="ci-color" placeholder="Rojo"/></div>
         <div class="field full"><label>Propietario *</label><input id="ci-owner" placeholder="Nombre completo"/></div>
         <div class="field"><label>Teléfono</label><input id="ci-phone" type="tel" placeholder="+1 555 0000"/></div>
-        <div class="field"><label>ID Referencia</label><input id="ci-id" placeholder="Núm. identificación"/></div>
         <div class="field"><label>Tarifa</label><input id="ci-fee" type="number" placeholder="0.00" step="0.01"/></div>
         <div class="field full">
           <label>Auditoría Fotográfica</label>
@@ -1254,7 +1308,7 @@ async function submitCheckin() {
     model: document.getElementById('ci-model').value,
     color: document.getElementById('ci-color').value,
     owner_phone: document.getElementById('ci-phone').value,
-    owner_id_ref: document.getElementById('ci-id').value,
+    key_hook: document.getElementById('ci-hook').value,
     parking_spot: document.getElementById('ci-spot').value,
     damage_notes: document.getElementById('ci-damage').value,
     fee_amount: parseFloat(document.getElementById('ci-fee').value)||0,
