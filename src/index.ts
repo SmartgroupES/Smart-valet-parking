@@ -159,17 +159,10 @@ app.post('/api/staff/login', async (c) => {
 // Middleware JWT (protege rutas /api/* EXCEPTO login)
 // ===============================
 app.use('/api/*', async (c, next) => {
-  if (c.req.path === '/api/staff/login') {
-    return next();
-  }
+  if (c.req.path === '/api/staff/login') return next();
 
   const auth = c.req.header('Authorization');
-  if (!auth) {
-    // Bypass para facilitar la prueba de la V1 (Solo local, en prod debería ser estricto)
-    // Pero como estamos en prod, lo dejamos estricto pronto.
-    c.set('user', { id: 1, name: 'Admin', role: 'supervisor' });
-    return next();
-  }
+  if (!auth) return c.json({ error: 'Autorización requerida' }, 401);
 
   const token = auth.replace('Bearer ', '').trim();
 
@@ -178,8 +171,7 @@ app.use('/api/*', async (c, next) => {
     c.set('user', payload);
     await next();
   } catch (err) {
-    c.set('user', { id: 1, name: 'Admin', role: 'supervisor' });
-    await next();
+    return c.json({ error: 'Token inválido o expirado' }, 401);
   }
 });
 

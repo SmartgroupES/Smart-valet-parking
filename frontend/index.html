@@ -627,24 +627,21 @@ async function tryLogin() {
     if (!res.ok) throw new Error('PIN inválido');
     currentStaff = await res.json();
     localStorage.setItem('token', currentStaff.token);
+    localStorage.setItem('role', currentStaff.role);
     
-    if (currentStaff.role === 'supervisor' || currentStaff.role === 'director') {
-      document.getElementById('tab-staff').style.display = 'block';
-      document.getElementById('tab-reports').style.display = 'block';
-      document.getElementById('tab-settings').style.display = 'block';
-    } else {
-      document.getElementById('tab-staff').style.display = 'none';
-      document.getElementById('tab-reports').style.display = 'none';
-      document.getElementById('tab-settings').style.display = 'none';
-    }
+    // Control de visibilidad de pestañas
+    const isAdmin = currentStaff.role === 'supervisor' || currentStaff.role === 'director';
+    document.getElementById('tab-staff').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('tab-reports').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('tab-settings').style.display = isAdmin ? 'block' : 'none';
     
-    document.getElementById('staff-name').textContent = currentStaff.name;
+    document.getElementById('staff-name').textContent = currentStaff.name + ' (' + currentStaff.role + ')';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     showTab('dashboard');
     toast('Bienvenido, ' + currentStaff.name, 'success');
   } catch(e) {
-    document.getElementById('pin-error').textContent = 'PIN incorrecto. Intente nuevamente.';
+    document.getElementById('pin-error').textContent = e.message || 'Error de conexión';
     pinBuffer = '';
     updatePinDisplay();
     setTimeout(() => document.getElementById('pin-error').textContent = '', 2000);
@@ -667,12 +664,19 @@ setTimeout(() => { if(!currentStaff) demoLogin(); }, 800);
 
 // ==================== NAVIGATION ====================
 function showTab(tab) {
+  // Bloqueo de seguridad en frontend
+  const isAdmin = currentStaff?.role === 'supervisor' || currentStaff?.role === 'director';
+  if (['staff', 'reports', 'settings'].includes(tab) && !isAdmin) {
+    toast('No tienes permisos para esta sección', 'error');
+    return;
+  }
+
   currentTab = tab;
-  document.querySelectorAll('.nav-tab').forEach((t,i) => {
-    t.classList.toggle('active', ['dashboard','vehicles','checkin','checkout','reservations'][i] === tab);
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.remove('active');
+    if (t.getAttribute('onclick').includes(`'${tab}'`)) t.classList.add('active');
   });
-    t.classList.toggle('active', ['dashboard','vehicles','checkin','checkout','reservations','staff'][i] === tab);
-  });
+
   const main = document.getElementById('main-content');
   switch(tab) {
     case 'dashboard': renderDashboard(main); break;
