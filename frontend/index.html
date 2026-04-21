@@ -441,6 +441,9 @@
 </head>
 <body>
 
+<!-- OFFLINE BANNER -->
+<div id="offline-banner" style="display:none; background:var(--gold); color:#000; padding:10px; text-align:center; font-size:0.8rem; font-weight:700; position:sticky; top:0; z-index:200; justify-content:center; align-items:center;"></div>
+
 <!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div>
@@ -567,7 +570,80 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const API_BASE = 'https://valet-parking-api.smart-group.workers.dev'; // Producción real
+const API_BASE = 'https://valet-parking-api.smart-group.workers.dev';
+
+// --- MODO OFFLINE (IndexedDB) ---
+const DB_NAME = 'ValetEyeDB';
+const STORE_NAME = 'pendingActions';
+let db;
+
+const initDB = () => new Promise((res, rej) => {
+  const req = indexedDB.open(DB_NAME, 1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+  req.onsuccess = e => { db = e.target.result; res(db); };
+  req.onerror = rej;
+});
+
+async function addPendingAction(url, method, body, label) {
+  const tx = db.transaction([STORE_NAME], 'readwrite');
+  tx.objectStore(STORE_NAME).add({ url, method, body, label, timestamp: Date.now() });
+  updateOfflineBanner();
+}
+
+async function getPendingActions() {
+  if (!db) return [];
+  return new Promise(res => {
+    const req = db.transaction([STORE_NAME], 'readonly').objectStore(STORE_NAME).getAll();
+    req.onsuccess = () => res(req.result);
+  });
+}
+
+async function updateOfflineBanner() {
+  const actions = await getPendingActions();
+  const banner = document.getElementById('offline-banner');
+  if (!banner) return;
+  if (!navigator.onLine || actions.length > 0) {
+    banner.style.display = 'flex';
+    banner.innerHTML = !navigator.onLine 
+      ? '📡 Sin conexión - Trabajando en modo local' 
+      : `🔄 Sincronizando: ${actions.length} pendientes...`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+let isSyncing = false;
+async function syncPendingActions() {
+  if (isSyncing || !navigator.onLine) { updateOfflineBanner(); return; }
+  const actions = await getPendingActions();
+  if (!actions.length) { updateOfflineBanner(); return; }
+  isSyncing = true;
+  for (const act of actions) {
+    try {
+      const r = await fetch(act.url, {
+        method: act.method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+        body: JSON.stringify(act.body)
+      });
+      if (r.ok) {
+        const tx = db.transaction([STORE_NAME], 'readwrite');
+        tx.objectStore(STORE_NAME).delete(act.id);
+      } else { break; }
+    } catch (e) { break; }
+  }
+  isSyncing = false;
+  updateOfflineBanner();
+  const remaining = await getPendingActions();
+  if (remaining.length === 0) {
+    toast('Datos sincronizados con éxito ✅', 'success');
+    if (currentTab === 'dashboard') loadDashboard();
+    if (currentTab === 'vehicles') loadVehicles();
+  }
+}
+
+window.addEventListener('online', syncPendingActions);
+window.addEventListener('offline', updateOfflineBanner);
+initDB().then(() => { updateOfflineBanner(); syncPendingActions(); }); // Producción real
 
 // ==================== STATE ====================
 let currentStaff = null;
@@ -1260,7 +1336,7 @@ async function doCheckout(id) {
   const fee = prompt('¿Monto a cobrar? (0 si ya fue prepagado)', '0');
   if (fee === null) return;
   const method = prompt('Método de pago: efectivo / tarjeta / app', 'efectivo');
-  await apiPatch(id, {
+  const data = {
     status: 'retrieved',
     check_out_at: new Date().toISOString(),
     valet_out: currentStaff?.name,
@@ -1269,8 +1345,21 @@ async function doCheckout(id) {
     payment_method: method,
     action: 'CHECK_OUT',
     actor: currentStaff?.name
-  });
-  toast('Vehículo entregado exitosamente ✅', 'success');
+  };
+
+  try {
+    const r = await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+      body: JSON.stringify(data)
+    });
+    if(!r.ok) throw new Error();
+    toast('Vehículo entregado exitosamente ✅', 'success');
+  } catch (e) {
+    await addPendingAction(`${API_BASE}/api/vehicles/${id}`, 'PATCH', data, `Salida ID ${id}`);
+    toast('Sin conexión. Salida guardada localmente 📁', 'info');
+  }
+  
   closeModal('modal-vehicle-detail');
   if (currentTab === 'vehicles') loadVehicles();
   if (currentTab === 'dashboard') showTab('dashboard');
@@ -1378,6 +1467,7 @@ async function submitCheckin() {
     const res = await fetch(`${API_BASE}/api/events/checkin`, {
       method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')}, body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error();
     
     // Subir fotos si existen
     for (const [i, img] of Object.entries(photoData)) {
@@ -1387,11 +1477,15 @@ async function submitCheckin() {
         body: JSON.stringify({ plate, image: img, type: ['front','rear','left','right'][i] })
       });
     }
-
     toast('Ingreso registrado exitosamente ✅', 'success');
-    
-    // Marcar reserva como llegada si aplica
-    if (pendingReservationId) {
+  } catch (e) {
+    // Modo Offline / Error
+    await addPendingAction(`${API_BASE}/api/events/checkin`, 'POST', body, `Check-in ${plate}`);
+    toast('Sin conexión. Registro guardado localmente 📁', 'info');
+  }
+
+  // Marcar reserva como llegada si aplica (incluso si offline, ya lo manejaremos)
+  if (pendingReservationId) {
       try {
         await fetch(`${API_BASE}/api/reservations/${pendingReservationId}`, {
           method: 'PATCH',
