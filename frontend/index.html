@@ -493,21 +493,23 @@
   <header>
     <div class="header-logo" id="header-brand">Valet<span>OS</span></div>
     <div class="header-right">
-      <div class="staff-badge">Operador: <strong id="staff-name">—</strong></div>
-      <button class="btn-logout" onclick="logout()">Salir</button>
+      <button class="btn-ghost" onclick="toggleLang()" style="margin-right:15px; font-weight:700; font-size:0.8rem; color:var(--accent1)">
+        ${lang.toUpperCase()} 🌐
+      </button>
+      <div class="staff-badge"><span id="txt-operator">Operador</span>: <strong id="staff-name">—</strong></div>
+      <button class="btn-logout" onclick="logout()" id="btn-logout-txt">Salir</button>
     </div>
   </header>
-  <nav>
-    <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
-    <button class="nav-tab" onclick="showTab('vehicles')">🚗 Vehículos</button>
-    <button class="nav-tab" onclick="showTab('checkin')">📥 Check-In</button>
-    <button class="nav-tab" onclick="showTab('checkout')">📤 Check-Out</button>
-    <button class="nav-tab" onclick="showTab('reservations')">📅 Reservas</button>
-    <button class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 Personal</button>
-    <button class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📊 Reportes</button>
-    <button class="nav-tab" onclick="showTab('slots')">🗺️ Mapa</button>
-    <button class="nav-tab" onclick="showTab('history')">📜 Historial</button>
-    <button class="nav-tab" id="tab-settings" onclick="showTab('settings')" style="display:none">⚙️ Ajustes</button>
+  <nav class="sidebar">
+    <div class="nav-tab active" onclick="showTab('dashboard')">📊 <span id="nav-dashboard">Dashboard</span></div>
+    <div class="nav-tab" onclick="showTab('checkin')">🚗 <span id="nav-checkin">Entrada</span></div>
+    <div class="nav-tab" onclick="showTab('checkout')">📤 <span id="nav-checkout">Entrega</span></div>
+    <div class="nav-tab" onclick="showTab('vehicles')">🏎️ <span id="nav-vehicles">Vehículos</span></div>
+    <div class="nav-tab" onclick="showTab('reservations')">📅 <span id="nav-reservations">Reservas</span></div>
+    <div class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 <span id="nav-staff">Personal</span></div>
+    <div class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📈 <span id="nav-reports">Reportes</span></div>
+    <div class="nav-tab" onclick="showTab('history')">📜 <span id="nav-history">Historial</span></div>
+    <div class="nav-tab" id="tab-settings" onclick="showTab('settings')" style="display:none">⚙️ <span id="nav-settings">Ajustes</span></div>
   </nav>
   <main id="main-content"></main>
 </div>
@@ -699,6 +701,39 @@ let vehicles = [];
 let vehicleFilter = 'parked';
 let searchQuery = '';
 let currentTab = 'dashboard';
+let lang = localStorage.getItem('lang') || 'es';
+
+const i18n = {
+  es: {
+    dashboard: 'Dashboard', vehicles: 'Vehículos', checkin: 'Entrada', checkout: 'Entrega',
+    reservations: 'Reservas', staff: 'Personal', reports: 'Reportes', settings: 'Ajustes',
+    history: 'Historial', logout: 'Salir', welcome: 'Bienvenido', search: 'Buscar...',
+    parked: 'Estacionado', retrieved: 'Entregado', requested: 'Solicitado',
+    new_checkin: 'Nueva Entrada', plate: 'Placa', owner: 'Dueño', brand: 'Marca',
+    parking_spot: 'Lugar', key_hook: 'Gancho', damage: 'Daños', save: 'Guardar',
+    request_car: 'Pedir mi Auto', preparing: 'En preparación', digital_receipt: 'Comprobante de Resguardo'
+  },
+  en: {
+    dashboard: 'Dashboard', vehicles: 'Vehicles', checkin: 'Check-in', checkout: 'Check-out',
+    reservations: 'Reservations', staff: 'Staff', reports: 'Reports', settings: 'Settings',
+    history: 'History', logout: 'Logout', welcome: 'Welcome', search: 'Search...',
+    parked: 'Parked', retrieved: 'Retrieved', requested: 'Requested',
+    new_checkin: 'New Check-in', plate: 'Plate', owner: 'Owner', brand: 'Brand',
+    parking_spot: 'Spot', key_hook: 'Hook', damage: 'Damage', save: 'Save',
+    request_car: 'Request my Car', preparing: 'Preparing', digital_receipt: 'Digital Receipt'
+  }
+};
+
+function t(key) {
+  return i18n[lang][key] || key;
+}
+
+function toggleLang() {
+  lang = lang === 'es' ? 'en' : 'es';
+  localStorage.setItem('lang', lang);
+  location.reload(); // Recarga simple para reaplicar todo
+}
+
 let lastTicket = null;
 let pendingReservationId = null;
 let currentDamageMarks = [];
@@ -760,10 +795,19 @@ async function tryLogin() {
     document.getElementById('tab-settings').style.display = isAdmin ? 'block' : 'none';
     
     document.getElementById('staff-name').textContent = currentStaff.name + ' (' + currentStaff.role + ')';
+    document.getElementById('txt-operator').textContent = t('welcome');
+    document.getElementById('btn-logout-txt').textContent = t('logout');
+    
+    // Traducir navegación
+    ['dashboard','checkin','checkout','vehicles','reservations','staff','reports','history','settings'].forEach(k => {
+      const el = document.getElementById('nav-'+k);
+      if(el) el.textContent = t(k);
+    });
+
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     showTab('dashboard');
-    toast('Bienvenido, ' + currentStaff.name, 'success');
+    toast(t('welcome') + ', ' + currentStaff.name, 'success');
   } catch(e) {
     document.getElementById('pin-error').textContent = e.message || 'Error de conexión';
     pinBuffer = '';
@@ -1855,26 +1899,26 @@ function showTicket(v) {
       <div style="text-align:center; margin-bottom:15px;">
         ${settings.company_logo ? `<img src="${settings.company_logo}" style="width:70px; height:auto; margin-bottom:10px; border-radius:10px;">` : ''}
         <div style="font-family:'Syne', sans-serif; font-size:1.4rem; font-weight:800; letter-spacing:-0.5px; color:#000;">${settings.company_name}</div>
-        <div style="font-size:0.6rem; letter-spacing:2px; color:#666; margin-top:2px;">COMPROBANTE DE RESGUARDO</div>
+        <div style="font-size:0.6rem; letter-spacing:2px; color:#666; margin-top:2px; text-transform:uppercase;">${t('digital_receipt')}</div>
       </div>
       <div class="ticket-code">${v.ticket_code||'—'}</div>
       
       ${v.requested_at ? `
       <div style="background:#fff3cd; color:#856404; padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid #ffeeba;">
-        ⏳ SOLICITADO: Estamos preparando su vehículo.
+        ⏳ ${t('requested').toUpperCase()}: ${t('preparing')}
       </div>` : `
       <div style="margin:15px 0;">
         <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--accent1); border:none; border-radius:12px; font-weight:700;" onclick="requestCar('${v.ticket_code}')">
-          🚗 Pedir mi Auto
+          🚗 ${t('request_car')}
         </button>
       </div>`}
 
       <hr class="ticket-divider"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
-        <div><div style="color:#666;font-size:0.6rem">PLACA</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>
-        <div><div style="color:#666;font-size:0.6rem">LUGAR</div><div style="color:#000;">${v.parking_spot||'P-A'}</div></div>
-        <div><div style="color:#666;font-size:0.6rem">PROPIETARIO</div><div style="color:#000;">${v.owner_name}</div></div>
-        <div><div style="color:#666;font-size:0.6rem">VEHÍCULO</div><div style="color:#000;">${v.brand||''}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('plate')}</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('parking_spot')}</div><div style="color:#000;">${v.parking_spot||'P-A'}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('owner')}</div><div style="color:#000;">${v.owner_name}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('brand')}</div><div style="color:#000;">${v.brand||''}</div></div>
       </div>
       <hr class="ticket-divider"/>
       <div style="font-size:0.65rem; color:#666; line-height:1.4; margin-top:10px;">
