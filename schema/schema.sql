@@ -14,7 +14,20 @@ CREATE TABLE IF NOT EXISTS vehicles (
   brand TEXT,
   model TEXT,
   color TEXT,
-  status TEXT NOT NULL CHECK(status IN ('checkin','parked','requested','delivering','delivered')),
+  status TEXT NOT NULL CHECK(status IN ('checkin','parked','requested','delivering','delivered','pending_retrieval','retrieved')),
+  ticket_code TEXT UNIQUE,
+  owner_name TEXT,
+  owner_phone TEXT,
+  owner_id_ref TEXT,
+  parking_spot TEXT,
+  damage_notes TEXT,
+  fee_amount REAL,
+  fee_paid INTEGER DEFAULT 0,
+  payment_method TEXT,
+  valet_in TEXT,
+  valet_out TEXT,
+  check_in_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  check_out_at TEXT,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,3 +80,17 @@ CREATE TABLE IF NOT EXISTS metrics (
   FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
 );
 
+-- Reservas
+CREATE TABLE IF NOT EXISTS reservations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  confirm_code TEXT NOT NULL UNIQUE,
+  owner_name TEXT NOT NULL,
+  owner_phone TEXT NOT NULL,
+  plate TEXT,
+  brand TEXT,
+  model TEXT,
+  expected_arrival TEXT NOT NULL,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'arrived', 'cancelled')),
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

@@ -516,8 +516,9 @@
 
 <script>
 // ==================== CONFIG ====================
-const API_BASE = window.location.origin; // Change to your Cloudflare Worker URL in production
-// const API_BASE = 'https://valet-app.YOUR_SUBDOMAIN.workers.dev';
+// const API_BASE = window.location.origin; // Usar esto cuando el frontend esté servido desde el mismo dominio
+const API_BASE = 'http://localhost:8787'; // Para pruebas locales con Wrangler
+// const API_BASE = 'https://valet-parking-api.TU-USUARIO.workers.dev'; // Para producción
 
 // ==================== STATE ====================
 let currentStaff = null;
@@ -551,6 +552,7 @@ async function tryLogin() {
     });
     if (!res.ok) throw new Error('PIN inválido');
     currentStaff = await res.json();
+    localStorage.setItem('token', currentStaff.token);
     document.getElementById('staff-name').textContent = currentStaff.name;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
@@ -565,17 +567,15 @@ async function tryLogin() {
 }
 function logout() {
   currentStaff = null; pinBuffer = ''; updatePinDisplay();
+  localStorage.removeItem('token');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').classList.remove('visible');
 }
 
 // Demo login bypass (remove in production)
-window.demoLogin = function() {
-  currentStaff = {id:1, name:'Demo Admin', role:'admin'};
-  document.getElementById('staff-name').textContent = currentStaff.name;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-  showTab('dashboard');
+window.demoLogin = async function() {
+  pinBuffer = '1234';
+  await tryLogin();
 };
 // Auto demo login for preview
 setTimeout(() => { if(!currentStaff) demoLogin(); }, 800);
@@ -607,8 +607,8 @@ async function renderDashboard(el) {
   <div id="dashboard-vehicles"></div>`;
   try {
     const [stats, vehs] = await Promise.all([
-      fetch(`${API_BASE}/api/dashboard/today`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json()).catch(()=>({checkins:0,checkouts:0,total:0})),
-      fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json()).catch(()=>({vehicles:[]}))
+      fetch(`${API_BASE}/api/dashboard/today`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r; return r.json()}).catch(()=>({checkins:0,checkouts:0,total:0})),
+      fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r; return r.json()}).catch(()=>({vehicles:[]}))
     ]);
     document.getElementById('stat-parked').textContent = stats.total ?? 0;
     document.getElementById('stat-retrieved_today').textContent = stats.checkouts ?? 0;
@@ -648,7 +648,9 @@ async function loadVehicles() {
     let url = `${API_BASE}/api/vehicles?`;
     if (vehicleFilter) url += `status=${vehicleFilter}&`;
     if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}`;
-    const data = await fetch(url).then(r=>r.json());
+    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+    if (!res.ok) throw new Error('Error al cargar');
+    const data = await res.json();
     vehicles = Array.isArray(data) ? data : mockVehicles();
   } catch {
     vehicles = mockVehicles().filter(v => !vehicleFilter || v.status === vehicleFilter);
@@ -692,7 +694,10 @@ function onSearch(v) {
 async function showVehicleDetail(id) {
   let v = vehicles.find(x => x.id === id);
   if (!v) {
-    try { v = await fetch(`${API_BASE}/api/vehicles/${id}`).then(r=>r.json()); } catch {}
+    try { 
+      const res = await fetch(`${API_BASE}/api/vehicles/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+      if (res.ok) v = await res.json(); 
+    } catch {}
   }
   if (!v) return;
   const el = document.getElementById('vehicle-detail-content');
@@ -789,7 +794,7 @@ async function apiPatch(id, data) {
   try {
     await fetch(`${API_BASE}/api/vehicles/${id}`, {
       method: 'PATCH',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
       body: JSON.stringify(data)
     });
   } catch {}
@@ -869,7 +874,7 @@ async function submitCheckin() {
   };
   try {
     const res = await fetch(`${API_BASE}/api/events/checkin`, {
-      method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')}, body: JSON.stringify({ plate, driver: owner_name })
+      method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')}, body: JSON.stringify(body)
     });
     
     // Subir fotos si existen
@@ -911,7 +916,7 @@ function renderCheckout(el) {
 
 async function updateActiveDatalist(query) {
   try {
-    const res = await fetch(`${API_BASE}/api/vehicles/active`);
+    const res = await fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
     const data = await res.json();
     const list = document.getElementById('active-plates');
     list.innerHTML = data.vehicles.map(v => `<option value="${v.plate}">`).join('');
@@ -924,7 +929,7 @@ async function doLookup() {
   const el = document.getElementById('co-result');
   el.innerHTML = `<div style="color:var(--muted);text-align:center;padding:20px">Buscando…</div>`;
   try {
-    const v = await fetch(`${API_BASE}/api/vehicles/lookup?q=${encodeURIComponent(q)}`).then(r=>{if(!r.ok)throw r;return r.json();});
+    const v = await fetch(`${API_BASE}/api/vehicles/lookup?q=${encodeURIComponent(q)}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r;return r.json();});
     renderCheckoutCard(el, v);
   } catch {
     // Demo: find in mock
@@ -989,7 +994,7 @@ async function renderReservations(el) {
     </div>
     <div class="reservation-list" id="res-list"><div style="color:var(--muted)">Cargando…</div></div>`;
   try {
-    const data = await fetch(`${API_BASE}/api/reservations`).then(r=>r.json());
+    const data = await fetch(`${API_BASE}/api/reservations`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r;return r.json()});
     renderResList(Array.isArray(data)?data:mockReservations());
   } catch {
     renderResList(mockReservations());
@@ -1043,7 +1048,8 @@ async function submitReservation() {
     model:document.getElementById('nr-model').value,
     notes:document.getElementById('nr-notes').value };
   try {
-    const res = await fetch(`${API_BASE}/api/reservations`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const res = await fetch(`${API_BASE}/api/reservations`,{method:'POST',headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},body:JSON.stringify(body)});
+    if(!res.ok) throw new Error();
     const created = await res.json();
     toast('Reserva confirmada: '+created.confirm_code,'success');
   } catch { toast('Reserva registrada (demo)','success'); }
