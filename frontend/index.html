@@ -514,7 +514,7 @@
     <div class="header-logo" id="header-brand">Valet<span>OS</span></div>
     <div class="header-right">
       <button class="btn-ghost" onclick="toggleLang()" style="margin-right:15px; font-weight:700; font-size:0.8rem; color:var(--accent1)">
-        ${lang.toUpperCase()} 🌐
+        <span id="lang-label">ES</span> 🌐
       </button>
       <div class="staff-badge">
         <button id="btn-clock" class="btn btn-secondary btn-sm" onclick="toggleShift()" style="margin-right:10px; border-radius:15px; font-weight:700;">🕒 ...</button>
@@ -622,7 +622,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const API_BASE = 'https://valet-parking-api.smart-group.workers.dev';
+const API_BASE = window.location.origin;
 
 // --- MODO OFFLINE (IndexedDB) ---
 const DB_NAME = 'ValetEyeDB';
@@ -815,10 +815,14 @@ function clearDamageMarks() {
 let pinBuffer = '';
 
 function pinPress(d) {
+  console.log('PIN Press:', d);
   if (pinBuffer.length >= 4) return;
   pinBuffer += d;
   updatePinDisplay();
-  if (pinBuffer.length === 4) setTimeout(tryLogin, 200);
+  if (pinBuffer.length === 4) {
+    console.log('Trying login with:', pinBuffer);
+    setTimeout(tryLogin, 200);
+  }
 }
 function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDisplay(); }
 function pinClear() { pinBuffer = ''; updatePinDisplay(); }
@@ -857,6 +861,10 @@ async function tryLogin() {
 
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
+    
+    // Actualizar etiqueta de idioma
+    document.getElementById('lang-label').textContent = lang.toUpperCase();
+
     initPushNotifications();
     checkShiftStatus();
     showTab('dashboard');
@@ -1735,14 +1743,6 @@ function openLightbox(url) {
   const img = document.getElementById('lightbox-img');
   img.src = url;
   lb.classList.add('open');
-}ight:100%; object-fit:cover; border-radius:12px;" onerror="this.src='https://placehold.co/400x300?text=Error+al+cargar'">
-        </div>
-      `).join('');
-    }
-  } catch (e) {
-    el.innerHTML = '<div style="color:var(--accent2); grid-column: 1/-1; text-align:center;">Error al cargar las fotos.</div>';
-  }
-  openModal('modal-photos');
 }
 function dRow(label, value) {
   return `<div class="detail-row"><span class="label">${label}</span><span class="value">${value}</span></div>`;

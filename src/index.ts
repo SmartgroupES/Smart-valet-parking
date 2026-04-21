@@ -129,9 +129,6 @@ app.get('/ticket/:code', async (c) => {
   `);
 });
 
-  `);
-});
-
 // PÚBLICO: SOLICITUD DE AUTO (Antiguo endpoint, se mantiene por compatibilidad si es necesario)
 app.post('/api/public/request-car/:code', async (c) => {
   const code = c.req.param('code');
