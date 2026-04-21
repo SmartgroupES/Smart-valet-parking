@@ -483,6 +483,7 @@
     <button class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 Personal</button>
     <button class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📊 Reportes</button>
     <button class="nav-tab" onclick="showTab('slots')">🗺️ Mapa</button>
+    <button class="nav-tab" onclick="showTab('history')">📜 Historial</button>
     <button class="nav-tab" id="tab-settings" onclick="showTab('settings')" style="display:none">⚙️ Ajustes</button>
   </nav>
   <main id="main-content"></main>
@@ -642,11 +643,57 @@ function showTab(tab) {
     case 'staff': renderStaff(); break;
     case 'reports': renderReports(); break;
     case 'slots': renderSlots(); break;
+    case 'history': renderHistory(); break;
     case 'settings': renderSettings(); break;
   }
 }
 
 // ==================== VIEWS ====================
+function renderHistory() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📜 Historial Global</h2>
+    </div>
+    <div style="margin-bottom:20px;">
+      <input type="text" id="hist-search" placeholder="Buscar por placa, nombre o ticket..." 
+             style="width:100%; padding:15px; border-radius:12px; background:var(--surface1); border:1px solid var(--border); color:var(--text); font-size:1rem;"
+             oninput="loadHistory()">
+    </div>
+    <div class="grid" id="history-list-content" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+      <div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">Escribe para buscar o deja vacío para ver últimos...</div>
+    </div>
+  `;
+  loadHistory();
+}
+
+async function loadHistory() {
+  const q = document.getElementById('hist-search')?.value || '';
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/search?q=${encodeURIComponent(q)}`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    const el = document.getElementById('history-list-content');
+    
+    if (!data.length) {
+      el.innerHTML = '<div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">No se encontraron registros.</div>';
+      return;
+    }
+    
+    el.innerHTML = data.map(v => `
+      <div class="vehicle-card" onclick="showVehicleDetail(${v.id})">
+        <div class="vehicle-card-top">
+          <div class="plate-tag">${v.plate}</div>
+          <span class="status-badge status-${v.status}">${v.status === 'retrieved' ? '⚪ Entregado' : '🟢 Activo'}</span>
+        </div>
+        <div class="vehicle-name" style="margin-top:8px; font-weight:600;">${v.owner_name}</div>
+        <div class="vehicle-meta">${fmtDate(v.check_in_at)} · ${v.brand||'Sin marca'}</div>
+        <div class="vehicle-ticket" style="margin-top:10px; font-size:0.75rem; color:var(--muted)">Ticket: ${v.ticket_code}</div>
+      </div>
+    `).join('');
+  } catch (e) {}
+}
 function renderSettings() {
   const main = document.getElementById('main-content');
   main.innerHTML = `
@@ -779,6 +826,7 @@ function renderReports() {
   main.innerHTML = `
     <div class="view-header">
       <h2 class="view-title">📈 Reportes Financieros</h2>
+      <button class="btn btn-secondary btn-sm" onclick="exportToCSV()">📥 Exportar CSV</button>
     </div>
     <div class="grid" id="reports-summary" style="margin-bottom:30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
       <div class="stat-card">
@@ -1258,12 +1306,37 @@ function renderCheckout(el) {
 }
 
 async function updateActiveDatalist(query) {
+  if (query.length < 2) return;
   try {
-    const res = await fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+    const res = await fetch(`${API_BASE}/api/vehicles/predictive?q=${encodeURIComponent(query)}`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
     const data = await res.json();
     const list = document.getElementById('active-plates');
-    list.innerHTML = data.vehicles.map(v => `<option value="${v.plate}">`).join('');
+    list.innerHTML = data.map(v => `
+      <option value="${v.plate}">Cliente: ${v.owner_name} (${v.visit_count} visitas)</option>
+    `).join('');
+    
+    const exact = data.find(x => x.plate.toUpperCase() === query.toUpperCase());
+    if (exact && exact.visit_count >= 3) {
+      toast(`⭐ Cliente Frecuente: ${exact.owner_name} (${exact.visit_count} visitas)`, 'info');
+    }
   } catch (e) {}
+}
+
+function exportToCSV() {
+  fetch(`${API_BASE}/api/reports/financial`, {
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+  }).then(r => r.json()).then(data => {
+    let csv = 'Fecha,Servicios,Ingresos\n';
+    data.daily.forEach(d => { csv += `${d.date},${d.services},${d.total}\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'reporte_valet.csv');
+    a.click();
+  });
 }
 
 async function doLookup() {

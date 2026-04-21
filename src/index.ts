@@ -280,6 +280,31 @@ app.get('/api/vehicles/active', async (c) => {
 // ===============================
 // VEHICLE LOOKUP (Checkout)
 // ===============================
+// Búsqueda predictiva (DATALIST) con conteo de visitas
+app.get('/api/vehicles/predictive', async (c) => {
+  const q = c.req.query('q') || '';
+  const results = await c.env.DB.prepare(`
+    SELECT plate, owner_name, brand, model, color, COUNT(*) as visit_count
+    FROM vehicles 
+    WHERE plate LIKE ? 
+    GROUP BY plate
+    LIMIT 10
+  `).bind(`%${q}%`).all();
+  return c.json(results.results);
+});
+
+// Búsqueda global en todo el historial
+app.get('/api/vehicles/search', async (c) => {
+  const q = c.req.query('q') || '';
+  const results = await c.env.DB.prepare(`
+    SELECT * FROM vehicles 
+    WHERE plate LIKE ? OR owner_name LIKE ? OR ticket_code LIKE ?
+    ORDER BY check_in_at DESC
+    LIMIT 50
+  `).bind(`%${q}%`, `%${q}%`, `%${q}%`).all();
+  return c.json(results.results);
+});
+
 app.get('/api/vehicles/lookup', async (c) => {
   const q = c.req.query('q');
   if (!q) return c.json({ error: 'Query required' }, 400);
