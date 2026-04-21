@@ -1,11 +1,14 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { sign, verify } from 'hono/jwt';
+import Stripe from 'stripe';
 
 export interface Env {
   DB: D1Database;
   PHOTOS: R2Bucket;
   JWT_SECRET: string;
+  STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
 }
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
@@ -696,6 +699,64 @@ app.get('/api/vehicles/:id/history', async (c) => {
     ORDER BY e.ts DESC
   `).bind(id).all();
   return c.json(logs.results);
+});
+
+// ===============================
+// PAYMENTS (STRIPE)
+// ===============================
+app.post('/api/public/payments/create-session/:code', async (c) => {
+  const code = c.req.param('code');
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+  
+  const v: any = await c.env.DB.prepare('SELECT * FROM vehicles WHERE ticket_code = ?').bind(code).first();
+  if (!v) return c.json({ error: 'Ticket no encontrado' }, 404);
+
+  const amount = Math.round((v.fee_amount || 0) * 100); // Stripe usa centavos
+  if (amount <= 0) return c.json({ error: 'Monto inválido' }, 400);
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [{
+      price_data: {
+        currency: 'usd',
+        product_data: { name: `Servicio Valet - Ticket ${code}`, description: `Placa: ${v.plate}` },
+        unit_amount: amount,
+      },
+      quantity: 1,
+    }],
+    mode: 'payment',
+    success_url: `${c.req.header('Origin') || ''}/ticket/${code}?payment=success`,
+    cancel_url: `${c.req.header('Origin') || ''}/ticket/${code}?payment=cancel`,
+    metadata: { ticket_code: code, vehicle_id: v.id.toString() }
+  });
+
+  return c.json({ url: session.url });
+});
+
+// Webhook para confirmar pago
+app.post('/api/payments/webhook', async (c) => {
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
+  const signature = c.req.header('stripe-signature');
+  const body = await c.req.text();
+
+  let event;
+  try {
+    event = await stripe.webhooks.constructEventAsync(body, signature!, c.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 400);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session: any = event.data.object;
+    const vehicleId = session.metadata.vehicle_id;
+    
+    await c.env.DB.prepare('UPDATE vehicles SET fee_paid = 1, payment_method = ? WHERE id = ?')
+      .bind('Stripe (Tarjeta)', vehicleId).run();
+    
+    await logEvent(c.env, parseInt(vehicleId), null, 'parked', 'Pago digital recibido vía Stripe ✅');
+  }
+
+  return c.json({ received: true });
 });
 
 export default app;

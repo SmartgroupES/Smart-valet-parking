@@ -684,6 +684,20 @@ async function requestCar(code) {
   }
 }
 
+async function payTicket(code) {
+  try {
+    const res = await fetch(`${API_BASE}/api/public/payments/create-session/${code}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error);
+    }
+  } catch (e) {
+    toast('Error al iniciar pago: ' + (e.message || 'Error de conexión'), 'error');
+  }
+}
+
 async function loadPublicTicket(code) {
   // Función para recargar el ticket desde la vista pública
   const res = await fetch(`${API_BASE}/api/vehicles/search?q=${code}`);
@@ -2022,11 +2036,22 @@ function showTicket(v) {
       <div style="background:#fff3cd; color:#856404; padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid #ffeeba;">
         ⏳ ${t('requested').toUpperCase()}: ${t('preparing')}
       </div>` : `
-      <div style="margin:15px 0;">
+      <div style="margin:15px 0; display:flex; flex-direction:column; gap:10px;">
+        ${settings.stripe_enabled === 'true' && !v.fee_paid ? `
+          <button class="btn btn-primary" style="width:100%; padding:15px; background:#6366f1; border:none; border-radius:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="payTicket('${v.ticket_code}')">
+            💳 ${t('en') === 'en' ? 'Pay with Card' : 'Pagar con Tarjeta'}
+          </button>
+        ` : ''}
         <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--accent1); border:none; border-radius:12px; font-weight:700;" onclick="requestCar('${v.ticket_code}')">
           🚗 ${t('request_car')}
         </button>
       </div>`}
+
+      ${v.fee_paid ? `
+      <div style="background:rgba(16, 185, 129, 0.1); color:var(--success); padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid var(--success); text-align:center;">
+        ✅ TICKET PAGADO
+      </div>` : ''}
+
 
       <hr class="ticket-divider"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
