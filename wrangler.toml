@@ -1,13 +1,13 @@
-name = "valet-eye"
+name = "valet-parking-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "valet-db"
-database_id = "7adcef7a-c4f9-43a3-ae29-ddd8c5a0cbcc"
+database_id = "0c3d5545-adc7-47ac-84b6-02405dd1df22"
 
 [[r2_buckets]]
 binding = "PHOTOS"
-bucket_name = "valet-photos"
+bucket_name = "valet-parking-photos"
 
