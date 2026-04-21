@@ -449,6 +449,50 @@ app.get('/api/reports/financial', async (c) => {
   });
 });
 
+app.get('/api/reports/analytics', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  // 1. Horas Pico (Entradas por hora)
+  const peakHours = await c.env.DB.prepare(`
+    SELECT 
+      strftime('%H', check_in_at) as hour,
+      COUNT(id) as count
+    FROM vehicles
+    WHERE check_in_at >= date('now', '-7 days')
+    GROUP BY hour
+    ORDER BY hour ASC
+  `).all();
+
+  // 2. Rendimiento Staff (Servicios por usuario)
+  const staffPerformance = await c.env.DB.prepare(`
+    SELECT 
+      u.name,
+      COUNT(e.id) as actions
+    FROM users u
+    JOIN events e ON e.user_id = u.id
+    WHERE e.created_at >= date('now', '-7 days')
+    GROUP BY u.name
+    ORDER BY actions DESC
+  `).all();
+
+  // 3. Métricas de hoy vs ayer
+  const comparison = await c.env.DB.prepare(`
+    SELECT 
+      date(check_in_at) as day,
+      COUNT(id) as count
+    FROM vehicles
+    WHERE check_in_at >= date('now', '-1 day')
+    GROUP BY day
+  `).all();
+
+  return c.json({
+    peakHours: peakHours.results,
+    staffPerformance: staffPerformance.results,
+    comparison: comparison.results
+  });
+});
+
 // ===============================
 // ESPACIOS (MAPA)
 // ===============================

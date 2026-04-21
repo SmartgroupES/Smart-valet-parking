@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2343/2343894.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   :root {
     --bg: #0a0a0f;
@@ -945,54 +946,131 @@ function renderReports() {
   const main = document.getElementById('main-content');
   main.innerHTML = `
     <div class="view-header">
-      <h2 class="view-title">📈 Reportes Financieros</h2>
-      <button class="btn btn-secondary btn-sm" onclick="exportToCSV()">📥 Exportar CSV</button>
+      <h2 class="view-title">📊 Analítica Estratégica</h2>
+      <button class="btn btn-secondary" onclick="exportToCSV()">📥 Exportar CSV</button>
     </div>
-    <div class="grid" id="reports-summary" style="margin-bottom:30px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-      <div class="stat-card">
-        <div class="stat-label">Ingresos Totales (Histórico)</div>
-        <div class="stat-value" id="rep-total-earnings" style="color:var(--accent1)">$0.00</div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px;">
+      <div class="stat-card" style="padding:24px;">
+        <div class="stat-label" style="margin-bottom:16px;">📈 Tendencia de Ingresos (10d)</div>
+        <div style="height:220px;"><canvas id="chart-revenue"></canvas></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Servicios Realizados</div>
-        <div class="stat-value" id="rep-total-services">0</div>
+      <div class="stat-card" style="padding:24px;">
+        <div class="stat-label" style="margin-bottom:16px;">🕒 Carga por Hora (7d)</div>
+        <div style="height:220px;"><canvas id="chart-peak"></canvas></div>
       </div>
     </div>
-    <div class="view-header" style="margin-top:40px;"><h3 class="view-title">Histórico de Ingresos (Últimos 30 días)</h3></div>
-    <div class="grid" id="reports-daily-list" style="gap:15px; grid-template-columns: 1fr;">
-      <div style="color:var(--muted); text-align:center; padding:40px;">Cargando historial...</div>
+
+    <div class="stat-card" style="padding:24px; margin-bottom: 24px;">
+      <div class="stat-label" style="margin-bottom:16px;">👥 Servicios por Empleado (7d)</div>
+      <div style="height:250px;"><canvas id="chart-staff"></canvas></div>
+    </div>
+
+    <div class="stat-card" style="padding:24px;">
+      <div class="stat-label" style="margin-bottom:16px;">📜 Detalle de Ingresos Diarios</div>
+      <div id="reports-table-container" style="overflow-x:auto">Cargando datos...</div>
     </div>
   `;
-  loadReports();
+
+  loadAdvancedAnalytics();
 }
 
-async function loadReports() {
+async function loadAdvancedAnalytics() {
   try {
-    const res = await fetch(`${API_BASE}/api/reports/financial`, {
-      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-    });
-    const data = await res.json();
-    
-    document.getElementById('rep-total-earnings').textContent = '$' + (data.summary.total_earnings || 0).toLocaleString();
-    document.getElementById('rep-total-services').textContent = data.summary.total_services || 0;
-    
-    const list = document.getElementById('reports-daily-list');
-    if (!data.daily || !data.daily.length) {
-      list.innerHTML = '<div style="color:var(--muted); text-align:center; padding:40px;">No hay historial disponible todavía.</div>';
-      return;
-    }
-    list.innerHTML = data.daily.map(d => `
-      <div class="vehicle-card" style="cursor:default; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--accent1);">
-        <div>
-          <div style="font-weight:600; font-size:1.1rem">${d.date}</div>
-          <div style="font-size:0.85rem; color:var(--muted)">${d.services} servicios completados</div>
-        </div>
-        <div style="font-size:1.4rem; font-weight:700; color:var(--accent1)">$${d.total.toLocaleString()}</div>
-      </div>
-    `).join('');
-  } catch {
-    document.getElementById('reports-daily-list').innerHTML = '<div style="color:var(--accent2); text-align:center;">No tienes permisos para ver reportes.</div>';
+    const fin = await fetch(`${API_BASE}/api/reports/financial`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+    const aly = await fetch(`${API_BASE}/api/reports/analytics`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+
+    initCharts(fin, aly);
+
+    document.getElementById('reports-table-container').innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted); text-align:left;">
+            <th style="padding:12px;">Fecha</th>
+            <th style="padding:12px;">Servicios</th>
+            <th style="padding:12px; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${fin.daily.map(d => `
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:12px;">${d.date}</td>
+              <td style="padding:12px;">${d.services}</td>
+              <td style="padding:12px; text-align:right; font-weight:700; color:var(--green)">$${d.total.toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    toast('Error al cargar analítica', 'error');
   }
+}
+
+function initCharts(fin, aly) {
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#ffffff10' }, ticks: { color: '#6b6b88', font: { size: 10 } } },
+      x: { grid: { display: false }, ticks: { color: '#6b6b88', font: { size: 10 } } }
+    }
+  };
+
+  new Chart(document.getElementById('chart-revenue'), {
+    type: 'line',
+    data: {
+      labels: fin.daily.slice(0,10).reverse().map(d => d.date.split('-').slice(1).join('/')),
+      datasets: [{
+        label: 'Ingresos',
+        data: fin.daily.slice(0,10).reverse().map(d => d.total),
+        borderColor: '#6c63ff',
+        backgroundColor: '#6c63ff20',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#6c63ff'
+      }]
+    },
+    options: commonOptions
+  });
+
+  const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0'));
+  const hourData = hours.map(h => {
+    const found = aly.peakHours.find(x => x.hour === h);
+    return found ? found.count : 0;
+  });
+
+  new Chart(document.getElementById('chart-peak'), {
+    type: 'bar',
+    data: {
+      labels: hours.map(h => h+':00'),
+      datasets: [{
+        data: hourData,
+        backgroundColor: '#f5c84280',
+        borderColor: '#f5c842',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: commonOptions
+  });
+
+  new Chart(document.getElementById('chart-staff'), {
+    type: 'bar',
+    data: {
+      labels: aly.staffPerformance.map(s => s.name),
+      datasets: [{
+        data: aly.staffPerformance.map(s => s.actions),
+        backgroundColor: aly.staffPerformance.map((_, i) => `hsl(${i * 45 + 200}, 70%, 60%, 0.6)`),
+        borderRadius: 4
+      }]
+    },
+    options: {
+      ...commonOptions,
+      indexAxis: 'y'
+    }
+  });
 }
 function renderStaff() {
   const main = document.getElementById('main-content');
