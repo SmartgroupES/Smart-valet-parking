@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Tabla de vehículos
 CREATE TABLE IF NOT EXISTS vehicles (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  plate TEXT NOT NULL,
+  plate TEXT NOT NULL UNIQUE,
   brand TEXT,
   model TEXT,
   color TEXT,

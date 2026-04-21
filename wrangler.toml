@@ -7,3 +7,7 @@ binding = "DB"
 database_name = "valet-db"
 database_id = "7adcef7a-c4f9-43a3-ae29-ddd8c5a0cbcc"
 
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "valet-photos"
+
