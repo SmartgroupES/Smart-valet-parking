@@ -438,6 +438,20 @@
   .empty-icon { font-size: 3rem; margin-bottom: 12px; }
   .empty-text { font-size: 1rem; margin-bottom: 6px; color: var(--text); }
   .empty-sub { font-size: 0.85rem; }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    @keyframes pulse-border {
+      0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+    }
+    .requested-pulse {
+      border: 2px solid var(--accent2) !important;
+      animation: pulse-border 2s infinite;
+    }
 </style>
 </head>
 <body>
@@ -644,7 +658,33 @@ async function syncPendingActions() {
 
 window.addEventListener('online', syncPendingActions);
 window.addEventListener('offline', updateOfflineBanner);
-initDB().then(() => { updateOfflineBanner(); syncPendingActions(); }); // Producción real
+initDB().then(() => { updateOfflineBanner(); syncPendingActions(); });
+
+async function requestCar(code) {
+  if (!confirm('¿Deseas pedir que preparen tu vehículo ahora?')) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/public/ticket/${code}/request`, { method: 'POST' });
+    if (!res.ok) throw new Error();
+    toast('Solicitud enviada. Estamos preparando tu auto 🚗', 'success');
+    loadPublicTicket(code);
+  } catch (e) {
+    toast('Error al solicitar auto', 'error');
+  }
+}
+
+async function loadPublicTicket(code) {
+  // Función para recargar el ticket desde la vista pública
+  const res = await fetch(`${API_BASE}/api/vehicles/search?q=${code}`);
+  const data = await res.json();
+  if (data.length) showTicket(data[0]);
+}
+
+// Polling para el Dashboard
+setInterval(() => {
+  if (currentTab === 'dashboard' && document.visibilityState === 'visible') {
+    loadDashboard(true); // true para carga silenciosa sin toast
+  }
+}, 15000);
 
 // ==================== STATE ====================
 let currentStaff = null;
@@ -1249,8 +1289,10 @@ function renderVehicleCards(el, list) {
     el.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🚗</div><div class="empty-text">Sin vehículos</div><div class="empty-sub">No hay registros que mostrar</div></div>`;
     return;
   }
-  el.innerHTML = list.map(v => `
-    <div class="vehicle-card" onclick="showVehicleDetail(${v.id})">
+  el.innerHTML = list.map(v => {
+    const isRequested = v.requested_at && v.status === 'parked';
+    return `
+    <div class="vehicle-card ${isRequested ? 'requested-pulse' : ''}" onclick="showVehicleDetail(${v.id})">
       <div class="vehicle-card-top">
         <div class="plate-tag">${v.plate}</div>
         <span class="status-badge status-${v.status}">${{parked:'🟢 Estacionado',retrieved:'⚪ Entregado',pending_retrieval:'🟡 Por Entregar'}[v.status]||v.status}</span>
@@ -1260,11 +1302,13 @@ function renderVehicleCards(el, list) {
       <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
         <div class="vehicle-ticket">${v.ticket_code}</div>
         <div style="display:flex; gap:6px;">
+          ${isRequested ? `<span style="background:var(--accent2); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700; animation:pulse 1s infinite;">🔔 SOLICITADO</span>` : ''}
           ${v.key_hook ? `<span style="background:var(--accent2); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">🔑 ${v.key_hook}</span>` : ''}
           ${v.parking_spot ? `<span style="background:var(--accent1); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">📍 ${v.parking_spot}</span>` : ''}
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function setFilter(f) {
@@ -1814,6 +1858,17 @@ function showTicket(v) {
         <div style="font-size:0.6rem; letter-spacing:2px; color:#666; margin-top:2px;">COMPROBANTE DE RESGUARDO</div>
       </div>
       <div class="ticket-code">${v.ticket_code||'—'}</div>
+      
+      ${v.requested_at ? `
+      <div style="background:#fff3cd; color:#856404; padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid #ffeeba;">
+        ⏳ SOLICITADO: Estamos preparando su vehículo.
+      </div>` : `
+      <div style="margin:15px 0;">
+        <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--accent1); border:none; border-radius:12px; font-weight:700;" onclick="requestCar('${v.ticket_code}')">
+          🚗 Pedir mi Auto
+        </button>
+      </div>`}
+
       <hr class="ticket-divider"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
         <div><div style="color:#666;font-size:0.6rem">PLACA</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>

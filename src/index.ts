@@ -330,7 +330,7 @@ app.patch('/api/vehicles/:id', async (c) => {
   const updates: string[] = [];
   const params: any[] = [];
 
-  const allowedFields = ['status', 'check_out_at', 'valet_out', 'fee_amount', 'fee_paid', 'payment_method', 'key_hook', 'parking_spot', 'damage_json'];
+  const allowedFields = ['status', 'check_out_at', 'valet_out', 'fee_amount', 'fee_paid', 'payment_method', 'key_hook', 'parking_spot', 'damage_json', 'requested_at'];
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updates.push(`${field} = ?`);
@@ -663,6 +663,20 @@ app.patch('/api/settings', async (c) => {
   );
   await c.env.DB.batch(queries);
   return c.json({ message: 'Ajustes actualizados' });
+});
+
+// ===============================
+// PÚBLICO: SOLICITUD DE AUTO
+// ===============================
+app.post('/api/public/ticket/:code/request', async (c) => {
+  const code = c.req.param('code');
+  const now = new Date().toISOString();
+  
+  await c.env.DB.prepare('UPDATE vehicles SET requested_at = ? WHERE ticket_code = ? AND status = ?')
+    .bind(now, code, 'parked')
+    .run();
+    
+  return c.json({ message: 'Solicitud recibida', requested_at: now });
 });
 
 export default app;
