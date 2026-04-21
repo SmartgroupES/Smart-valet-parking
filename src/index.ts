@@ -381,11 +381,17 @@ app.get('/api/dashboard/today', async (c) => {
   const checkouts = await c.env.DB.prepare("SELECT COUNT(id) as count FROM events WHERE event_type = 'checkout' AND date(created_at) = date('now')").first<{ count: number }>();
   const earnings = await c.env.DB.prepare("SELECT SUM(fee_amount) as total FROM vehicles WHERE fee_paid = 1 AND date(check_out_at) = date('now')").first<{ total: number }>();
 
+  // Ocupación
+  const slotsCount = await c.env.DB.prepare("SELECT COUNT(*) as count FROM slots").first<{ count: number }>();
+  const occupiedCount = await c.env.DB.prepare("SELECT COUNT(*) as count FROM vehicles WHERE status NOT IN ('retrieved') AND parking_spot IS NOT NULL").first<{ count: number }>();
+
   return c.json({
     total: total?.count || 0,
     checkins: checkins?.count || 0,
     checkouts: checkouts?.count || 0,
-    earnings: earnings?.total || 0
+    earnings: earnings?.total || 0,
+    slots_total: slotsCount?.count || 0,
+    slots_occupied: occupiedCount?.count || 0
   });
 });
 
@@ -437,6 +443,37 @@ app.get('/api/slots', async (c) => {
     ORDER BY s.zone, s.number
   `).all();
   return c.json(slots.results);
+});
+
+app.post('/api/slots', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+  
+  const { zone, number } = await c.req.json();
+  await c.env.DB.prepare('INSERT INTO slots (zone, number) VALUES (?, ?)').bind(zone, number).run();
+  return c.json({ message: 'Espacio creado' });
+});
+
+app.post('/api/slots/bulk', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+  
+  const { zone, from, to } = await c.req.json();
+  const queries = [];
+  for (let i = from; i <= to; i++) {
+    queries.push(c.env.DB.prepare('INSERT INTO slots (zone, number) VALUES (?, ?)').bind(zone, i));
+  }
+  await c.env.DB.batch(queries);
+  return c.json({ message: `${queries.length} espacios creados en Zona ${zone}` });
+});
+
+app.delete('/api/slots/:id', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'supervisor' && user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+  
+  const id = c.req.param('id');
+  await c.env.DB.prepare('DELETE FROM slots WHERE id = ?').bind(id).run();
+  return c.json({ message: 'Espacio eliminado' });
 });
 
 app.get('/api/vehicles/:id/photos', async (c) => {

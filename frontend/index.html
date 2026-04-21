@@ -483,6 +483,7 @@
     <button class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 Personal</button>
     <button class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📊 Reportes</button>
     <button class="nav-tab" onclick="showTab('slots')">🗺️ Mapa</button>
+    <button class="nav-tab" id="tab-settings" onclick="showTab('settings')" style="display:none">⚙️ Ajustes</button>
   </nav>
   <main id="main-content"></main>
 </div>
@@ -586,13 +587,14 @@ async function tryLogin() {
     currentStaff = await res.json();
     localStorage.setItem('token', currentStaff.token);
     
-    // Mostrar pestañas si es admin
     if (currentStaff.role === 'supervisor' || currentStaff.role === 'director') {
       document.getElementById('tab-staff').style.display = 'block';
       document.getElementById('tab-reports').style.display = 'block';
+      document.getElementById('tab-settings').style.display = 'block';
     } else {
       document.getElementById('tab-staff').style.display = 'none';
       document.getElementById('tab-reports').style.display = 'none';
+      document.getElementById('tab-settings').style.display = 'none';
     }
     
     document.getElementById('staff-name').textContent = currentStaff.name;
@@ -640,10 +642,80 @@ function showTab(tab) {
     case 'staff': renderStaff(); break;
     case 'reports': renderReports(); break;
     case 'slots': renderSlots(); break;
+    case 'settings': renderSettings(); break;
   }
 }
 
 // ==================== VIEWS ====================
+function renderSettings() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">⚙️ Configuración del Sistema</h2>
+    </div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+      <!-- Gestión de Espacios -->
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🗺️ Gestión de Espacios</h3>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:20px;">Crea nuevos lugares de estacionamiento de forma masiva.</p>
+        
+        <div class="form-grid">
+          <div class="field">
+            <label style="font-size:0.75rem">Zona (Letra)</label>
+            <input type="text" id="set-zone" placeholder="Ej: D" maxlength="1" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; width:100%">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div class="field" style="flex:1">
+              <label style="font-size:0.75rem">Desde</label>
+              <input type="number" id="set-from" value="1" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; width:100%">
+            </div>
+            <div class="field" style="flex:1">
+              <label style="font-size:0.75rem">Hasta</label>
+              <input type="number" id="set-to" value="10" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; width:100%">
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="bulkCreateSlots()">Generar Espacios</button>
+      </div>
+
+      <!-- Alertas de Capacidad -->
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto; opacity:0.8;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🔔 Umbrales de Alerta</h3>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:20px;">Configura cuándo recibir avisos de capacidad.</p>
+        <div class="field">
+          <label style="font-size:0.75rem">Alerta Crítica (%)</label>
+          <input type="number" value="90" disabled style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; width:100%">
+        </div>
+        <p style="font-size:0.7rem; color:var(--accent1); margin-top:10px;">Configuración bloqueada en versión v1.3</p>
+      </div>
+    </div>
+  `;
+}
+
+async function bulkCreateSlots() {
+  const zone = document.getElementById('set-zone').value.toUpperCase();
+  const from = parseInt(document.getElementById('set-from').value);
+  const to = parseInt(document.getElementById('set-to').value);
+
+  if (!zone || isNaN(from) || isNaN(to)) {
+    toast('Completa todos los campos', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/slots/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify({ zone, from, to })
+    });
+    if (!res.ok) throw new Error();
+    toast('Espacios creados con éxito', 'success');
+    document.getElementById('set-zone').value = '';
+  } catch {
+    toast('Error al crear espacios', 'error');
+  }
+}
 function renderSlots() {
   const main = document.getElementById('main-content');
   main.innerHTML = `
@@ -818,25 +890,73 @@ async function submitAddStaff() {
 }
 
 // ==================== DASHBOARD ====================
-async function renderDashboard(el) {
-  el.innerHTML = `<div class="stats-grid" id="stats-grid">
-    ${['parked','retrieved_today','checked_in_today','revenue_today'].map(k => `
-      <div class="stat-card" style="--accent-color:${k==='revenue_today'?'var(--gold)':k==='parked'?'var(--green)':k==='retrieved_today'?'var(--muted)':'var(--accent)'}">
-        <div class="stat-label">${{parked:'Estacionados',retrieved_today:'Entregados Hoy',checked_in_today:'Ingresos Hoy',revenue_today:'Ingresos $'}[k]}</div>
-        <div class="stat-value" id="stat-${k}">—</div>
-      </div>`).join('')}
-  </div>
-  <div class="list-title" style="margin-bottom:16px">Vehículos Activos</div>
-  <div id="dashboard-vehicles"></div>`;
+function renderDashboard(el) {
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📊 Resumen de Hoy</h2>
+    </div>
+    
+    <div id="capacity-warning" style="display:none; grid-column:1/-1; background:rgba(239, 68, 68, 0.1); border:1px solid var(--accent2); padding:15px; border-radius:12px; margin-bottom:20px; font-weight:700; color:var(--accent2); text-align:center;">
+      ⚠️ CAPACIDAD CRÍTICA: <span id="cap-val">0</span>% OCUPADO
+    </div>
+
+    <div class="grid">
+      <div class="stat-card">
+        <div class="stat-label">EN PARKING</div>
+        <div class="stat-value" id="stat-parked">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">OCUPACIÓN</div>
+        <div class="stat-value" id="stat-occupancy">0%</div>
+        <div style="width:100%; height:6px; background:var(--surface2); margin-top:10px; border-radius:3px; overflow:hidden;">
+           <div id="stat-occupancy-bar" style="width:0%; height:100%; background:var(--success); transition:all 0.5s;"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">ENTRADAS</div>
+        <div class="stat-value" id="stat-checkins_today">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">INGRESOS $</div>
+        <div class="stat-value" id="stat-revenue_today">$0.00</div>
+      </div>
+    </div>
+    
+    <div class="view-header" style="margin-top:30px">
+      <h3 class="view-title">🚗 Últimos Movimientos</h3>
+    </div>
+    <div class="grid" id="dashboard-vehicles"></div>
+  `;
+  loadDashboard();
+}
+
+async function loadDashboard() {
   try {
     const [stats, vehs] = await Promise.all([
-      fetch(`${API_BASE}/api/dashboard/today`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r; return r.json()}).catch(()=>({checkins:0,checkouts:0,total:0})),
+      fetch(`${API_BASE}/api/dashboard/today`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r; return r.json()}).catch(()=>({checkins:0,checkouts:0,total:0,slots_occupied:0,slots_total:0})),
       fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r; return r.json()}).catch(()=>({vehicles:[]}))
     ]);
     document.getElementById('stat-parked').textContent = stats.total ?? 0;
-    document.getElementById('stat-retrieved_today').textContent = stats.checkouts ?? 0;
-    document.getElementById('stat-checked_in_today').textContent = stats.checkins ?? 0;
+    document.getElementById('stat-checkins_today').textContent = stats.checkins ?? 0;
     document.getElementById('stat-revenue_today').textContent = '$' + (stats.earnings ?? 0).toLocaleString();
+    
+    // Calcular ocupación
+    if (stats.slots_total > 0) {
+      const pct = Math.round((stats.slots_occupied / stats.slots_total) * 100);
+      document.getElementById('stat-occupancy').textContent = pct + '%';
+      const bar = document.getElementById('stat-occupancy-bar');
+      bar.style.width = pct + '%';
+      bar.style.background = pct > 90 ? 'var(--accent2)' : (pct > 70 ? 'var(--warning)' : 'var(--success)');
+      
+      const warning = document.getElementById('capacity-warning');
+      if (pct >= 90) {
+        warning.style.display = 'block';
+        document.getElementById('cap-val').textContent = pct;
+      } else {
+        warning.style.display = 'none';
+      }
+    }
+    
     vehicles = vehs.vehicles || [];
     renderVehicleCards(document.getElementById('dashboard-vehicles'), vehicles.slice(0,6));
   } catch(e) {
