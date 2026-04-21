@@ -13,6 +13,116 @@ const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
 app.use('*', cors());
 
 // ===============================
+// VISTA PÚBLICA DEL CLIENTE (HTML)
+// ===============================
+app.get('/ticket/:code', async (c) => {
+  const code = c.req.param('code');
+  const vehicle = await c.env.DB.prepare('SELECT * FROM vehicles WHERE ticket_code = ?').bind(code).first();
+  
+  if (!vehicle) return c.html('<h1 style="text-align:center;margin-top:50px;font-family:sans-serif;">Ticket no encontrado</h1>', 404);
+
+  const statusMap: any = {
+    'parked': { text: 'Estacionado', color: '#10b981', icon: '🅿️' },
+    'pending_retrieval': { text: 'En Camino / Preparando', color: '#f59e0b', icon: '🏃' },
+    'retrieved': { text: 'Entregado', color: '#6b7280', icon: '✅' }
+  };
+  const status = statusMap[vehicle.status] || { text: vehicle.status, color: '#000', icon: '🚗' };
+
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mi Ticket - Valet Eye</title>
+        <style>
+            :root { --primary: #6366f1; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
+            body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; padding: 20px; }
+            .container { max-width: 400px; width: 100%; }
+            .card { background: var(--card); border-radius: 24px; padding: 30px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+            .logo { font-size: 24px; font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; }
+            .logo span { color: var(--primary); }
+            .status-box { background: ${status.color}20; color: ${status.color}; padding: 20px; border-radius: 16px; margin-bottom: 30px; border: 1px solid ${status.color}40; }
+            .status-icon { font-size: 40px; margin-bottom: 10px; }
+            .status-text { font-size: 1.2rem; font-weight: 700; }
+            .plate { font-size: 2rem; font-weight: 900; margin: 20px 0; letter-spacing: 2px; }
+            .info { text-align: left; margin-bottom: 30px; color: #94a3b8; font-size: 0.9rem; }
+            .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; transition: transform 0.2s; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4); }
+            .btn:active { transform: scale(0.98); }
+            .btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; box-shadow: none; }
+            .footer { margin-top: 20px; font-size: 0.8rem; color: #475569; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card">
+                <div class="logo">Valet<span>Eye</span></div>
+                <div class="status-box">
+                    <div class="status-icon">${status.icon}</div>
+                    <div class="status-text">${status.text}</div>
+                </div>
+                <div style="color:#94a3b8; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Vehículo</div>
+                <div class="plate">${vehicle.plate}</div>
+                <div class="info">
+                    <div class="info-row"><span>Ticket:</span><span>${vehicle.ticket_code}</span></div>
+                    <div class="info-row"><span>Marca:</span><span>${vehicle.brand || '—'}</span></div>
+                    <div class="info-row"><span>Color:</span><span>${vehicle.color || '—'}</span></div>
+                </div>
+                
+                ${vehicle.status === 'parked' ? `
+                    <button class="btn" id="reqBtn" onclick="requestCar()">Solicitar mi vehículo</button>
+                ` : `
+                    <button class="btn" disabled>${status.text}</button>
+                `}
+                
+                <div class="footer">Este es un resguardo digital oficial. Valet Eye System.</div>
+            </div>
+        </div>
+        <script>
+            async function requestCar() {
+                if (!confirm('¿Deseas solicitar que traigan tu auto ahora?')) return;
+                const btn = document.getElementById('reqBtn');
+                btn.disabled = true;
+                btn.textContent = 'Procesando...';
+                try {
+                    const res = await fetch('/api/public/request-car/${code}', { method: 'POST' });
+                    if (res.ok) {
+                        alert('¡Solicitud enviada! El personal de Valet ya está preparando tu auto.');
+                        location.reload();
+                    } else {
+                        throw new Error();
+                    }
+                } catch {
+                    alert('Error al enviar solicitud. Intenta de nuevo.');
+                    btn.disabled = false;
+                    btn.textContent = 'Solicitar mi vehículo';
+                }
+            }
+        </script>
+    </body>
+    </html>
+  `);
+});
+
+// Endpoint público para solicitud del cliente
+app.post('/api/public/request-car/:code', async (c) => {
+  const code = c.req.param('code');
+  const vehicle = await c.env.DB.prepare('SELECT id, status FROM vehicles WHERE ticket_code = ?').bind(code).first();
+  
+  if (!vehicle) return c.json({ error: 'Ticket no encontrado' }, 404);
+  if (vehicle.status !== 'parked') return c.json({ error: 'El auto ya está en camino o fue entregado' }, 400);
+
+  await c.env.DB.prepare("UPDATE vehicles SET status = 'pending_retrieval' WHERE id = ?").bind(vehicle.id).run();
+  
+  // Registrar evento (usamos ID 1 como sistema/cliente por defecto)
+  await c.env.DB.prepare('INSERT INTO events (vehicle_id, user_id, event_type) VALUES (?, ?, ?)')
+    .bind(vehicle.id, 1, 'checkout_request').run();
+
+  return c.json({ message: 'Auto solicitado' });
+});
+
+// ===============================
 // LOGIN (Frontend)
 // ===============================
 app.post('/api/staff/login', async (c) => {
@@ -314,6 +424,19 @@ app.get('/api/reports/financial', async (c) => {
     summary,
     daily: dailyEarnings.results
   });
+});
+
+// ===============================
+// ESPACIOS (MAPA)
+// ===============================
+app.get('/api/slots', async (c) => {
+  const slots = await c.env.DB.prepare(`
+    SELECT s.id, s.zone, s.number, v.plate, v.id as vehicle_id, v.status as vehicle_status
+    FROM slots s
+    LEFT JOIN vehicles v ON v.parking_spot = (s.zone || '-' || s.number) AND v.status NOT IN ('retrieved')
+    ORDER BY s.zone, s.number
+  `).all();
+  return c.json(slots.results);
 });
 
 app.get('/api/vehicles/:id/photos', async (c) => {

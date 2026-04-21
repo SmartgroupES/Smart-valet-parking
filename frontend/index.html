@@ -482,6 +482,7 @@
     <button class="nav-tab" onclick="showTab('reservations')">📅 Reservas</button>
     <button class="nav-tab" id="tab-staff" onclick="showTab('staff')" style="display:none">👥 Personal</button>
     <button class="nav-tab" id="tab-reports" onclick="showTab('reports')" style="display:none">📊 Reportes</button>
+    <button class="nav-tab" onclick="showTab('slots')">🗺️ Mapa</button>
   </nav>
   <main id="main-content"></main>
 </div>
@@ -638,10 +639,69 @@ function showTab(tab) {
     case 'reservations': renderReservations(main); break;
     case 'staff': renderStaff(); break;
     case 'reports': renderReports(); break;
+    case 'slots': renderSlots(); break;
   }
 }
 
 // ==================== VIEWS ====================
+function renderSlots() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">🗺️ Mapa de Estacionamiento</h2>
+      <div class="header-right">
+        <div style="display:flex; gap:15px; align-items:center; font-size:0.85rem">
+          <div style="display:flex; gap:5px; align-items:center;"><span style="display:inline-block; width:12px; height:12px; background:rgba(16, 185, 129, 0.2); border:1px solid var(--success); border-radius:3px;"></span> Libre</div>
+          <div style="display:flex; gap:5px; align-items:center;"><span style="display:inline-block; width:12px; height:12px; background:rgba(239, 68, 68, 0.2); border:1px solid var(--accent2); border-radius:3px;"></span> Ocupado</div>
+        </div>
+      </div>
+    </div>
+    <div id="slots-container" style="padding-bottom:100px;">
+      <div style="text-align:center; padding:40px; color:var(--muted)">Cargando mapa...</div>
+    </div>
+  `;
+  loadSlots();
+}
+
+async function loadSlots() {
+  try {
+    const res = await fetch(`${API_BASE}/api/slots`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const slots = await res.json();
+    const container = document.getElementById('slots-container');
+    
+    const zones = {};
+    slots.forEach(s => {
+      if (!zones[s.zone]) zones[s.zone] = [];
+      zones[s.zone].push(s);
+    });
+
+    container.innerHTML = Object.keys(zones).map(z => `
+      <div style="margin-top:30px; font-weight:800; color:var(--muted); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:15px; display:flex; justify-content:space-between;">
+        <span>ZONA ${z}</span>
+        <span style="font-size:0.75rem; font-weight:400">${zones[z].filter(x=>!x.plate).length} libres de ${zones[z].length}</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:12px;">
+        ${zones[z].map(s => `
+          <div class="slot-item" 
+               onclick="${s.vehicle_id ? `showVehicleDetail(${s.vehicle_id})` : ''}"
+               style="background: ${s.plate ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)'}; 
+                      border: 1px solid ${s.plate ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}; 
+                      border-radius: 12px; padding: 12px 5px; text-align: center; cursor: pointer; transition: all 0.2s; position:relative; overflow:hidden;">
+            ${s.plate ? `<div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--accent2)"></div>` : ''}
+            <div style="font-size:0.65rem; font-weight:600; color:var(--muted); opacity:0.7;">${s.zone}-${s.number}</div>
+            <div style="font-weight:800; font-size:0.85rem; margin-top:4px; color:${s.plate ? 'var(--accent2)' : 'var(--success)'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${s.plate ? s.plate : 'LIBRE'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  } catch (e) {
+    document.getElementById('slots-container').innerHTML = '<div style="color:var(--accent2); text-align:center;">Error al cargar el mapa.</div>';
+  }
+}
 function renderReports() {
   const main = document.getElementById('main-content');
   main.innerHTML = `
@@ -1222,6 +1282,7 @@ async function submitReservation() {
 
 // ==================== TICKET ====================
 function showTicket(v) {
+  lastTicket = v;
   const since = v.check_in_at ? Math.round((Date.now() - new Date(v.check_in_at))/60000) : 0;
   document.getElementById('ticket-content').innerHTML = `
     <div class="ticket">
@@ -1239,8 +1300,21 @@ function showTicket(v) {
       <hr class="ticket-divider"/>
       <div style="font-size:0.65rem;color:var(--muted);margin-top:6px">Presente este resguardo al retirar su vehículo.<br/>Custodia bajo vigilancia permanente.</div>
     </div>`;
+  
+  // Mostrar/ocultar botón WhatsApp según si hay teléfono
+  const btnWa = document.getElementById('btn-wa');
+  if (btnWa) btnWa.style.display = v.owner_phone ? 'block' : 'none';
+  
   closeModal('modal-vehicle-detail');
   openModal('modal-ticket');
+}
+
+function sendWhatsApp() {
+  if (!lastTicket) return;
+  const phone = lastTicket.owner_phone.replace(/\D/g, '');
+  const ticketUrl = `${API_BASE}/ticket/${lastTicket.ticket_code}`;
+  const msg = `🚗 *Ticket Digital Valet Eye*\n\nHola *${lastTicket.owner_name}*, tu vehículo *${lastTicket.brand||''} ${lastTicket.model||''}* (Placa: *${lastTicket.plate}*) ha sido registrado.\n\n📌 *Ver Estado y Solicitar Auto:* ${ticketUrl}\n\n_Usa el enlace de arriba para pedir tu auto cuando estés listo para retirarte._`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // ==================== UTILS ====================
