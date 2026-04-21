@@ -120,44 +120,10 @@ app.get('/ticket/:code', async (c) => {
   `);
 });
 
-// PWA Assets
-app.get('/manifest.json', (c) => {
-  return c.json({
-    "name": "Valet Eye Staff",
-    "short_name": "Eye Staff",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#6366f1",
-    "icons": [{
-      "src": "https://cdn-icons-png.flaticon.com/512/2343/2343894.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }]
-  });
-});
-
-app.get('/sw.js', (c) => {
-  c.header('Content-Type', 'application/javascript');
-  return c.body(`
-    const CACHE_NAME = 'valet-eye-v1';
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
-    });
-    self.addEventListener('fetch', e => {
-      e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
-    });
-    self.addEventListener('push', e => {
-      const data = e.data.json();
-      self.registration.showNotification(data.title, {
-        body: data.body,
-        icon: 'https://cdn-icons-png.flaticon.com/512/2343/2343894.png'
-      });
-    });
   `);
 });
 
-// Endpoint público para solicitud del cliente
+// PÚBLICO: SOLICITUD DE AUTO (Antiguo endpoint, se mantiene por compatibilidad si es necesario)
 app.post('/api/public/request-car/:code', async (c) => {
   const code = c.req.param('code');
   const vehicle = await c.env.DB.prepare('SELECT id, status FROM vehicles WHERE ticket_code = ?').bind(code).first();
