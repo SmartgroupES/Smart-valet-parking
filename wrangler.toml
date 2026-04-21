@@ -11,3 +11,6 @@ database_id = "0c3d5545-adc7-47ac-84b6-02405dd1df22"
 binding = "PHOTOS"
 bucket_name = "valet-parking-photos"
 
+[vars]
+JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
+
