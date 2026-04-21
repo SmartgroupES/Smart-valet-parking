@@ -705,7 +705,9 @@ let settings = {
   company_logo: 'https://cdn-icons-png.flaticon.com/512/2343/2343894.png',
   company_address: '',
   company_phone: '',
-  terms_conditions: 'No nos hacemos responsables por objetos de valor no declarados.'
+  terms_conditions: 'No nos hacemos responsables por objetos de valor no declarados.',
+  currency: '$',
+  stripe_enabled: 'false'
 };
 let vehicles = [];
 let vehicleFilter = 'parked';
@@ -975,6 +977,87 @@ async function bulkCreateSlots() {
     toast('Error al crear espacios', 'error');
   }
 }
+function renderSettings() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">⚙️ Ajustes del Sistema</h2>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar Cambios</button>
+    </div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;">
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🏢 Identidad Corporativa</h3>
+        <div class="field">
+          <label>Nombre de la Empresa</label>
+          <input type="text" id="set-name" value="${settings.company_name}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>URL del Logo (PNG/JPG)</label>
+          <input type="text" id="set-logo" value="${settings.company_logo}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>Dirección Física</label>
+          <input type="text" id="set-address" value="${settings.company_address}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>Teléfono de Contacto</label>
+          <input type="text" id="set-phone" value="${settings.company_phone}" class="search-box" style="width:100%">
+        </div>
+      </div>
+
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🌍 Localización y Pagos</h3>
+        <div class="field">
+          <label>Moneda del Sistema</label>
+          <select id="set-currency" class="search-box" style="width:100%">
+            <option value="$" ${settings.currency==='$'?'selected':''}>Dólar Americano ($)</option>
+            <option value="Bs" ${settings.currency==='Bs'?'selected':''}>Bolívar (Bs)</option>
+            <option value="€" ${settings.currency==='€'?'selected':''}>Euro (€)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Pagos Digitales (Stripe)</label>
+          <select id="set-stripe" class="search-box" style="width:100%">
+            <option value="false" ${settings.stripe_enabled==='false'?'selected':''}>Desactivado (Venezuela / Otros)</option>
+            <option value="true" ${settings.stripe_enabled==='true'?'selected':''}>Activado (USA / Miami)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto; grid-column: 1 / -1;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">⚖️ Términos y Condiciones</h3>
+        <textarea id="set-terms" style="width:100%; height:100px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:10px;">${settings.terms_conditions}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+async function saveSettings() {
+  const body = {
+    company_name: document.getElementById('set-name').value,
+    company_logo: document.getElementById('set-logo').value,
+    company_address: document.getElementById('set-address').value,
+    company_phone: document.getElementById('set-phone').value,
+    currency: document.getElementById('set-currency').value,
+    stripe_enabled: document.getElementById('set-stripe').value,
+    terms_conditions: document.getElementById('set-terms').value
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/api/settings/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error();
+    settings = {...settings, ...body};
+    toast('Configuración actualizada ✅', 'success');
+  } catch (e) {
+    toast('Error al guardar configuración', 'error');
+  }
+}
+
 function renderSlots() {
   const main = document.getElementById('main-content');
   main.innerHTML = `
@@ -1950,7 +2033,7 @@ function showTicket(v) {
         <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('plate')}</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>
         <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('parking_spot')}</div><div style="color:#000;">${v.parking_spot||'P-A'}</div></div>
         <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('owner')}</div><div style="color:#000;">${v.owner_name}</div></div>
-        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('brand')}</div><div style="color:#000;">${v.brand||''}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">TARIFA</div><div style="color:#000; font-weight:700;">${settings.currency}${v.fee_amount||0}</div></div>
       </div>
       <hr class="ticket-divider"/>
       <div style="font-size:0.65rem; color:#666; line-height:1.4; margin-top:10px;">
