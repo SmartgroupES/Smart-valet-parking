@@ -9,6 +9,7 @@ export interface Env {
   JWT_SECRET: string;
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
+  ASSETS: { fetch: typeof fetch };
 }
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
@@ -22,6 +23,14 @@ async function logEvent(env: any, vehicleId: number, userId: number | null, even
 }
 
 app.use('*', cors());
+
+// Servir Frontend (Assets)
+app.get('/', async (c) => {
+  return c.env.ASSETS.fetch(c.req.raw);
+});
+
+app.get('/manifest.json', async (c) => c.env.ASSETS.fetch(c.req.raw));
+app.get('/sw.js', async (c) => c.env.ASSETS.fetch(c.req.raw));
 
 // ===============================
 // VISTA PÚBLICA DEL CLIENTE (HTML)
