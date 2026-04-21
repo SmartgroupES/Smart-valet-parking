@@ -10,6 +10,14 @@ export interface Env {
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
 
+async function logEvent(env: any, vehicleId: number, userId: number | null, eventType: string, details: string = '') {
+  try {
+    await env.DB.prepare('INSERT INTO events (vehicle_id, user_id, event_type, details) VALUES (?, ?, ?, ?)')
+      .bind(vehicleId, userId || 1, eventType, details)
+      .run();
+  } catch (e) { console.error('Log Error:', e); }
+}
+
 app.use('*', cors());
 
 // ===============================
@@ -224,9 +232,7 @@ app.post('/api/events/checkin', async (c) => {
 
     const vehicleId = result.meta.last_row_id;
 
-    await c.env.DB.prepare(
-      'INSERT INTO events (vehicle_id, user_id, event_type) VALUES (?, ?, ?)'
-    ).bind(vehicleId, user.id, 'checkin').run();
+    await logEvent(c.env, vehicleId, user.id, 'checkin', `Vehículo registrado por ${user.name}`);
 
     return c.json({ message: 'Check-in registrado', ticket_code: ticketCode, vehicle_id: vehicleId });
   } catch (error: any) {
@@ -344,13 +350,13 @@ app.patch('/api/vehicles/:id', async (c) => {
   const query = `UPDATE vehicles SET ${updates.join(', ')} WHERE id = ?`;
   await c.env.DB.prepare(query).bind(...params).run();
 
-  if (body.action) {
-    let eventType = body.action.toLowerCase();
-    if (eventType.includes('checkout')) eventType = 'checkout';
-    await c.env.DB.prepare(
-      'INSERT INTO events (vehicle_id, user_id, event_type) VALUES (?, ?, ?)'
-    ).bind(id, user?.id || 1, eventType).run();
-  }
+  let detail = '';
+  if (body.parking_spot) detail += `Ubicación: ${body.parking_spot}. `;
+  if (body.key_hook) detail += `Gancho: ${body.key_hook}. `;
+  if (body.status === 'retrieved') detail += 'Vehículo entregado.';
+
+  const eventType = body.status === 'retrieved' ? 'delivered' : 'parked';
+  await logEvent(c.env, parseInt(id), user?.id || 1, eventType, detail || 'Actualización de datos');
 
   return c.json({ success: true });
 });
@@ -374,9 +380,7 @@ app.post('/api/events/checkout', async (c) => {
     'UPDATE vehicles SET status = ?, check_out_at = CURRENT_TIMESTAMP WHERE id = ?'
   ).bind('retrieved', vehicle.id).run();
 
-  await c.env.DB.prepare(
-    'INSERT INTO events (vehicle_id, user_id, event_type) VALUES (?, ?, ?)'
-  ).bind(vehicle.id, user.id, 'checkout').run();
+  await logEvent(c.env, vehicle.id, user.id, 'delivered', `Entrega registrada por ${user.name}`);
 
   return c.json({ message: 'Check-out registrado' });
 });
@@ -390,20 +394,20 @@ app.get('/api/dashboard/today', async (c) => {
   ).first<{ total: number }>();
 
   const checkins = await c.env.DB.prepare(
-    "SELECT COUNT(*) AS total FROM events WHERE event_type = 'checkin' AND date(ts) = date('now')"
-  ).first<{ total: number }>();
     "SELECT COUNT(*) AS count FROM events WHERE event_type = 'checkin' AND date(ts) = date('now')"
   ).first<{ count: number }>();
 
-  const checkouts = await c.env.DB.prepare("SELECT COUNT(id) as count FROM events WHERE event_type = 'checkout' AND date(created_at) = date('now')").first<{ count: number }>();
+  const checkouts = await c.env.DB.prepare(
+    "SELECT COUNT(*) AS count FROM events WHERE event_type = 'delivered' AND date(ts) = date('now')"
+  ).first<{ count: number }>();
+
   const earnings = await c.env.DB.prepare("SELECT SUM(fee_amount) as total FROM vehicles WHERE fee_paid = 1 AND date(check_out_at) = date('now')").first<{ total: number }>();
 
-  // Ocupación
   const slotsCount = await c.env.DB.prepare("SELECT COUNT(*) as count FROM slots").first<{ count: number }>();
   const occupiedCount = await c.env.DB.prepare("SELECT COUNT(*) as count FROM vehicles WHERE status NOT IN ('retrieved') AND parking_spot IS NOT NULL").first<{ count: number }>();
 
   return c.json({
-    total: total?.count || 0,
+    total: total?.total || 0,
     checkins: checkins?.count || 0,
     checkouts: checkouts?.count || 0,
     earnings: earnings?.total || 0,
@@ -675,8 +679,23 @@ app.post('/api/public/ticket/:code/request', async (c) => {
   await c.env.DB.prepare('UPDATE vehicles SET requested_at = ? WHERE ticket_code = ? AND status = ?')
     .bind(now, code, 'parked')
     .run();
+  
+  const v: any = await c.env.DB.prepare('SELECT id FROM vehicles WHERE ticket_code = ?').bind(code).first();
+  if (v) await logEvent(c.env, v.id, null, 'requested', 'Cliente solicitó auto desde la Web');
     
   return c.json({ message: 'Solicitud recibida', requested_at: now });
+});
+
+app.get('/api/vehicles/:id/history', async (c) => {
+  const id = c.req.param('id');
+  const logs = await c.env.DB.prepare(`
+    SELECT e.*, u.name as user_name, u.role as user_role, e.ts as created_at
+    FROM events e
+    LEFT JOIN users u ON e.user_id = u.id
+    WHERE e.vehicle_id = ?
+    ORDER BY e.ts DESC
+  `).bind(id).all();
+  return c.json(logs.results);
 });
 
 export default app;

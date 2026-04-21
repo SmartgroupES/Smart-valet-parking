@@ -438,6 +438,16 @@
   .empty-icon { font-size: 3rem; margin-bottom: 12px; }
   .empty-text { font-size: 1rem; margin-bottom: 6px; color: var(--text); }
   .empty-sub { font-size: 0.85rem; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 30px; margin-top: 10px; }
+  .timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-icon { position: absolute; left: -30px; width: 24px; height: 24px; background: var(--surface2); border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; z-index: 1; }
+  .timeline-content { background: var(--surface1); padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+  .timeline-action { font-weight: 600; font-size: 0.85rem; color: var(--text); }
+  .timeline-meta { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -1435,7 +1445,29 @@ async function showVehicleDetail(id) {
       ${v.status==='parked' ? `<button class="btn btn-warning btn-sm" onclick="markPendingPickup(${v.id})">📞 Aviso Recolección</button>` : ''}
       ${v.status!=='retrieved' ? `<button class="btn btn-success btn-sm" onclick="doCheckout(${v.id})">📤 Entregar</button>` : ''}
     </div>`;
-  openModal('modal-vehicle-detail');
+    try {
+      const resHist = await fetch(`${API_BASE}/api/vehicles/${id}/history`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+      });
+      const history = await resHist.json();
+      const icons = { checkin: '🚗', parked: '🅿️', requested: '🔔', delivered: '✅', move: '📍' };
+      el.innerHTML += `
+        <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border);">
+          <h3 style="font-size:1rem; color:var(--text); margin-bottom:16px;">🕒 ${t('history')}</h3>
+          <div class="timeline">
+            ${history.map(h => `
+              <div class="timeline-item">
+                <div class="timeline-icon">${icons[h.event_type] || '•'}</div>
+                <div class="timeline-content">
+                  <div class="timeline-action">${h.details || h.event_type.toUpperCase()}</div>
+                  <div class="timeline-meta">${h.user_name || 'Sistema'} · ${fmtDate(h.created_at)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+    } catch (e) {}
+    openModal('modal-vehicle-detail');
 }
 
 async function openPhotos(id) {
