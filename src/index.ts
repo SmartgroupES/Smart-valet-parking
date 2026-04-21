@@ -598,5 +598,12 @@ app.post('/api/reservations', async (c) => {
   return c.json({ confirm_code: confirmCode });
 });
 
+app.patch('/api/reservations/:id', async (c) => {
+  const id = c.req.param('id');
+  const { status } = await c.req.json();
+  await c.env.DB.prepare('UPDATE reservations SET status = ? WHERE id = ?').bind(status, id).run();
+  return c.json({ message: 'Reserva actualizada' });
+});
+
 export default app;
 

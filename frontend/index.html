@@ -560,6 +560,7 @@ let vehicleFilter = 'parked';
 let searchQuery = '';
 let currentTab = 'dashboard';
 let lastTicket = null;
+let pendingReservationId = null;
 
 // ==================== PIN LOGIN ====================
 let pinBuffer = '';
@@ -1277,8 +1278,23 @@ async function submitCheckin() {
       });
     }
 
-    toast('Vehículo registrado correctamente', 'success');
-    showTab('dashboard');
+    toast('Ingreso registrado exitosamente ✅', 'success');
+    
+    // Marcar reserva como llegada si aplica
+    if (pendingReservationId) {
+      try {
+        await fetch(`${API_BASE}/api/reservations/${pendingReservationId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+          body: JSON.stringify({ status: 'arrived' })
+        });
+        pendingReservationId = null;
+      } catch (e) {}
+    }
+
+    const ticket = await res.json();
+    showTicket(ticket);
+    loadDashboard();
   } catch {
     // Demo mode: generate local ticket
     const ticket_code = 'V' + Date.now().toString(36).toUpperCase();
@@ -1404,33 +1420,54 @@ async function finalizeCheckout(id) {
 // ==================== RESERVATIONS ====================
 async function renderReservations(el) {
   el.innerHTML = `
-    <div class="list-header">
-      <div class="list-title">📅 Reservaciones</div>
+    <div class="view-header">
+      <h2 class="view-title">📅 Próximas Reservas</h2>
       <button class="btn btn-primary" onclick="openNewReservation()">+ Nueva Reserva</button>
     </div>
-    <div class="reservation-list" id="res-list"><div style="color:var(--muted)">Cargando…</div></div>`;
+    <div class="grid" id="reservations-list" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));"></div>`;
+  
   try {
-    const data = await fetch(`${API_BASE}/api/reservations`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r;return r.json()});
-    renderResList(Array.isArray(data)?data:mockReservations());
-  } catch {
-    renderResList(mockReservations());
+    const res = await fetch(`${API_BASE}/api/reservations`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const list = await res.json();
+    
+    const pending = list.filter(r => r.status === 'pending');
+    document.getElementById('reservations-list').innerHTML = pending.map(r => `
+      <div class="vehicle-card" style="cursor:default; border-left:4px solid var(--accent1);">
+        <div class="vehicle-card-top">
+          <div style="font-weight:700; color:var(--accent1)">${r.confirm_code}</div>
+          <span class="status-badge" style="background:var(--surface2); color:var(--text)">PENDIENTE</span>
+        </div>
+        <div class="vehicle-name" style="margin-top:10px; font-weight:600;">${r.owner_name}</div>
+        <div class="vehicle-meta">${r.plate ? 'Placa: '+r.plate : 'Placa no registrada'} · ${r.brand||''}</div>
+        <div style="margin-top:15px; font-size:0.9rem; color:var(--accent1); font-weight:600;">
+          ⏳ Llegada: ${fmtDate(r.expected_arrival)}
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" style="width:100%" onclick='startCheckinFromReservation(${JSON.stringify(r).replace(/'/g, "\\'")})'>
+            🚗 Registrar Llegada
+          </button>
+        </div>
+      </div>`).join('') || '<div class="empty" style="grid-column:1/-1">Sin reservas pendientes</div>';
+  } catch (e) {
+    document.getElementById('reservations-list').innerHTML = '<div class="empty" style="grid-column:1/-1">Error al cargar reservas</div>';
   }
 }
-function renderResList(list) {
-  const el = document.getElementById('res-list');
-  if (!list.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Sin reservas</div></div>`; return; }
-  el.innerHTML = list.map(r => `
-    <div class="reservation-card">
-      <div class="res-info">
-        <div class="res-name">${r.owner_name}</div>
-        <div class="res-meta">${r.owner_phone} ${r.plate?'· '+r.plate:''} ${r.brand?'· '+r.brand:''} ${r.model?r.model:''}</div>
-        ${r.notes?`<div class="res-meta" style="margin-top:4px;font-style:italic">${r.notes}</div>`:''}
-      </div>
-      <div>
-        <div class="res-time">${fmtDate(r.expected_arrival)}</div>
-        <span class="status-badge status-${r.status==='pending'?'pending_retrieval':r.status}" style="display:block;text-align:center;margin-top:6px">${r.status}</span>
-      </div>
-    </div>`).join('');
+
+async function startCheckinFromReservation(r) {
+  pendingReservationId = r.id;
+  showTab('checkin');
+  
+  // Esperar a que se renderice la pestaña de checkin
+  setTimeout(() => {
+    if(document.getElementById('ci-plate')) document.getElementById('ci-plate').value = r.plate || '';
+    if(document.getElementById('ci-owner')) document.getElementById('ci-owner').value = r.owner_name || '';
+    if(document.getElementById('ci-phone')) document.getElementById('ci-phone').value = r.owner_phone || '';
+    if(document.getElementById('ci-brand')) document.getElementById('ci-brand').value = r.brand || '';
+    if(document.getElementById('ci-model')) document.getElementById('ci-model').value = r.model || '';
+    toast('Datos cargados desde reserva. Completa el registro.', 'info');
+  }, 200);
 }
 
 function openNewReservation() {
@@ -1453,24 +1490,37 @@ function openNewReservation() {
     '📅 Nueva Reservación <button class="modal-close" onclick="closeModal(\'modal-vehicle-detail\')">×</button>';
   openModal('modal-vehicle-detail');
 }
+
 async function submitReservation() {
   const name = document.getElementById('nr-name').value.trim();
   const phone = document.getElementById('nr-phone').value.trim();
   const arrival = document.getElementById('nr-arrival').value;
   if (!name||!phone||!arrival) { toast('Nombre, teléfono y llegada son requeridos','error'); return; }
-  const body = { owner_name:name, owner_phone:phone, expected_arrival:arrival,
-    plate:document.getElementById('nr-plate').value,
-    brand:document.getElementById('nr-brand').value,
-    model:document.getElementById('nr-model').value,
-    notes:document.getElementById('nr-notes').value };
+  
+  const body = { 
+    owner_name: name, 
+    owner_phone: phone, 
+    expected_arrival: arrival,
+    plate: document.getElementById('nr-plate').value.toUpperCase(),
+    brand: document.getElementById('nr-brand').value,
+    model: document.getElementById('nr-model').value,
+    notes: document.getElementById('nr-notes').value 
+  };
+  
   try {
-    const res = await fetch(`${API_BASE}/api/reservations`,{method:'POST',headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},body:JSON.stringify(body)});
+    const res = await fetch(`${API_BASE}/api/reservations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(body)
+    });
     if(!res.ok) throw new Error();
     const created = await res.json();
-    toast('Reserva confirmada: '+created.confirm_code,'success');
-  } catch { toast('Reserva registrada (demo)','success'); }
-  closeModal('modal-vehicle-detail');
-  showTab('reservations');
+    toast('Reserva confirmada: ' + created.confirm_code, 'success');
+    closeModal('modal-vehicle-detail');
+    showTab('reservations');
+  } catch {
+    toast('Error al registrar reserva', 'error');
+  }
 }
 
 // ==================== TICKET ====================
