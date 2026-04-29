@@ -1,0 +1,58 @@
+Entendido perfectamente. Lo que buscas es un **Módulo de Gestión de Permisos por Perfil**
+(RBAC - Role Based Access Control) integrado en el panel de **ADMINISTRACIÓN** de
+Ungravity.
+Esto permitirá que la encargada de RR.HH. defina qué botones (módulos) ve cada empleado
+en la pantalla principal de "Servicios" y "Operaciones" (la que aparece en tu tercera imagen)
+simplemente marcando o desmarcando opciones.
+Aquí tienes el prompt detallado para el equipo de desarrollo de Ungravity:
+### **Especificación Técnica: Módulo de Gestión de Permisos Dinámicos (Panel
+Administración)**
+**Objetivo:** Implementar una interfaz de control en el módulo de "Administración" que
+permita asignar visibilidad de módulos específicos a los distintos perfiles de usuario de **EYE
+STAFF**, afectando en tiempo real lo que cada usuario visualiza al loguearse.
+#### **1. Interfaz de Administración (Vista de RR.HH. / Administrador)**
+Dentro del módulo de Administración, crear una sección de **"Gestión de Perfiles y
+Permisos"**:
+* **Selector de Perfil:** Un desplegable o lista para elegir el rol (ej. Operador Valet,
+Supervisor, Anfitrión, Administrador).
+* **Matriz de Checkboxes (Módulos):** Una lista clicable con todos los módulos actuales y
+futuros (basada en la estructura de la App):
+* **Servicios:** Valet Parking, Renta Equipos, Xpress Pro, Eye Kids.
+* **Operaciones:** Eventos, Listas, Formatos, Administración.
+* **Acción:** La encargada de RR.HH. marcará con un **check** los módulos que ese perfil
+tiene permitido ver.
+#### **2. Lógica de Renderizado Dinámico (Frontend)**
+El panel principal de **EYE STAFF** (Dashboard) debe dejar de ser estático y pasar a ser
+condicional:
+* **Validación al Login:** Cuando un usuario inicia sesión, la App consulta su perfil y los
+permisos asociados en la base de datos.
+* **Filtrado de Módulos:** La pantalla de "Servicios" y "Operaciones" solo renderizará
+(mostrará) las tarjetas/botones cuyos permisos tengan el valor TRUE para ese perfil.
+* **Estado "Próximamente":** Los módulos no permitidos para un perfil específico **no
+deben aparecer** (ni siquiera como "próximamente") para evitar ruido visual y accesos no
+autorizados.
+#### **3. Requerimientos de Base de Datos**
+* **Tabla Perfiles_Permisos:** Una tabla que relacione ID_Perfil con ID_Modulo y un booleano
+Activo.
+* **Persistencia:** Cualquier cambio realizado por RR.HH. en el panel de administración debe
+impactar de inmediato en la siguiente sesión que inicie el personal afectado.
+#### **4. Flujo de Trabajo Sugerido para RR.HH.**
+1. Entra a **Administración** -> **Permisos**.
+2. Selecciona el perfil "Operador Junior".
+3. Marca solo: [x] Valet Parking y [x] Formatos.
+4. Guarda cambios.
+5. **Resultado:** Cuando el Operador Junior entre a la App, su pantalla solo mostrará esas
+dos opciones, ocultando "Administración", "Renta Equipos", etc.
+### **Notas para el Desarrollador (Contexto Ungravity):**
+* Utilizar los componentes de UI actuales de la app para que la lista de checks sea
+estéticamente coherente con el modo oscuro de **EYE STAFF**.
+* Asegurar que, aunque un usuario intente acceder por URL directa a un módulo no
+permitido, el sistema lo redirija al Dashboard (protección a nivel de ruta/backend).
+
+-- 1 of 2 --
+
+Con este prompt, los desarrolladores podrán crear una herramienta muy potente para tu
+encargada de RR.HH., dándole control total sobre quién ve qué en el **Grupo Eye Staff**.
+
+-- 2 of 2 --
+

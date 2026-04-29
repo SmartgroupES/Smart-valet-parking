@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Valet Eye — Smart Parking</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2343/2343894.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent2: #ff6b6b;
+    --gold: #f5c842;
+    --green: #2dce89;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* --- LOGIN --- */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 32px;
+  }
+  .login-logo {
+    font-family: var(--font-display);
+    font-size: 3rem; font-weight: 800;
+    letter-spacing: -2px;
+  }
+  .login-logo span { color: var(--accent); }
+  .login-subtitle { color: var(--muted); font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
+  .pin-display {
+    display: flex; gap: 12px; margin: 8px 0;
+  }
+  .pin-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-pad {
+    display: grid; grid-template-columns: repeat(3, 72px);
+    gap: 12px;
+  }
+  .pin-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text); font-size: 1.4rem;
+    font-family: var(--font-display); font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .pin-btn:hover { background: var(--surface); border-color: var(--accent); transform: scale(1.05); }
+  .pin-btn:active { transform: scale(0.95); }
+  .pin-btn.del { font-size: 1rem; color: var(--muted); }
+  .pin-error { color: var(--accent2); font-size: 0.85rem; min-height: 20px; }
+
+  /* --- LAYOUT --- */
+  #app { display: flex !important; min-height: 100vh; flex-direction: column; }
+  #app.visible { display: flex !important; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 64px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem; font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .staff-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .staff-badge strong { color: var(--text); }
+  .btn-logout {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .btn-logout:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; padding: 0 24px; gap: 4px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 12px 20px;
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-family: var(--font-body); font-size: 0.85rem;
+    font-weight: 500; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { flex: 1; padding: 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
+
+  /* --- DASHBOARD --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent-color, var(--accent));
+  }
+  .stat-label {
+    font-size: 0.75rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.4rem; font-weight: 800;
+    line-height: 1;
+  }
+  .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+  /* --- VEHICLE LIST --- */
+  .list-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .list-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem; font-weight: 700;
+  }
+  .search-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px;
+    color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+    width: 240px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--accent); }
+  .filter-tabs {
+    display: flex; gap: 8px;
+  }
+  .filter-tab {
+    padding: 6px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; color: var(--muted);
+    cursor: pointer; font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .filter-tab:hover, .filter-tab.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff;
+  }
+
+  .vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .vehicle-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .vehicle-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .vehicle-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .plate-tag {
+    font-family: var(--font-mono);
+    font-size: 1.1rem; font-weight: 500;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px;
+    letter-spacing: 2px;
+  }
+  .status-badge {
+    font-size: 0.7rem; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .status-parked { background: #1a3a2a; color: var(--green); }
+  .status-retrieved { background: #2a2a3a; color: var(--muted); }
+  .status-pending_retrieval { background: #3a2a1a; color: var(--gold); }
+  .vehicle-name { font-size: 0.95rem; font-weight: 500; margin-bottom: 4px; }
+  .vehicle-meta { font-size: 0.8rem; color: var(--muted); }
+  .vehicle-ticket {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--accent); margin-top: 8px;
+  }
+  .spot-badge {
+    position: absolute; bottom: 14px; right: 14px;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px; color: var(--muted);
+  }
+
+  /* --- MODAL --- */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem; font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 1.2rem; cursor: pointer;
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+  /* --- FORMS --- */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 0.75rem; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .field input, .field select, .field textarea {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent);
+  }
+  .field select option { background: var(--surface2); }
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  /* Photo audit grid */
+  .photo-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    margin: 4px 0;
+  }
+  .photo-slot {
+    aspect-ratio: 4/3;
+    background: var(--surface2); border: 1px dashed var(--border);
+    border-radius: 8px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; cursor: pointer; font-size: 0.75rem; color: var(--muted);
+    transition: all 0.2s; overflow: hidden; position: relative;
+  }
+  .photo-slot:hover { border-color: var(--accent); }
+  .photo-slot img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  }
+  .photo-slot input[type=file] { display: none; }
+  .photo-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  /* --- BUTTONS --- */
+  .btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; border: none; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+  }
+  .btn-primary:hover { filter: brightness(1.15); }
+  .btn-secondary {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-success { background: var(--green); color: #0a2a1a; }
+  .btn-warning { background: var(--gold); color: #2a1a0a; }
+  .btn-danger { background: var(--accent2); color: #fff; }
+  .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* --- TICKET PRINT VIEW --- */
+  .ticket {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    font-family: var(--font-mono); font-size: 0.85rem;
+    text-align: center; margin: 16px 0;
+  }
+  .ticket-code {
+    font-size: 2rem; font-weight: 500;
+    color: var(--accent); letter-spacing: 4px;
+    margin: 8px 0;
+  }
+  .barcode {
+    font-size: 2.5rem; letter-spacing: 4px;
+    color: var(--text); margin: 4px 0;
+    font-family: 'Libre Barcode 128', cursive;
+  }
+  .ticket-divider { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
+
+  /* --- DETAIL PANEL --- */
+  .detail-section { margin-bottom: 20px; }
+  .detail-section-title {
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .detail-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; font-size: 0.875rem;
+  }
+  .detail-row .label { color: var(--muted); }
+  .detail-row .value { font-weight: 500; text-align: right; }
+  .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+  /* --- RESERVATIONS --- */
+  .reservation-list { display: flex; flex-direction: column; gap: 12px; }
+  .reservation-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .res-info { flex: 1; }
+  .res-name { font-weight: 600; margin-bottom: 4px; }
+  .res-meta { font-size: 0.8rem; color: var(--muted); }
+  .res-time {
+    font-family: var(--font-mono); font-size: 0.95rem;
+    color: var(--gold); white-space: nowrap;
+  }
+
+  /* --- TOAST --- */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px;
+    font-size: 0.875rem; min-width: 240px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: fadeInRight 0.3s ease;
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .toast-success { border-left: 3px solid var(--green); }
+  .toast-error { border-left: 3px solid var(--accent2); }
+  .toast-info { border-left: 3px solid var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .vehicle-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-text { font-size: 1rem; margin-bottom: 6px; color: var(--text); }
+  .empty-sub { font-size: 0.85rem; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 30px; margin-top: 10px; }
+  .timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-icon { position: absolute; left: -30px; width: 24px; height: 24px; background: var(--surface2); border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; z-index: 1; }
+  .timeline-content { background: var(--surface1); padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+  .timeline-action { font-weight: 600; font-size: 0.85rem; color: var(--text); }
+  .timeline-meta { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    @keyframes pulse-border {
+      0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+    }
+    .requested-pulse {
+      border: 2px solid var(--accent2) !important;
+      animation: pulse-border 2s infinite;
+    }
+
+    /* LIGHTBOX PRO */
+    #lightbox {
+      display: none; position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.95); align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 95%; max-height: 95%; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.5); transition: transform 0.3s; }
+    #lightbox:active img { transform: scale(1.5); cursor: grabbing; }
+</style>
+</head>
+<body>
+
+<!-- OFFLINE BANNER -->
+<div id="offline-banner" style="display:none; background:var(--gold); color:#000; padding:10px; text-align:center; font-size:0.8rem; font-weight:700; position:sticky; top:0; z-index:200; justify-content:center; align-items:center;"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div>
+    <div class="login-logo" id="login-brand">Valet<span>OS</span></div>
+    <div class="login-subtitle" style="text-align:center;margin-top:4px;">Sistema de Gestión de Estacionamiento</div>
+  </div>
+  <div class="pin-display" id="pin-display">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn del" onclick="pinClear()">✕</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="header-logo" id="header-brand">Valet<span>OS</span></div>
+    <div class="header-right">
+      <button class="btn-ghost" onclick="toggleLang()" style="margin-right:15px; font-weight:700; font-size:0.8rem; color:var(--accent1)">
+        <span id="lang-label">ES</span> 🌐
+      </button>
+      <div class="staff-badge">
+        <button id="btn-clock" class="btn btn-secondary btn-sm" onclick="toggleShift()" style="margin-right:10px; border-radius:15px; font-weight:700;">🕒 ...</button>
+        <span id="txt-operator">Operador</span>: <strong id="staff-name">—</strong>
+      </div>
+      <button class="btn-logout" onclick="logout()" id="btn-logout-txt">Salir</button>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-tab active" id="tab-dashboard" onclick="showTab('dashboard')">📊 <span id="nav-dashboard">Dashboard</span></div>
+    <div class="nav-tab" id="tab-checkin" onclick="showTab('checkin')">🚗 <span id="nav-checkin">Entrada</span></div>
+    <div class="nav-tab" id="tab-checkout" onclick="showTab('checkout')">📤 <span id="nav-checkout">Entrega</span></div>
+    <div class="nav-tab" id="tab-vehicles" onclick="showTab('vehicles')">🏎️ <span id="nav-vehicles">Vehículos</span></div>
+    <div class="nav-tab" id="tab-reservations" onclick="showTab('reservations')">📅 <span id="nav-reservations">Reservas</span></div>
+    <div class="nav-tab" id="tab-staff-nav" onclick="showTab('staff')">👥 <span id="nav-staff">Personal</span></div>
+    <div class="nav-tab" id="tab-reports-nav" onclick="showTab('reports')">📈 <span id="nav-reports">Reportes</span></div>
+    <div class="nav-tab" id="tab-history-nav" onclick="showTab('history')">📜 <span id="nav-history">Historial</span></div>
+    <div class="nav-tab" id="tab-settings-nav" onclick="showTab('settings')">⚙️ <span id="nav-settings">Ajustes</span></div>
+  </nav>
+  <main id="main-content" style="padding: 24px; flex: 1; overflow-y: auto;">
+    <div style="text-align:center; padding:100px; color:var(--muted);">Cargando panel de control...</div>
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-vehicle-detail">
+  <div class="modal">
+    <div class="modal-title">Detalle del Vehículo <button class="modal-close" onclick="closeModal('modal-vehicle-detail')">×</button></div>
+    <div id="vehicle-detail-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-ticket">
+  <div class="modal">
+    <div class="modal-title">🎫 Resguardo <button class="modal-close" onclick="closeModal('modal-ticket')">×</button></div>
+    <div id="ticket-content"></div>
+    <div style="margin-top:20px; text-align:center; display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-success" id="btn-wa" style="background:#25D366; border:none;" onclick="sendWhatsApp()">
+        <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" style="width:16px; margin-right:8px; vertical-align:middle; filter:brightness(0) invert(1)"> Enviar Ticket WhatsApp
+      </button>
+      <button class="btn btn-primary" onclick="closeModal('modal-ticket')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-staff">
+  <div class="modal">
+    <div class="modal-title">Registrar Nuevo Personal <button class="modal-close" onclick="closeModal('modal-add-staff')">×</button></div>
+    <div style="padding:20px;">
+      <div class="form-group" style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">Nombre Completo</label>
+        <input type="text" id="ns-name" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+      </div>
+      <div class="form-group" style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">PIN de Acceso (4 dígitos)</label>
+        <input type="password" id="ns-pin" maxlength="4" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:5px;color:var(--muted)">Rol</label>
+        <select id="ns-role" style="width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;">
+          <option value="driver">Chofer (Driver)</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="director">Director</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-add-staff')">Cancelar</button>
+        <button class="btn btn-primary" style="flex:1" onclick="submitAddStaff()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="modal" style="max-width: 1000px; width: 95%;">
+    <div class="modal-title">🔍 Inspección Visual Pro <button class="modal-close" onclick="closeModal('modal-photos')">×</button></div>
+    <div id="photos-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 24px;">
+      <!-- Lado Izquierdo: Diagrama -->
+      <div id="gallery-diagram" style="background: var(--surface2); border-radius: 16px; padding: 20px; border: 1px solid var(--border);">
+        <div class="detail-section-title" style="margin-bottom:15px;">Marcas de Daños</div>
+        <div id="diagram-container-gallery"></div>
+      </div>
+      <!-- Lado Derecho: Fotos -->
+      <div id="photos-content" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; align-content: start;">
+        <!-- Las fotos se cargarán aquí -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightbox-img" src="" alt="Zoomed view">
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ==================== CONFIG ====================
+// API base usa el mismo dominio donde está alojado el frontend
+
+const API_BASE = window.location.origin;
+
+// --- MODO OFFLINE (IndexedDB) ---
+const DB_NAME = 'ValetEyeDB';
+const STORE_NAME = 'pendingActions';
+let db;
+
+const initDB = () => new Promise((res, rej) => {
+  const req = indexedDB.open(DB_NAME, 1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+  req.onsuccess = e => { db = e.target.result; res(db); };
+  req.onerror = rej;
+});
+
+async function addPendingAction(url, method, body, label) {
+  const tx = db.transaction([STORE_NAME], 'readwrite');
+  tx.objectStore(STORE_NAME).add({ url, method, body, label, timestamp: Date.now() });
+  updateOfflineBanner();
+}
+
+async function getPendingActions() {
+  if (!db) return [];
+  return new Promise(res => {
+    const req = db.transaction([STORE_NAME], 'readonly').objectStore(STORE_NAME).getAll();
+    req.onsuccess = () => res(req.result);
+  });
+}
+
+async function updateOfflineBanner() {
+  const actions = await getPendingActions();
+  const banner = document.getElementById('offline-banner');
+  if (!banner) return;
+  if (!navigator.onLine || actions.length > 0) {
+    banner.style.display = 'flex';
+    banner.innerHTML = !navigator.onLine 
+      ? '📡 Sin conexión - Trabajando en modo local' 
+      : `🔄 Sincronizando: ${actions.length} pendientes...`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+let isSyncing = false;
+async function syncPendingActions() {
+  if (isSyncing || !navigator.onLine) { updateOfflineBanner(); return; }
+  const actions = await getPendingActions();
+  if (!actions.length) { updateOfflineBanner(); return; }
+  isSyncing = true;
+  for (const act of actions) {
+    try {
+      const r = await fetch(act.url, {
+        method: act.method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+        body: JSON.stringify(act.body)
+      });
+      if (r.ok) {
+        const tx = db.transaction([STORE_NAME], 'readwrite');
+        tx.objectStore(STORE_NAME).delete(act.id);
+      } else { break; }
+    } catch (e) { break; }
+  }
+  isSyncing = false;
+  updateOfflineBanner();
+  const remaining = await getPendingActions();
+  if (remaining.length === 0) {
+    toast('Datos sincronizados con éxito ✅', 'success');
+    if (currentTab === 'dashboard') loadDashboard();
+    if (currentTab === 'vehicles') loadVehicles();
+  }
+}
+
+window.addEventListener('online', syncPendingActions);
+window.addEventListener('offline', updateOfflineBanner);
+initDB().then(() => { 
+  try {
+    updateOfflineBanner(); 
+    syncPendingActions(); 
+    
+    // Bypass Login
+    document.getElementById('staff-name').textContent = currentStaff.name;
+    initPushNotifications();
+    checkShiftStatus();
+    showTab('dashboard');
+  } catch(err) {
+    console.error('Init Error:', err);
+    toast('Error en inicialización: ' + err.message, 'error');
+  }
+});
+
+async function requestCar(code) {
+  if (!confirm('¿Deseas pedir que preparen tu vehículo ahora?')) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/public/ticket/${code}/request`, { method: 'POST' });
+    if (!res.ok) throw new Error();
+    toast('Solicitud enviada. Estamos preparando tu auto 🚗', 'success');
+    loadPublicTicket(code);
+  } catch (e) {
+    toast('Error al solicitar auto', 'error');
+  }
+}
+
+async function payTicket(code) {
+  try {
+    const res = await fetch(`${API_BASE}/api/public/payments/create-session/${code}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error);
+    }
+  } catch (e) {
+    toast('Error al iniciar pago: ' + (e.message || 'Error de conexión'), 'error');
+  }
+}
+
+async function loadPublicTicket(code) {
+  // Función para recargar el ticket desde la vista pública
+  const res = await fetch(`${API_BASE}/api/vehicles/search?q=${code}`);
+  const data = await res.json();
+  if (data.length) showTicket(data[0]);
+}
+
+// Polling para el Dashboard
+setInterval(() => {
+  if (currentTab === 'dashboard' && document.visibilityState === 'visible') {
+    loadDashboard(true); // true para carga silenciosa sin toast
+  }
+}, 15000);
+
+// ==================== STATE ====================
+let settings = {
+  company_name: 'Eye Staff',
+  company_logo: 'https://cdn-icons-png.flaticon.com/512/2343/2343894.png',
+  company_address: '',
+  company_phone: '',
+  terms_conditions: 'No nos hacemos responsables por objetos de valor no declarados.',
+  currency: '$',
+  stripe_enabled: 'false'
+};
+let vehicles = [];
+let vehicleFilter = 'parked';
+let searchQuery = '';
+let currentTab = 'dashboard';
+let currentStaff = { id: 1, name: 'Director Valet', role: 'director' };
+let lang = localStorage.getItem('lang') || 'es';
+if (!localStorage.getItem('token')) localStorage.setItem('token', 'master-bypass-token');
+
+const i18n = {
+  es: {
+    dashboard: 'Dashboard', vehicles: 'Vehículos', checkin: 'Entrada', checkout: 'Entrega',
+    reservations: 'Reservas', staff: 'Personal', reports: 'Reportes', settings: 'Ajustes',
+    history: 'Historial', logout: 'Salir', welcome: 'Bienvenido', search: 'Buscar...',
+    parked: 'Estacionado', retrieved: 'Entregado', requested: 'Solicitado',
+    new_checkin: 'Nueva Entrada', plate: 'Placa', owner: 'Dueño', brand: 'Marca',
+    parking_spot: 'Lugar', key_hook: 'Gancho', damage: 'Daños', save: 'Guardar',
+    request_car: 'Pedir mi Auto', preparing: 'En preparación', digital_receipt: 'Comprobante de Resguardo'
+  },
+  en: {
+    dashboard: 'Dashboard', vehicles: 'Vehicles', checkin: 'Check-in', checkout: 'Check-out',
+    reservations: 'Reservations', staff: 'Staff', reports: 'Reports', settings: 'Settings',
+    history: 'History', logout: 'Logout', welcome: 'Welcome', search: 'Search...',
+    parked: 'Parked', retrieved: 'Retrieved', requested: 'Requested',
+    new_checkin: 'New Check-in', plate: 'Plate', owner: 'Owner', brand: 'Brand',
+    parking_spot: 'Spot', key_hook: 'Hook', damage: 'Damage', save: 'Save',
+    request_car: 'Request my Car', preparing: 'Preparing', digital_receipt: 'Digital Receipt'
+  }
+};
+
+function t(key) {
+  return i18n[lang][key] || key;
+}
+
+function toggleLang() {
+  lang = lang === 'es' ? 'en' : 'es';
+  localStorage.setItem('lang', lang);
+  location.reload(); // Recarga simple para reaplicar todo
+}
+
+let lastTicket = null;
+let pendingReservationId = null;
+let currentDamageMarks = [];
+
+function addDamageMark(e) {
+  const svg = document.getElementById('car-diagram');
+  const rect = svg.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 200;
+  const y = ((e.clientY - rect.top) / rect.height) * 400;
+  currentDamageMarks.push({ x, y });
+  renderDamageMarks();
+}
+
+function renderDamageMarks() {
+  const g = document.getElementById('damage-marks');
+  if (!g) return;
+  g.innerHTML = currentDamageMarks.map(m => `
+    <circle cx="${m.x}" cy="${m.y}" r="8" fill="var(--accent2)" stroke="white" stroke-width="2" />
+  `).join('');
+}
+
+function clearDamageMarks() {
+  currentDamageMarks = [];
+  renderDamageMarks();
+}
+
+// ==================== PIN LOGIN ====================
+let pinBuffer = '';
+
+function pinPress(d) {
+  console.log('PIN Press:', d);
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updatePinDisplay();
+  if (pinBuffer.length === 4) {
+    console.log('Trying login with:', pinBuffer);
+    setTimeout(tryLogin, 200);
+  }
+}
+function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDisplay(); }
+function pinClear() { pinBuffer = ''; updatePinDisplay(); }
+function updatePinDisplay() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('d'+i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+async function tryLogin() {
+  try {
+    const res = await fetch(`${API_BASE}/api/staff/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({pin: pinBuffer})
+    });
+    if (!res.ok) throw new Error('PIN inválido');
+    currentStaff = await res.json();
+    localStorage.setItem('token', currentStaff.token);
+    localStorage.setItem('role', currentStaff.role);
+    
+    // Control de visibilidad de pestañas
+    const isAdmin = currentStaff.role === 'supervisor' || currentStaff.role === 'director';
+    document.getElementById('tab-staff').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('tab-reports').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('tab-settings').style.display = isAdmin ? 'block' : 'none';
+    
+    document.getElementById('staff-name').textContent = currentStaff.name + ' (' + currentStaff.role + ')';
+    document.getElementById('txt-operator').textContent = t('welcome');
+    document.getElementById('btn-logout-txt').textContent = t('logout');
+    
+    // Traducir navegación
+    ['dashboard','checkin','checkout','vehicles','reservations','staff','reports','history','settings'].forEach(k => {
+      const el = document.getElementById('nav-'+k);
+      if(el) el.textContent = t(k);
+    });
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    
+    // Actualizar etiqueta de idioma
+    document.getElementById('lang-label').textContent = lang.toUpperCase();
+
+    initPushNotifications();
+    checkShiftStatus();
+    showTab('dashboard');
+    toast(t('welcome') + ', ' + currentStaff.name, 'success');
+  } catch(e) {
+    document.getElementById('pin-error').textContent = e.message || 'Error de conexión';
+    pinBuffer = '';
+    updatePinDisplay();
+    setTimeout(() => document.getElementById('pin-error').textContent = '', 2000);
+  }
+}
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') return;
+      const VAPID_PUBLIC_KEY = 'BG9WIYnt587j1ZjmFhywAqz6lHiiWO1Tzcio0u_NwxIS8kzFwhp9ckuCm_K95t6RUFC1W-l9cbElwdPjnnzYct0';
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: VAPID_PUBLIC_KEY
+      });
+    }
+    await fetch(`${API_BASE}/api/push/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(subscription)
+    });
+  } catch (e) { console.error('Push Error:', e); }
+}
+
+async function checkShiftStatus() {
+  try {
+    const res = await fetch(`${API_BASE}/api/shifts/status`, { 
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } 
+    });
+    if (!res.ok) return;
+    const shift = await res.json().catch(() => ({}));
+    const btn = document.getElementById('btn-clock');
+    if (!btn) return;
+    
+    if (shift.status === 'active') {
+      btn.textContent = '🏁 Finalizar Turno';
+      btn.className = 'btn btn-danger btn-sm';
+      btn.style.animation = 'pulse 2s infinite';
+    } else {
+      btn.textContent = '🕒 Iniciar Turno';
+      btn.className = 'btn btn-success btn-sm';
+      btn.style.animation = 'none';
+    }
+  } catch(e) { console.log('Shift check failed'); }
+}
+
+async function toggleShift() {
+  const resStatus = await fetch(`${API_BASE}/api/shifts/status`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+  const shift = await resStatus.json();
+  const endpoint = shift.status === 'active' ? '/api/shifts/clock-out' : '/api/shifts/clock-in';
+  
+  try {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    if (!res.ok) throw new Error();
+    toast(shift.status === 'active' ? 'Turno finalizado' : 'Turno iniciado', 'success');
+    checkShiftStatus();
+  } catch (e) {
+    toast('Error al marcar turno', 'error');
+  }
+}
+
+function logout() {
+  currentStaff = null; pinBuffer = ''; updatePinDisplay();
+  localStorage.removeItem('token');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+}
+
+// Demo login bypass (remove in production)
+window.demoLogin = async function() {
+  pinBuffer = '1234';
+  await tryLogin();
+};
+// Auto demo login for preview
+setTimeout(() => { if(!currentStaff) demoLogin(); }, 800);
+
+// ==================== NAVIGATION ====================
+function showTab(tab) {
+  console.log('Showing tab:', tab);
+  currentTab = tab;
+  
+  // Actualizar clases activas de forma segura
+  document.querySelectorAll('.nav-tab').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  const targetNav = document.getElementById('nav-' + tab)?.parentElement;
+  if (targetNav) targetNav.classList.add('active');
+
+  const main = document.getElementById('main-content');
+  if (!main) return;
+  
+  switch(tab) {
+    case 'dashboard': renderDashboard(main); break;
+    case 'vehicles': renderVehicles(main); break;
+    case 'checkin': renderCheckin(main); break;
+    case 'checkout': renderCheckout(main); break;
+    case 'reservations': renderReservations(main); break;
+    case 'staff': renderStaff(); break;
+    case 'reports': renderReports(); break;
+    case 'slots': renderSlots(); break;
+    case 'history': renderHistory(); break;
+    case 'settings': renderSettings(); break;
+    default: renderDashboard(main);
+  }
+}
+
+// ==================== VIEWS ====================
+function renderHistory() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📜 Historial Global</h2>
+    </div>
+    <div style="margin-bottom:20px;">
+      <input type="text" id="hist-search" placeholder="Buscar por placa, nombre o ticket..." 
+             style="width:100%; padding:15px; border-radius:12px; background:var(--surface1); border:1px solid var(--border); color:var(--text); font-size:1rem;"
+             oninput="loadHistory()">
+    </div>
+    <div class="grid" id="history-list-content" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+      <div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">Escribe para buscar o deja vacío para ver últimos...</div>
+    </div>
+  `;
+  loadHistory();
+}
+
+async function loadHistory() {
+  const q = document.getElementById('hist-search')?.value || '';
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/search?q=${encodeURIComponent(q)}`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    const el = document.getElementById('history-list-content');
+    
+    if (!data.length) {
+      el.innerHTML = '<div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">No se encontraron registros.</div>';
+      return;
+    }
+    
+    el.innerHTML = data.map(v => `
+      <div class="vehicle-card" onclick="showVehicleDetail(${v.id})">
+        <div class="vehicle-card-top">
+          <div class="plate-tag">${v.plate}</div>
+          <span class="status-badge status-${v.status}">${v.status === 'retrieved' ? '⚪ Entregado' : '🟢 Activo'}</span>
+        </div>
+        <div class="vehicle-name" style="margin-top:8px; font-weight:600;">${v.owner_name}</div>
+        <div class="vehicle-meta">${fmtDate(v.check_in_at)} · ${v.brand||'Sin marca'}</div>
+        <div class="vehicle-ticket" style="margin-top:10px; font-size:0.75rem; color:var(--muted)">Ticket: ${v.ticket_code}</div>
+      </div>
+    `).join('');
+  } catch (e) {}
+}
+
+
+
+async function bulkCreateSlots() {
+  const zone = document.getElementById('set-zone').value.toUpperCase();
+  const from = parseInt(document.getElementById('set-from').value);
+  const to = parseInt(document.getElementById('set-to').value);
+
+  if (!zone || isNaN(from) || isNaN(to)) {
+    toast('Completa todos los campos', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/slots/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify({ zone, from, to })
+    });
+    if (!res.ok) throw new Error();
+    toast('Espacios creados con éxito', 'success');
+    document.getElementById('set-zone').value = '';
+  } catch {
+    toast('Error al crear espacios', 'error');
+  }
+}
+function renderSettings() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">⚙️ Ajustes del Sistema</h2>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar Cambios</button>
+    </div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;">
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🏢 Identidad Corporativa</h3>
+        <div class="field">
+          <label>Nombre de la Empresa</label>
+          <input type="text" id="set-name" value="${settings.company_name}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>URL del Logo (PNG/JPG)</label>
+          <input type="text" id="set-logo" value="${settings.company_logo}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>Dirección Física</label>
+          <input type="text" id="set-address" value="${settings.company_address}" class="search-box" style="width:100%">
+        </div>
+        <div class="field">
+          <label>Teléfono de Contacto</label>
+          <input type="text" id="set-phone" value="${settings.company_phone}" class="search-box" style="width:100%">
+        </div>
+      </div>
+
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">🌍 Localización y Pagos</h3>
+        <div class="field">
+          <label>Moneda del Sistema</label>
+          <select id="set-currency" class="search-box" style="width:100%">
+            <option value="$" ${settings.currency==='$'?'selected':''}>Dólar Americano ($)</option>
+            <option value="Bs" ${settings.currency==='Bs'?'selected':''}>Bolívar (Bs)</option>
+            <option value="€" ${settings.currency==='€'?'selected':''}>Euro (€)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Pagos Digitales (Stripe)</label>
+          <select id="set-stripe" class="search-box" style="width:100%">
+            <option value="false" ${settings.stripe_enabled==='false'?'selected':''}>Desactivado (Venezuela / Otros)</option>
+            <option value="true" ${settings.stripe_enabled==='true'?'selected':''}>Activado (USA / Miami)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stat-card" style="text-align:left; background:var(--surface1); height:auto; grid-column: 1 / -1;">
+        <h3 style="margin-top:0; font-size:1.1rem; color:var(--text)">⚖️ Términos y Condiciones</h3>
+        <textarea id="set-terms" style="width:100%; height:100px; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:10px;">${settings.terms_conditions}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+async function saveSettings() {
+  const body = {
+    company_name: document.getElementById('set-name').value,
+    company_logo: document.getElementById('set-logo').value,
+    company_address: document.getElementById('set-address').value,
+    company_phone: document.getElementById('set-phone').value,
+    currency: document.getElementById('set-currency').value,
+    stripe_enabled: document.getElementById('set-stripe').value,
+    terms_conditions: document.getElementById('set-terms').value
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/api/settings/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error();
+    settings = {...settings, ...body};
+    toast('Configuración actualizada ✅', 'success');
+  } catch (e) {
+    toast('Error al guardar configuración', 'error');
+  }
+}
+
+function renderSlots() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">🗺️ Mapa de Estacionamiento</h2>
+      <div class="header-right">
+        <div style="display:flex; gap:15px; align-items:center; font-size:0.85rem">
+          <div style="display:flex; gap:5px; align-items:center;"><span style="display:inline-block; width:12px; height:12px; background:rgba(16, 185, 129, 0.2); border:1px solid var(--success); border-radius:3px;"></span> Libre</div>
+          <div style="display:flex; gap:5px; align-items:center;"><span style="display:inline-block; width:12px; height:12px; background:rgba(239, 68, 68, 0.2); border:1px solid var(--accent2); border-radius:3px;"></span> Ocupado</div>
+        </div>
+      </div>
+    </div>
+    <div id="slots-container" style="padding-bottom:100px;">
+      <div style="text-align:center; padding:40px; color:var(--muted)">Cargando mapa...</div>
+    </div>
+  `;
+  loadSlots();
+}
+
+async function loadSlots() {
+  try {
+    const res = await fetch(`${API_BASE}/api/slots`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const slots = await res.json();
+    const container = document.getElementById('slots-container');
+    
+    const zones = {};
+    slots.forEach(s => {
+      if (!zones[s.zone]) zones[s.zone] = [];
+      zones[s.zone].push(s);
+    });
+
+    container.innerHTML = Object.keys(zones).map(z => `
+      <div style="margin-top:30px; font-weight:800; color:var(--muted); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:15px; display:flex; justify-content:space-between;">
+        <span>ZONA ${z}</span>
+        <span style="font-size:0.75rem; font-weight:400">${zones[z].filter(x=>!x.plate).length} libres de ${zones[z].length}</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:12px;">
+        ${zones[z].map(s => `
+          <div class="slot-item" 
+               onclick="${s.vehicle_id ? `showVehicleDetail(${s.vehicle_id})` : ''}"
+               style="background: ${s.plate ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)'}; 
+                      border: 1px solid ${s.plate ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}; 
+                      border-radius: 12px; padding: 12px 5px; text-align: center; cursor: pointer; transition: all 0.2s; position:relative; overflow:hidden;">
+            ${s.plate ? `<div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--accent2)"></div>` : ''}
+            <div style="font-size:0.65rem; font-weight:600; color:var(--muted); opacity:0.7;">${s.zone}-${s.number}</div>
+            <div style="font-weight:800; font-size:0.85rem; margin-top:4px; color:${s.plate ? 'var(--accent2)' : 'var(--success)'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${s.plate ? s.plate : 'LIBRE'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  } catch (e) {
+    document.getElementById('slots-container').innerHTML = '<div style="color:var(--accent2); text-align:center;">Error al cargar el mapa.</div>';
+  }
+}
+function renderReports() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📊 Analítica Estratégica</h2>
+      <button class="btn btn-secondary" onclick="exportToCSV()">📥 Exportar CSV</button>
+    </div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px;">
+      <div class="stat-card" style="padding:24px;">
+        <div class="stat-label" style="margin-bottom:16px;">📈 Tendencia de Ingresos (10d)</div>
+        <div style="height:220px;"><canvas id="chart-revenue"></canvas></div>
+      </div>
+      <div class="stat-card" style="padding:24px;">
+        <div class="stat-label" style="margin-bottom:16px;">🕒 Carga por Hora (7d)</div>
+        <div style="height:220px;"><canvas id="chart-peak"></canvas></div>
+      </div>
+    </div>
+
+    <div class="stat-card" style="padding:24px; margin-bottom: 24px;">
+      <div class="stat-label" style="margin-bottom:16px;">👥 Servicios por Empleado (7d)</div>
+      <div style="height:250px;"><canvas id="chart-staff"></canvas></div>
+    </div>
+
+    <div class="stat-card" style="padding:24px;">
+      <div class="stat-label" style="margin-bottom:16px;">📜 Detalle de Ingresos Diarios</div>
+      <div id="reports-table-container" style="overflow-x:auto">Cargando datos...</div>
+    </div>
+
+    <div class="stat-card" style="padding:24px; margin-top:24px;">
+      <div class="stat-label" style="margin-bottom:16px;">🕒 Control de Nómina (30d)</div>
+      <div id="shifts-report-container" style="overflow-x:auto">Cargando horas...</div>
+    </div>
+  `;
+
+  loadAdvancedAnalytics();
+}
+
+async function loadAdvancedAnalytics() {
+  try {
+    const fin = await fetch(`${API_BASE}/api/reports/financial`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+    const aly = await fetch(`${API_BASE}/api/reports/analytics`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+
+    initCharts(fin, aly);
+
+    document.getElementById('reports-table-container').innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted); text-align:left;">
+            <th style="padding:12px;">Fecha</th>
+            <th style="padding:12px;">Servicios</th>
+            <th style="padding:12px; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${fin.daily.map(d => `
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:12px;">${d.date}</td>
+              <td style="padding:12px;">${d.services}</td>
+              <td style="padding:12px; text-align:right; font-weight:700; color:var(--green)">$${d.total.toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+    } catch(e) {
+    toast('Error al cargar analítica', 'error');
+  }
+
+  try {
+    const shifts = await fetch(`${API_BASE}/api/reports/shifts`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>r.json());
+    document.getElementById('shifts-report-container').innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border); color:var(--muted); text-align:left;">
+            <th style="padding:12px;">Empleado</th>
+            <th style="padding:12px;">Turnos</th>
+            <th style="padding:12px; text-align:right;">Total Horas</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${shifts.map(s => `
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:12px; font-weight:600;">${s.name}</td>
+              <td style="padding:12px;">${s.total_shifts}</td>
+              <td style="padding:12px; text-align:right; font-weight:700; color:var(--accent)">${(s.total_min/60).toFixed(1)}h</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {}
+}
+
+function initCharts(fin, aly) {
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#ffffff10' }, ticks: { color: '#6b6b88', font: { size: 10 } } },
+      x: { grid: { display: false }, ticks: { color: '#6b6b88', font: { size: 10 } } }
+    }
+  };
+
+  new Chart(document.getElementById('chart-revenue'), {
+    type: 'line',
+    data: {
+      labels: fin.daily.slice(0,10).reverse().map(d => d.date.split('-').slice(1).join('/')),
+      datasets: [{
+        label: 'Ingresos',
+        data: fin.daily.slice(0,10).reverse().map(d => d.total),
+        borderColor: '#6c63ff',
+        backgroundColor: '#6c63ff20',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#6c63ff'
+      }]
+    },
+    options: commonOptions
+  });
+
+  const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0'));
+  const hourData = hours.map(h => {
+    const found = aly.peakHours.find(x => x.hour === h);
+    return found ? found.count : 0;
+  });
+
+  new Chart(document.getElementById('chart-peak'), {
+    type: 'bar',
+    data: {
+      labels: hours.map(h => h+':00'),
+      datasets: [{
+        data: hourData,
+        backgroundColor: '#f5c84280',
+        borderColor: '#f5c842',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: commonOptions
+  });
+
+  new Chart(document.getElementById('chart-staff'), {
+    type: 'bar',
+    data: {
+      labels: aly.staffPerformance.map(s => s.name),
+      datasets: [{
+        data: aly.staffPerformance.map(s => s.actions),
+        backgroundColor: aly.staffPerformance.map((_, i) => `hsl(${i * 45 + 200}, 70%, 60%, 0.6)`),
+        borderRadius: 4
+      }]
+    },
+    options: {
+      ...commonOptions,
+      indexAxis: 'y'
+    }
+  });
+}
+function renderStaff() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">👥 Gestión de Personal</h2>
+      <button class="btn btn-primary" onclick="openModal('modal-add-staff')">+ Nuevo Miembro</button>
+    </div>
+    <div class="grid" id="staff-list-content" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+      <div style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">Cargando personal...</div>
+    </div>
+  `;
+  loadStaff();
+}
+
+async function loadStaff() {
+  try {
+    const res = await fetch(`${API_BASE}/api/staff`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    const el = document.getElementById('staff-list-content');
+    if (!Array.isArray(data)) throw new Error();
+    
+    el.innerHTML = data.map(s => `
+      <div class="vehicle-card" style="cursor:default; border-left:4px solid var(--accent1);">
+        <div class="vehicle-card-top">
+          <div style="font-weight:600;font-size:1.1rem">${s.name}</div>
+          <span class="status-badge" style="background:var(--surface2); color:var(--text);">${s.role.toUpperCase()}</span>
+        </div>
+        <div class="vehicle-meta" style="margin-top:8px; font-size:0.85rem">Registrado: ${fmtDate(s.created_at)}</div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('staff-list-content').innerHTML = '<div style="color:var(--accent2); grid-column:1/-1; text-align:center;">No tienes permisos o hubo un error.</div>';
+  }
+}
+
+async function submitAddStaff() {
+  const name = document.getElementById('ns-name').value;
+  const pin = document.getElementById('ns-pin').value;
+  const role = document.getElementById('ns-role').value;
+  
+  if (!name || pin.length < 4) {
+    toast('Nombre y PIN de 4 dígitos requeridos', 'error');
+    return;
+  }
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/staff`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify({ name, pin, role })
+    });
+    if (!res.ok) throw new Error();
+    
+    toast('Personal registrado correctamente', 'success');
+    closeModal('modal-add-staff');
+    renderStaff();
+  } catch {
+    toast('Error al registrar personal', 'error');
+  }
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard(el) {
+  if (!el) el = document.getElementById('main-content');
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📊 Resumen de Hoy</h2>
+    </div>
+    
+    <div id="capacity-warning" style="display:none; grid-column:1/-1; background:rgba(239, 68, 68, 0.1); border:1px solid var(--accent2); padding:15px; border-radius:12px; margin-bottom:20px; font-weight:700; color:var(--accent2); text-align:center;">
+      ⚠️ CAPACIDAD CRÍTICA: <span id="cap-val">0</span>% OCUPADO
+    </div>
+
+    <div class="grid">
+      <div class="stat-card">
+        <div class="stat-label">EN PARKING</div>
+        <div class="stat-value" id="stat-parked">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">OCUPACIÓN</div>
+        <div class="stat-value" id="stat-occupancy">0%</div>
+        <div style="width:100%; height:6px; background:var(--surface2); margin-top:10px; border-radius:3px; overflow:hidden;">
+           <div id="stat-occupancy-bar" style="width:0%; height:100%; background:var(--success); transition:all 0.5s;"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">ENTRADAS</div>
+        <div class="stat-value" id="stat-checkins_today">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">INGRESOS $</div>
+        <div class="stat-value" id="stat-revenue_today">$0.00</div>
+      </div>
+    </div>
+    
+    <div class="view-header" style="margin-top:30px">
+      <h3 class="view-title">🚗 Últimos Movimientos</h3>
+    </div>
+    <div class="grid" id="dashboard-vehicles"></div>
+  `;
+  loadDashboard();
+}
+
+async function loadDashboard() {
+  const el = document.getElementById('dashboard-vehicles');
+  try {
+    const [resStats, resVehs] = await Promise.all([
+      fetch(`${API_BASE}/api/dashboard/today`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }),
+      fetch(`${API_BASE}/api/vehicles/active`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+    ]);
+    
+    const stats = await resStats.json().catch(() => ({}));
+    const vehs = await resVehs.json().catch(() => ({ vehicles: [] }));
+    
+    console.log('Dashboard Data:', { stats, vehs });
+    
+    document.getElementById('stat-parked').textContent = stats.total || 0;
+    document.getElementById('stat-checkins_today').textContent = stats.checkins || 0;
+    document.getElementById('stat-revenue_today').textContent = '$' + (stats.earnings || 0);
+    
+    const pct = stats.slots_total > 0 ? Math.round((stats.slots_occupied / stats.slots_total) * 100) : 0;
+    document.getElementById('stat-occupancy').textContent = pct + '%';
+    document.getElementById('stat-occupancy-bar').style.width = pct + '%';
+    
+    vehicles = vehs.vehicles || [];
+    renderVehicleCards(el, vehicles.slice(0,6));
+  } catch(e) {
+    console.error('Dashboard Error:', e);
+    el.innerHTML = `<div style="color:var(--accent2); padding:20px; text-align:center;">Error al cargar datos. Usando modo offline.<br><small>${e.message}</small></div>`;
+    vehicles = mockVehicles();
+    renderVehicleCards(el, vehicles.slice(0,6));
+  }
+}
+
+// ==================== VEHICLES ====================
+async function renderVehicles(el) {
+  el.innerHTML = `
+    <div class="list-header">
+      <div class="list-title">Vehículos</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input class="search-box" id="search-input" placeholder="Buscar placa, nombre, ticket…" oninput="onSearch(this.value)"/>
+      </div>
+    </div>
+    <div class="filter-tabs" style="margin-bottom:16px">
+      <button class="filter-tab ${vehicleFilter==='parked'?'active':''}" onclick="setFilter('parked')">Estacionados</button>
+      <button class="filter-tab ${vehicleFilter==='pending_retrieval'?'active':''}" onclick="setFilter('pending_retrieval')">Por Entregar</button>
+      <button class="filter-tab ${vehicleFilter==='retrieved'?'active':''}" onclick="setFilter('retrieved')">Entregados</button>
+      <button class="filter-tab ${vehicleFilter===''?'active':''}" onclick="setFilter('')">Todos</button>
+    </div>
+    <div class="vehicle-grid" id="vehicles-grid"></div>`;
+  await loadVehicles();
+}
+
+async function loadVehicles() {
+  const grid = document.getElementById('vehicles-grid');
+  if (!grid) return;
+  try {
+    let url = `${API_BASE}/api/vehicles?`;
+    if (vehicleFilter) url += `status=${vehicleFilter}&`;
+    if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}`;
+    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+    if (!res.ok) throw new Error('Error al cargar');
+    const data = await res.json();
+    vehicles = Array.isArray(data) ? data : mockVehicles();
+  } catch {
+    vehicles = mockVehicles().filter(v => !vehicleFilter || v.status === vehicleFilter);
+  }
+  renderVehicleCards(grid, vehicles);
+}
+
+function renderVehicleCards(el, list) {
+  if (!list.length) {
+    el.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🚗</div><div class="empty-text">Sin vehículos</div><div class="empty-sub">No hay registros que mostrar</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(v => {
+    const isRequested = v.requested_at && v.status === 'parked';
+    return `
+    <div class="vehicle-card ${isRequested ? 'requested-pulse' : ''}" onclick="showVehicleDetail(${v.id})">
+      <div class="vehicle-card-top">
+        <div class="plate-tag">${v.plate}</div>
+        <span class="status-badge status-${v.status}">${{parked:'🟢 Estacionado',retrieved:'⚪ Entregado',pending_retrieval:'🟡 Por Entregar'}[v.status]||v.status}</span>
+      </div>
+      <div class="vehicle-name">${v.brand||''} ${v.model||''} ${v.color ? '· '+v.color : ''}</div>
+      <div class="vehicle-meta">${v.owner_name} ${v.owner_phone?'· '+v.owner_phone:''}</div>
+      <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
+        <div class="vehicle-ticket">${v.ticket_code}</div>
+        <div style="display:flex; gap:6px;">
+          ${isRequested ? `<span style="background:var(--accent2); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700; animation:pulse 1s infinite;">🔔 SOLICITADO</span>` : ''}
+          ${v.key_hook ? `<span style="background:var(--accent2); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">🔑 ${v.key_hook}</span>` : ''}
+          ${v.parking_spot ? `<span style="background:var(--accent1); color:white; font-size:0.65rem; padding:3px 8px; border-radius:6px; font-weight:700;">📍 ${v.parking_spot}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setFilter(f) {
+  vehicleFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  loadVehicles();
+}
+
+let searchTimer;
+function onSearch(v) {
+  searchQuery = v;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadVehicles, 300);
+}
+
+// ==================== VEHICLE DETAIL ====================
+async function showVehicleDetail(id) {
+  let v = vehicles.find(x => x.id === id);
+  if (!v) {
+    try { 
+      const res = await fetch(`${API_BASE}/api/vehicles/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+      if (res.ok) v = await res.json(); 
+    } catch {}
+  }
+  if (!v) return;
+  const el = document.getElementById('vehicle-detail-content');
+  el.innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Vehículo</div>
+      ${dRow('Placa', `<span class="plate-tag">${v.plate}</span>`)}
+      ${dRow('Marca / Modelo', `${v.brand||'—'} ${v.model||''}`)}
+      ${dRow('Color', v.color||'—')}
+      ${dRow('Lugar 🗺️', `
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent1); font-weight:700">${v.parking_spot||'—'}</span>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.65rem; border-radius:6px;" onclick="editField(${v.id}, 'parking_spot', 'Nuevo Lugar (Ej: A-12)', '${v.parking_spot||''}')">✏️</button>
+        </div>
+      `)}
+      ${dRow('Gancho Llave 🔑', `
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-weight:700">${v.key_hook||'—'}</span>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.65rem; border-radius:6px;" onclick="editField(${v.id}, 'key_hook', 'Número de Gancho', '${v.key_hook||''}')">✏️</button>
+        </div>
+      `)}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Propietario</div>
+      ${dRow('Nombre', v.owner_name)}
+      ${dRow('Teléfono', v.owner_phone||'—')}
+      ${dRow('ID Ref.', v.owner_id_ref||'—')}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Registro</div>
+      ${dRow('Ticket', `<span style="font-family:var(--font-mono);color:var(--accent)">${v.ticket_code}</span>`)}
+      ${dRow('Estado', `<span class="status-badge status-${v.status}">${v.status}</span>`)}
+      ${dRow('Entrada', fmtDate(v.check_in_at))}
+      ${dRow('Salida', v.check_out_at ? fmtDate(v.check_out_at) : '—')}
+      ${dRow('Valet Entrada', v.valet_in||'—')}
+      ${dRow('Cobro', v.fee_amount ? '$'+v.fee_amount : '—')}
+      ${dRow('Pagado', v.fee_paid ? '✅ Sí' : '❌ No')}
+    </div>
+    ${v.damage_notes ? `<div class="detail-section"><div class="detail-section-title">Notas de daños</div><p style="font-size:0.875rem;color:var(--muted)">${v.damage_notes}</p></div>` : ''}
+    
+    ${v.damage_json ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Mapa Visual de Daños</div>
+      <div style="width:100%; max-width:180px; margin:0 auto; background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border);">
+        <svg viewBox="0 0 200 400" style="width:100%; height:auto;">
+          <path d="M50,40 Q50,20 100,20 Q150,20 150,40 L150,360 Q150,380 100,380 Q50,380 50,360 Z" fill="none" stroke="var(--muted)" stroke-width="2"/>
+          <path d="M60,100 L140,100 Q130,70 100,70 Q70,70 60,100" fill="none" stroke="var(--muted)" stroke-width="1"/>
+          <path d="M60,300 L140,300 Q130,330 100,330 Q70,330 60,300" fill="none" stroke="var(--muted)" stroke-width="1"/>
+          ${JSON.parse(v.damage_json).map(m => `<circle cx="${m.x}" cy="${m.y}" r="7" fill="var(--accent2)" stroke="white" stroke-width="2" />`).join('')}
+        </svg>
+      </div>
+    </div>` : ''}
+    <div class="detail-actions">
+      <button class="btn btn-secondary btn-sm" onclick="showTicket(${JSON.stringify(v).replace(/"/g,'&quot;')})">🎫 Ver Resguardo</button>
+      <button class="btn btn-primary btn-sm" onclick="openPhotos(${v.id})">📸 Ver Fotos</button>
+      ${v.status==='parked' ? `<button class="btn btn-warning btn-sm" onclick="markPendingPickup(${v.id})">📞 Aviso Recolección</button>` : ''}
+      ${v.status!=='retrieved' ? `<button class="btn btn-success btn-sm" onclick="doCheckout(${v.id})">📤 Entregar</button>` : ''}
+    </div>`;
+    try {
+      const resHist = await fetch(`${API_BASE}/api/vehicles/${id}/history`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+      });
+      const history = await resHist.json();
+      const icons = { checkin: '🚗', parked: '🅿️', requested: '🔔', delivered: '✅', move: '📍' };
+      el.innerHTML += `
+        <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border);">
+          <h3 style="font-size:1rem; color:var(--text); margin-bottom:16px;">🕒 ${t('history')}</h3>
+          <div class="timeline">
+            ${history.map(h => `
+              <div class="timeline-item">
+                <div class="timeline-icon">${icons[h.event_type] || '•'}</div>
+                <div class="timeline-content">
+                  <div class="timeline-action">${h.details || h.event_type.toUpperCase()}</div>
+                  <div class="timeline-meta">${h.user_name || 'Sistema'} · ${fmtDate(h.created_at)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+    } catch (e) {}
+    openModal('modal-vehicle-detail');
+}
+
+async function openPhotos(id) {
+  const v = vehicles.find(x => x.id === id);
+  if (!v) return;
+  
+  openModal('modal-photos');
+  const el = document.getElementById('photos-content');
+  const diag = document.getElementById('diagram-container-gallery');
+  
+  el.innerHTML = '<div style="color:var(--muted); grid-column: 1/-1; text-align:center; padding:40px;">Cargando fotos de evidencia...</div>';
+  
+  // Renderizar Diagrama
+  diag.innerHTML = `
+    <svg viewBox="0 0 200 400" style="width:100%; height:auto;">
+      <rect x="50" y="40" width="100" height="320" rx="40" fill="none" stroke="var(--muted)" stroke-width="2" opacity="0.3"/>
+      <rect x="65" y="100" width="70" height="120" rx="5" fill="none" stroke="var(--muted)" stroke-width="2" opacity="0.3"/>
+      <g id="gallery-marks">
+        ${(v.damage_json ? JSON.parse(v.damage_json) : []).map(m => `
+          <circle cx="${m.x}" cy="${m.y}" r="8" fill="var(--accent2)" stroke="white" stroke-width="2" />
+        `).join('')}
+      </g>
+    </svg>
+    <div style="margin-top:10px; font-size:0.7rem; color:var(--muted); text-align:center;">
+      ${(v.damage_json ? JSON.parse(v.damage_json).length : 0)} puntos críticos identificados
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/${id}/photos`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    
+    if (!data.photos || data.photos.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted); grid-column: 1/-1; text-align:center; padding:40px;">No hay fotos registradas para este vehículo.</div>';
+      return;
+    }
+    
+    el.innerHTML = data.photos.map(p => `
+      <div class="photo-card" style="background:var(--surface2); border-radius:12px; overflow:hidden; border:1px solid var(--border); transition:all 0.2s;">
+        <img src="${API_BASE}/api/photos/${p.url}" 
+             style="width:100%; aspect-ratio:4/3; object-fit:cover; cursor:zoom-in;" 
+             onclick="openLightbox('${API_BASE}/api/photos/${p.url}')">
+        <div style="padding:10px; font-size:0.7rem; color:var(--muted); display:flex; justify-content:space-between;">
+          <span>📸 Evidencia</span>
+          <span>${fmtDate(v.check_in_at)}</span>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    el.innerHTML = '<div style="color:var(--accent2); grid-column: 1/-1; text-align:center;">Error al cargar la galería.</div>';
+  }
+}
+
+function openLightbox(url) {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  img.src = url;
+  lb.classList.add('open');
+}
+function dRow(label, value) {
+  return `<div class="detail-row"><span class="label">${label}</span><span class="value">${value}</span></div>`;
+}
+
+async function markPendingPickup(id) {
+  await apiPatch(id, {status:'pending_retrieval', action:'PENDING_PICKUP', actor: currentStaff?.name});
+  toast('Marcado como pendiente de recolección', 'info');
+  closeModal('modal-vehicle-detail');
+  if (currentTab === 'vehicles') loadVehicles();
+}
+
+async function editField(id, field, label, current) {
+  const val = prompt(`${label}:`, current);
+  if (val === null) return;
+  const data = {};
+  data[field] = val;
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error();
+    toast('Actualizado correctamente', 'success');
+    showVehicleDetail(id);
+    if (currentTab === 'vehicles') loadVehicles();
+    if (currentTab === 'dashboard') loadDashboard();
+    if (currentTab === 'slots') loadSlots();
+  } catch (e) {
+    toast('Error al actualizar', 'error');
+  }
+}
+
+async function doCheckout(id) {
+  const fee = prompt('¿Monto a cobrar? (0 si ya fue prepagado)', '0');
+  if (fee === null) return;
+  const method = prompt('Método de pago: efectivo / tarjeta / app', 'efectivo');
+  const data = {
+    status: 'retrieved',
+    check_out_at: new Date().toISOString(),
+    valet_out: currentStaff?.name,
+    fee_amount: parseFloat(fee)||0,
+    fee_paid: 1,
+    payment_method: method,
+    action: 'CHECK_OUT',
+    actor: currentStaff?.name
+  };
+
+  try {
+    const r = await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+      body: JSON.stringify(data)
+    });
+    if(!r.ok) throw new Error();
+    toast('Vehículo entregado exitosamente ✅', 'success');
+  } catch (e) {
+    await addPendingAction(`${API_BASE}/api/vehicles/${id}`, 'PATCH', data, `Salida ID ${id}`);
+    toast('Sin conexión. Salida guardada localmente 📁', 'info');
+  }
+  
+  closeModal('modal-vehicle-detail');
+  if (currentTab === 'vehicles') loadVehicles();
+  if (currentTab === 'dashboard') showTab('dashboard');
+}
+
+async function apiPatch(id, data) {
+  try {
+    await fetch(`${API_BASE}/api/vehicles/${id}`, {
+      method: 'PATCH',
+      headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+
+// ==================== CHECK-IN ====================
+function renderCheckin(el) {
+  el.innerHTML = `
+    <div style="max-width:640px;margin:0 auto">
+      <div class="list-title" style="margin-bottom:24px">📥 Registrar Ingreso</div>
+      <div class="form-grid">
+        <div class="field"><label>Placa *</label><input id="ci-plate" placeholder="ABC-1234" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="field"><label>Gancho Llave 🔑</label><input id="ci-hook" placeholder="Gancho #"/></div>
+        <div class="field"><label>Lugar Estacionamiento</label><input id="ci-spot" placeholder="A-12"/></div>
+        <div class="field"><label>Marca</label><input id="ci-brand" placeholder="Toyota"/></div>
+        <div class="field"><label>Modelo</label><input id="ci-model" placeholder="Corolla"/></div>
+        <div class="field"><label>Color</label><input id="ci-color" placeholder="Rojo"/></div>
+        <div class="field full"><label>Propietario *</label><input id="ci-owner" placeholder="Nombre completo"/></div>
+        <div class="field"><label>Teléfono</label><input id="ci-phone" type="tel" placeholder="+1 555 0000"/></div>
+        <div class="field"><label>Tarifa</label><input id="ci-fee" type="number" placeholder="0.00" step="0.01"/></div>
+        
+        <div class="field full">
+          <label>Mapa de Daños (Toca el auto para marcar)</label>
+          <div style="position:relative; width:100%; max-width:280px; margin:10px auto; background:var(--surface2); border-radius:16px; padding:20px; border:1px solid var(--border);">
+            <svg viewBox="0 0 200 400" id="car-diagram" style="width:100%; height:auto; cursor:crosshair; display:block;" onclick="addDamageMark(event)">
+              <path d="M50,40 Q50,20 100,20 Q150,20 150,40 L150,360 Q150,380 100,380 Q50,380 50,360 Z" fill="none" stroke="var(--muted)" stroke-width="2"/>
+              <path d="M60,100 L140,100 Q130,70 100,70 Q70,70 60,100" fill="none" stroke="var(--muted)" stroke-width="1"/>
+              <path d="M60,300 L140,300 Q130,330 100,330 Q70,330 60,300" fill="none" stroke="var(--muted)" stroke-width="1"/>
+              <g id="damage-marks"></g>
+            </svg>
+            <button class="btn btn-secondary btn-sm" style="position:absolute; top:10px; right:10px; padding:4px 8px; font-size:0.7rem;" onclick="clearDamageMarks()">Limpiar</button>
+          </div>
+        </div>
+        <div class="field full"><label>Notas de Daños (Texto)</label><textarea id="ci-damage" placeholder="Rayón en puerta trasera, etc..." style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:8px; height:60px"></textarea></div>
+
+        <div class="field full">
+          <label>Auditoría Fotográfica</label>
+          <div class="photo-grid">
+            ${['Frente','Trasera','Lateral Izq.','Lateral Der.'].map((side,i) => `
+              <div class="photo-slot" onclick="triggerPhoto(${i})" id="photo-slot-${i}">
+                <input type="file" accept="image/*" capture="environment" id="photo-input-${i}" onchange="loadPhoto(${i},this)"/>
+                <span style="font-size:1.5rem">📷</span>
+                <span class="photo-label">${side}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="field full"><label>Notas de daños preexistentes</label><textarea id="ci-damage" placeholder="Describa cualquier daño visible al momento del ingreso…"></textarea></div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="submitCheckin()" style="flex:1">✅ Registrar Ingreso</button>
+        <button class="btn btn-secondary" onclick="showTab('dashboard')">Cancelar</button>
+      </div>
+    </div>`;
+  photoData = {};
+}
+
+let photoData = {};
+function triggerPhoto(i) { document.getElementById('photo-input-'+i).click(); }
+function loadPhoto(i, inp) {
+  const file = inp.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoData[i] = e.target.result;
+    const slot = document.getElementById('photo-slot-'+i);
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+    img.src = e.target.result;
+    slot.querySelectorAll('span').forEach(s => s.style.display='none');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitCheckin() {
+  const plate = document.getElementById('ci-plate').value.trim();
+  const owner_name = document.getElementById('ci-owner').value.trim();
+  if (!plate || !owner_name) { toast('Placa y propietario son requeridos', 'error'); return; }
+    const body = {
+      plate, owner_name,
+      brand: document.getElementById('ci-brand').value,
+      model: document.getElementById('ci-model').value,
+      color: document.getElementById('ci-color').value,
+      owner_phone: document.getElementById('ci-phone').value,
+      key_hook: document.getElementById('ci-hook').value,
+      parking_spot: document.getElementById('ci-spot').value,
+      damage_notes: document.getElementById('ci-damage').value,
+      damage_json: JSON.stringify(currentDamageMarks),
+      fee_amount: parseFloat(document.getElementById('ci-fee').value)||0,
+      valet_in: currentStaff?.name || 'Sistema',
+      photo_front: photoData[0]||null,
+      photo_rear: photoData[1]||null,
+      photo_left: photoData[2]||null,
+      photo_right: photoData[3]||null,
+    };
+  try {
+    const res = await fetch(`${API_BASE}/api/events/checkin`, {
+      method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')}, body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error();
+    
+    // Subir fotos si existen
+    for (const [i, img] of Object.entries(photoData)) {
+      await fetch(`${API_BASE}/api/photos/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+        body: JSON.stringify({ plate, image: img, type: ['front','rear','left','right'][i] })
+      });
+    }
+    toast('Ingreso registrado exitosamente ✅', 'success');
+  } catch (e) {
+    // Modo Offline / Error
+    await addPendingAction(`${API_BASE}/api/events/checkin`, 'POST', body, `Check-in ${plate}`);
+    toast('Sin conexión. Registro guardado localmente 📁', 'info');
+  }
+
+  // Marcar reserva como llegada si aplica (incluso si offline, ya lo manejaremos)
+  if (pendingReservationId) {
+      try {
+        await fetch(`${API_BASE}/api/reservations/${pendingReservationId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+          body: JSON.stringify({ status: 'arrived' })
+        });
+        pendingReservationId = null;
+      } catch (e) {}
+    }
+
+    const ticket = await res.json();
+    showTicket(ticket);
+    loadDashboard();
+  } catch {
+    // Demo mode: generate local ticket
+    const ticket_code = 'V' + Date.now().toString(36).toUpperCase();
+    const barcode = Math.random().toString(36).substring(2,10).toUpperCase();
+    toast('Vehículo registrado (demo): ' + ticket_code, 'success');
+    showTicket({...body, ticket_code, barcode, check_in_at: new Date().toISOString()});
+  }
+}
+
+// ==================== CHECK-OUT ====================
+function renderCheckout(el) {
+  el.innerHTML = `
+    <div style="max-width:560px;margin:0 auto">
+      <div class="list-title" style="margin-bottom:24px">📤 Entrega de Vehículo</div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Buscar por Ticket o Placa</label>
+        <div style="display:flex;gap:10px">
+          <input id="co-search" list="active-plates" class="search-box" style="flex:1" placeholder="Ej: ABC-1234" oninput="if(this.value.length > 2) updateActiveDatalist(this.value)"/>
+          <datalist id="active-plates"></datalist>
+          <button class="btn btn-primary" onclick="doLookup()">🔍 Buscar</button>
+        </div>
+      </div>
+      <div id="co-result"></div>
+    </div>`;
+}
+
+async function updateActiveDatalist(query) {
+  if (query.length < 2) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/vehicles/predictive?q=${encodeURIComponent(query)}`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const data = await res.json();
+    const list = document.getElementById('active-plates');
+    list.innerHTML = data.map(v => `
+      <option value="${v.plate}">Cliente: ${v.owner_name} (${v.visit_count} visitas)</option>
+    `).join('');
+    
+    const exact = data.find(x => x.plate.toUpperCase() === query.toUpperCase());
+    if (exact && exact.visit_count >= 3) {
+      toast(`⭐ Cliente Frecuente: ${exact.owner_name} (${exact.visit_count} visitas)`, 'info');
+    }
+  } catch (e) {}
+}
+
+function exportToCSV() {
+  fetch(`${API_BASE}/api/reports/financial`, {
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+  }).then(r => r.json()).then(data => {
+    let csv = 'Fecha,Servicios,Ingresos\n';
+    data.daily.forEach(d => { csv += `${d.date},${d.services},${d.total}\n`; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'reporte_valet.csv');
+    a.click();
+  });
+}
+
+async function doLookup() {
+  const q = document.getElementById('co-search').value.trim();
+  if (!q) return;
+  const el = document.getElementById('co-result');
+  el.innerHTML = `<div style="color:var(--muted);text-align:center;padding:20px">Buscando…</div>`;
+  try {
+    const v = await fetch(`${API_BASE}/api/vehicles/lookup?q=${encodeURIComponent(q)}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(r=>{if(!r.ok)throw r;return r.json();});
+    renderCheckoutCard(el, v);
+  } catch {
+    // Demo: find in mock
+    const v = mockVehicles().find(x => x.plate === q.toUpperCase() || x.ticket_code === q.toUpperCase());
+    if (v) renderCheckoutCard(el, v);
+    else el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No encontrado</div><div class="empty-sub">Verifique el ticket o placa</div></div>`;
+  }
+}
+
+function renderCheckoutCard(el, v) {
+  if (v.status === 'retrieved') {
+    el.innerHTML = `<div class="vehicle-card" style="border-color:var(--muted)"><div class="vehicle-card-top"><div class="plate-tag">${v.plate}</div><span class="status-badge status-retrieved">Ya Entregado</span></div><div class="vehicle-name">${v.owner_name}</div></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="vehicle-card" style="cursor:default">
+      <div class="vehicle-card-top">
+        <div class="plate-tag">${v.plate}</div>
+        <span class="status-badge status-${v.status}">${v.status==='pending_retrieval'?'🟡 Por Entregar':'🟢 Estacionado'}</span>
+      </div>
+      <div class="vehicle-name">${v.brand||''} ${v.model||''} ${v.color?'· '+v.color:''}</div>
+      <div class="vehicle-meta">${v.owner_name} · Entrada: ${fmtDate(v.check_in_at)}</div>
+      <div class="vehicle-ticket">${v.ticket_code}</div>
+      ${v.parking_spot?`<div class="spot-badge">Lugar: ${v.parking_spot}</div>`:''}
+    </div>
+    <div class="form-grid" style="margin-top:16px">
+      <div class="field"><label>Monto a Cobrar</label><input type="number" id="co-fee" value="${v.fee_amount||0}" step="0.01"/></div>
+      <div class="field"><label>Método de Pago</label>
+        <select id="co-method"><option>Efectivo</option><option>Tarjeta</option><option>App Móvil</option><option>Prepagado</option></select>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button class="btn btn-success" style="flex:1" onclick="finalizeCheckout(${v.id})">✅ Confirmar Entrega</button>
+    </div>`;
+}
+
+async function finalizeCheckout(id) {
+  const fee = parseFloat(document.getElementById('co-fee').value)||0;
+  const method = document.getElementById('co-method').value;
+  try {
+    const res = await fetch(`${API_BASE}/api/events/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify({ plate: document.getElementById('plate-tag-detail')?.textContent || document.getElementById('co-search').value })
+    });
+    if (!res.ok) throw new Error();
+    toast('Vehículo entregado ✅', 'success');
+    showTab('dashboard');
+  } catch (e) {
+    toast('Error en el checkout', 'error');
+  }
+  document.getElementById('co-result').innerHTML = '';
+  document.getElementById('co-search').value = '';
+}
+
+// ==================== RESERVATIONS ====================
+async function renderReservations(el) {
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">📅 Próximas Reservas</h2>
+      <button class="btn btn-primary" onclick="openNewReservation()">+ Nueva Reserva</button>
+    </div>
+    <div class="grid" id="reservations-list" style="gap:15px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));"></div>`;
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/reservations`, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    const list = await res.json();
+    
+    const pending = list.filter(r => r.status === 'pending');
+    document.getElementById('reservations-list').innerHTML = pending.map(r => `
+      <div class="vehicle-card" style="cursor:default; border-left:4px solid var(--accent1);">
+        <div class="vehicle-card-top">
+          <div style="font-weight:700; color:var(--accent1)">${r.confirm_code}</div>
+          <span class="status-badge" style="background:var(--surface2); color:var(--text)">PENDIENTE</span>
+        </div>
+        <div class="vehicle-name" style="margin-top:10px; font-weight:600;">${r.owner_name}</div>
+        <div class="vehicle-meta">${r.plate ? 'Placa: '+r.plate : 'Placa no registrada'} · ${r.brand||''}</div>
+        <div style="margin-top:15px; font-size:0.9rem; color:var(--accent1); font-weight:600;">
+          ⏳ Llegada: ${fmtDate(r.expected_arrival)}
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" style="width:100%" onclick='startCheckinFromReservation(${JSON.stringify(r).replace(/'/g, "\\'")})'>
+            🚗 Registrar Llegada
+          </button>
+        </div>
+      </div>`).join('') || '<div class="empty" style="grid-column:1/-1">Sin reservas pendientes</div>';
+  } catch (e) {
+    document.getElementById('reservations-list').innerHTML = '<div class="empty" style="grid-column:1/-1">Error al cargar reservas</div>';
+  }
+}
+
+async function startCheckinFromReservation(r) {
+  pendingReservationId = r.id;
+  showTab('checkin');
+  
+  // Esperar a que se renderice la pestaña de checkin
+  setTimeout(() => {
+    if(document.getElementById('ci-plate')) document.getElementById('ci-plate').value = r.plate || '';
+    if(document.getElementById('ci-owner')) document.getElementById('ci-owner').value = r.owner_name || '';
+    if(document.getElementById('ci-phone')) document.getElementById('ci-phone').value = r.owner_phone || '';
+    if(document.getElementById('ci-brand')) document.getElementById('ci-brand').value = r.brand || '';
+    if(document.getElementById('ci-model')) document.getElementById('ci-model').value = r.model || '';
+    toast('Datos cargados desde reserva. Completa el registro.', 'info');
+  }, 200);
+}
+
+function openNewReservation() {
+  const el = document.getElementById('vehicle-detail-content');
+  el.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Nombre Propietario *</label><input id="nr-name" placeholder="Nombre completo"/></div>
+      <div class="field"><label>Teléfono *</label><input id="nr-phone" type="tel" placeholder="+1 555 0000"/></div>
+      <div class="field"><label>Llegada Esperada *</label><input id="nr-arrival" type="datetime-local"/></div>
+      <div class="field"><label>Placa</label><input id="nr-plate" placeholder="ABC-1234"/></div>
+      <div class="field"><label>Marca</label><input id="nr-brand" placeholder="Toyota"/></div>
+      <div class="field"><label>Modelo</label><input id="nr-model" placeholder="Corolla"/></div>
+      <div class="field full"><label>Notas</label><textarea id="nr-notes" placeholder="Instrucciones especiales…"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-vehicle-detail')">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitReservation()">Confirmar Reserva</button>
+    </div>`;
+  document.getElementById('modal-vehicle-detail').querySelector('.modal-title').innerHTML =
+    '📅 Nueva Reservación <button class="modal-close" onclick="closeModal(\'modal-vehicle-detail\')">×</button>';
+  openModal('modal-vehicle-detail');
+}
+
+async function submitReservation() {
+  const name = document.getElementById('nr-name').value.trim();
+  const phone = document.getElementById('nr-phone').value.trim();
+  const arrival = document.getElementById('nr-arrival').value;
+  if (!name||!phone||!arrival) { toast('Nombre, teléfono y llegada son requeridos','error'); return; }
+  
+  const body = { 
+    owner_name: name, 
+    owner_phone: phone, 
+    expected_arrival: arrival,
+    plate: document.getElementById('nr-plate').value.toUpperCase(),
+    brand: document.getElementById('nr-brand').value,
+    model: document.getElementById('nr-model').value,
+    notes: document.getElementById('nr-notes').value 
+  };
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/reservations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error();
+    const created = await res.json();
+    toast('Reserva confirmada: ' + created.confirm_code, 'success');
+    closeModal('modal-vehicle-detail');
+    showTab('reservations');
+  } catch {
+    toast('Error al registrar reserva', 'error');
+  }
+}
+
+// ==================== TICKET ====================
+function showTicket(v) {
+  lastTicket = v;
+  const since = v.check_in_at ? Math.round((Date.now() - new Date(v.check_in_at))/60000) : 0;
+  document.getElementById('ticket-content').innerHTML = `
+    <div class="ticket">
+      <div style="text-align:center; margin-bottom:15px;">
+        ${settings.company_logo ? `<img src="${settings.company_logo}" style="width:70px; height:auto; margin-bottom:10px; border-radius:10px;">` : ''}
+        <div style="font-family:'Syne', sans-serif; font-size:1.4rem; font-weight:800; letter-spacing:-0.5px; color:#000;">${settings.company_name}</div>
+        <div style="font-size:0.6rem; letter-spacing:2px; color:#666; margin-top:2px; text-transform:uppercase;">${t('digital_receipt')}</div>
+      </div>
+      <div class="ticket-code">${v.ticket_code||'—'}</div>
+      
+      ${v.requested_at ? `
+      <div style="background:#fff3cd; color:#856404; padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid #ffeeba;">
+        ⏳ ${t('requested').toUpperCase()}: ${t('preparing')}
+      </div>` : `
+      <div style="margin:15px 0; display:flex; flex-direction:column; gap:10px;">
+        ${settings.stripe_enabled === 'true' && !v.fee_paid ? `
+          <button class="btn btn-primary" style="width:100%; padding:15px; background:#6366f1; border:none; border-radius:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="payTicket('${v.ticket_code}')">
+            💳 ${t('en') === 'en' ? 'Pay with Card' : 'Pagar con Tarjeta'}
+          </button>
+        ` : ''}
+        <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--accent1); border:none; border-radius:12px; font-weight:700;" onclick="requestCar('${v.ticket_code}')">
+          🚗 ${t('request_car')}
+        </button>
+      </div>`}
+
+      ${v.fee_paid ? `
+      <div style="background:rgba(16, 185, 129, 0.1); color:var(--success); padding:10px; border-radius:8px; font-size:0.8rem; font-weight:700; margin:10px 0; border:1px solid var(--success); text-align:center;">
+        ✅ TICKET PAGADO
+      </div>` : ''}
+
+
+      <hr class="ticket-divider"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:12px 0">
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('plate')}</div><div style="font-size:1rem; font-weight:700; color:#000;">${v.plate}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('parking_spot')}</div><div style="color:#000;">${v.parking_spot||'P-A'}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">${t('owner')}</div><div style="color:#000;">${v.owner_name}</div></div>
+        <div><div style="color:#666;font-size:0.6rem; text-transform:uppercase;">TARIFA</div><div style="color:#000; font-weight:700;">${settings.currency}${v.fee_amount||0}</div></div>
+      </div>
+      <hr class="ticket-divider"/>
+      <div style="font-size:0.65rem; color:#666; line-height:1.4; margin-top:10px;">
+        ${settings.terms_conditions}
+        ${settings.company_address ? `<br><br>📍 ${settings.company_address}` : ''}
+        ${settings.company_phone ? `<br>📞 ${settings.company_phone}` : ''}
+      </div>
+    </div>`;
+  
+  // Mostrar/ocultar botón WhatsApp según si hay teléfono
+  const btnWa = document.getElementById('btn-wa');
+  if (btnWa) btnWa.style.display = v.owner_phone ? 'block' : 'none';
+  
+  closeModal('modal-vehicle-detail');
+  openModal('modal-ticket');
+}
+
+function sendWhatsApp() {
+  if (!lastTicket) return;
+  const phone = lastTicket.owner_phone.replace(/\D/g, '');
+  const ticketUrl = `${API_BASE}/ticket/${lastTicket.ticket_code}`;
+  const msg = `🚗 *Ticket Digital Valet Eye*\n\nHola *${lastTicket.owner_name}*, tu vehículo *${lastTicket.brand||''} ${lastTicket.model||''}* (Placa: *${lastTicket.plate}*) ha sido registrado.\n\n📌 *Ver Estado y Solicitar Auto:* ${ticketUrl}\n\n_Usa el enlace de arriba para pedir tu auto cuando estés listo para retirarte._`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ==================== UTILS ====================
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('es', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast-item toast-${type}`;
+  t.textContent = msg;
+  document.getElementById('toast').appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); });
+});
+
+// ==================== MOCK DATA ====================
+function mockVehicles() {
+  return [
+    {id:1,ticket_code:'V1A2B3C',barcode:'XK9P2M',plate:'ABC-1234',brand:'Toyota',model:'Corolla',color:'Blanco',owner_name:'Carlos Méndez',owner_phone:'+1 555 0101',status:'parked',parking_spot:'A-03',check_in_at:new Date(Date.now()-3600000).toISOString(),fee_amount:25,fee_paid:0,valet_in:'Juan'},
+    {id:2,ticket_code:'V4D5E6F',barcode:'YL3Q5N',plate:'XYZ-5678',brand:'Honda',model:'Civic',color:'Gris',owner_name:'María López',owner_phone:'+1 555 0202',status:'parked',parking_spot:'B-07',check_in_at:new Date(Date.now()-7200000).toISOString(),fee_amount:30,fee_paid:0,valet_in:'Pedro'},
+    {id:3,ticket_code:'V7G8H9I',barcode:'ZM4R6O',plate:'LMN-9012',brand:'BMW',model:'320i',color:'Negro',owner_name:'Roberto García',owner_phone:'+1 555 0303',status:'pending_retrieval',parking_spot:'C-12',check_in_at:new Date(Date.now()-10800000).toISOString(),fee_amount:50,fee_paid:0,valet_in:'Ana'},
+    {id:4,ticket_code:'V1J2K3L',barcode:'AN5S7P',plate:'DEF-3456',brand:'Mercedes',model:'C200',color:'Plata',owner_name:'Laura Jiménez',owner_phone:'+1 555 0404',status:'retrieved',parking_spot:'A-01',check_in_at:new Date(Date.now()-86400000).toISOString(),check_out_at:new Date(Date.now()-3600000).toISOString(),fee_amount:45,fee_paid:1,valet_in:'Juan',valet_out:'Pedro'},
+  ];
+}
+function mockReservations() {
+  return [
+    {id:1,confirm_code:'R1A2B3',owner_name:'Sandra Torres',owner_phone:'+1 555 1001',plate:'GHI-7890',brand:'Audi',model:'A4',expected_arrival:new Date(Date.now()+3600000).toISOString(),status:'pending'},
+    {id:2,confirm_code:'R4C5D6',owner_name:'Miguel Ángel Ruiz',owner_phone:'+1 555 1002',plate:'JKL-2345',brand:'Volkswagen',model:'Jetta',expected_arrival:new Date(Date.now()+7200000).toISOString(),status:'pending',notes:'Lleva equipaje grande'},
+  ];
+}
+</script>
+</body>
+</html>
+

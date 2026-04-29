@@ -1,0 +1,964 @@
+PRAGMA defer_foreign_keys=TRUE;
+CREATE TABLE usuarios (   id INTEGER PRIMARY KEY,   username TEXT UNIQUE,   pin TEXT,   rol TEXT,   activo INTEGER,   created_at DATETIME DEFAULT CURRENT_TIMESTAMP );
+INSERT INTO "usuarios" ("id","username","pin","rol","activo","created_at") VALUES(1,'admin','1234','Administrador',1,'2026-04-21 05:40:10');
+CREATE TABLE entradas (   id INTEGER PRIMARY KEY,   placa TEXT UNIQUE,   cliente TEXT,   marca TEXT,   modelo TEXT,   color TEXT,   telefono TEXT,   observaciones TEXT,   usuario_registra TEXT,   hora_entrada DATETIME DEFAULT CURRENT_TIMESTAMP,   fotos JSON );
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(1,'ABC-123','NICOLAS BETANCOURT','TOYOTA','AUTANA','AZUL','04142987798','DIRECTOR EYE STAFF','admin','2026-04-21 05:47:47','["https://valet-parking-photos.r2.cdn.com/entradas/ABC-123-1-1776750467089.jpg"]');
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(2,'XJG-029','NELSON CARRILLO','FIAT','PREMIO','BLANCO','+34722838789','','admin','2026-04-21 05:49:08','["https://valet-parking-photos.r2.cdn.com/entradas/XJG-029-1-1776750548499.jpg"]');
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(3,'XPL-021','ALFONSO CALABRESE','MERCEDES','VAN','NEGRA','+17546669898','','admin','2026-04-21 06:05:32','[]');
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(4,'XXX-999','MAIFER BARRUETA','FORD','FOCUS','BLANCO','8889987','','admin','2026-04-21 06:08:35','["/api/fotos/entradas/XXX-999-1-1776751714974.jpg"]');
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(5,'XXX-998','PEDRO CASTILLO','FORD','FOCUS','BLANCO','34555555','','admin','2026-04-21 06:27:11','["/api/fotos/entradas/XXX-998-1-1776752831585.jpg"]');
+INSERT INTO "entradas" ("id","placa","cliente","marca","modelo","color","telefono","observaciones","usuario_registra","hora_entrada","fotos") VALUES(6,'QQQ-444','ANTONIO','FIAT','BRAVA','AZUL','333333333','','admin','2026-04-21 08:23:06','["/api/fotos/entradas/QQQ-444-1-1776759785940.jpg"]');
+CREATE TABLE salidas (   id INTEGER PRIMARY KEY,   placa TEXT,   cliente TEXT,   hora_salida DATETIME,   comentarios TEXT,   precio DECIMAL,   usuario_registra TEXT,   entrada_id INTEGER,   created_at DATETIME DEFAULT CURRENT_TIMESTAMP );
+INSERT INTO "salidas" ("id","placa","cliente","hora_salida","comentarios","precio","usuario_registra","entrada_id","created_at") VALUES(1,'XXX-999','MAIFER BARRUETA','2026-04-21T06:20:00.892Z','Retira la chofer',20,'admin',4,'2026-04-21 06:20:01');
+INSERT INTO "salidas" ("id","placa","cliente","hora_salida","comentarios","precio","usuario_registra","entrada_id","created_at") VALUES(2,'XPL-021','ALFONSO CALABRESE','2026-04-21T08:23:37.784Z','',50,'admin',3,'2026-04-21 08:23:38');
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  pin_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK(role IN ('driver','supervisor','director')),
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+, cedula TEXT, sector TEXT, phone TEXT, emergency_contact TEXT, emergency_phone TEXT, is_allergic TEXT, current_session_id INTEGER, bank_name TEXT, bank_account TEXT, status TEXT, cargo TEXT, birth_date TEXT, email TEXT, address TEXT, photo_url TEXT, admin_level INTEGER DEFAULT 3, op_level INTEGER DEFAULT 4, username TEXT, password TEXT, is_active INTEGER DEFAULT 1, carnet_url TEXT);
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(419,'NELSON CARRILLO','EYE001','director','2026-04-26 07:02:18','10334346','MADRID','+34722838789',NULL,NULL,NULL,55,NULL,NULL,'INACTIVO','DIRECTOR','05/05/1970','ncarrillok@gmail.com','MADRID',NULL,1,4,'nelsoncarrillo','10334346',1,NULL);
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(421,'NICOLÁS BETANCOURT','109876543','director','2026-04-28 14:06:47','109876543','CALLE GARCILAZO, EDIFICIO FLANDES, PLANTA BAJA, LOCAL 1, CP 1080, CARACAS, VENEZUELA','+584142772998',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,NULL);
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(422,'LUIS QUERALES','25683277','supervisor','2026-04-28 14:16:40','25683277',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777385800290.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(423,'STEVEN CONTRERAS','24283893','driver','2026-04-28 14:33:36','24283893',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777386816048.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(424,'MIGUEL ORTEGA','20837863','driver','2026-04-28 14:37:45','20837863',NULL,NULL,NULL,NULL,NULL,55,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777387065439.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(425,'MOISÉS MENDOZA','11111111','driver','2026-04-28 14:43:12','11111111',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777387391765.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(426,'JOSÉ ATELLA','16972248','driver','2026-04-28 14:56:13','16972248',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777388173261.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(427,'WILMER BURGOS','19088329','driver','2026-04-28 14:56:53','19088329',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777388213412.jpg');
+INSERT INTO "users" ("id","name","pin_hash","role","created_at","cedula","sector","phone","emergency_contact","emergency_phone","is_allergic","current_session_id","bank_name","bank_account","status","cargo","birth_date","email","address","photo_url","admin_level","op_level","username","password","is_active","carnet_url") VALUES(428,'DELVIN SUÁREZ','22016272','driver','2026-04-28 14:57:37','22016272',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,4,NULL,NULL,1,'carnets/1777388257402.jpg');
+CREATE TABLE IF NOT EXISTS "vehicles_old" (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  plate TEXT NOT NULL UNIQUE,
+  brand TEXT,
+  model TEXT,
+  color TEXT,
+  status TEXT NOT NULL CHECK(status IN ('checkin','parked','requested','delivering','delivered','pending_retrieval','retrieved')),
+  ticket_code TEXT UNIQUE,
+  owner_name TEXT,
+  owner_phone TEXT,
+  owner_id_ref TEXT,
+  parking_spot TEXT,
+  damage_notes TEXT,
+  fee_amount REAL,
+  fee_paid INTEGER DEFAULT 0,
+  payment_method TEXT,
+  valet_in TEXT,
+  valet_out TEXT,
+  check_in_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  check_out_at TEXT,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+, key_hook TEXT, damage_json TEXT, requested_at DATETIME);
+INSERT INTO "vehicles_old" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","key_hook","damage_json","requested_at") VALUES(1,'aaa-123','toyota',NULL,NULL,'retrieved','VMO8O00H0','alfonso',NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL,'2026-04-21 13:33:46','2026-04-21 13:51:17','2026-04-21 13:33:46',NULL,NULL,NULL);
+INSERT INTO "vehicles_old" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","key_hook","damage_json","requested_at") VALUES(2,'ZZZ-999',NULL,NULL,NULL,'parked','VMO8OAT00','nelson','+34722838789',NULL,NULL,NULL,0,0,NULL,NULL,NULL,'2026-04-21 13:42:10',NULL,'2026-04-21 13:42:10',NULL,'[]',NULL);
+INSERT INTO "vehicles_old" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","key_hook","damage_json","requested_at") VALUES(3,'1234-AAA','mercedes',NULL,NULL,'parked','VMO8OUTFM','alfonso','+34722838789',NULL,NULL,NULL,0,0,NULL,NULL,NULL,'2026-04-21 13:57:44',NULL,'2026-04-21 13:57:44',NULL,'[{"x":168.59845187615872,"y":322.56163058777514},{"x":212.1858943311103,"y":199.87105434422216},{"x":323.5760250493199,"y":188.570606532316},{"x":268.688134550492,"y":448.48090620615835}]',NULL);
+CREATE TABLE slots (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  zone TEXT NOT NULL,
+  number INTEGER NOT NULL,
+  is_free INTEGER DEFAULT 1
+);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(1,'A',1,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(2,'A',2,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(3,'A',3,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(4,'A',4,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(5,'A',5,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(6,'A',6,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(7,'A',7,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(8,'A',8,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(9,'A',9,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(10,'A',10,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(11,'B',1,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(12,'B',2,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(13,'B',3,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(14,'B',4,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(15,'B',5,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(16,'B',6,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(17,'B',7,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(18,'B',8,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(19,'B',9,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(20,'B',10,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(21,'C',1,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(22,'C',2,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(23,'C',3,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(24,'C',4,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(25,'C',5,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(26,'C',6,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(27,'C',7,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(28,'C',8,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(29,'C',9,1);
+INSERT INTO "slots" ("id","zone","number","is_free") VALUES(30,'C',10,1);
+CREATE TABLE reservations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  confirm_code TEXT NOT NULL UNIQUE,
+  owner_name TEXT NOT NULL,
+  owner_phone TEXT NOT NULL,
+  plate TEXT,
+  brand TEXT,
+  model TEXT,
+  expected_arrival TEXT NOT NULL,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'arrived', 'cancelled')),
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT);
+INSERT INTO "settings" ("key","value") VALUES('company_name','Eye Staff');
+INSERT INTO "settings" ("key","value") VALUES('company_address','');
+INSERT INTO "settings" ("key","value") VALUES('company_phone','');
+INSERT INTO "settings" ("key","value") VALUES('terms_conditions','No nos hacemos responsables por objetos de valor no declarados.');
+INSERT INTO "settings" ("key","value") VALUES('company_logo','https://cdn-icons-png.flaticon.com/512/2343/2343894.png');
+INSERT INTO "settings" ("key","value") VALUES('currency','$');
+INSERT INTO "settings" ("key","value") VALUES('stripe_enabled','false');
+CREATE TABLE subscriptions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, endpoint TEXT UNIQUE, keys_p256dh TEXT, keys_auth TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, start_at DATETIME DEFAULT CURRENT_TIMESTAMP, end_at DATETIME, total_minutes INTEGER, status TEXT DEFAULT 'active');
+CREATE TABLE vehicles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    plate TEXT NOT NULL,
+    brand TEXT,
+    model TEXT,
+    color TEXT,
+    status TEXT NOT NULL,
+    ticket_code TEXT UNIQUE,
+    owner_name TEXT,
+    owner_phone TEXT,
+    owner_id_ref TEXT,
+    parking_spot TEXT,
+    damage_notes TEXT,
+    damage_json TEXT,
+    fee_amount REAL,
+    fee_paid INTEGER DEFAULT 0,
+    payment_method TEXT,
+    valet_in TEXT,
+    valet_out TEXT,
+    check_in_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    check_out_at TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  , session_id INTEGER, daily_seq INTEGER, owner_email TEXT, auth_token_1 TEXT, auth_token_2 TEXT, retrieval_token TEXT, conformity_signed INTEGER DEFAULT 0, vehicle_type TEXT DEFAULT 'car');
+INSERT INTO "vehicles" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","damage_json","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","session_id","daily_seq","owner_email","auth_token_1","auth_token_2","retrieval_token","conformity_signed","vehicle_type") VALUES(102,'3332NCR','FORD','X','VERDE','parked','V00072','Stephano kosak','+58 4248748406',NULL,NULL,NULL,'[{"x":367.92452830188677,"y":374.2138364779874}]',0,0,NULL,NULL,NULL,'2026-04-28 12:14:09',NULL,'2026-04-28 12:14:09',49,72,NULL,'3152','1677','5345',0,'car');
+INSERT INTO "vehicles" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","damage_json","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","session_id","daily_seq","owner_email","auth_token_1","auth_token_2","retrieval_token","conformity_signed","vehicle_type") VALUES(104,'9967FKL','CITROEN','XSARA','BEIGE','retrieved','V00074','Manuel','722838789',NULL,NULL,NULL,'[{"x":852.2012578616352,"y":798.74213836478}]',0,0,NULL,NULL,NULL,'2026-04-28 16:06:43','2026-04-28 18:26:32','2026-04-28 16:06:43',51,74,NULL,'2573','6084','2186',0,'car');
+INSERT INTO "vehicles" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","damage_json","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","session_id","daily_seq","owner_email","auth_token_1","auth_token_2","retrieval_token","conformity_signed","vehicle_type") VALUES(105,'1519KBX','HIUNDAY','I20','BLANCO','retrieved','V00075','Stephano kosak','+58 4248748406',NULL,NULL,'Prueba ','[{"x":411.9496855345912,"y":389.937106918239}]',0,0,NULL,NULL,NULL,'2026-04-28 16:10:47','2026-04-28 18:34:13','2026-04-28 16:10:47',51,75,NULL,'2674','1816','2597',0,'car');
+INSERT INTO "vehicles" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","damage_json","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","session_id","daily_seq","owner_email","auth_token_1","auth_token_2","retrieval_token","conformity_signed","vehicle_type") VALUES(106,'6581DMJ','FORD','FIESTA','VERDE','retrieved','V00076','Conductor 1','722838789',NULL,NULL,NULL,'[{"x":364.7798742138365,"y":380.5031446540881}]',0,0,NULL,NULL,NULL,'2026-04-28 16:53:57','2026-04-28 18:26:13','2026-04-28 16:53:57',51,76,NULL,'3508','6245','4353',0,'car');
+INSERT INTO "vehicles" ("id","plate","brand","model","color","status","ticket_code","owner_name","owner_phone","owner_id_ref","parking_spot","damage_notes","damage_json","fee_amount","fee_paid","payment_method","valet_in","valet_out","check_in_at","check_out_at","created_at","session_id","daily_seq","owner_email","auth_token_1","auth_token_2","retrieval_token","conformity_signed","vehicle_type") VALUES(107,'0718JMP','FORD','KUGA','GRIS','parked','V00077','Antonio martínez','+34722838546',NULL,NULL,NULL,'[{"x":616.3522012578616,"y":333.3333333333333}]',0,0,NULL,NULL,NULL,'2026-04-28 19:53:09',NULL,'2026-04-28 19:53:09',55,77,NULL,'8530','2317','3058',0,'car');
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    event_type TEXT NOT NULL,
+    key_hook TEXT,
+    slot_id INTEGER,
+    ts TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
+  );
+CREATE TABLE photos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id INTEGER NOT NULL,
+    url TEXT NOT NULL,
+    FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
+  );
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(116,84,'photos/999 ANJ/plate_1777149204683.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(117,85,'photos/VBV 6786/plate_1777149475739.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(118,88,'photos/8304HRK/1_1777187510087.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(119,88,'photos/8304HRK/2_1777187510267.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(120,88,'photos/8304HRK/plate_1777187510447.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(121,89,'photos/6707KRW/1_1777187881327.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(122,89,'photos/6707KRW/plate_1777187881534.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(123,90,'photos/6707KRQ/1_1777190095969.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(124,90,'photos/6707KRQ/plate_1777190096261.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(125,93,'photos/ACCO355LV/plate_1777221265941.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(126,94,'photos/5133HLM/1_1777300993176.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(127,94,'photos/5133HLM/2_1777300993391.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(128,94,'photos/5133HLM/3_1777300993576.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(129,94,'photos/5133HLM/plate_1777300993746.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(130,95,'photos/AC035LW/plate_1777301175717.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(131,96,'photos/7992MLW/plate_1777301413833.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(132,97,'photos/6707KRW/1_1777302830625.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(133,97,'photos/6707KRW/plate_1777302830883.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(134,102,'photos/3332NCR/plate_1777378449928.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(135,104,'photos/9967FKL/1_1777392403075.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(136,104,'photos/9967FKL/plate_1777392403284.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(137,105,'photos/1519KBX/plate_1777392647591.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(138,106,'photos/6581DMJ/plate_1777395237203.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(139,107,'photos/0718JMP/1_1777405989865.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(140,107,'photos/0718JMP/2_1777405990227.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(141,107,'photos/0718JMP/3_1777405990509.jpg');
+INSERT INTO "photos" ("id","vehicle_id","url") VALUES(142,107,'photos/0718JMP/plate_1777405990888.jpg');
+CREATE TABLE messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id INTEGER NOT NULL,
+    from_role TEXT NOT NULL,
+    to_role TEXT NOT NULL,
+    text TEXT NOT NULL,
+    ts TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
+  );
+CREATE TABLE metrics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicle_id INTEGER NOT NULL,
+    avg_time INTEGER,
+    alerts_count INTEGER DEFAULT 0,
+    FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
+  );
+CREATE TABLE sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, status TEXT DEFAULT 'open', started_at TEXT DEFAULT CURRENT_TIMESTAMP, ended_at TEXT, type TEXT DEFAULT 'valet', client TEXT, phone TEXT, address TEXT, supervisor_id INTEGER REFERENCES users(id), contact_name TEXT, email TEXT, observations TEXT, internal_key TEXT);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(48,'BODA BILLY','closed','2026-04-28 05:22:11','2026-04-28 13:53:25','valet',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(49,'BODA BILLY','closed','2026-04-28 05:27:24','2026-04-28 13:53:28','valet',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(50,'FESTEJOS ELITE_50','closed','2026-04-28 06:10:08','2026-04-28 13:53:21','valet',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(51,'FESTEJOS ELITE_51','closed','2026-04-28 15:09:42','2026-04-28 18:34:29','valet parking',NULL,NULL,'G493+4FM Av Mariano Montilla, con Avenida Cota Mil, Caracas 1011, Distrito Capital, Venezuela',NULL,'ELITE',NULL,NULL,NULL);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(52,'Los andes 52','closed','2026-04-28 16:46:00','2026-04-28 18:34:25','valet parking',NULL,'722838789','Los naranjos',423,'Andes',NULL,NULL,NULL);
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(53,'COLEGIO CLARET','planning','2026-04-29',NULL,'valet parking',NULL,NULL,'Calle Los Curtidores con Calle Islandia Urbanización, Caracas 1083, Miranda, Venezuela',421,'CLARET',NULL,NULL,'COLEGIO CLARET 53');
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(54,'BODA ALFONSO CALABRESE','planning','2026-05-02',NULL,'valet parking',NULL,'+17862527353','C5XC+6HV, calle B, Caracas 1083, Miranda, Venezuela',421,'ALFONSO CALABRESE',NULL,NULL,'BODA ALFONSO CALABRESE 54');
+INSERT INTO "sessions" ("id","name","status","started_at","ended_at","type","client","phone","address","supervisor_id","contact_name","email","observations","internal_key") VALUES(55,'PRUEBA','active','2026-04-28 19:38:40',NULL,'valet parking',NULL,NULL,'SOL, MADRID',419,'NELSON',NULL,NULL,'PRUEBA 55');
+CREATE TABLE modules (
+  id TEXT PRIMARY KEY,
+  display_name TEXT NOT NULL,
+  category TEXT NOT NULL CHECK(category IN ('Servicios', 'Operaciones')),
+  is_active INTEGER DEFAULT 1
+);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('valet','Valet Parking','Servicios',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('renta','Renta Equipos','Servicios',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('xpress','Xpress Pro','Servicios',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('kids','Eye Kids','Servicios',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('eventos','Eventos','Operaciones',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('listas','Listas','Operaciones',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('formatos','Formatos','Operaciones',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('admin','Administración','Operaciones',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('monitoreo','Monitoreo Real-Time','Operaciones',1);
+INSERT INTO "modules" ("id","display_name","category","is_active") VALUES('rrss','Imagen y RRSS','Operaciones',1);
+CREATE TABLE role_permissions (
+  role TEXT NOT NULL,
+  module_id TEXT NOT NULL,
+  can_view INTEGER DEFAULT 1,
+  PRIMARY KEY(role, module_id),
+  FOREIGN KEY(module_id) REFERENCES modules(id)
+);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('driver','valet',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('driver','formatos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('supervisor','valet',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('supervisor','eventos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('supervisor','listas',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('supervisor','formatos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','valet',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','renta',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','xpress',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','kids',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','eventos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','listas',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','formatos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','admin',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('logistics','valet',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('logistics','formatos',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','monitoreo',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('supervisor','monitoreo',1);
+INSERT INTO "role_permissions" ("role","module_id","can_view") VALUES('director','rrss',1);
+CREATE TABLE payroll_rates (id INTEGER PRIMARY KEY AUTOINCREMENT, role TEXT NOT NULL UNIQUE, rate REAL NOT NULL, description TEXT);
+INSERT INTO "payroll_rates" ("id","role","rate","description") VALUES(1,'driver',50,'Pago base por turno de conductor');
+INSERT INTO "payroll_rates" ("id","role","rate","description") VALUES(2,'supervisor',80,'Pago base por turno de supervisor');
+INSERT INTO "payroll_rates" ("id","role","rate","description") VALUES(3,'director',120,'Pago base por turno de director');
+INSERT INTO "payroll_rates" ("id","role","rate","description") VALUES(7,'logistics',50,'Pago base por turno de logística');
+CREATE TABLE payroll_submissions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, session_id INTEGER NOT NULL, date TEXT NOT NULL, role_at_event TEXT NOT NULL, bank_name TEXT, bank_account TEXT, amount REAL, status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')), approved_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(session_id) REFERENCES sessions(id));
+CREATE TABLE equivalences (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  category TEXT NOT NULL CHECK(category IN ('brand', 'model', 'color')),
+  original_value TEXT NOT NULL,
+  standard_value TEXT NOT NULL,
+  UNIQUE(category, original_value)
+);
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(1,'brand','TOYO','TOYOTA');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(2,'brand','TOYOT','TOYOTA');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(3,'brand','FORDD','FORD');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(4,'brand','CHEVY','CHEVROLET');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(5,'brand','BMW ','BMW');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(6,'color','BLANKO','BLANCO');
+INSERT INTO "equivalences" ("id","category","original_value","standard_value") VALUES(7,'color','NEGROO','NEGRO');
+CREATE TABLE staff_attendance (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      session_id INTEGER,
+      type TEXT, -- 'entry', 'exit', 'break_start', 'break_end'
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(150,1,50,'entry','2026-04-28 13:52:28');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(151,1,50,'exit','2026-04-28 13:52:30');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(152,426,51,'entry','2026-04-28 15:09:42');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(153,425,51,'entry','2026-04-28 15:09:43');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(154,419,51,'entry','2026-04-28 15:09:43');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(155,421,51,'entry','2026-04-28 15:09:43');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(156,1,51,'entry','2026-04-28 15:44:46');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(157,1,51,'entry','2026-04-28 15:44:49');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(158,1,51,'entry','2026-04-28 15:44:50');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(159,1,51,'entry','2026-04-28 15:44:52');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(160,419,51,'entry','2026-04-28 15:50:59');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(161,421,51,'entry','2026-04-28 15:51:03');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(162,425,51,'entry','2026-04-28 15:51:04');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(163,426,51,'entry','2026-04-28 15:51:06');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(164,419,51,'entry','2026-04-28 15:52:56');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(165,421,51,'entry','2026-04-28 15:52:59');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(166,419,51,'exit','2026-04-28 15:53:01');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(167,419,51,'entry','2026-04-28 15:53:06');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(168,421,51,'entry','2026-04-28 15:53:08');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(169,425,51,'entry','2026-04-28 15:53:09');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(170,426,51,'entry','2026-04-28 15:53:11');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(171,423,52,'entry','2026-04-28 16:46:00');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(172,427,52,'entry','2026-04-28 16:46:00');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(173,424,52,'entry','2026-04-28 16:46:01');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(174,423,52,'exit','2026-04-28 18:25:20');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(175,424,52,'exit','2026-04-28 18:25:23');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(176,427,52,'exit','2026-04-28 18:25:25');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(177,419,51,'exit','2026-04-28 18:25:53');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(178,421,51,'exit','2026-04-28 18:25:55');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(179,425,51,'exit','2026-04-28 18:25:56');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(180,426,51,'exit','2026-04-28 18:25:58');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(181,421,51,'entry','2026-04-28 18:26:03');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(182,421,51,'exit','2026-04-28 18:26:39');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(183,421,51,'entry','2026-04-28 18:26:59');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(184,424,52,'entry','2026-04-28 18:30:21');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(185,424,52,'exit','2026-04-28 18:30:35');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(190,419,55,'entry','2026-04-28 19:38:40');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(191,424,55,'entry','2026-04-28 19:38:40');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(192,419,55,'break_start','2026-04-28 20:25:16');
+INSERT INTO "staff_attendance" ("id","user_id","session_id","type","timestamp") VALUES(193,419,55,'entry','2026-04-28 20:31:47');
+CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, type TEXT NOT NULL CHECK(type IN ('equipment', 'vehicle', 'other')), status TEXT DEFAULT 'available', description TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO "assets" ("id","name","type","status","description","created_at") VALUES(1,'GRÚA 01','vehicle','available','Unidad de remolque principal','2026-04-25 15:54:01');
+INSERT INTO "assets" ("id","name","type","status","description","created_at") VALUES(2,'MOTO 05','vehicle','available','Traslado rápido de personal','2026-04-25 15:54:01');
+INSERT INTO "assets" ("id","name","type","status","description","created_at") VALUES(3,'RADIO BASE','equipment','available','Estación central de comunicaciones','2026-04-25 15:54:01');
+CREATE TABLE locations (id INTEGER PRIMARY KEY AUTOINCREMENT, entity_id INTEGER NOT NULL, entity_type TEXT NOT NULL CHECK(entity_type IN ('staff', 'asset')), latitude REAL NOT NULL, longitude REAL NOT NULL, accuracy REAL, ts TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(1,1,'asset',10.488,-66.885,10,'2026-04-25 15:54:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(2,2,'asset',10.485,-66.89,15,'2026-04-25 15:54:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(3,3,'asset',10.482,-66.895,5,'2026-04-25 15:54:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(4,1,'staff',40.43532491052055,-3.6674768300612657,40,'2026-04-25 19:05:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(5,1,'staff',40.43532491052055,-3.6674768300612657,40,'2026-04-25 19:05:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(6,1,'staff',40.43543721459973,-3.6678422648010374,35,'2026-04-25 19:05:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(7,1,'staff',40.43538496953641,-3.6678005935627005,35,'2026-04-25 19:14:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(8,1,'staff',40.43538496953641,-3.6678005935627005,35,'2026-04-25 19:14:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(9,1,'staff',40.43538496919413,-3.6678005931503344,35,'2026-04-25 19:14:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(10,1,'staff',40.43538496914494,-3.667800593091251,35,'2026-04-25 19:14:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(11,1,'staff',40.43532531696651,-3.6676425488686846,35,'2026-04-25 19:19:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(12,1,'staff',40.43538238380843,-3.6678324207942765,10.56144697642574,'2026-04-25 20:25:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(13,1,'staff',40.43538238380843,-3.6678324207942765,10.695014,'2026-04-25 20:25:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(14,1,'staff',40.43538241212057,-3.6678324245209883,9.384504527642699,'2026-04-25 20:25:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(15,1,'staff',40.43538238380843,-3.6678324207942765,10.56144697642574,'2026-04-25 20:25:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(16,1,'staff',40.43538237971096,-3.66783242025493,9.384321408496016,'2026-04-25 20:25:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(17,1,'staff',40.43538240368368,-3.6678324234104465,8.501047171567002,'2026-04-25 20:25:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(18,1,'staff',40.435382420320344,-3.6678324256003214,7.823790089503955,'2026-04-25 20:25:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(19,1,'staff',40.43538243258332,-3.6678324272144893,7.29873863385783,'2026-04-25 20:25:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(20,1,'staff',40.435382441965544,-3.6678324284494654,6.857059835228763,'2026-04-25 20:25:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(21,1,'staff',40.435382451288106,-3.667832429676588,7.276242582031572,'2026-04-25 20:25:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(22,1,'staff',40.43538245863304,-3.6678324306433976,6.933677373073247,'2026-04-25 20:25:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(23,1,'staff',40.43538145950531,-3.667832497128152,13.96602881232343,'2026-04-26 05:00:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(24,1,'staff',40.43538145977589,-3.667832497163841,14.995014000000001,'2026-04-26 05:00:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(25,1,'staff',40.43538145950531,-3.667832497128152,13.96602881232343,'2026-04-26 05:00:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(26,1,'staff',40.435381457220025,-3.6678324968267244,11.942749794709139,'2026-04-26 05:00:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(27,1,'staff',40.43538150964567,-3.6678325037416073,11.94317578837062,'2026-04-26 05:00:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(28,1,'staff',40.4353814947762,-3.667832501780342,10.270914003037223,'2026-04-26 05:00:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(29,1,'staff',40.43538151667351,-3.667832504668571,9.139972108658723,'2026-04-26 05:01:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(30,1,'staff',40.435381531010655,-3.6678325065596242,8.314782008482727,'2026-04-26 05:01:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(31,1,'staff',40.43538154112351,-3.6678325078934995,7.678238524989244,'2026-04-26 05:01:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(32,1,'staff',40.43538154868349,-3.667832508890652,7.189669530787885,'2026-04-26 05:01:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(33,1,'staff',40.43531829009271,-3.667475119745099,35,'2026-04-26 11:44:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(34,1,'staff',40.43531829009271,-3.667475119745099,35,'2026-04-26 11:44:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(35,1,'staff',40.43542834884017,-3.6675806993068365,35,'2026-04-26 11:44:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(36,419,'staff',40.4337,-3.6778,5,'2026-04-26 12:07:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(37,1,'staff',40.435406686060254,-3.667398101779359,40,'2026-04-26 11:49:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(38,419,'staff',40.4337,-3.6778,5,'2026-04-26 12:07:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(39,1,'staff',40.435417161842295,-3.667376508002824,40,'2026-04-26 11:54:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(40,1,'staff',40.435417161842295,-3.667376508002824,40,'2026-04-26 11:54:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(41,1,'staff',40.435417161842295,-3.667376508002824,40,'2026-04-26 11:57:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(42,1,'staff',40.435417161842295,-3.667376508002824,40,'2026-04-26 11:57:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(43,1,'staff',40.435400214945865,-3.6678574946647804,35,'2026-04-26 11:57:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(44,1,'staff',40.435400214945865,-3.6678574946647804,35,'2026-04-26 11:59:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(45,1,'staff',40.435400214945865,-3.6678574946647804,35,'2026-04-26 11:59:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(46,1,'staff',40.435458644114966,-3.667426132991472,37.715237836218535,'2026-04-26 11:59:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(47,1,'staff',40.43537818328683,-3.6678143043869187,16.295014,'2026-04-26 12:03:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(48,1,'staff',40.43537818328683,-3.6678143043869187,16.156137845003382,'2026-04-26 12:03:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(49,1,'staff',40.43537818328683,-3.6678143043869187,16.156137845003382,'2026-04-26 12:03:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(50,1,'staff',40.4353786860048,-3.667821219043354,12.58054197280711,'2026-04-26 12:03:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(51,1,'staff',40.4353786135654,-3.667821246818098,12.580044073196708,'2026-04-26 12:03:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(52,1,'staff',40.43538039694968,-3.6678184628751933,12.35214406449188,'2026-04-26 12:03:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(53,1,'staff',40.4353804058422,-3.6678151936889543,12.1108724761208,'2026-04-26 12:03:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(54,1,'staff',40.43538452708475,-3.6678120629438147,11.015140953636989,'2026-04-26 12:03:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(55,1,'staff',40.4354068130775,-3.66781654913766,10.921350820951895,'2026-04-26 12:03:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(56,1,'staff',40.435400491013134,-3.667814342636468,10.706496533362044,'2026-04-26 12:03:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(57,1,'staff',40.43540207231423,-3.6678151992570474,10.736163577486268,'2026-04-26 12:03:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(58,1,'staff',40.435402074067184,-3.667815200192686,10.736167546563788,'2026-04-26 12:03:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(59,1,'staff',40.43539982662118,-3.6677978948523986,10.033113724803533,'2026-04-26 12:03:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(60,1,'staff',40.43542174130787,-3.6678058785729384,9.273114232295935,'2026-04-26 12:03:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(61,1,'staff',40.43543896325511,-3.667813877841159,8.656499043485697,'2026-04-26 12:03:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(62,1,'staff',40.43544025744987,-3.6678133027054702,8.669882215086732,'2026-04-26 12:03:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(63,1,'staff',40.43543920409774,-3.6678120006649095,8.721930284170034,'2026-04-26 12:03:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(64,1,'staff',40.43543889771349,-3.6678121084405926,8.720740007743435,'2026-04-26 12:03:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(65,1,'staff',40.43543889785954,-3.667812108567848,8.720734231675202,'2026-04-26 12:03:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(66,1,'staff',40.43543890144222,-3.6678121101495953,8.720792939055448,'2026-04-26 12:03:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(67,1,'staff',40.43545205880463,-3.667816937867417,8.202125742788416,'2026-04-26 12:03:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(68,1,'staff',40.43545020266467,-3.6678156427065787,8.195973268772551,'2026-04-26 12:03:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(69,1,'staff',40.435450553407996,-3.667815573118013,8.220119741048551,'2026-04-26 12:03:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(70,1,'staff',40.435451076388695,-3.6678157905360202,8.344988544084813,'2026-04-26 12:03:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(71,1,'staff',40.435451960330994,-3.667816119034266,8.317004410265815,'2026-04-26 12:03:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(72,1,'staff',40.43545193665169,-3.6678156277071623,8.315063402771909,'2026-04-26 12:03:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(73,1,'staff',40.435451105421784,-3.6678158129406966,8.267319369550236,'2026-04-26 12:03:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(74,1,'staff',40.43546034420748,-3.667817643330383,7.810363705424796,'2026-04-26 12:03:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(75,1,'staff',40.43546764497509,-3.6678190897596212,7.452177308822656,'2026-04-26 12:03:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(76,1,'staff',40.43546764495107,-3.6678190897630767,7.452180952161913,'2026-04-26 12:03:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(77,1,'staff',40.43546862624312,-3.667814054087549,7.433308869390713,'2026-04-26 12:03:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(78,1,'staff',40.43546688139199,-3.667812148403,7.434122219043949,'2026-04-26 12:03:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(79,1,'staff',40.43547026000424,-3.667808317445661,7.103149049810384,'2026-04-26 12:03:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(80,1,'staff',40.435472636563404,-3.6678051348137966,6.8549454636056355,'2026-04-26 12:03:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(81,1,'staff',40.43547592450309,-3.6678027450264414,6.607198910239751,'2026-04-26 12:03:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(82,1,'staff',40.435473735881146,-3.6678035537813813,6.608074672250166,'2026-04-26 12:03:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(83,1,'staff',40.43547079127027,-3.667804435340452,6.504069606006299,'2026-04-26 12:03:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(84,1,'staff',40.4354707909287,-3.667804435442147,6.549121346298514,'2026-04-26 12:03:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(85,1,'staff',40.43546981440138,-3.6678050586851154,6.550838386337954,'2026-04-26 12:03:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(86,1,'staff',40.43547042290875,-3.6678040577861557,6.351897174751963,'2026-04-26 12:03:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(87,1,'staff',40.43547047253691,-3.6678044710416273,6.353632134435301,'2026-04-26 12:03:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(88,1,'staff',40.43547048808301,-3.6678044574501905,6.355022767540035,'2026-04-26 12:03:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(89,1,'staff',40.4354711103727,-3.6678039134028784,6.1487814679078445,'2026-04-26 12:03:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(90,1,'staff',40.43547165452659,-3.667803437667119,5.962593262659837,'2026-04-26 12:03:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(91,1,'staff',40.43547165447156,-3.6678034376840323,5.962837083482389,'2026-04-26 12:03:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(92,1,'staff',40.43547213395378,-3.667803018490323,5.793814244524102,'2026-04-26 12:03:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(93,1,'staff',40.435472133950725,-3.66780301849127,5.793814835015175,'2026-04-26 12:03:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(94,1,'staff',40.435472558992295,-3.667802646893105,5.639745940519779,'2026-04-26 12:03:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(95,1,'staff',40.43547257000693,-3.66780263726341,5.63570663433624,'2026-04-26 12:03:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(96,1,'staff',40.43547288642553,-3.667802360630312,5.518140059750742,'2026-04-26 12:03:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(97,1,'staff',40.43547288640444,-3.6678023606369536,5.518144228468111,'2026-04-26 12:03:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(98,1,'staff',40.43547342474972,-3.6678018899823965,5.312128223397922,'2026-04-26 12:03:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(99,1,'staff',40.43546553832363,-3.6678082174216784,5.278937335271397,'2026-04-26 12:03:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(100,1,'staff',40.43546551061083,-3.667808267126103,5.27894723346653,'2026-04-26 12:03:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(101,1,'staff',40.43546088928434,-3.667811952633143,5.03170013785973,'2026-04-26 12:03:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(102,1,'staff',40.43545733776882,-3.667814784969349,4.833103726909256,'2026-04-26 12:03:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(103,1,'staff',40.43545437732547,-3.6678171459250555,4.661098460717621,'2026-04-26 12:03:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(104,1,'staff',40.43545437732459,-3.6678171459257625,4.66110967526833,'2026-04-26 12:03:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(105,1,'staff',40.43545419327849,-3.667817292702653,4.650216925082827,'2026-04-26 12:03:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(106,1,'staff',40.43545163277585,-3.667819334691118,4.495784337941885,'2026-04-26 12:03:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(107,1,'staff',40.435451632775084,-3.667819334691735,4.495795979878601,'2026-04-26 12:03:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(108,1,'staff',40.43544938647065,-3.6678211261220195,4.355807446020321,'2026-04-26 12:03:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(109,1,'staff',40.43545142107254,-3.6678195958826625,4.349629193019203,'2026-04-26 12:03:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(110,1,'staff',40.435451754053446,-3.6678187512420735,4.367691617786005,'2026-04-26 12:03:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(111,1,'staff',40.435451733485195,-3.667818722132326,4.362169119264512,'2026-04-26 12:03:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(112,1,'staff',40.43544891017705,-3.667818530008564,4.455508227344708,'2026-04-26 12:04:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(113,1,'staff',40.43544986763494,-3.6678180154076077,4.4536960917084265,'2026-04-26 12:04:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(114,1,'staff',40.43545043896871,-3.6678178282581984,4.4502821200526235,'2026-04-26 12:04:02');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(115,1,'staff',40.43545065448777,-3.6678175377681677,4.447239861937953,'2026-04-26 12:04:03');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(116,1,'staff',40.43545069239321,-3.667817500731222,4.444512508746494,'2026-04-26 12:04:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(117,1,'staff',40.4354509094802,-3.667817833634147,4.4420538657462965,'2026-04-26 12:04:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(118,1,'staff',40.435447550511256,-3.667818499903936,4.336396653289709,'2026-04-26 12:04:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(119,1,'staff',40.4354475505123,-3.6678184999031966,4.336408776473344,'2026-04-26 12:04:07');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(120,1,'staff',40.43544758682165,-3.667818474060273,4.3343376887239025,'2026-04-26 12:04:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(121,1,'staff',40.435447586822725,-3.667818474059515,4.334349863978581,'2026-04-26 12:04:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(122,1,'staff',40.43544761987083,-3.6678184505377622,4.332465003520649,'2026-04-26 12:04:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(123,1,'staff',40.435447619871915,-3.667818450536987,4.332477131668622,'2026-04-26 12:04:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(124,1,'staff',40.43544765007774,-3.6678184290381965,4.33075474790889,'2026-04-26 12:04:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(125,1,'staff',40.435447679186915,-3.667818408319949,4.3290945837805594,'2026-04-26 12:04:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(126,1,'staff',40.43544993500678,-3.6678180716346125,4.327495597416899,'2026-04-26 12:04:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(127,1,'staff',40.43544680407401,-3.667818449333848,4.229056804755169,'2026-04-26 12:04:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(128,1,'staff',40.435447817906535,-3.667818861085064,4.643174480539792,'2026-04-26 12:04:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(129,1,'staff',40.43544665152714,-3.6678187378389935,4.685597223656276,'2026-04-26 12:04:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(130,1,'staff',40.43544708453554,-3.667818850416597,4.690428346562313,'2026-04-26 12:04:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(131,1,'staff',40.43544713650715,-3.667818828511894,4.690803281880642,'2026-04-26 12:04:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(132,1,'staff',40.435447186428966,-3.667818807471129,4.6890523120651135,'2026-04-26 12:04:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(133,1,'staff',40.43544718643153,-3.6678188074700495,4.689063346090535,'2026-04-26 12:04:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(134,1,'staff',40.4354471864341,-3.6678188074689695,4.689074556530284,'2026-04-26 12:04:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(135,1,'staff',40.43544723436248,-3.6678187872683865,4.687393306125528,'2026-04-26 12:04:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(136,1,'staff',40.43544728035371,-3.6678187678842535,4.685779929380678,'2026-04-26 12:04:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(137,1,'staff',40.43544732446517,-3.6678187492924015,4.684232462182837,'2026-04-26 12:04:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(138,1,'staff',40.435447324467845,-3.667818749291277,4.68424368353878,'2026-04-26 12:04:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(139,1,'staff',40.43544736675737,-3.6678187314673263,4.68276008497938,'2026-04-26 12:04:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(140,1,'staff',40.4354473945959,-3.6678187197341057,4.681787000471083,'2026-04-26 12:04:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(141,1,'staff',40.43545310043623,-3.667816314868586,4.475478531226723,'2026-04-26 12:04:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(142,1,'staff',40.43545313472406,-3.667816300417145,4.474221828133989,'2026-04-26 12:04:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(143,1,'staff',40.43545316757567,-3.667816286571028,4.473017805450105,'2026-04-26 12:04:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(144,1,'staff',40.435457934162365,-3.667814277576858,4.292976699332636,'2026-04-26 12:04:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(145,1,'staff',40.435461826598655,-3.667812637014684,4.140151682847967,'2026-04-26 12:04:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(146,1,'staff',40.43546182660014,-3.6678126370140625,4.140164377404455,'2026-04-26 12:04:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(147,1,'staff',40.435465117796234,-3.6678112498592292,4.006400301540876,'2026-04-26 12:04:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(148,1,'staff',40.435465117797456,-3.667811249858716,4.00641340822815,'2026-04-26 12:04:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(149,1,'staff',40.43546511779867,-3.667811249858201,4.006426576224114,'2026-04-26 12:04:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(150,1,'staff',40.43546513949335,-3.6678112407144514,4.005543106493135,'2026-04-26 12:04:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(151,1,'staff',40.43546517079779,-3.6678112275204278,4.004262131416823,'2026-04-26 12:04:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(152,1,'staff',40.435465200940435,-3.667811214816078,4.0030287735943935,'2026-04-26 12:04:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(153,1,'staff',40.43546806035171,-3.667810009647485,3.882970806506527,'2026-04-26 12:04:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(154,1,'staff',40.43547056013249,-3.667808956053929,3.7748866844933646,'2026-04-26 12:04:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(155,1,'staff',40.43547058769705,-3.6678089444361746,3.7736913963732954,'2026-04-26 12:04:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(156,1,'staff',40.435472800711615,-3.6678080117072343,3.6753239051513757,'2026-04-26 12:04:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(157,1,'staff',40.435472826265396,-3.6678080009369682,3.674186900636198,'2026-04-26 12:04:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(158,1,'staff',40.43547282626621,-3.667808000936623,3.6742012727191917,'2026-04-26 12:04:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(159,1,'staff',40.43546980354544,-3.6678087667464707,3.6126820892551006,'2026-04-26 12:04:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(160,1,'staff',40.435471921412955,-3.6678078986987033,3.5242339672820284,'2026-04-26 12:04:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(161,1,'staff',40.43547193914106,-3.667807891432509,3.5234992284659326,'2026-04-26 12:04:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(162,1,'staff',40.435473831165496,-3.66780711595094,3.442557838446321,'2026-04-26 12:04:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(163,1,'staff',40.43547552276943,-3.667806422615454,3.368545065288381,'2026-04-26 12:04:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(164,1,'staff',40.43547552277004,-3.667806422615205,3.3685607620973457,'2026-04-26 12:04:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(165,1,'staff',40.435476967378634,-3.6678058305153836,3.3040440595268996,'2026-04-26 12:04:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(166,1,'staff',40.43547696737912,-3.6678058305151864,3.304060061502534,'2026-04-26 12:04:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(167,1,'staff',40.43547828692468,-3.6678052896747824,3.2440081444024798,'2026-04-26 12:04:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(168,1,'staff',40.43547829660122,-3.6678052857086736,3.243579865975593,'2026-04-26 12:04:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(169,1,'staff',40.435478298320795,-3.667805285003873,3.2435170093130195,'2026-04-26 12:04:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(170,1,'staff',40.435478298321236,-3.6678052850036917,3.243533313384165,'2026-04-26 12:04:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(171,1,'staff',40.43547952179577,-3.6678047835397956,3.1868332351509294,'2026-04-26 12:04:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(172,1,'staff',40.435479541841914,-3.6678047753235123,3.185912114482091,'2026-04-26 12:05:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(173,1,'staff',40.4354806890168,-3.6678043051324467,3.1317998861172462,'2026-04-26 12:05:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(174,1,'staff',40.43548070753316,-3.667804297543172,3.1309352646719044,'2026-04-26 12:05:02');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(175,1,'staff',40.43548070753356,-3.667804297543011,3.13095212093653,'2026-04-26 12:05:03');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(176,1,'staff',40.43548179074008,-3.6678038535705726,3.0789696632639685,'2026-04-26 12:05:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(177,1,'staff',40.43548180772216,-3.6678038466101457,3.0781646211755547,'2026-04-26 12:05:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(178,1,'staff',40.43548182422359,-3.667803839846734,3.0773826134672952,'2026-04-26 12:05:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(179,1,'staff',40.43548182422398,-3.667803839846575,3.077399722211036,'2026-04-26 12:05:07');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(180,1,'staff',40.43548182422436,-3.667803839846417,3.077416887918068,'2026-04-26 12:05:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(181,1,'staff',40.43548184024339,-3.6678038332807184,3.0766579914830157,'2026-04-26 12:05:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(182,1,'staff',40.4354818402438,-3.6678038332805554,3.076675155947374,'2026-04-26 12:05:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(183,1,'staff',40.43548184024421,-3.6678038332803924,3.076692282338109,'2026-04-26 12:05:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(184,1,'staff',40.43548185578032,-3.667803826912625,3.0759566016619844,'2026-04-26 12:05:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(185,1,'staff',40.43548185578072,-3.6678038269124578,3.0759737373501697,'2026-04-26 12:05:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(186,1,'staff',40.435479464457664,-3.667804480099041,3.041558623235015,'2026-04-26 12:05:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(187,1,'staff',40.43547946445765,-3.667804480099043,3.041678259593149,'2026-04-26 12:05:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(188,1,'staff',40.435479483032765,-3.667804475028602,3.041375674458906,'2026-04-26 12:05:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(189,1,'staff',40.435479483032765,-3.667804475028602,3.041375674458906,'2026-04-26 12:05:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(190,1,'staff',40.43547954572054,-3.6678043059854897,3.0267411034330727,'2026-04-26 12:05:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(191,1,'staff',40.435479516496606,-3.6678042917969527,3.177693557413244,'2026-04-26 12:05:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(192,1,'staff',40.435479525400815,-3.667804290328135,3.195014,'2026-04-26 12:05:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(193,1,'staff',40.43547952538767,-3.6678042903317447,3.1269141545284547,'2026-04-26 12:05:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(194,1,'staff',40.435479516496606,-3.6678042917969527,3.177693557413244,'2026-04-26 12:05:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(195,1,'staff',40.435479562048386,-3.667804136277048,3.1130872557092837,'2026-04-26 12:05:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(196,1,'staff',40.43547892447169,-3.6678035647064244,3.1005188337825347,'2026-04-26 12:05:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(197,1,'staff',40.435479290414435,-3.667803393203868,3.126875146344085,'2026-04-26 12:05:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(198,1,'staff',40.43548004350443,-3.6678038018468713,3.180312175666547,'2026-04-26 12:05:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(199,1,'staff',40.43548005283438,-3.6678037648476676,3.179149377670764,'2026-04-26 12:05:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(200,1,'staff',40.43548008430974,-3.667803716232966,3.175856369076013,'2026-04-26 12:05:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(201,1,'staff',40.43548009328112,-3.667803726377764,3.1777877084418265,'2026-04-26 12:05:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(202,1,'staff',40.435479418360046,-3.667803914514369,3.167272425315819,'2026-04-26 12:05:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(203,1,'staff',40.43547939489257,-3.6678039294922256,3.2177128878003387,'2026-04-26 12:05:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(204,1,'staff',40.43547940534545,-3.6678039312119077,3.2746881046320246,'2026-04-26 12:05:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(205,1,'staff',40.43547907970036,-3.6678040219440318,3.299063126414133,'2026-04-26 12:05:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(206,1,'staff',40.43547911836459,-3.6678040079857595,3.2980881823081543,'2026-04-26 12:05:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(207,1,'staff',40.43547913060648,-3.667803999774753,3.299415845702133,'2026-04-26 12:05:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(208,1,'staff',40.435479134230825,-3.6678039944810514,3.3011535768236775,'2026-04-26 12:05:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(209,1,'staff',40.4354791349056,-3.667803993247389,3.302965712808662,'2026-04-26 12:05:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(210,1,'staff',40.43547932088532,-3.6678037032514794,3.271189028364439,'2026-04-26 12:05:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(211,1,'staff',40.43547932091593,-3.667803703203784,3.2847809382210356,'2026-04-26 12:05:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(212,1,'staff',40.43547932089451,-3.667803703209809,3.284780600755733,'2026-04-26 12:05:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(213,1,'staff',40.435479331730086,-3.667803689153521,3.284618268224219,'2026-04-26 12:05:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(214,1,'staff',40.43547935084345,-3.667803678545845,3.284451277668289,'2026-04-26 12:05:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(215,1,'staff',40.435479383567326,-3.6678036663658466,3.283915275861804,'2026-04-26 12:05:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(216,1,'staff',40.435479398580625,-3.667803637816325,3.2895378483703905,'2026-04-26 12:05:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(217,1,'staff',40.43547939856429,-3.6678036378209256,3.2922351131242604,'2026-04-26 12:05:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(218,1,'staff',40.435479403674776,-3.6678036019734575,3.2921672602917735,'2026-04-26 12:05:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(219,1,'staff',40.435479414412114,-3.667803571502613,3.2921088836325114,'2026-04-26 12:05:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(220,1,'staff',40.435479683648836,-3.6678031565149083,3.256509989432297,'2026-04-26 12:05:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(221,1,'staff',40.435479943937956,-3.6678027541049962,3.2220760970014,'2026-04-26 12:05:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(222,1,'staff',40.43547994625427,-3.6678027464296616,3.2224378159101597,'2026-04-26 12:05:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(223,1,'staff',40.43548019078716,-3.667802364871067,3.19232716878126,'2026-04-26 12:05:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(224,1,'staff',40.435480190770576,-3.6678023648759117,3.192326918002011,'2026-04-26 12:05:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(225,1,'staff',40.4354801401948,-3.6678023796439962,3.1936270104695437,'2026-04-26 12:05:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(226,1,'staff',40.43548013733678,-3.6678023788211522,3.19701473037203,'2026-04-26 12:05:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(227,1,'staff',40.43548013646356,-3.6678023790761456,3.2044448292663423,'2026-04-26 12:05:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(228,1,'staff',40.43548038478932,-3.667801987503125,3.319892109122134,'2026-04-26 12:05:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(229,1,'staff',40.435480384787624,-3.6678019875036285,3.319898175941575,'2026-04-26 12:05:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(230,1,'staff',40.43548062683548,-3.66780166929085,3.1269444550639958,'2026-04-26 12:05:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(231,1,'staff',40.435480637034196,-3.6678016568552447,3.125855967477527,'2026-04-26 12:05:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(232,1,'staff',40.43548063521338,-3.6678016644167766,3.128836410841747,'2026-04-26 12:05:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(233,1,'staff',40.435458644114966,-3.667426132991472,37.715237836218535,'2026-04-26 12:05:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(234,1,'staff',40.435458644114966,-3.667426132991472,37.715237836218535,'2026-04-26 12:05:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(235,1,'staff',40.435480843028266,-3.6678013478043483,3.099133848237516,'2026-04-26 12:05:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(236,1,'staff',40.43534086317024,-3.6676202102084074,35,'2026-04-26 12:05:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(237,1,'staff',40.43548084488189,-3.6678013449803064,3.098877351903228,'2026-04-26 12:06:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(238,1,'staff',40.4354808463913,-3.6678013426806704,3.0986714298321676,'2026-04-26 12:06:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(239,1,'staff',40.435478465246476,-3.6678020574826853,3.0649248488451004,'2026-04-26 12:06:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(240,1,'staff',40.43547847230537,-3.667802048320224,3.2424145919989247,'2026-04-26 12:06:02');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(241,1,'staff',40.43548353327888,-3.6678019243446975,3.455767536637465,'2026-04-26 12:06:03');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(242,1,'staff',40.43548900127835,-3.667801369748851,4.520712906114775,'2026-04-26 12:06:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(243,1,'staff',40.43549337690685,-3.6678009259475295,4.85039641508424,'2026-04-26 12:06:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(244,1,'staff',40.43549337690753,-3.667800925947461,4.850407293228616,'2026-04-26 12:06:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(245,1,'staff',40.43549487223627,-3.6678007742826497,4.817586105794342,'2026-04-26 12:06:07');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(246,1,'staff',40.43549591807217,-3.6678006682079776,4.794500459249509,'2026-04-26 12:06:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(247,1,'staff',40.435497348755696,-3.667800617178923,4.77724743650567,'2026-04-26 12:06:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(248,1,'staff',40.435497716301015,-3.6678009222135333,4.765024802773452,'2026-04-26 12:06:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(249,1,'staff',40.43549677947325,-3.667801692286065,5.370139461720343,'2026-04-26 12:06:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(250,1,'staff',40.435497267501695,-3.6678016943721103,5.356185469921001,'2026-04-26 12:06:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(251,1,'staff',40.43549767301793,-3.6678016961054625,5.383073041658776,'2026-04-26 12:06:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(252,1,'staff',40.43549802808905,-3.6678016976231915,5.372459673170767,'2026-04-26 12:06:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(253,1,'staff',40.43549831151998,-3.667801698834697,5.364790907306812,'2026-04-26 12:06:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(254,1,'staff',40.435498333434744,-3.667801698928371,5.365977573584457,'2026-04-26 12:06:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(255,1,'staff',40.43549853069844,-3.6678016997715615,5.360856825345326,'2026-04-26 12:06:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(256,1,'staff',40.43550644480557,-3.6678017335998847,5.1022925525471345,'2026-04-26 12:06:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(257,1,'staff',40.43551284450986,-3.667801760954994,4.923780676138089,'2026-04-26 12:06:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(258,1,'staff',40.43551285564403,-3.667801761002586,4.976722072229792,'2026-04-26 12:06:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(259,1,'staff',40.43551298414834,-3.667801761551869,5.026358558133393,'2026-04-26 12:06:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(260,1,'staff',40.4355184630278,-3.667801784970974,4.865914086336981,'2026-04-26 12:06:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(261,1,'staff',40.43552303217284,-3.66780180450148,4.697095804276881,'2026-04-26 12:06:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(262,1,'staff',40.43552303217428,-3.6678018045014853,4.6971070148486005,'2026-04-26 12:06:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(263,1,'staff',40.435526965204,-3.6678018213129593,4.5857631198898865,'2026-04-26 12:06:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(264,1,'staff',40.435523095385705,-3.6678032439244546,4.338100991344232,'2026-04-26 12:06:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(265,1,'staff',40.43552619986386,-3.667803177683152,4.216573226622336,'2026-04-26 12:06:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(266,1,'staff',40.43552884535619,-3.6678031212353845,4.110179308538877,'2026-04-26 12:06:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(267,1,'staff',40.43553106644797,-3.6678030738431957,4.018680576674745,'2026-04-26 12:06:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(268,1,'staff',40.435533087883755,-3.6678030307111347,3.933557986438843,'2026-04-26 12:06:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(269,1,'staff',40.43553493631447,-3.667802991270541,3.8540757838504303,'2026-04-26 12:06:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(270,1,'staff',40.435536619257675,-3.667802955361011,3.7802572045083753,'2026-04-26 12:06:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(271,1,'staff',40.43553814187218,-3.6678029228724687,3.7122072861713984,'2026-04-26 12:06:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(272,1,'staff',40.43553952271221,-3.6678028934090166,3.64939757065836,'2026-04-26 12:06:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(273,1,'staff',40.43553952271255,-3.6678028934090094,3.649411986594365,'2026-04-26 12:06:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(274,1,'staff',40.43553955231111,-3.6678028927774546,3.6480679455303697,'2026-04-26 12:06:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(275,1,'staff',40.43554084643864,-3.6678028651642167,3.588182124183703,'2026-04-26 12:06:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(276,1,'staff',40.435540882666245,-3.6678028643912155,3.586505614269828,'2026-04-26 12:06:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(277,1,'staff',40.435540914903626,-3.6678028637033555,3.585014668537261,'2026-04-26 12:06:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(278,1,'staff',40.43554094784623,-3.667802863000447,3.5834902158833732,'2026-04-26 12:06:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(279,1,'staff',40.43554221567334,-3.6678028359483905,3.5237548815972293,'2026-04-26 12:06:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(280,1,'staff',40.4355396590529,-3.6678024015060617,3.52206229760652,'2026-04-26 12:06:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(281,1,'staff',40.435539708469,-3.667802928780738,3.520524160446407,'2026-04-26 12:06:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(282,1,'staff',40.43553839474312,-3.6678030510989736,3.4665991236175278,'2026-04-26 12:06:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(283,1,'staff',40.43553834604265,-3.6678029550420677,3.5029789754257137,'2026-04-26 12:06:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(284,1,'staff',40.43553787584118,-3.667803301909234,3.524834985639799,'2026-04-26 12:06:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(285,1,'staff',40.43553864831076,-3.66780311266748,3.523845714724362,'2026-04-26 12:06:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(286,1,'staff',40.43553941968529,-3.667803058427796,3.523859814278537,'2026-04-26 12:06:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(287,1,'staff',40.43554084511196,-3.6678031304340113,3.520552310758088,'2026-04-26 12:06:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(288,1,'staff',40.43554123979888,-3.6678028678292574,3.5233782445150683,'2026-04-26 12:06:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(289,1,'staff',40.43554098169994,-3.667803159596879,3.5297844746253957,'2026-04-26 12:06:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(290,1,'staff',40.43554141382956,-3.6678031681267695,3.527960415786369,'2026-04-26 12:06:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(291,1,'staff',40.43554114701539,-3.6678031389125376,3.6523404929557817,'2026-04-26 12:06:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(292,1,'staff',40.43553982342605,-3.6678029306520936,3.6686772396256053,'2026-04-26 12:06:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(293,1,'staff',40.4355402009033,-3.6678028380914744,3.6673395809068863,'2026-04-26 12:06:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(294,1,'staff',40.435540166310176,-3.667802862794713,3.66972707693573,'2026-04-26 12:06:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(295,1,'staff',40.43553360845527,-3.6678036037646002,3.4685447403810565,'2026-04-26 12:06:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(296,1,'staff',40.435534410356276,-3.667803220042415,3.469225821532592,'2026-04-26 12:06:58');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(297,1,'staff',40.43553447996253,-3.6678031926017827,3.4692408913749895,'2026-04-26 12:06:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(298,1,'staff',40.43553427246441,-3.6678029619060144,3.4680364999208853,'2026-04-26 12:07:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(299,1,'staff',40.43553415274117,-3.6678032262442026,3.4642771981190195,'2026-04-26 12:07:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(300,1,'staff',40.43552406113729,-3.667805091147995,5.106937607481813,'2026-04-26 12:07:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(301,1,'staff',40.435524074998696,-3.667805086355318,5.104673622435276,'2026-04-26 12:07:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(302,1,'staff',40.435524074971795,-3.667805086360281,5.1069709133673085,'2026-04-26 12:07:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(303,1,'staff',40.435524074998696,-3.667805086355318,5.104673622435276,'2026-04-26 12:07:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(304,1,'staff',40.435524074998696,-3.667805086355318,5.195014,'2026-04-26 12:07:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(305,1,'staff',40.43537928781918,-3.6678318416593005,13.995847199904691,'2026-04-26 12:56:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(306,1,'staff',40.43537928781918,-3.6678318416593005,14.095014,'2026-04-26 12:56:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(307,1,'staff',40.435379282140296,-3.6678318437694015,11.48759277819352,'2026-04-26 12:56:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(308,1,'staff',40.43537934258804,-3.667831821308896,11.487958391888704,'2026-04-26 12:56:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(309,1,'staff',40.43537928781918,-3.6678318416593005,13.995847199904691,'2026-04-26 12:56:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(310,1,'staff',40.43540430050553,-3.667808706971654,10.3856142781441,'2026-04-26 12:56:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(311,1,'staff',40.435379282140715,-3.6678318437692514,11.496892884740712,'2026-04-26 12:56:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(312,1,'staff',40.435379282140694,-3.6678318437692536,11.496890906967037,'2026-04-26 12:56:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(313,1,'staff',40.43540134791142,-3.6678065151496986,10.355903564496376,'2026-04-26 12:56:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(314,1,'staff',40.43540272917987,-3.6678071081272474,10.305637683104147,'2026-04-26 12:56:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(315,1,'staff',40.435406846404604,-3.6678085571557446,10.26667976116858,'2026-04-26 12:56:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(316,1,'staff',40.43540823457614,-3.6678092113369005,10.252933145685137,'2026-04-26 12:56:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(317,1,'staff',40.435405710381424,-3.667811190702718,9.802696676611196,'2026-04-26 12:56:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(318,1,'staff',40.43542575633165,-3.6677930524694364,9.489866705298983,'2026-04-26 12:56:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(319,1,'staff',40.435425537468205,-3.6677923845106877,9.485761045519448,'2026-04-26 12:56:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(320,1,'staff',40.43542750272749,-3.6677933409340895,9.48514892598364,'2026-04-26 12:56:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(321,1,'staff',40.43542627686982,-3.667791868306341,9.466315733210385,'2026-04-26 12:56:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(322,1,'staff',40.435439612672496,-3.6677770575099418,8.713617957387289,'2026-04-26 12:56:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(323,1,'staff',40.43543955333971,-3.667776351696393,8.68091548117998,'2026-04-26 12:56:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(324,1,'staff',40.435440869914906,-3.667778764456219,8.627240584038148,'2026-04-26 12:56:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(325,1,'staff',40.43543964140168,-3.6677778194935606,8.653193344113467,'2026-04-26 12:56:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(326,1,'staff',40.435439853024974,-3.667778366550655,8.651911939791475,'2026-04-26 12:56:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(327,1,'staff',40.435440468132725,-3.6677788182869806,8.651658781327773,'2026-04-26 12:56:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(328,1,'staff',40.43544049102987,-3.6677787900312495,8.69049077381213,'2026-04-26 12:56:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(329,1,'staff',40.43544097866951,-3.6677792709857067,8.69049635274394,'2026-04-26 12:56:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(330,1,'staff',40.435450631775076,-3.6677682554126934,8.097593623273658,'2026-04-26 12:56:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(331,1,'staff',40.43545819552605,-3.667760083051481,7.62119872347599,'2026-04-26 12:56:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(332,1,'staff',40.43545819544385,-3.6677600831263377,7.621194749882376,'2026-04-26 12:56:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(333,1,'staff',40.435458195442635,-3.667760083127445,7.621197481179928,'2026-04-26 12:56:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(334,1,'staff',40.43546454877059,-3.6677537656803207,7.220571276490448,'2026-04-26 12:56:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(335,1,'staff',40.43546551302875,-3.667753717962543,7.186439157590615,'2026-04-26 12:56:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(336,1,'staff',40.435465796346634,-3.667754275455193,7.187827779540424,'2026-04-26 12:56:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(337,1,'staff',40.43546590144954,-3.667754668442321,7.187834618822844,'2026-04-26 12:56:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(338,1,'staff',40.43547159121886,-3.6677510016588193,6.84110698893324,'2026-04-26 12:56:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(339,1,'staff',40.43547614744106,-3.667748348591418,6.54514183644291,'2026-04-26 12:56:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(340,1,'staff',40.43547614736689,-3.6677483486554188,6.545139333620629,'2026-04-26 12:56:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(341,1,'staff',40.43547604098511,-3.667748440446165,6.544925191102179,'2026-04-26 12:56:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(342,1,'staff',40.435479879280216,-3.6677465111511127,6.291007919334547,'2026-04-26 12:56:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(343,1,'staff',40.43548020428161,-3.6677466863091523,6.277175810912464,'2026-04-26 12:56:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(344,1,'staff',40.435483915094146,-3.667745451685699,6.039687336545765,'2026-04-26 12:56:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(345,1,'staff',40.435484144772,-3.6677455317924403,6.031420449328023,'2026-04-26 12:56:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(346,1,'staff',40.43548416407807,-3.6677456218836126,6.031428649597319,'2026-04-26 12:56:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(347,1,'staff',40.43548419303687,-3.667745654058992,6.031436849862955,'2026-04-26 12:56:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(348,1,'staff',40.43548419296919,-3.667745654114643,6.03143490796747,'2026-04-26 12:56:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(349,1,'staff',40.435484070906746,-3.6677457544852556,6.06265974429319,'2026-04-26 12:56:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(350,1,'staff',40.43548403839702,-3.667745689464005,6.062748145031879,'2026-04-26 12:56:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(351,1,'staff',40.435483989631884,-3.667745611438322,6.06275630191331,'2026-04-26 12:56:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(352,1,'staff',40.435483999385866,-3.667745578927391,6.062764482170548,'2026-04-26 12:56:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(353,1,'staff',40.4354840514039,-3.6677456504508803,6.062772639022199,'2026-04-26 12:56:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(354,1,'staff',40.435484026329775,-3.6677425146182094,5.771346031722572,'2026-04-26 12:56:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(355,1,'staff',40.43548352713192,-3.667742007435234,5.771354423494137,'2026-04-26 12:56:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(356,1,'staff',40.435483182530184,-3.6677429785480085,5.771360795878304,'2026-04-26 12:56:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(357,1,'staff',40.435483194759314,-3.667742948743649,5.771369216463911,'2026-04-26 12:56:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(358,1,'staff',40.43548260410669,-3.6677431245118566,5.771371753587755,'2026-04-26 12:56:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(359,1,'staff',40.4354790760976,-3.667741480125295,5.7713801410517975,'2026-04-26 12:56:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(360,1,'staff',40.435474009808345,-3.667739345468756,5.821308003511507,'2026-04-26 12:56:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(361,1,'staff',40.435473398750645,-3.6677405715005773,5.821316317314291,'2026-04-26 12:56:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(362,1,'staff',40.43547578964136,-3.6677418644527924,5.799788426903504,'2026-04-26 12:56:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(363,1,'staff',40.43537936149751,-3.667831814282721,14.07635183923663,'2026-04-26 13:18:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(364,1,'staff',40.435379452270006,-3.6678317805544793,14.077049385692856,'2026-04-26 13:18:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(365,1,'staff',40.43537945074909,-3.667831781119604,19.895014,'2026-04-26 13:18:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(366,1,'staff',40.43537945074909,-3.667831781119604,19.684884099843938,'2026-04-26 13:18:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(367,1,'staff',40.43537945074909,-3.667831781119604,19.684884099843938,'2026-04-26 13:18:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(368,1,'staff',40.43537918906251,-3.667831732993247,14.065669291763083,'2026-04-26 13:18:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(369,1,'staff',40.43537936149782,-3.667831814282609,14.076420169654986,'2026-04-26 13:18:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(370,1,'staff',40.43537936149784,-3.6678318142826054,14.076422175483689,'2026-04-26 13:18:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(371,1,'staff',40.43536926286838,-3.6678292625816726,13.541641392445362,'2026-04-26 13:18:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(372,1,'staff',40.43535102145863,-3.667833559545664,13.243180087571021,'2026-04-26 13:18:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(373,1,'staff',40.435379300867346,-3.6678534052610803,12.668077290308506,'2026-04-26 13:18:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(374,1,'staff',40.435376215060295,-3.6678527110111387,12.520043131453654,'2026-04-26 13:18:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(375,1,'staff',40.4353761392116,-3.6678527816017388,12.517643936956183,'2026-04-26 13:18:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(376,1,'staff',40.43537095802239,-3.6678592197394684,12.235788585233065,'2026-04-26 13:18:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(377,1,'staff',40.43537024590272,-3.6678586319367463,12.23478759083645,'2026-04-26 13:18:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(378,1,'staff',40.435371096575345,-3.6678604530187773,12.20927556648412,'2026-04-26 13:18:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(379,1,'staff',40.43534057744781,-3.667915074388638,18.72132573397969,'2026-04-26 15:15:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(380,1,'staff',40.43534057744781,-3.667915074388638,18.72132573397969,'2026-04-26 15:15:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(381,1,'staff',40.43534057744781,-3.667915074388638,36.195014,'2026-04-26 15:15:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(382,1,'staff',40.43533930284064,-3.667917555639065,17.54184889191374,'2026-04-26 15:15:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(383,1,'staff',40.43533943765157,-3.667917516454381,17.54317964888563,'2026-04-26 15:15:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(384,1,'staff',40.435346438435246,-3.667856827429765,16.53703310064209,'2026-04-26 15:15:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(385,1,'staff',40.43537758251068,-3.6677861413852484,11.782799120859666,'2026-04-26 15:15:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(386,1,'staff',40.43538654706926,-3.6676890521520322,12.13529613050414,'2026-04-26 15:15:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(387,1,'staff',40.43536377988962,-3.6677312391004833,11.789618739183448,'2026-04-26 15:15:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(388,1,'staff',40.435345999395594,-3.667734635768033,14.064360900014128,'2026-04-26 15:16:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(389,1,'staff',40.43536193106113,-3.6676761755978564,11.007670825978149,'2026-04-26 15:16:01');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(390,1,'staff',40.4353569739801,-3.6677304908700727,7.682346852718313,'2026-04-26 15:16:02');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(391,1,'staff',40.43536023753498,-3.6677324082863514,8.359774714525868,'2026-04-26 15:16:03');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(392,1,'staff',40.435359670064756,-3.6677127089850323,8.544040247479263,'2026-04-26 15:16:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(393,1,'staff',40.4353659276554,-3.6677249512841184,15.478429915188494,'2026-04-26 15:16:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(394,1,'staff',40.435363742322586,-3.6677253169602473,15.548923711355453,'2026-04-26 15:16:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(395,1,'staff',40.43535481673962,-3.667792739379181,12.357539241637529,'2026-04-26 15:16:07');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(396,1,'staff',40.43535313829759,-3.667790955678497,12.75518738055793,'2026-04-26 15:16:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(397,1,'staff',40.435353134922714,-3.667789905068268,13.170326909031777,'2026-04-26 15:16:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(398,1,'staff',40.43535273534202,-3.6676711708043004,21.737809508206478,'2026-04-26 15:16:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(399,1,'staff',40.43534965954871,-3.6676466441604805,19.164377143477424,'2026-04-26 15:16:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(400,1,'staff',40.43534845002225,-3.6676331057576492,23.125886441923143,'2026-04-26 15:16:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(401,1,'staff',40.43535015851368,-3.667629522966038,18.59529422790028,'2026-04-26 15:16:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(402,1,'staff',40.43534819870252,-3.6677040181029663,15.17658425678912,'2026-04-26 15:16:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(403,1,'staff',40.43535006815222,-3.6676533472552557,19.86282779997512,'2026-04-26 15:16:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(404,1,'staff',40.43535252948311,-3.667626416359655,22.685340775877755,'2026-04-26 15:16:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(405,1,'staff',40.435350800123445,-3.66761540577117,22.793461560676118,'2026-04-26 15:16:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(406,1,'staff',40.43535506939518,-3.6676373807440945,19.50724728136512,'2026-04-26 15:16:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(407,1,'staff',40.43535170451874,-3.6676614091345265,22.447262099796685,'2026-04-26 15:16:19');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(408,1,'staff',40.43535464429859,-3.667651086420529,22.268170528769684,'2026-04-26 15:16:20');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(409,1,'staff',40.43535624556271,-3.667651598487028,22.429339389531425,'2026-04-26 15:16:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(410,1,'staff',40.43535399946891,-3.667654230219631,22.415928112236188,'2026-04-26 15:16:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(411,1,'staff',40.435353925169835,-3.667652904416175,17.36808606253113,'2026-04-26 15:16:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(412,1,'staff',40.43535388241022,-3.6676521334754155,22.287058185470062,'2026-04-26 15:16:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(413,1,'staff',40.43534974638437,-3.6677360951010813,13.596032814934569,'2026-04-26 15:16:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(414,1,'staff',40.435349034891026,-3.6677134991822036,12.593589192517333,'2026-04-26 15:16:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(415,1,'staff',40.43534830693554,-3.667663297250881,22.261386233481883,'2026-04-26 15:16:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(416,1,'staff',40.43534802072879,-3.6676549042056044,20.939884272005067,'2026-04-26 15:16:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(417,1,'staff',40.43529064221935,-3.667664224453007,14.24070318574,'2026-04-26 15:16:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(418,1,'staff',40.43537973897497,-3.6678290414073738,11.093082194123442,'2026-04-26 17:17:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(419,1,'staff',40.43537973897497,-3.6678290414073738,11.093082194123442,'2026-04-26 17:17:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(420,1,'staff',40.435379756784336,-3.6678290482963014,13.383828264271127,'2026-04-26 17:17:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(421,1,'staff',40.43537970990164,-3.6678290301613807,13.383228774007948,'2026-04-26 17:17:08');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(422,1,'staff',40.435379731308515,-3.6678290384418784,11.152647896669684,'2026-04-26 17:17:14');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(423,1,'staff',40.43537973426752,-3.6678290395864677,10.80106794698082,'2026-04-26 17:17:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(424,1,'staff',40.435379731308515,-3.6678290384418784,11.152647896669684,'2026-04-26 17:17:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(425,1,'staff',40.435379703733,-3.667829027775261,10.800890200102243,'2026-04-26 17:17:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(426,1,'staff',40.435379731308515,-3.6678290384418784,11.295014,'2026-04-26 17:17:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(427,1,'staff',40.435379703733,-3.667829027775261,10.895014000000002,'2026-04-26 17:17:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(428,1,'staff',40.435379703733,-3.667829027775261,10.800890200102243,'2026-04-26 17:17:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(429,1,'staff',40.43537970449522,-3.6678290280700994,10.750517677307977,'2026-04-26 17:17:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(430,1,'staff',40.43537970449499,-3.667829028070013,10.750541738885564,'2026-04-26 17:17:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(431,1,'staff',40.4353797212183,-3.667829034538832,9.491719823164745,'2026-04-26 17:17:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(432,1,'staff',40.43537973202873,-3.667829038720463,8.670005787518068,'2026-04-26 17:17:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(433,1,'staff',40.43537972239959,-3.6678290349957696,8.150472323318361,'2026-04-26 17:19:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(434,1,'staff',40.435379714652015,-3.667829031998888,8.005936008560045,'2026-04-26 17:19:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(435,1,'staff',40.43537972239959,-3.6678290349957696,8.150472323318361,'2026-04-26 17:19:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(436,1,'staff',40.43537972239959,-3.6678290349957696,8.595014,'2026-04-26 17:19:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(437,1,'staff',40.43537973142822,-3.667829038488176,8.005977635123502,'2026-04-26 17:19:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(438,1,'staff',40.43537972668542,-3.6678290366535893,8.666057604411801,'2026-04-26 17:19:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(439,1,'staff',40.43537974015532,-3.6678290418639476,10.173372842199408,'2026-04-26 17:19:59');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(440,1,'staff',40.435379748095194,-3.667829044935205,9.07204317393816,'2026-04-26 17:20:05');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(441,1,'staff',40.43537975333046,-3.6678290469602817,8.26590533799432,'2026-04-26 17:20:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(442,1,'staff',40.43537975703915,-3.667829048394859,7.640211993049839,'2026-04-26 17:20:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(443,1,'staff',40.43537975980416,-3.667829049464406,7.138339812838444,'2026-04-26 17:20:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(444,1,'staff',40.43538034679717,-3.667829660780175,7.11976197041272,'2026-04-26 17:20:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(445,1,'staff',40.43538034679666,-3.6678296607796437,7.119925120801574,'2026-04-26 17:20:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(446,1,'staff',40.43539257822604,-3.667842399033027,6.716957683803065,'2026-04-26 17:20:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(447,1,'staff',40.435386261549404,-3.667835847771681,13.925539643426218,'2026-04-26 17:21:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(448,1,'staff',40.43538626152729,-3.6678358477485173,13.925516589764516,'2026-04-26 17:21:00');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(449,1,'staff',40.43538626149924,-3.6678358477191804,13.938380856666628,'2026-04-26 17:21:06');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(450,1,'staff',40.43538413480602,-3.667833619928433,11.455198416461899,'2026-04-26 17:21:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(451,1,'staff',40.435383057303234,-3.6678324912039377,9.947001487820557,'2026-04-26 17:21:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(452,1,'staff',40.43538240703297,-3.667831810021493,8.907081902251074,'2026-04-26 17:21:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(453,1,'staff',40.43538197191926,-3.667831354223601,8.137572005258656,'2026-04-26 17:21:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(454,1,'staff',40.435381634575556,-3.6678310106122183,7.669286660091681,'2026-04-26 17:22:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(455,1,'staff',40.43538162938294,-3.667831005145427,7.756641789431042,'2026-04-26 17:22:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(456,1,'staff',40.435381613578215,-3.6678309989948383,7.756618807536942,'2026-04-26 17:22:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(457,1,'staff',40.435379786428534,-3.6678290988189244,13.99418015976914,'2026-04-26 17:22:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(458,1,'staff',40.43537974050197,-3.6678290419982673,14.095014,'2026-04-26 17:30:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(459,1,'staff',40.43537971759067,-3.6678290331357535,11.504673274691596,'2026-04-26 17:30:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(460,1,'staff',40.43537974050197,-3.6678290419982673,14.095014,'2026-04-26 17:30:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(461,1,'staff',40.43537975223526,-3.6678290465367986,11.505054089374925,'2026-04-26 17:30:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(462,1,'staff',40.435379739124436,-3.667829041465415,14.195014,'2026-04-26 17:30:17');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(463,1,'staff',40.43537973281405,-3.6678290390243435,9.978711181890407,'2026-04-26 17:30:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(464,1,'staff',40.43537974197382,-3.6678290425674587,8.931474426672674,'2026-04-26 17:30:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(465,1,'staff',40.43537974809915,-3.6678290449368127,8.162915551108581,'2026-04-26 17:30:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(466,1,'staff',40.4353797525116,-3.6678290466436025,7.589080507133084,'2026-04-26 17:30:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(467,1,'staff',40.435379727396864,-3.6678290369288282,13.695014,'2026-04-26 17:33:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(468,1,'staff',40.435379727396864,-3.6678290369288282,10.829796991749182,'2026-04-26 17:33:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(469,1,'staff',40.435379727396864,-3.6678290369288282,10.829796991749182,'2026-04-26 17:33:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(470,1,'staff',40.43537971057106,-3.667829030420346,11.231946502893658,'2026-04-26 17:33:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(471,1,'staff',40.43537974359203,-3.6678290431933473,11.232166338067495,'2026-04-26 17:33:04');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(472,1,'staff',40.43537971796905,-3.667829033281996,10.626515274569972,'2026-04-26 17:33:09');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(473,1,'staff',40.43537971796906,-3.6678290332819987,10.629738424649844,'2026-04-26 17:33:10');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(474,1,'staff',40.435379725022145,-3.6678289118777854,10.625647917731955,'2026-04-26 17:33:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(475,1,'staff',40.43537972502225,-3.667828911878051,10.62563821934835,'2026-04-26 17:33:15');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(476,1,'staff',40.435379725022266,-3.6678289118780802,10.65385065461157,'2026-04-26 17:33:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(477,1,'staff',40.4353799754501,-3.6678272914585204,10.621699964551336,'2026-04-26 17:33:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(478,1,'staff',40.43537997612337,-3.667827315100318,10.55554080508492,'2026-04-26 17:33:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(479,1,'staff',40.43537979937077,-3.6678282071461568,10.647455963248275,'2026-04-26 17:33:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(480,1,'staff',40.43537989223004,-3.6678276556995555,10.633961146606648,'2026-04-26 17:33:21');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(481,1,'staff',40.43538337804783,-3.667806311145371,10.028063463960226,'2026-04-26 17:33:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(482,1,'staff',40.435383374054084,-3.6678063415688937,10.079305625608043,'2026-04-26 17:33:22');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(483,1,'staff',40.43540487468592,-3.667811387096572,10.052965362483071,'2026-04-26 17:33:23');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(484,1,'staff',40.43540981623956,-3.667811881549293,10.014868768140238,'2026-04-26 17:33:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(485,1,'staff',40.435410269052355,-3.6678095768028562,9.940823395052663,'2026-04-26 17:33:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(486,1,'staff',40.43541264138517,-3.6678049507649266,9.901410539494615,'2026-04-26 17:33:26');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(487,1,'staff',40.43542013586569,-3.667786484843995,9.254596644910979,'2026-04-26 17:33:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(488,1,'staff',40.43542016125831,-3.6677858450926166,9.24863132718892,'2026-04-26 17:33:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(489,1,'staff',40.43542019415217,-3.6677858219564303,9.248623848099376,'2026-04-26 17:33:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(490,1,'staff',40.435420194150424,-3.6677858219583053,9.248628043345493,'2026-04-26 17:33:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(491,1,'staff',40.4354216081535,-3.667777673804884,8.732416920834346,'2026-04-26 17:33:29');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(492,1,'staff',40.435411732152424,-3.667786741720821,8.312985231746342,'2026-04-26 17:33:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(493,1,'staff',40.435406776808705,-3.66779381065639,8.675591147436256,'2026-04-26 17:33:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(494,1,'staff',40.43538536005931,-3.6678411742033203,8.753792438661852,'2026-04-26 17:33:32');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(495,1,'staff',40.43536551729349,-3.6678881286777876,9.1444321779509,'2026-04-26 17:33:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(496,1,'staff',40.435343385322255,-3.6679354064316003,9.559180748746336,'2026-04-26 17:33:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(497,1,'staff',40.435351683876064,-3.6679122004304636,8.76512263695453,'2026-04-26 17:33:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(498,1,'staff',40.435372796963904,-3.667847100799494,13.580022184065376,'2026-04-26 17:35:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(499,1,'staff',40.435372796963904,-3.667847100799494,13.580022184065376,'2026-04-26 17:35:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(500,1,'staff',40.435375372966014,-3.6678404354720433,12.104452829600223,'2026-04-26 17:35:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(501,1,'staff',40.43537541099893,-3.66784045114254,12.104895776989906,'2026-04-26 17:35:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(502,1,'staff',40.43537660612396,-3.6678373289318804,10.400671362289634,'2026-04-26 17:35:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(503,1,'staff',40.43537737404349,-3.667835394408495,9.60899257486776,'2026-04-26 17:35:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(504,1,'staff',40.4353778544749,-3.667834184117896,8.666126982657849,'2026-04-26 17:36:03');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(505,1,'staff',40.4353778544749,-3.667834184117896,8.666126982657849,'2026-04-26 17:36:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(506,1,'staff',40.43537818519971,-3.6678333509643717,7.978092190092578,'2026-04-26 17:36:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(507,1,'staff',40.43537816858973,-3.667833344383067,7.97796520691377,'2026-04-26 17:36:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(508,1,'staff',40.4353778544749,-3.667834184117896,8.795014,'2026-04-26 17:36:18');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(509,1,'staff',40.43537841470049,-3.6678327311421732,7.469837934286898,'2026-04-26 17:36:24');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(510,1,'staff',40.435378600564235,-3.667832268020402,6.997885417853233,'2026-04-26 17:36:30');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(511,1,'staff',40.435378745970254,-3.667831905708237,6.607220689422457,'2026-04-26 17:36:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(512,1,'staff',40.435378864385065,-3.667831610650835,6.3172126340231625,'2026-04-26 17:36:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(513,1,'staff',40.43539048958904,-3.667617482526006,35,'2026-04-26 17:40:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(514,1,'staff',40.43539048958904,-3.667617482526006,35,'2026-04-26 17:40:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(515,1,'staff',40.43542272666952,-3.667584122854343,35,'2026-04-26 17:40:11');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(516,1,'staff',40.43539506044901,-3.667505036275253,35,'2026-04-26 17:41:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(517,1,'staff',40.43537353255592,-3.667778996126765,35,'2026-04-26 17:42:12');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(518,1,'staff',40.43535740522207,-3.6677171254437724,35,'2026-04-26 17:43:13');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(519,1,'staff',40.435337255034995,-3.6676079848762897,35,'2026-04-26 17:44:16');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(520,1,'staff',40.435379852874235,-3.6678289173522787,11.480984421507394,'2026-04-26 17:49:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(521,1,'staff',40.435379852874235,-3.6678289173522787,11.480984421507394,'2026-04-26 17:49:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(522,1,'staff',40.43537984489592,-3.66782891426871,11.361755491289745,'2026-04-26 17:49:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(523,1,'staff',40.43537987869328,-3.667828927331176,11.362122288811765,'2026-04-26 17:49:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(524,1,'staff',40.435379852874235,-3.6678289173522787,13.895014000000002,'2026-04-26 17:49:25');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(525,1,'staff',40.43537984489613,-3.6678289142687928,11.367319864927499,'2026-04-26 17:49:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(526,1,'staff',40.435379844896126,-3.6678289142687936,11.367320974448491,'2026-04-26 17:49:31');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(527,1,'staff',40.43538384832851,-3.667828221517524,11.36551415493781,'2026-04-26 17:49:33');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(528,1,'staff',40.43538096138121,-3.6678255592394646,10.813200039139518,'2026-04-26 17:49:34');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(529,1,'staff',40.43538313626406,-3.667844585539106,10.47254864676618,'2026-04-26 17:49:35');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(530,1,'staff',40.43537943686758,-3.6678363532772065,10.340458512706864,'2026-04-26 17:49:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(531,1,'staff',40.435379485876844,-3.6678356216034387,9.816789659664641,'2026-04-26 17:49:36');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(532,1,'staff',40.43539163324009,-3.6678279545325316,11.283424597149846,'2026-04-26 17:49:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(533,1,'staff',40.43539164688458,-3.6678276291067684,11.28632631171042,'2026-04-26 17:49:37');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(534,1,'staff',40.43538565054255,-3.6678231436601036,11.215599623701085,'2026-04-26 17:49:38');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(535,1,'staff',40.4353899561286,-3.667822937201529,11.16591821572346,'2026-04-26 17:49:39');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(536,1,'staff',40.43539300778852,-3.6678186945387297,10.064783407498638,'2026-04-26 17:49:40');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(537,1,'staff',40.43539820036879,-3.667818280017195,9.267570289614843,'2026-04-26 17:49:41');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(538,1,'staff',40.435402699958466,-3.667821198350783,9.30742637866427,'2026-04-26 17:49:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(539,1,'staff',40.43540268692629,-3.6678211955266935,9.306263588179949,'2026-04-26 17:49:42');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(540,1,'staff',40.43540317618239,-3.6678196263745066,9.270148074247132,'2026-04-26 17:49:43');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(541,1,'staff',40.4354015990402,-3.66781674559176,9.260622202647825,'2026-04-26 17:49:44');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(542,1,'staff',40.4354017736798,-3.6678167660267516,9.25562615427939,'2026-04-26 17:49:45');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(543,1,'staff',40.435401825235424,-3.667816772059397,9.252616564568116,'2026-04-26 17:49:46');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(544,1,'staff',40.43540206334767,-3.667816799921477,9.238050564982426,'2026-04-26 17:49:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(545,1,'staff',40.43540046139612,-3.66781786337253,9.067064667798311,'2026-04-26 17:49:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(546,1,'staff',40.435402365387596,-3.667816835263887,9.47779753221777,'2026-04-26 17:49:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(547,1,'staff',40.435388314856525,-3.6678086237374785,9.541422243597662,'2026-04-26 17:49:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(548,1,'staff',40.43538831971122,-3.667808627522804,9.541377233914249,'2026-04-26 17:49:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(549,1,'staff',40.435385634156674,-3.66780812032552,9.515523921933884,'2026-04-26 17:49:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(550,1,'staff',40.43538532318726,-3.6678082910302265,9.499039824918215,'2026-04-26 17:49:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(551,1,'staff',40.4353837058289,-3.667807790223407,9.499509478405539,'2026-04-26 17:49:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(552,1,'staff',40.43544152313348,-3.6677289399187654,35,'2026-04-26 17:52:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(553,1,'staff',40.43544152313348,-3.6677289399187654,35,'2026-04-26 17:52:27');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(554,1,'staff',40.435335890976404,-3.6676711592252906,35,'2026-04-26 17:52:28');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(555,1,'staff',40.435335890976404,-3.6676711592252906,35,'2026-04-26 17:53:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(556,1,'staff',40.435335890976404,-3.6676711592252906,35,'2026-04-26 17:53:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(557,1,'staff',40.43537411905195,-3.6676540680267795,35,'2026-04-26 17:53:56');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(558,1,'staff',40.435388562583015,-3.667638169226339,35,'2026-04-26 17:54:57');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(559,1,'staff',40.435393713302204,-3.667507855768298,35,'2026-04-26 19:29:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(560,1,'staff',40.435393713302204,-3.667507855768298,35,'2026-04-26 19:29:47');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(561,1,'staff',40.435390991625034,-3.6674861904576628,35,'2026-04-26 19:29:48');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(562,1,'staff',40.43547792266592,-3.6676613112395935,35,'2026-04-26 19:30:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(563,1,'staff',40.43539371575158,-3.66767138927889,35,'2026-04-26 19:31:49');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(564,1,'staff',40.43537936231961,-3.6677741372363633,35,'2026-04-26 19:32:50');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(565,1,'staff',40.435415192237805,-3.6676847283255998,35,'2026-04-26 19:33:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(566,1,'staff',40.43543973614393,-3.6676371759538515,35,'2026-04-26 19:34:51');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(567,1,'staff',40.43538897924352,-3.6676558596703446,35,'2026-04-26 19:35:52');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(568,1,'staff',40.43538361964973,-3.667728138176081,35,'2026-04-26 19:36:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(569,1,'staff',40.4354045401855,-3.667392084271711,35,'2026-04-26 19:37:53');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(570,1,'staff',40.43539024905643,-3.667588283039722,40,'2026-04-26 19:38:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(571,1,'staff',40.435390227800795,-3.667588617414346,40,'2026-04-26 19:39:54');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(572,1,'staff',40.43541016088238,-3.6675986527537656,35,'2026-04-26 19:40:55');
+INSERT INTO "locations" ("id","entity_id","entity_type","latitude","longitude","accuracy","ts") VALUES(573,1,'staff',40.43533706613224,-3.667790449096121,35,'2026-04-26 19:41:56');
+CREATE TABLE geofences (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL,
+  radius INTEGER NOT NULL,
+  type TEXT CHECK(type IN ('office', 'client', 'danger_zone')) DEFAULT 'office',
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO "geofences" ("id","name","latitude","longitude","radius","type","is_active","created_at") VALUES(1,'OFICINA CENTRAL',40.4165,-3.7035,100,'office',1,'2026-04-26 11:53:29');
+INSERT INTO "geofences" ("id","name","latitude","longitude","radius","type","is_active","created_at") VALUES(2,'OFICINA CARACAS',10.4859,-66.8748,100,'office',1,'2026-04-26 12:27:24');
+CREATE TABLE geofence_alerts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  geofence_id INTEGER NOT NULL,
+  alert_type TEXT CHECK(alert_type IN ('entry', 'exit')),
+  ts TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(user_id) REFERENCES users(id),
+  FOREIGN KEY(geofence_id) REFERENCES geofences(id)
+);
+INSERT INTO "geofence_alerts" ("id","user_id","geofence_id","alert_type","ts") VALUES(1,419,1,'entry','2026-04-26 11:54:01');
+CREATE TABLE tracking_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, requested_by INTEGER NOT NULL, status TEXT DEFAULT 'pending', expires_at DATETIME, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE access_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id INTEGER NOT NULL,
+  visitor_name TEXT,
+  visitor_id_ref TEXT,
+  visitor_type TEXT,
+  visitor_phone TEXT,
+  visitor_email TEXT,
+  comments TEXT,
+  company_name TEXT,
+  vehicle_details TEXT,
+  activity_desc TEXT,
+  status TEXT DEFAULT 'in',
+  entry_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  exit_at TEXT,
+  operator_id INTEGER,
+  FOREIGN KEY(session_id) REFERENCES sessions(id)
+);
+CREATE TABLE guest_list (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  id_ref TEXT,
+  visitor_type TEXT,
+  notes TEXT,
+  FOREIGN KEY(session_id) REFERENCES sessions(id)
+);
+DELETE FROM sqlite_sequence;
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('slots',30);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('vehicles_old',3);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('vehicles',107);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('photos',142);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('events',25);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('sessions',55);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('messages',3);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('payroll_rates',7);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('equivalences',7);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('payroll_submissions',15);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('staff_attendance',193);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('users',428);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('assets',3);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('locations',573);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('geofences',2);
+INSERT INTO "sqlite_sequence" ("name","seq") VALUES('geofence_alerts',1);
+CREATE UNIQUE INDEX idx_users_name ON users(name);

@@ -1,0 +1,5 @@
+INSERT INTO users (name, pin_hash, role, cedula, phone, sector, created_at) VALUES ('ADRIAN SALOM', 'L219', 'valet', '29625219', '0424 2480405', 'BELLO MONTE', datetime('now'));
+INSERT INTO users (name, pin_hash, role, cedula, phone, sector, created_at) VALUES ('RUBEN FLORES', 'L469', 'valet', '24407469', '', '', datetime('now'));
+INSERT INTO users (name, pin_hash, role, cedula, phone, sector, created_at) VALUES ('GENESISI ORTIZ', 'L803', 'valet', '27764803', '0412 6134772', 'CARICUAO', datetime('now'));
+INSERT INTO users (name, pin_hash, role, cedula, phone, sector, created_at) VALUES ('JOSE ARAQUE', 'L578', 'valet', '26386578', '0412 2516003', 'BELLO MONTE', datetime('now'));
+INSERT INTO users (name, pin_hash, role, cedula, phone, sector, created_at) VALUES ('EDUARDO MACHADO', 'L888', 'valet', '19452888', '', '', datetime('now'));

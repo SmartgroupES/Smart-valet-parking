@@ -1,9 +1,17 @@
-const CACHE_NAME = 'valet-eye-v1';
+const CACHE_NAME = 'valet-eye-v2.3.47';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
 });
 self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+  if (e.request.mode === 'navigate') {
+    e.respondWith(fetch(e.request).catch(() => caches.match('/')));
+  } else {
+    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+  }
 });
 self.addEventListener('push', e => {
   const data = e.data.json();

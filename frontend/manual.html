@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Operación — EYE STAFF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #0b0f19; color: #f1f5f9; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #161b2c; padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); }
+        h1 { color: #ef4444; font-weight: 800; font-size: 2.5rem; margin-top: 0; }
+        h2 { color: #6366f1; border-bottom: 2px solid rgba(99, 102, 241, 0.2); padding-bottom: 10px; margin-top: 40px; }
+        .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .rule-item { background: #1e253c; padding: 20px; border-radius: 16px; border-left: 4px solid #ef4444; }
+        .rule-num { font-size: 2rem; font-weight: 800; color: rgba(255,255,255,0.1); float: right; }
+        .clock-img { width: 100%; max-width: 300px; display: block; margin: 20px auto; filter: invert(1) opacity(0.8); }
+        .step { margin-bottom: 20px; display: flex; gap: 15px; }
+        .step-num { background: #ef4444; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; }
+        .highlight { color: #22c55e; font-weight: 700; }
+        .footer { text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.8rem; letter-spacing: 1px; }
+        @media (max-width: 600px) { .rule-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manual de Operación: Recepción Digital</h1>
+        <p>Optimiza la entrada de vehículos mediante Inteligencia Artificial y captura de evidencia fotográfica.</p>
+
+        <h2>1. La Regla de las 4 Fotos (El "Reloj")</h2>
+        <p>Imagina que el vehículo está en el centro de un reloj. Debes capturar 4 ángulos críticos que garantizan la visibilidad de placas, esquinas y estado general.</p>
+        
+        <div class="rule-grid">
+            <div class="rule-item">
+                <span class="rule-num">2</span>
+                <strong>Posición 2:</strong> Esquina Frontal Derecha. Captura placa delantera y neumático.
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">4</span>
+                <strong>Posición 4:</strong> Esquina Trasera Derecha. Captura lateral y estado de puertas.
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">8</span>
+                <strong>Posición 8:</strong> Esquina Trasera Izquierda. Captura placa trasera y parachoques.
+            </div>
+            <div class="rule-item">
+                <span class="rule-num">10</span>
+                <strong>Posición 10:</strong> Esquina Frontal Izquierda. Captura lateral piloto y frontal.
+            </div>
+        </div>
+
+        <h2>2. Flujo de Trabajo (Workflow)</h2>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div><strong>Captura:</strong> Toma las 4 fotos en el orden del reloj directamente desde la aplicación.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div><strong>Análisis:</strong> Pulsa el botón <span class="highlight">"ANALIZAR CON IA"</span>. El sistema extraerá Placa, Marca, Modelo y Color.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div><strong>Verificación:</strong> Revisa que los campos autocompletados sean correctos. La IA también generará un comentario sobre el estado visual detectado.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div><strong>Confirmación:</strong> Corrige manualmente si es necesario y pulsa "GENERAR TICKET" para finalizar.</div>
+        </div>
+
+        <h2>3. Rastreo GPS y Monitoreo (v2.2.28)</h2>
+        <div class="step">
+            <div class="step-num">🛰️</div>
+            <div><strong>Transparencia:</strong> El sistema registra tu ubicación únicamente durante tu jornada laboral para optimizar la logística y respuesta ante emergencias.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">📍</div>
+            <div><strong>Geofencing:</strong> El sistema detecta automáticamente tu entrada y salida de zonas operativas (Oficinas, Clientes). Recibirás una notificación en el portal al entrar en una zona activa.</div>
+        </div>
+
+        <h2>4. Consideraciones Importantes</h2>
+        <ul>
+            <li><strong>Luz:</strong> Asegúrate de que las placas sean legibles en las fotos.</li>
+            <li><strong>Permisos:</strong> Debes autorizar el acceso a la ubicación en tu navegador para que el sistema funcione correctamente.</li>
+            <li><strong>Privacidad:</strong> Solo fotografía el vehículo, evita capturar rostros de clientes o peatones.</li>
+            <li><strong>Batería:</strong> El rastreo GPS consume batería adicional. Asegúrate de tener tu dispositivo cargado.</li>
+        </ul>
+
+        <div class="footer">GRUPO EYE STAFF © 2026 — PLATAFORMA OPERATIVA v2.2.28</div>
+    </div>
+</body>
+</html>
