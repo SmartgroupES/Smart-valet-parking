@@ -1300,7 +1300,7 @@
         const canSeeEvents = isAdmin && user.profile_admin !== 'NO APLICA';
 
         // RESTRICCIÓN: Solo perfiles con privilegios de Director o Coordinador pueden ingresar a los otros módulos
-        if (!isAdmin && module !== 'valet' && module !== 'formatos' && module !== 'chat') {
+        if (!isAdmin && module !== 'valet' && module !== 'formatos' && module !== 'chat' && module !== 'accesos' && module !== 'alquiler') {
             return toast('⚠️ ACCESO RESTRINGIDO A EVENTOS Y OPERACIONES', 'warning');
         }
 
@@ -1325,6 +1325,10 @@
         } else if (module === 'hr') {
             showTab('admin');
             setTimeout(updateFloatingChatVisibility, 100);
+        } else if (module === 'accesos') {
+            renderAccessControl(view);
+        } else if (module === 'alquiler') {
+            renderAlquiler(view);
         } else if (module === 'listas') {
             apiFetch('/api/sessions/next-correlativo').then(res => {
                 window.nextCorrelativo = res.next || 1;
@@ -2163,6 +2167,22 @@ NOTAS: ${s.observations || 'N/A'}
                                 <span class="menu-item-desc" style="font-size:0.55rem;">${valetStatus}</span>
                             </div>
                         </div>
+                        <!-- CONTROL DE ACCESOS -->
+                        <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🆔</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">ACTIVO</span>
+                            </div>
+                        </div>
+                        <!-- ALQUILER DE EQUIPOS -->
+                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🏗️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">ACTIVO</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Servicios Inactivos / Colapsables -->
@@ -2170,28 +2190,12 @@ NOTAS: ${s.observations || 'N/A'}
                     <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 16px; margin-top: 12px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
                         <div onclick="window.toggleServicesSection()" style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; cursor:pointer; background:rgba(255,255,255,0.01); transition: background 0.2s;">
                             <span style="font-size:0.75rem; font-weight:800; color:var(--muted); letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-                                🗂️ VER OTROS SERVICIOS <span style="font-size:0.6rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:10px; color:#fff;">5</span>
+                                🗂️ VER OTROS SERVICIOS <span style="font-size:0.6rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:10px; color:#fff;">3</span>
                             </span>
                             <span id="services-toggle-arrow" style="font-size:0.7rem; color:var(--muted); transition: transform 0.3s; display: inline-block; transform: ${window.isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</span>
                         </div>
                         <div id="collapsed-services-container" style="display: ${window.isServicesExpanded ? 'block' : 'none'}; padding: 15px; border-top: 1px solid var(--border); background:rgba(0,0,0,0.15);">
                             <div class="menu-grid" style="margin-top:0; gap:12px;">
-                                <!-- CONTROL DE ACCESOS -->
-                                <div class="menu-item disabled" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
-                                    <i style="font-size:1.5rem">🆔</i>
-                                    <div class="menu-item-content">
-                                        <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
-                                        <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
-                                    </div>
-                                </div>
-                                <!-- ALQUILER DE EQUIPOS -->
-                                <div class="menu-item disabled" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
-                                    <i style="font-size:1.5rem">🏗️</i>
-                                    <div class="menu-item-content">
-                                        <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
-                                        <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
-                                    </div>
-                                </div>
                                 <!-- TRASLADOS -->
                                 <div class="menu-item disabled" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
                                     <i style="font-size:1.5rem">🚐</i>
@@ -8093,6 +8097,22 @@ NOTAS: ${s.observations || 'N/A'}
             const data = await apiFetch('/api/admin/permissions');
             if (data) window.rbacData = data;
         }
+    }
+
+    function renderAlquiler(el) {
+        if (!el) return;
+        el.innerHTML = `
+            <div id="alquiler-view">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+                    <h1 class="view-title" style="color:var(--warning);">🏗️ ALQUILER DE EQUIPOS 🚧</h1>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--warning); margin-bottom: 30px; background: rgba(245, 158, 11, 0.02);">
+                    <p style="color:var(--muted); font-size:1rem; text-align:center; line-height:1.6; max-width:800px; margin:0 auto;">
+                        El módulo de <b>Alquiler de Equipos</b> está siendo habilitado. Permite la gestión, control y facturación de activos cedidos para eventos y producciones de forma estructurada.
+                    </p>
+                </div>
+            </div>
+        `;
     }
 
     function renderAccessControl(el) {
