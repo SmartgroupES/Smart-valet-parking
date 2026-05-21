@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GRUPO EYE STAFF</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="description" content="Plataforma integral de operaciones para Grupo Eye Staff — Valet Parking, Eventos, RRHH y más.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GRUPO EYE STAFF">
+    <meta name="apple-mobile-web-app-title" content="EYE STAFF">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -754,18 +755,8 @@
         }
         .scheduled-staff-grid {
             display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
             gap: 12px !important;
-        }
-        @media (max-width: 1024px) {
-            .scheduled-staff-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-        }
-        @media (max-width: 480px) {
-            .scheduled-staff-grid {
-                grid-template-columns: 1fr !important;
-            }
         }
         .event-card-split {
             display: flex;
@@ -949,7 +940,7 @@
             </div>
 
             <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                GRUPO EYE STAFF — PLATAFORMA INTEGRAL v2.4.66
+                GRUPO EYE STAFF — PLATAFORMA INTEGRAL v2.4.98
             </div>
         </div>
     </main>
@@ -963,23 +954,18 @@
 <div id="toast-container"></div>
 
 <script>
-    // Kill any active Service Worker to avoid cache/routing conflicts
+    // Registro del Service Worker (PWA)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(regs => {
-            regs.forEach(r => {
-                r.unregister().then(success => {
-                    if (success) {
-                        console.log('SW unregistered');
-                        window.location.reload();
-                    }
-                });
-            });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('[PWA] Service Worker registrado:', reg.scope))
+                .catch(err => console.warn('[PWA] Error al registrar SW:', err));
         });
     }
 
     // --- CONFIG & STATE ---
     const API_BASE = window.location.origin;
-    const VERSION = '2.4.61';
+    const VERSION = '2.4.94';
     
     function formatPhone(phone) {
         if (!phone) return '---';
@@ -995,6 +981,21 @@
     
     // Global Error Handler for debugging
     window.onerror = function(msg, url, line, col, error) {
+        const message = (msg || '').toString();
+        // Ignorar errores típicos de extensiones de navegador, inyecciones de script, o CDN con problemas de red
+        if (
+            !line || 
+            line <= 1 || 
+            !url || 
+            url.indexOf('chrome-extension') > -1 || 
+            url.indexOf('moz-extension') > -1 || 
+            (url.indexOf('http') === -1 && url.indexOf('/') === -1) ||
+            message.indexOf('Unexpected token') > -1 || 
+            message.indexOf('Script error') > -1
+        ) {
+            console.warn("Ignored script error (external/injected):", msg, "at", url, "line", line);
+            return false;
+        }
         const errorMsg = `ERROR: ${msg}\nEn: ${line}:${col}`;
         console.error(errorMsg, error);
         if (typeof toast === 'function') toast(errorMsg, 'error');
@@ -1026,7 +1027,73 @@
         if (!dateInput) return 'S/F';
         const d = new Date(dateInput);
         if (isNaN(d.getTime())) return 'S/F';
-        return d.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', day: '2-digit', month: '2-digit', year: '2-digit' });
+        const weekday = d.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', weekday: 'long' }).toLowerCase();
+        const dateStr = d.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', day: '2-digit', month: '2-digit', year: '2-digit' });
+        return `${weekday} ${dateStr}`;
+    }
+
+    function setupTimeInputMask(id) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.addEventListener('input', () => {
+            let val = input.value.replace(/[^0-9]/g, '');
+            if (val.length > 4) val = val.substring(0, 4);
+            if (val.length > 2) {
+                val = val.substring(0, 2) + ':' + val.substring(2);
+            }
+            input.value = val;
+        });
+        input.addEventListener('blur', () => {
+            const val = input.value;
+            if (!val) return;
+            const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (!regex.test(val)) {
+                toast('HORA INVÁLIDA. USE FORMATO 24H (EJ: 23:00)', 'error');
+                input.value = '';
+            }
+        });
+    }
+
+    function isStaffMemberBusy(staffId, currentSessionId) {
+        const targetDate = document.getElementById('lista-fecha')?.value;
+        if (!targetDate) return null;
+
+        const targetTimeStart = document.getElementById('lista-hora-convocatoria')?.value || document.getElementById('lista-hora-inicio')?.value || '00:00';
+        const targetDateFin = document.getElementById('lista-fecha-fin')?.value || targetDate;
+        const targetTimeEnd = document.getElementById('lista-hora-fin')?.value || '23:59';
+
+        const newStart = new Date(`${targetDate}T${targetTimeStart}`);
+        const newEnd = new Date(`${targetDateFin}T${targetTimeEnd}`);
+
+        if (isNaN(newStart.getTime()) || isNaN(newEnd.getTime())) return null;
+
+        const busySession = (window.activeSessions || []).find(sess => {
+            if (sess.id == window.editingSessionId) return false;
+
+            if (sess.status === 'active' && String(currentSessionId || '').split(',').includes(String(sess.id))) return true;
+
+            const isAssigned = (sess.assigned_staff_list || []).some(u => u.id == staffId) || (sess.supervisor_id == staffId);
+            if (isAssigned) {
+                const sessStartDay = sess.started_at ? sess.started_at.split('T')[0] : '';
+                if (!sessStartDay) return false;
+
+                const sessTimeStart = sess.convocation_time || sess.event_start_time || '00:00';
+                const sessEndDay = sess.event_end_date ? sess.event_end_date.split('T')[0] : sessStartDay;
+                const sessTimeEnd = sess.event_end_time || '23:59';
+
+                const sessStart = new Date(`${sessStartDay}T${sessTimeStart}`);
+                const sessEnd = new Date(`${sessEndDay}T${sessTimeEnd}`);
+
+                if (isNaN(sessStart.getTime()) || isNaN(sessEnd.getTime())) return false;
+
+                if (newStart < sessEnd && newEnd > sessStart) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        return busySession || null;
     }
     let currentTab = 'dashboard';
     let currentStaff = { id: 1, name: 'Director Valet', role: 'director' };
@@ -1205,7 +1272,7 @@
         const timeStr = formatTime24h(now);
 
         // Actualizar todos los footers dinámicamente
-        const footerStr = `EYE STAFF 2026 - v2.4.66 | ${dateStr} | ${timeStr}`;
+        const footerStr = `EYE STAFF 2026 - v2.4.98 | ${dateStr} | ${timeStr}`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.textContent = footerStr;
         });
@@ -1271,12 +1338,13 @@
             window.chatLoadedOnce = false; // Forzar recarga fresca del directorio de chat al entrar
             renderChat(view);
             setTimeout(updateFloatingChatVisibility, 100);
-        } else if (module === 'accesos' || module === 'renta' || module === 'formatos' || module === 'traslados' || module === 'guardia' || module === 'custodia_portal') {
+        } else if (module === 'accesos' || module === 'renta' || module === 'formatos' || module === 'traslados' || module === 'guardia' || module === 'custodia_portal' || module === 'vip_eye_staff') {
             if (module === 'accesos') renderAccessControl(view);
             else if (module === 'renta') renderRentaEquipos(view);
             else if (module === 'traslados') showToast('MÓDULO DE TRASLADOS PRÓXIMAMENTE');
             else if (module === 'guardia') showToast('MÓDULO DE GUARDIA PRÓXIMAMENTE');
             else if (module === 'custodia_portal') showToast('MÓDULO DE CUSTODIA PRÓXIMAMENTE');
+            else if (module === 'vip_eye_staff') renderVipEyeStaff(view);
             else renderFormatos(view);
             setTimeout(updateFloatingChatVisibility, 100);
         }
@@ -1483,11 +1551,16 @@ NOTAS: ${s.observations || 'N/A'}
                     observations: document.getElementById('lista-observaciones')?.value || '',
                     convocation_time: document.getElementById('lista-hora-convocatoria')?.value || '',
                     event_start_time: document.getElementById('lista-hora-inicio')?.value || '',
-                    event_end_time: document.getElementById('lista-hora-fin')?.value || ''
+                    event_end_time: document.getElementById('lista-hora-fin')?.value || '',
+                    event_end_date: document.getElementById('lista-fecha-fin')?.value || ''
                 })
             });
             
-            if (res && res.error) throw new Error(res.error);
+            if (!res) {
+                hideLoading();
+                return;
+            }
+            if (res.error) throw new Error(res.error);
 
             await checkActiveSession();
             toast(isEditing ? '📝 EVENTO ACTUALIZADO CORRECTAMENTE' : '🚀 EVENTO GUARDADO Y PROGRAMADO', 'success');
@@ -1518,25 +1591,25 @@ NOTAS: ${s.observations || 'N/A'}
                 <div class="header" style="margin-bottom: 20px;">
                     <h1 class="view-title">📋 GESTIÓN DE LISTAS</h1>
                 </div>
-                <div class="listas-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items:stretch; width:100%; max-width:100%; box-sizing:border-box;">
+                <div class="listas-grid" style="display:grid; grid-template-columns: 1fr; gap: 20px; align-items:stretch; width:100%; max-width:100%; box-sizing:border-box;">
                     <!-- COLUMNA 1: PANEL DE ENTRADA -->
                     <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.3s ease-out;">
                         <h3 style="margin-bottom:20px; color:var(--accent);">Datos del Evento</h3>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; text-align:left;">
                             <div style="grid-column: span 1;">
                                 <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">FECHA DEL EVENTO</label>
-                                <input type="date" id="lista-fecha" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;" onchange="updateStaffList('employee')">
+                                <input type="date" id="lista-fecha" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;" onchange="updateStaffList('supervisor'); updateStaffList('employee');">
                             </div>
                             <div style="grid-column: span 1;">
                                 <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
                                 <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;">
                                     <option value="" disabled selected>Seleccione...</option>
-                                    <option value="Valet Parking">Valet Parking</option>
-                                    <option value="Boda">Boda</option>
-                                    <option value="Corporativo">Corporativo</option>
-                                    <option value="Cumpleaños">Cumpleaños</option>
-                                    <option value="Concierto">Concierto</option>
-                                    <option value="Otro">Otro</option>
+                                    <option value="valet parking">Valet Parking</option>
+                                    <option value="boda" disabled style="color:var(--muted);">Boda</option>
+                                    <option value="corporativo" disabled style="color:var(--muted);">Corporativo</option>
+                                    <option value="cumpleaños" disabled style="color:var(--muted);">Cumpleaños</option>
+                                    <option value="concierto" disabled style="color:var(--muted);">Concierto</option>
+                                    <option value="otro" disabled style="color:var(--muted);">Otro</option>
                                 </select>
                             </div>
                             <div style="grid-column: span 2;">
@@ -1561,18 +1634,25 @@ NOTAS: ${s.observations || 'N/A'}
                                 <input type="tel" id="lista-telefono" class="input-field" placeholder="+58 ..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
                             </div>
                             
-                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px;">
+                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
                                 <div style="min-width:0;">
-                                    <label style="font-size:0.6rem; color:var(--warning); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🕗 CONVOCATORIA</label>
-                                    <input type="time" id="lista-hora-convocatoria" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                    <label style="font-size:0.65rem; color:var(--warning); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🕗 CONVOCATORIA</label>
+                                    <input type="text" id="lista-hora-convocatoria" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
                                 </div>
                                 <div style="min-width:0;">
-                                    <label style="font-size:0.6rem; color:var(--accent); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🚀 INICIO EVENTO</label>
-                                    <input type="time" id="lista-hora-inicio" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                    <label style="font-size:0.65rem; color:var(--accent); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🚀 INICIO EVENTO</label>
+                                    <input type="text" id="lista-hora-inicio" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
+                                </div>
+                            </div>
+                            
+                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.65rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📅 FECHA FIN DE EVENTO</label>
+                                    <input type="date" id="lista-fecha-fin" class="input-field" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" onchange="updateStaffList('supervisor'); updateStaffList('employee');">
                                 </div>
                                 <div style="min-width:0;">
-                                    <label style="font-size:0.6rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🏁 FIN (EST.)</label>
-                                    <input type="time" id="lista-hora-fin" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                    <label style="font-size:0.65rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🏁 FIN (EST.)</label>
+                                    <input type="text" id="lista-hora-fin" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
                                 </div>
                             </div>
 
@@ -1604,13 +1684,12 @@ NOTAS: ${s.observations || 'N/A'}
                         <!-- SECCIÓN SUPERVISORES -->
                         <div style="margin-bottom:25px;">
                             <label style="font-size:0.65rem; color:var(--warning); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">🛡️ SUPERVISORES / ENCARGADOS</label>
-                            <div style="position:relative;">
-                                <input type="text" id="search-supervisor" class="input-field" placeholder="Escriba nombre..." 
-                                    style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box;"
-                                    oninput="handleStaffSearch('supervisor', this.value)">
-                                <div id="results-supervisor" class="search-results"></div>
+                            <input type="text" id="filter-supervisor" class="input-field" placeholder="Filtrar por nombre..." 
+                                style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
+                                oninput="updateStaffList('supervisor')">
+                            <div id="list-supervisor" style="height:150px; overflow-y:auto; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--warning) transparent;">
+                                <!-- Cargado dinámicamente -->
                             </div>
-                            <div id="selected-supervisors" style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;"></div>
                         </div>
 
                         <!-- SECCIÓN EMPLEADOS -->
@@ -1637,8 +1716,14 @@ NOTAS: ${s.observations || 'N/A'}
             window.allStaffData = allStaff;
             window.staffSelection = { supervisors: [], employees: [] };
             
-            // Inicializar lista de empleados
+            // Inicializar listas de personal
+            updateStaffList('supervisor');
             updateStaffList('employee');
+
+            // Inicializar mascaras de hora 24h
+            setupTimeInputMask('lista-hora-convocatoria');
+            setupTimeInputMask('lista-hora-inicio');
+            setupTimeInputMask('lista-hora-fin');
         } catch (e) {
             console.error(e);
             toast('ERROR AL CARGAR DATOS', 'error');
@@ -1793,6 +1878,24 @@ NOTAS: ${s.observations || 'N/A'}
         }
     };
 
+    function checkVipAccess(user) {
+        if (!user || !user.name) return false;
+        const allowedVipNames = [
+            "NELSON CARRILLO",
+            "JOSÉ GREGORIO RAMOS",
+            "NICOLÁS BETANCOURT",
+            "BILLY GONZÁLEZ",
+            "ALFONSO CALABRESE",
+            "INVITADO",
+            "EMPLEADO INVITADO (DEMO)"
+        ];
+        return allowedVipNames.some(name => {
+            const normalizedUser = user.name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const normalizedAllowed = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return normalizedUser === normalizedAllowed || normalizedUser.includes(normalizedAllowed);
+        });
+    }
+
     function exitToPortal() {
         if (window.chatInterval) {
             clearInterval(window.chatInterval);
@@ -1841,6 +1944,7 @@ NOTAS: ${s.observations || 'N/A'}
         const user = userStr ? JSON.parse(userStr) : { role: 'valet', name: 'INVITADO' };
         
         const isDirector = isUserAdminOrStaff(user);
+        const canSeeVip = checkVipAccess(user);
 
         const isAdmin = isDirector || (user && (
             user.profile_admin === 'DIRECTOR' || 
@@ -2122,7 +2226,7 @@ NOTAS: ${s.observations || 'N/A'}
                 <!-- 3. OPERACIONES -->
                 <div>
                     <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">OPERACIONES</h2>
-                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                    <div class="menu-grid operations-grid-custom" style="margin-top:0; gap:12px;">
                         ${isDirector ? `
                         <div class="menu-item" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; background: rgba(244, 63, 94, 0.05); padding:12px 15px;">
                             <i style="font-size:1.5rem">📋</i>
@@ -2148,6 +2252,17 @@ NOTAS: ${s.observations || 'N/A'}
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">ADMINISTRACIÓN</span>
                                 <span class="menu-item-desc" style="font-size:0.55rem;">CONTROL GENERAL</span>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        ${canSeeVip ? `
+                        <!-- VIP EYE STAFF -->
+                        <div class="menu-item" onclick="enterModule('vip_eye_staff')" style="border-top: 3px solid #eab308; background: rgba(234, 179, 8, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">👑</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">VIP EYE STAFF</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">SERVICIOS ESPECIALES</span>
                             </div>
                         </div>
                         ` : ''}
@@ -2405,18 +2520,47 @@ NOTAS: ${s.observations || 'N/A'}
 
         // Actualizar habilitación de botones de menú si existen
         if (document.getElementById('menu-checkin')) {
-            const hasAnyActive = activeSessions.length > 0;
-            if (hasAnyActive) {
+            const isSessionActive = window.activeSession && window.activeSession.status === 'active';
+            if (isSessionActive) {
                 document.getElementById('menu-checkin').classList.remove('disabled');
                 document.getElementById('menu-checkin').style.opacity = '1';
                 document.getElementById('menu-checkin').style.cursor = 'pointer';
+                document.getElementById('menu-checkin').style.filter = 'none';
+                document.getElementById('menu-checkin').style.pointerEvents = 'auto';
                 
                 document.getElementById('menu-eventos').classList.remove('disabled');
                 document.getElementById('menu-eventos').style.opacity = '1';
                 document.getElementById('menu-eventos').style.cursor = 'pointer';
+                document.getElementById('menu-eventos').style.filter = 'none';
+                document.getElementById('menu-eventos').style.pointerEvents = 'auto';
+
+                if (document.getElementById('menu-resumen')) {
+                    document.getElementById('menu-resumen').classList.remove('disabled');
+                    document.getElementById('menu-resumen').style.opacity = '1';
+                    document.getElementById('menu-resumen').style.cursor = 'pointer';
+                    document.getElementById('menu-resumen').style.filter = 'none';
+                    document.getElementById('menu-resumen').style.pointerEvents = 'auto';
+                }
             } else {
                 document.getElementById('menu-checkin').classList.add('disabled');
+                document.getElementById('menu-checkin').style.opacity = '0.4';
+                document.getElementById('menu-checkin').style.cursor = 'not-allowed';
+                document.getElementById('menu-checkin').style.filter = 'grayscale(1)';
+                document.getElementById('menu-checkin').style.pointerEvents = 'auto';
+                
                 document.getElementById('menu-eventos').classList.add('disabled');
+                document.getElementById('menu-eventos').style.opacity = '0.4';
+                document.getElementById('menu-eventos').style.cursor = 'not-allowed';
+                document.getElementById('menu-eventos').style.filter = 'grayscale(1)';
+                document.getElementById('menu-eventos').style.pointerEvents = 'auto';
+
+                if (document.getElementById('menu-resumen')) {
+                    document.getElementById('menu-resumen').classList.add('disabled');
+                    document.getElementById('menu-resumen').style.opacity = '0.4';
+                    document.getElementById('menu-resumen').style.cursor = 'not-allowed';
+                    document.getElementById('menu-resumen').style.filter = 'grayscale(1)';
+                    document.getElementById('menu-resumen').style.pointerEvents = 'auto';
+                }
             }
         }
 
@@ -2555,22 +2699,7 @@ NOTAS: ${s.observations || 'N/A'}
                                 if (!isValet) return false;
                                 
                                 if (s.status === 'active') return true;
-                                if (s.status === 'planning') {
-                                    // Validar ventana de 3 horas
-                                    let schedDate;
-                                    const rawDate = s.started_at || s.created_at;
-                                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
-                                        const parts = rawDate.split('-');
-                                        schedDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                                    } else {
-                                        schedDate = new Date(rawDate);
-                                    }
-                                    const [hh, mm] = (s.event_start_time || '00:00').split(':');
-                                    schedDate.setHours(parseInt(hh), parseInt(mm), 0, 0);
-                                    const diffMs = schedDate.getTime() - Date.now();
-                                    const diffHours = diffMs / (1000 * 60 * 60);
-                                    return diffHours <= 3;
-                                }
+                                if (s.status === 'planning') return true;
                                 return false;
                             }).map(s => 
                                 `<option value="${s.id}" ${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="${s.status === 'planning' ? 'color:var(--muted);' : 'color:var(--success);'}">${s.name.toUpperCase()} ${s.status === 'planning' ? '(PLANIFICADO)' : ''}</option>`
@@ -2582,7 +2711,8 @@ NOTAS: ${s.observations || 'N/A'}
                 ${window.activeSession && window.activeSession.status === 'planning' ? `
                 <div class="stat-card" style="margin: 20px auto; max-width: 500px; text-align:center; background:rgba(245, 158, 11, 0.05); border:1px solid var(--warning); padding:25px; border-radius:24px;">
                     <i style="font-size:2.5rem; display:block; margin-bottom:15px;">🕒</i>
-                    <h2 style="color:var(--warning); margin:0 0 10px 0; font-size:1.2rem; font-weight:900;">EVENTO PLANIFICADO</h2>
+                    <h2 style="color:var(--warning); margin:0 0 5px 0; font-size:1.2rem; font-weight:900;">EVENTO PLANIFICADO</h2>
+                    <div style="font-size:1.1rem; font-weight:900; color:#fff; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${window.activeSession.name}</div>
                     <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px; font-weight:700;">EL EVENTO ESTÁ EN LISTA PERO AÚN NO HA INICIADO OPERATIVAMENTE.</p>
                     
                     ${(() => {
@@ -2601,21 +2731,66 @@ NOTAS: ${s.observations || 'N/A'}
                         const diffMs = schedDate.getTime() - Date.now();
                         const diffHoursTotal = diffMs / (1000 * 60 * 60);
 
-                        if (diffHoursTotal > 3) {
-                            return `
-                                <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
-                                    <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
-                                    <div id="countdown-timer" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
-                                        FALTAN ${Math.floor(diffHoursTotal)}H ${Math.floor((diffMs % 3600000) / 60000)}M
-                                    </div>
-                                    <div style="font-size:0.55rem; color:var(--muted); margin-top:10px; font-weight:700;">EL BOTÓN DE INICIO SE ACTIVARÁ 3 HORAS ANTES DEL EVENTO.</div>
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === session.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            currentUser.profile_admin === 'DIRECTOR' ||
+                            currentUser.profile_admin === 'COORDINADOR' ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+
+                        let endDetailsHtml = '';
+                        if (session.event_end_date && session.event_end_time) {
+                            const [eyy, emm, edd] = session.event_end_date.split('-');
+                            const endSchedDate = new Date(parseInt(eyy), parseInt(emm) - 1, parseInt(edd));
+                            const [ehh, emi] = session.event_end_time.split(':');
+                            endSchedDate.setHours(parseInt(ehh), parseInt(emi), 0, 0);
+                            endDetailsHtml = `
+                                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:10px; margin-bottom:5px;">FINALIZA EL DÍA:</div>
+                                <div style="font-size:0.95rem; font-weight:900; color:var(--danger);">${formatDateExplicit(endSchedDate)} A LAS ${session.event_end_time}</div>
+                            `;
+                        }
+
+                        const detailsHtml = `
+                            <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
+                                <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                                ${endDetailsHtml}
+                                <div id="countdown-timer" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
+                                    FALTAN ${Math.floor(diffHoursTotal)}H ${Math.floor((diffMs % 3600000) / 60000)}M
                                 </div>
-                            `;
+                                ${session.address ? `
+                                    <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">DIRECCIÓN DEL EVENTO:</div>
+                                        <div style="font-size:0.85rem; font-weight:900; color:#fff; margin-bottom:12px; text-transform:uppercase; line-height:1.4;">${session.address}</div>
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:0.65rem; font-weight:900; color:#fff; text-decoration:none; transition:0.2s; cursor:pointer;">
+                                            📍 VER EN GOOGLE MAPS
+                                        </a>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+
+                        if (diffHoursTotal > 3) {
+                            return detailsHtml;
                         } else {
-                            return `
-                                <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
-                            `;
+                            let actionHtml = '';
+                            if (isAuthorizedSupervisor) {
+                                actionHtml = `
+                                    <div style="margin-top:20px;">
+                                        <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
+                                    </div>
+                                `;
+                            } else {
+                                actionHtml = `
+                                    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                        <div style="font-size:0.8rem; font-weight:900; color:var(--warning); margin-bottom:5px;">🕒 ESPERANDO INICIO DE OPERACIÓN</div>
+                                        <div style="font-size:0.6rem; color:var(--muted); font-weight:700;">EL SUPERVISOR O ADMINISTRADOR DEBE INICIAR EL EVENTO PARA PODER EMPEZAR.</div>
+                                    </div>
+                                `;
+                            }
+                            return detailsHtml + actionHtml;
                         }
                     })()}
                 </div>
@@ -2623,143 +2798,198 @@ NOTAS: ${s.observations || 'N/A'}
 
 
 
-                <div class="menu-grid" style="max-width: 1000px; margin: 20px auto;">
-                    <div id="menu-checkin" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('checkin')" : "toast('⚠️ ACTIVE EL EVENTO PARA OPERAR', 'warning')"}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
-                        <i>🚗</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title">RECEPCIÓN</span>
-                            <span class="menu-item-desc">INGRESAR VEHÍCULO</span>
-                        </div>
-                    </div>
-                    
-                    <div id="menu-eventos" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('eventos')" : ""}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
-                        <i>📊</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title">CUSTODIA <span id="custody-count-inline" style="color:var(--success); margin-left:5px; font-weight:900;"></span></span>
-                            <span class="menu-item-desc">VEHÍCULOS EN RECINTO</span>
-                        </div>
-                    </div>
+                ${(() => {
+                    const isSessionActive = window.activeSession && window.activeSession.status === 'active';
+                    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    const isAuthorizedSupervisor = window.activeSession && (
+                        currentUser.id === window.activeSession.supervisor_id || 
+                        currentUser.role === 'director' ||
+                        currentUser.profile_admin === 'DIRECTOR' ||
+                        currentUser.profile_admin === 'COORDINADOR' ||
+                        window.isUserAdminOrStaff(currentUser)
+                    );
+                    const disabledClass = !isSessionActive ? 'disabled' : '';
+                    const disabledStyle = !isSessionActive ? 'opacity:0.4; cursor:not-allowed; filter:grayscale(1); pointer-events:auto !important;' : '';
+                    const clickToast = isSessionActive ? '' : (
+                        isAuthorizedSupervisor 
+                            ? "toast('⚠️ ACTIVE EL EVENTO PARA OPERAR', 'warning')" 
+                            : "toast('⚠️ ESPERANDO QUE EL SUPERVISOR INICIE LA OPERACIÓN', 'warning')"
+                    );
 
-                    <div id="menu-resumen" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('resumen')" : ""}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
-                        <i>📋</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title">RESUMEN</span>
-                            <span class="menu-item-desc">REPORTES Y ESTADÍSTICAS</span>
+                    return `
+                    <div class="menu-grid" style="max-width: 1000px; margin: 20px auto;">
+                        <div id="menu-checkin" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('checkin')" : clickToast}" style="${disabledStyle}">
+                            <i>🚗</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">RECEPCIÓN</span>
+                                <span class="menu-item-desc">INGRESAR VEHÍCULO</span>
+                            </div>
+                        </div>
+                        
+                        <div id="menu-eventos" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('eventos')" : clickToast}" style="${disabledStyle}">
+                            <i>📊</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">CUSTODIA <span id="custody-count-inline" style="color:var(--success); margin-left:5px; font-weight:900;"></span></span>
+                                <span class="menu-item-desc">VEHÍCULOS EN RECINTO</span>
+                            </div>
+                        </div>
+
+                        <div id="menu-resumen" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('resumen')" : clickToast}" style="${disabledStyle}">
+                            <i>📋</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">RESUMEN</span>
+                                <span class="menu-item-desc">REPORTES Y ESTADÍSTICAS</span>
+                            </div>
+                        </div>
+
+                        <div id="menu-alerta" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "enviarAlertaWA()" : clickToast}" style="${disabledStyle} border-top: 3px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+                            <i>🚨</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="color:var(--danger)">ALERTA WA</span>
+                                <span class="menu-item-desc">NOTIFICAR EMERGENCIA</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    `;
+                })()}
 
-                <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                        <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
                 ${window.activeSession ? `
                 <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
-                    <div style="text-align:center; margin-bottom:25px;">
-                        <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
-                        <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO</div>
-                    </div>
-                    
-                    <div class="staff-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
-                        ${(window.activeSession.assigned_staff_list || []).map(u => {
-                            const isSupervisor = u.id === window.activeSession.supervisor_id;
-                            const att = u.attendance || [];
-                            const entry = att.find(a => a.type === 'entry')?.timestamp;
-                            const breakStart = att.find(a => a.type === 'break_start')?.timestamp;
-                            const exit = att.find(a => a.type === 'exit')?.timestamp;
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            currentUser.profile_admin === 'DIRECTOR' ||
+                            currentUser.profile_admin === 'COORDINADOR' ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        
+                        const filteredStaffList = isAuthorizedSupervisor 
+                            ? (window.activeSession.assigned_staff_list || [])
+                            : (window.activeSession.assigned_staff_list || []).filter(u => u.id === currentUser.id);
                             
-                            let totalTime = '0:00h';
-                            if (entry) {
-                                const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                                let workedMs = 0;
-                                const refTime = exit ? new Date(exit) : new Date();
+                        const isEventActive = window.activeSession.status === 'active';
 
-                                for (let i = 0; i < sorted.length; i++) {
-                                    const current = sorted[i];
-                                    const currentType = current.type;
-                                    const currentT = new Date(current.timestamp);
-
-                                    const next = sorted[i + 1];
-                                    const nextT = next ? new Date(next.timestamp) : refTime;
-
-                                    if (currentType === 'entry') {
-                                        workedMs += (nextT - currentT);
-                                    }
-                                }
-                                
-                                const hours = Math.floor(workedMs / 3600000);
-                                const mins = Math.floor((workedMs % 3600000) / 60000);
-                                totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
-                            }
-
-                            const formatTime = formatTime24h;
-
-                            const lastAction = att.length > 0 ? att[att.length - 1].type : null;
-                            const canEntry = !lastAction || lastAction === 'exit' || lastAction === 'break_start';
-                            
-                            const activeStaff = (window.activeSession.assigned_staff_list || []).filter(usr => {
-                                const uAtt = usr.attendance || [];
-                                return uAtt.length > 0 && uAtt[uAtt.length - 1].type === 'entry';
-                            });
-                            const isLastActive = activeStaff.length === 1 && activeStaff[0].id === u.id;
-                            const canBreak = lastAction === 'entry' && !isLastActive;
-
-                            const canExit = lastAction === 'entry' || lastAction === 'break_start';
-
-                            let statusText = 'INACTIVO';
-                            let statusColor = 'var(--muted)';
-                            if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
-                            else if (lastAction === 'break_start') { statusText = 'EN DESCANSO'; statusColor = 'var(--warning)'; }
-
-                            const currentUser = JSON.parse(localStorage.getItem('user'));
-                            const isAuthorizedSupervisor = (currentUser && (
-                                currentUser.id === window.activeSession.supervisor_id || 
-                                currentUser.role === 'director' ||
-                                currentUser.profile_admin === 'DIRECTOR' ||
-                                currentUser.profile_admin === 'COORDINADOR'
-                            ));
-
-                            let buttonsHtml = '';
-                            if (isAuthorizedSupervisor) {
-                                buttonsHtml = `
-                                    <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}">ENTRADA</button>
-                                    <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} title="${isLastActive ? 'No se puede iniciar el descanso: debe haber al menos un empleado activo en el evento' : ''}" style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
-                                    <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
-                                `;
-                            } else {
-                                buttonsHtml = `
-                                    <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}">ENTRADA</button>
-                                    <button disabled style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:not-allowed; opacity:0.3" title="Solo el supervisor puede autorizar la salida">SALIDA</button>
-                                `;
-                            }
-
-                            return `
-                                <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
-                                    <div style="display:flex; align-items:center; justify-content:space-between;">
-                                        <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-                                            ${u.name.toUpperCase()}
-                                            ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
-                                        </div>
-                                        <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
-                                            ${statusText}
-                                        </div>
-                                    </div>
-                                    
-                                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
-                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
-                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--warning); border-right:1px solid rgba(255,255,255,0.05);">DESC: <span style="color:#fff; margin-top:2px;">${formatTime(breakStart)}</span></div>
-                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
-                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
-                                    </div>
-
-                                    <div style="display:flex; gap:6px;">
-                                        ${buttonsHtml}
-                                    </div>
+                        return `
+                            <div style="text-align:center; margin-bottom:25px;">
+                                <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                                <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
+                                    ${isAuthorizedSupervisor ? 'REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO' : 'REGISTRE SUS HORAS INDIVIDUALES PARA EL EVENTO'}
                                 </div>
-                            `;
-                        }).join('')}
-                    </div>
+                            </div>
+                            
+                            <div class="staff-grid" style="display:grid; ${isAuthorizedSupervisor ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr; max-width: 380px; margin: 0 auto;'} gap:15px;">
+                                ${filteredStaffList.map(u => {
+                                    const isSupervisor = u.id === window.activeSession.supervisor_id;
+                                    const att = u.attendance || [];
+                                    const entry = att.find(a => a.type === 'entry')?.timestamp;
+                                    const breakStart = att.find(a => a.type === 'break_start')?.timestamp;
+                                    const exit = att.find(a => a.type === 'exit')?.timestamp;
+                                    
+                                    let totalTime = '0:00h';
+                                    if (entry) {
+                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        let workedMs = 0;
+                                        const refTime = exit ? new Date(exit) : new Date();
+
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            const current = sorted[i];
+                                            const currentType = current.type;
+                                            const currentT = new Date(current.timestamp);
+
+                                            const next = sorted[i + 1];
+                                            const nextT = next ? new Date(next.timestamp) : refTime;
+
+                                            if (currentType === 'entry') {
+                                                workedMs += (nextT - currentT);
+                                            }
+                                        }
+                                        
+                                        const hours = Math.floor(workedMs / 3600000);
+                                        const mins = Math.floor((workedMs % 3600000) / 60000);
+                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                    }
+
+                                    const formatTime = formatTime24h;
+
+                                    const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                                    
+                                    // NO puede marcar Entrada si el evento no está activo
+                                    const canEntry = (!lastAction || lastAction === 'exit' || lastAction === 'break_start') && isEventActive;
+                                    
+                                    const activeStaff = (window.activeSession.assigned_staff_list || []).filter(usr => {
+                                        const uAtt = usr.attendance || [];
+                                        return uAtt.length > 0 && uAtt[uAtt.length - 1].type === 'entry';
+                                    });
+                                    const isLastActive = activeStaff.length === 1 && activeStaff[0].id === u.id;
+                                    const canBreak = lastAction === 'entry' && !isLastActive;
+
+                                    const canExit = lastAction === 'entry' || lastAction === 'break_start';
+
+                                    let statusText = 'INACTIVO';
+                                    let statusColor = 'var(--muted)';
+                                    if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                                    else if (lastAction === 'break_start') { statusText = 'EN DESCANSO'; statusColor = 'var(--warning)'; }
+
+                                    let buttonsHtml = '';
+                                    if (isAuthorizedSupervisor) {
+                                        buttonsHtml = `
+                                            <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
+                                            <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} title="${isLastActive ? 'No se puede iniciar el descanso: debe haber al menos un empleado activo en el evento' : ''}" style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
+                                            <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                        `;
+                                    } else {
+                                        // Para el staff operativo regular (ellos mismos en su perfil) habilitar entrada y salida
+                                        buttonsHtml = `
+                                            <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento debe estar activo para marcar entrada' : ''}">ENTRADA</button>
+                                            <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                        `;
+                                    }
+
+                                    return `
+                                        <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                                    ${statusText}
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--warning); border-right:1px solid rgba(255,255,255,0.05);">DESC: <span style="color:#fff; margin-top:2px;">${formatTime(breakStart)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                            </div>
+
+                                            <div style="display:flex; gap:6px;">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    })()}
                 </div>
 
                 <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
                     ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            currentUser.profile_admin === 'DIRECTOR' ||
+                            currentUser.profile_admin === 'COORDINADOR' ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        if (!isAuthorizedSupervisor) return '';
+                        
                         const staff = window.activeSession.assigned_staff_list || [];
                         const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit'));
                         
@@ -2893,6 +3123,100 @@ NOTAS: ${s.observations || 'N/A'}
         
         const headerEl = document.getElementById('header-custody-count');
         if (headerEl) headerEl.textContent = count;
+    }
+
+    // --- VIP EYE STAFF ---
+    async function renderVipEyeStaff(el) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!checkVipAccess(user)) {
+            exitToPortal();
+            return;
+        }
+        const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+        const hasCfoAccess = allowedCfoNames.some(name => {
+            const normalizedUser = (user.name || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const normalizedAllowed = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return normalizedUser.includes(normalizedAllowed);
+        });
+
+        el.innerHTML = `
+            <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+                <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+            </div>
+            <div class="view-header">
+                <h1 class="view-title">👑 VIP EYE STAFF</h1>
+            </div>
+            <div class="menu-grid operations-grid-custom" style="margin-top:20px; gap:12px;">
+                <!-- NÓMINA Y PAGOS -->
+                ${hasCfoAccess ? `
+                <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); background: rgba(16, 185, 129, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">💰</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REVISIÓN Y AUTORIZACIÓN</span>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- IMAGEN & RRSS -->
+                <div class="menu-item" onclick="toast('📸 IMAGEN & RRSS estará disponible próximamente', 'info')" style="border-top: 4px solid #64748b; background: rgba(100, 116, 139, 0.03); opacity: 0.6; cursor: not-allowed; padding: 24px; border-radius: 24px;">
+                    <i style="filter: grayscale(100%); font-size:1.8rem">📸</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900; color: #94a3b8;">IMAGEN & RRSS</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; color: #64748b; font-weight:bold; letter-spacing:1px;">PRÓXIMAMENTE</span>
+                    </div>
+                </div>
+
+                <!-- INFORMES Y REPORTES -->
+                ${hasCfoAccess ? `
+                <div class="menu-item" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">📈</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REPORTES GENERALES Y ESTADÍSTICAS</span>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- PROYECTOS -->
+                <div class="menu-item" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">📁</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PROYECTOS</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">PLANIFICACIÓN Y SEGUIMIENTO</span>
+                    </div>
+                </div>
+
+                <!-- PUBLICIDAD -->
+                <div class="menu-item" onclick="toast('📢 PUBLICIDAD estará disponible próximamente', 'info')" style="border-top: 4px solid #d946ef; background: rgba(217, 70, 239, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">📢</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PUBLICIDAD</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">MARKETING Y COMUNICACIÓN</span>
+                    </div>
+                </div>
+
+                <!-- LEGAL -->
+                <div class="menu-item" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316; background: rgba(249, 115, 22, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">⚖️</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">LEGAL</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTRATOS Y NORMATIVAS</span>
+                    </div>
+                </div>
+
+                <!-- CIERRES -->
+                <div class="menu-item" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981; background: rgba(16, 185, 129, 0.05); padding: 24px; border-radius: 24px;">
+                    <i style="font-size:1.8rem">🔒</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES</span>
+                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE CIERRES DIARIOS</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-info" style="margin-top:60px;"></div>
+        `;
+        updateClock();
     }
 
     // --- FORMATOS (PAYROLL) ---
@@ -3204,7 +3528,7 @@ NOTAS: ${s.observations || 'N/A'}
             for (const session of sessions) {
                 const isPlanning = session.status === 'planning';
                 const stats = await apiFetch('/api/events/stats?session_id=' + session.id);
-                const sessionStaff = allStaff.filter(u => u.current_session_id == session.id);
+                const sessionStaff = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
                 const attendance = await apiFetch('/api/attendance/session/' + session.id) || [];
 
                 html += `
@@ -3233,17 +3557,32 @@ NOTAS: ${s.observations || 'N/A'}
                                             })().toUpperCase()} - ${session.event_start_time || '00:00'}</span>
                                         </div>
                                         ` : ''}
+
+                                        <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:10px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
+                                            <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
+                                            ${session.address ? `
+                                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
+                                                    ${session.address.toUpperCase()} 🔗
+                                                </a>
+                                            ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="stats-mini-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:25px; ${isPlanning ? 'opacity:0.4;' : ''}">
-                                    <div ${isPlanning ? '' : `onclick="showSessionStatsDetail(${session.id}, 'entries', '${session.name}')"`} style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-radius:16px; ${isPlanning ? '' : 'cursor:pointer; transition:0.2s;'}" ${isPlanning ? '' : `onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'`}>
-                                        <div style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px;">ENTRADA</div>
-                                        <div style="font-size:1.3rem; font-weight:900; color:var(--accent2)">${stats?.total || 0}</div>
+                                <div class="stats-mini-grid" style="display:flex; flex-direction:column; gap:12px; margin-bottom:25px; ${isPlanning ? 'opacity:0.4;' : ''}">
+                                    <!-- Entrada -->
+                                    <div ${isPlanning ? '' : `onclick="showSessionStatsDetail(${session.id}, 'entries', '${session.name}')"`} 
+                                         style="background:rgba(255,255,255,0.03); border:1px solid var(--border); width:100%; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:16px; ${isPlanning ? '' : 'cursor:pointer; transition:0.2s;'}" 
+                                         ${isPlanning ? '' : `onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'`}>
+                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:1px;">ENTRADA</span>
+                                        <span style="font-size:1.2rem; font-weight:900; color:var(--accent2);">${stats?.total || 0}</span>
                                     </div>
-                                    <div ${isPlanning ? '' : `onclick="showSessionStatsDetail(${session.id}, 'custody', '${session.name}')"`} style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-radius:16px; ${isPlanning ? '' : 'cursor:pointer; transition:0.2s;'}" ${isPlanning ? '' : `onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'`}>
-                                        <div style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px;">EN RECINTO</div>
-                                        <div style="font-size:1.3rem; font-weight:900; color:var(--success)">${stats?.custody || 0}</div>
+                                    <!-- En Recinto -->
+                                    <div ${isPlanning ? '' : `onclick="showSessionStatsDetail(${session.id}, 'custody', '${session.name}')"`} 
+                                         style="background:rgba(255,255,255,0.03); border:1px solid var(--border); width:100%; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:16px; ${isPlanning ? '' : 'cursor:pointer; transition:0.2s;'}" 
+                                         ${isPlanning ? '' : `onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'`}>
+                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:1px;">EN RECINTO</span>
+                                        <span style="font-size:1.2rem; font-weight:900; color:var(--success);">${stats?.custody || 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -3252,12 +3591,12 @@ NOTAS: ${s.observations || 'N/A'}
                                 <div style="font-size:0.7rem; color:var(--warning); font-weight:900; margin-bottom:15px; letter-spacing:2px; text-transform:uppercase;">📋 CONTROL DE PERSONAL</div>
                                 <div style="display:flex; flex-direction:column; gap:10px;">
                                     ${(() => {
-                                        const sortedStaff = sessionStaff.sort((a, b) => {
-                                            const isASuper = (a.role || '').toUpperCase().includes('SUPERVISOR') || (a.role || '').toUpperCase().includes('DIRECTOR');
-                                            const isBSuper = (b.role || '').toUpperCase().includes('SUPERVISOR') || (b.role || '').toUpperCase().includes('DIRECTOR');
+                                        const sortedStaff = [...sessionStaff].sort((a, b) => {
+                                            const isASuper = a.id == session.supervisor_id || ['supervisor', 'director'].includes(String(a.role).toLowerCase());
+                                            const isBSuper = b.id == session.supervisor_id || ['supervisor', 'director'].includes(String(b.role).toLowerCase());
                                             if (isASuper && !isBSuper) return -1;
                                             if (!isASuper && isBSuper) return 1;
-                                            return a.name.localeCompare(b.name);
+                                            return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
                                         });
 
                                         return sortedStaff.length > 0 ? sortedStaff.map(u => {
@@ -3298,12 +3637,21 @@ NOTAS: ${s.observations || 'N/A'}
                                             if (lastLog?.type === 'entry') statusColor = 'var(--success)';
                                             else if (lastLog?.type === 'break_start') statusColor = 'var(--warning)';
                                             
+                                            const isSuper = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
+
                                             if (isPlanning) {
                                                 const hasApiKey = !!u.whatsapp_apikey;
                                                 return `
                                                     <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px;">
                                                         <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
-                                                            <div style="font-size:0.9rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${u.name.toUpperCase()}</div>
+                                                            <div style="font-size:0.9rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                                                                ${u.name.toUpperCase()}
+                                                                ${isSuper ? `
+                                                                    <span style="font-size:0.55rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                        SUPERVISOR
+                                                                    </span>
+                                                                ` : ''}
+                                                            </div>
                                                         </div>
                                                         <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                                                             ${hasApiKey ? `
@@ -3311,8 +3659,8 @@ NOTAS: ${s.observations || 'N/A'}
                                                                     📲 AUTO
                                                                 </button>
                                                             ` : ''}
-                                                            <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
-                                                                💬 LINK
+                                                            <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                                💬
                                                             </button>
                                                         </div>
                                                     </div>
@@ -3321,16 +3669,21 @@ NOTAS: ${s.observations || 'N/A'}
 
                                             return `
                                                 <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
-                                                    <div style="display:flex; align-items:center; gap:12px;">
-                                                        <div style="width:10px; height:10px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 10px ${statusColor}44;"></div>
-                                                        <div style="font-size:0.95rem; font-weight:900; color:white; display:flex; align-items:center; gap:6px;">
+                                                    <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+                                                        <div style="width:10px; height:10px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 10px ${statusColor}44; flex-shrink:0;"></div>
+                                                        <div style="font-size:0.95rem; font-weight:900; color:white; display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                                             ${u.name.toUpperCase()}
+                                                            ${isSuper ? `
+                                                                <span style="font-size:0.55rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                    SUPERVISOR
+                                                                </span>
+                                                            ` : ''}
                                                             ${u.phone ? `
                                                                 <span onclick="openDirectWhatsApp('${u.phone}', '${u.name}')" title="Chat Directo WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">💬</span>
                                                             ` : ''}
                                                         </div>
                                                     </div>
-                                                    <div style="text-align:right;">
+                                                    <div style="text-align:right; flex-shrink:0;">
                                                         <div style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase;">
                                                             ENT: <span style="color:#fff">${entryTime}</span> • <span style="color:var(--accent2)">${workedTime}</span>
                                                         </div>
@@ -3355,7 +3708,7 @@ NOTAS: ${s.observations || 'N/A'}
                         ← VOLVER AL PORTAL
                     </button>
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.4.0</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.4.98</div>
             `;
 
             el.innerHTML = html;
@@ -3390,7 +3743,15 @@ NOTAS: ${s.observations || 'N/A'}
 
             const staffRes = await apiFetch('/api/staff');
             const allStaff = staffRes?.staff || [];
-            const sessionStaff = allStaff.filter(u => u.current_session_id == session.id);
+            const sessionStaffRaw = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
+            
+            const supervisors = sessionStaffRaw.filter(u => u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase()));
+            const employees = sessionStaffRaw.filter(u => !(u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase())));
+            
+            supervisors.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            employees.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            
+            const sessionStaff = [...supervisors, ...employees];
 
             const el = document.getElementById('current-view');
 
@@ -3407,39 +3768,59 @@ NOTAS: ${s.observations || 'N/A'}
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:10px;">
                             <div>
                                 <h2 style="margin:0; font-size:1.4rem; color:white; font-weight:900; letter-spacing:-0.5px;">${(session.type || 'EVENTO').toUpperCase()} - ${session.name.toUpperCase()}</h2>
-                                <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:2px;">DETALLES DEL SERVICIO</div>
-                                <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                                    <div style="width:10px; height:10px; border-radius:50%; background:#f59e0b; box-shadow: 0 0 10px #f59e0b44;"></div>
-                                    <span style="font-size:0.75rem; color:#f59e0b; font-weight:900;">PROGRAMADO</span>
+                                <div style="font-si                                <div style="font-size:0.8rem; color:var(--warning); font-weight:900; margin-top:10px; display:flex; align-items:flex-start; gap:8px; background:rgba(245,158,11,0.08); padding:10px 14px; border-radius:12px; border:1px solid rgba(245,158,11,0.2);">
+                                    <span style="font-size:1.1rem; margin-top:2px;">📅</span>
+                                    <span style="display:flex; flex-direction:column; gap:2px;">
+                                        <span style="color:white; font-size:0.85rem; font-weight:900;">${(() => {
+                                            try {
+                                                const d = new Date(session.started_at);
+                                                if (!session.started_at || isNaN(d.getTime())) return 'S/F';
+                                                return d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                            } catch(e) {
+                                                return 'S/F';
+                                            }
+                                        })()}</span>
+                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:800; display:flex; gap:12px; margin-top:2px; flex-wrap:wrap;">
+                                            <span>📢 CONVOCATORIA: <b style="color:var(--warning);">${session.convocation_time || '00:00'} H</b></span>
+                                            <span>🚀 INICIO: <b style="color:white;">${session.event_start_time || '00:00'} H</b></span>
+                                        </span>
+                                    </span>
                                 </div>
-                                <div style="font-size:0.8rem; color:var(--warning); font-weight:900; margin-top:10px; display:flex; align-items:center; gap:5px; background:rgba(245,158,11,0.08); padding:8px 12px; border-radius:8px; border:1px solid rgba(245,158,11,0.2);">
-                                    <span>📅</span>
-                                    <span>${(() => {
-                                        try {
-                                            const d = new Date(session.started_at);
-                                            if (!session.started_at || isNaN(d.getTime())) return 'S/F';
-                                            return d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-                                        } catch(e) {
-                                            return 'S/F';
-                                        }
-                                    })()} - ${session.event_start_time || '00:00'} H</span>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:15px; width:100%;">
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">👤 CLIENTE / CONTACTO</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">${(session.contact_name || session.client || 'NO ESPECIFICADO').toUpperCase()}</span>
+                                    </div>
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🏁 FINALIZACIÓN ESTIMADA</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">
+                                            ${(() => {
+                                                try {
+                                                    if (!session.event_end_date) return 'NO ESPECIFICADA';
+                                                    const d = new Date(session.event_end_date + 'T00:00:00');
+                                                    if (isNaN(d.getTime())) return 'NO ESPECIFICADA';
+                                                    const datePart = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                                    const timePart = session.event_end_time ? ` - ${session.event_end_time} H` : '';
+                                                    return `${datePart}${timePart}`;
+                                                } catch(e) {
+                                                    return 'NO ESPECIFICADA';
+                                                }
+                                            })()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:12px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
+                                    <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
+                                    ${session.address ? `
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
+                                            ${session.address.toUpperCase()} 🔗
+                                        </a>
+                                    ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Stats Card Deshabilitada para Programados -->
-                        <div class="stats-mini-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:25px; opacity:0.4;">
-                            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-radius:16px;">
-                                <div style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px;">ENTRADA</div>
-                                <div style="font-size:1.3rem; font-weight:900; color:var(--accent2)">0</div>
-                            </div>
-                            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-radius:16px;">
-                                <div style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px;">EN RECINTO</div>
-                                <div style="font-size:1.3rem; font-weight:900; color:var(--success)">0</div>
-                            </div>
-                        </div>
-
-                        <div style="border-top:1px solid var(--border); padding-top:20px;">
+ 
+                        <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:20px;">
                             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
                                 <i style="font-size:1.1rem; opacity:0.6;">📋</i>
                                 <span style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Control de Personal</span>
@@ -3450,10 +3831,18 @@ NOTAS: ${s.observations || 'N/A'}
                                     if (sessionStaff.length > 0) {
                                         return sessionStaff.map(u => {
                                             const hasApiKey = !!u.whatsapp_apikey;
+                                            const isSupervisor = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
                                             return `
                                                 <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px;">
                                                     <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
-                                                        <div style="font-size:0.9rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${u.name.toUpperCase()}</div>
+                                                        <div style="font-size:0.82rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                                                            ${u.name.toUpperCase()}
+                                                            ${isSupervisor ? `
+                                                                <span style="font-size:0.55rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                    SUPERVISOR
+                                                                </span>
+                                                            ` : ''}
+                                                        </div>
                                                     </div>
                                                     <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                                                         ${hasApiKey ? `
@@ -3461,8 +3850,8 @@ NOTAS: ${s.observations || 'N/A'}
                                                                 📲 AUTO
                                                             </button>
                                                         ` : ''}
-                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
-                                                            💬 LINK
+                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                            💬
                                                         </button>
                                                     </div>
                                                 </div>
@@ -4289,7 +4678,7 @@ NOTAS: ${s.observations || 'N/A'}
             <div id="detail-photos" class="photo-grid" style="margin-bottom:20px">Cargando fotos...</div>
             
             <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                <button id="btn-do-checkout" class="btn" style="flex:2; min-height:50px; font-size:0.8rem; padding: 5px 15px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; line-height: 1.2; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); opacity: 0.4;" onclick="doCheckout(${v.id}, '${v.owner_phone || ''}', '${v.plate}')" disabled>ENTREGAR VEHÍCULO Y NOTIFICAR</button>
+                <button id="btn-do-checkout" class="btn" style="flex:2; min-height:50px; font-size:0.8rem; padding: 5px 15px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; line-height: 1.2; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); opacity: 0.4;" onclick="doCheckout(${v.id}, '${v.owner_phone || ''}', '${v.plate}', '${v.owner_name || ''}', '${v.brand || ''}')" disabled>ENTREGAR VEHÍCULO Y NOTIFICAR</button>
                 <button class="btn btn-secondary" style="flex:1; min-height:50px; font-size:0.9rem; display: inline-flex; align-items: center; justify-content: center; text-align: center;" onclick="closeModal()">CERRAR</button>
             </div>
         `;
@@ -4322,12 +4711,16 @@ NOTAS: ${s.observations || 'N/A'}
     }
 
     function shareWhatsApp(phone, plate, code) {
-        /*
-        const msg = `Hola, este es el ticket digital de tu vehículo (Placa: ${plate}). Puedes solicitar tu auto o ver fotos aquí: ${API_BASE}/ticket/${code}`;
-        const url = `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+        if (!phone) {
+            toast('⚠️ Este cliente no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const ticketUrl = `${API_BASE}/ticket/${code}`;
+        const msg = `🚗 *EYE STAFF — Ticket Valet Parking*\n\nHola, bienvenido/a. Aquí está el registro digital de tu vehículo:\n\n📋 *Placa:* ${plate}\n🔗 *Ver ticket y fotos aquí:*\n${ticketUrl}\n\n_Para solicitar tu vehículo, muestra este mensaje o el código al coordinador._`;
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
-        */
-        toast('WhatsApp desactivado temporalmente', 'info');
+        toast('✅ Abriendo WhatsApp con ticket del cliente...', 'success');
     }
 
     async function loadDetailPhotos(id) {
@@ -4475,7 +4868,7 @@ NOTAS: ${s.observations || 'N/A'}
         }
     }
 
-    async function doCheckout(id, phone, plate) {
+    async function doCheckout(id, phone, plate, ownerName, brand) {
         if (!confirm('¿CONFIRMAR ENTREGA DEL VEHÍCULO?')) return;
         
         showLoading('REGISTRANDO ENTREGA...');
@@ -4488,6 +4881,21 @@ NOTAS: ${s.observations || 'N/A'}
             hideLoading();
             toast('✅ Vehículo entregado', 'success');
             closeModal();
+
+            // WhatsApp Integration (Fase 1)
+            if (phone) {
+                try {
+                    const waRes = await apiFetch('/api/valet/notificar', {
+                        method: 'POST',
+                        body: JSON.stringify({ nombre: ownerName || '', vehiculo: brand || '', placa: plate, telefono: phone })
+                    });
+                    if (waRes && waRes.url) {
+                        window.open(waRes.url, '_blank');
+                    }
+                } catch(e) {
+                    console.error('Error enviando WA:', e);
+                }
+            }
 
             const sid = window.activeSession ? window.activeSession.id : null;
             let inCustodyCount = 0;
@@ -4504,6 +4912,31 @@ NOTAS: ${s.observations || 'N/A'}
                 showTab('resumen');
             }
         } else {
+            hideLoading();
+        }
+    }
+
+    async function enviarAlertaWA() {
+        const phone = prompt('Ingrese el teléfono del supervisor o grupo (ej: 04121234567):', '04121234567');
+        if (!phone) return;
+        
+        const msg = prompt('Ingrese el mensaje de alerta:', 'Alerta operativa en Valet Parking');
+        if (!msg) return;
+
+        showLoading('GENERANDO ALERTA WA...');
+        try {
+            const waRes = await apiFetch('/api/staff/alerta', {
+                method: 'POST',
+                body: JSON.stringify({ mensaje: msg, telefono: phone })
+            });
+            if (waRes && waRes.url) {
+                window.open(waRes.url, '_blank');
+                toast('Alerta generada', 'success');
+            }
+        } catch(e) {
+            console.error('Error generando alerta WA:', e);
+            toast('Error generando alerta', 'error');
+        } finally {
             hideLoading();
         }
     }
@@ -5444,7 +5877,8 @@ NOTAS: ${s.observations || 'N/A'}
                         <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">
                             SISTEMA EYE STAFF — CIERRE DE EVENTO ID: ${session.id}
                         </div>
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button onclick="openEmailReportModal(${report.id}, '${(session.name || '').replace(/'/g, "\\'")}', \`${report.sent_emails_history || '[]'}\`)" style="padding:8px 18px; background:rgba(14,165,233,0.15); color:#0ea5e9; border:1px solid rgba(14,165,233,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;">✉️ ENVIAR EMAIL</button>
                             <a href="/api/event-reports/${report.id}/download/pdf" target="_blank" style="padding:8px 18px; background:rgba(239,68,68,0.15); color:var(--brand-red); border:1px solid rgba(239,68,68,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; gap:6px;">📄 DESCARGAR PDF</a>
                             <a href="/api/event-reports/${report.id}/download/excel" target="_blank" style="padding:8px 18px; background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; gap:6px;">📊 DESCARGAR EXCEL</a>
                         </div>
@@ -5456,6 +5890,123 @@ NOTAS: ${s.observations || 'N/A'}
             document.body.appendChild(modal);
         } catch (e) {
             toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.openEmailReportModal = function(reportId, sessionName, sentEmailsHistoryStr) {
+        let history = [];
+        try {
+            history = typeof sentEmailsHistoryStr === 'string' ? JSON.parse(sentEmailsHistoryStr) : sentEmailsHistoryStr;
+            if (!Array.isArray(history)) history = [];
+        } catch(e) {
+            history = [];
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(11,15,25,0.85); backdrop-filter:blur(8px); z-index:12000; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+
+        const historyHtml = history.length > 0 
+            ? `
+                <div style="margin-top:15px; background:rgba(255,255,255,0.02); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:0.7rem; color:var(--warning); font-weight:900; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase;">📧 ¿Enviar también a destinatarios anteriores?</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; max-height:120px; overflow-y:auto; padding-right:5px;">
+                        ${history.map(email => `
+                            <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="additional-email-chk" value="${email}" checked style="accent-color:var(--brand-red); width:16px; height:16px; cursor:pointer;">
+                                <span>${email}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `
+            : `
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--muted); font-style:italic;">
+                    No hay otros destinatarios registrados previamente para este reporte.
+                </div>
+            `;
+
+        modal.innerHTML = `
+            <div style="background:#0e1320; border:1px solid rgba(255,255,255,0.08); width:100%; max-width:480px; border-radius:24px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5); font-family:var(--font-main); position:relative; animation: modalFadeIn 0.3s ease;">
+                <!-- Decoración Superior -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #0ea5e9, var(--brand-red));"></div>
+
+                <!-- Header -->
+                <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.15);">
+                    <div>
+                        <h2 style="margin:0; font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:0.5px;">✉️ ENVIAR REPORTE POR EMAIL</h2>
+                        <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-top:2px;">${sessionName.toUpperCase()}</div>
+                    </div>
+                    <button onclick="this.closest('.modal-overlay').remove()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; width:30px; height:30px; border-radius:50%; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--brand-red)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#fff'">✕</button>
+                </div>
+
+                <!-- Body -->
+                <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
+                    <div style="background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.2); padding:12px; border-radius:12px; font-size:0.75rem; color:#fff; line-height:1.4;">
+                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>eyestaff.ncarrillo@gmail.com</b>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:0.5px;">EMAIL ADICIONAL CON COPIA (CC):</label>
+                        <input type="email" id="email-cc-input" placeholder="ejemplo@correo.com" style="width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.8rem; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--brand-red)'" onblur="this.style.borderColor='var(--border)'">
+                    </div>
+
+                    ${historyHtml}
+                </div>
+
+                <!-- Footer -->
+                <div style="padding:15px 20px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:flex-end; gap:10px; background:rgba(0,0,0,0.15);">
+                    <button onclick="this.closest('.modal-overlay').remove()" style="padding:8px 16px; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:10px; font-size:0.75rem; font-weight:800; cursor:pointer;">CANCELAR</button>
+                    <button onclick="submitSendReportEmail(this, ${reportId})" style="padding:8px 20px; background:var(--brand-red); border:none; color:#fff; border-radius:10px; font-size:0.75rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 0 12px rgba(239,68,68,0.3);">🚀 ENVIAR</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    window.submitSendReportEmail = async function(btn, reportId) {
+        const modal = btn.closest('.modal-overlay');
+        const ccInput = modal.querySelector('#email-cc-input');
+        const ccEmail = ccInput ? ccInput.value.trim() : '';
+
+        // Validar formato de email si se ingresó uno nuevo
+        if (ccEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ccEmail)) {
+            toast('❌ Por favor ingrese un email válido para la copia.', 'error');
+            return;
+        }
+
+        // Obtener adicionales seleccionados de los históricos
+        const checkedBoxes = modal.querySelectorAll('.additional-email-chk:checked');
+        const additionalEmails = Array.from(checkedBoxes).map(cb => cb.value);
+
+        showLoading('ENVIANDO REPORTE POR CORREO...');
+        try {
+            const res = await apiFetch(`/api/event-reports/${reportId}/send-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ccEmail, additionalEmails })
+            });
+
+            if (res && res.success) {
+                toast('🚀 Reporte enviado exitosamente por email.', 'success');
+                modal.remove();
+                
+                // Refrescar listado para actualizar el historial de correos del reporte
+                const currentView = document.getElementById('current-view');
+                if (currentView) {
+                    const titleEl = currentView.querySelector('.view-title');
+                    if (titleEl && titleEl.textContent.includes('BBDD DE EVENTOS')) {
+                        renderEventReports(currentView);
+                    }
+                }
+            } else {
+                throw new Error(res?.error || 'No se pudo enviar el email.');
+            }
+        } catch(e) {
+            toast('❌ Error: ' + e.message, 'error');
         } finally {
             hideLoading();
         }
@@ -5547,16 +6098,19 @@ NOTAS: ${s.observations || 'N/A'}
                                 </div>
                             </div>
 
-                            <div style="display:flex; gap:8px; margin-top:auto; padding-top:8px;">
-                                <button onclick="showEventReportDetail(${r.id})" style="flex:1.2; text-align:center; padding:8px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            <div style="display:flex; gap:8px; margin-top:auto; padding-top:8px; flex-wrap:wrap;">
+                                <button onclick="showEventReportDetail(${r.id})" style="flex:1.2; text-align:center; padding:8px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:80px;">
                                     <span>👁️</span> DETALLES
                                 </button>
-                                <a href="/api/event-reports/${r.id}/download/pdf" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                <a href="/api/event-reports/${r.id}/download/pdf" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; min-width:60px;">
                                     <span>📄</span> PDF
                                 </a>
-                                <a href="/api/event-reports/${r.id}/download/excel" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(16,185,129,0.1); color:var(--success); border:1px solid rgba(16,185,129,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                <a href="/api/event-reports/${r.id}/download/excel" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(16,185,129,0.1); color:var(--success); border:1px solid rgba(16,185,129,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; min-width:65px;">
                                     <span>📊</span> EXCEL
                                 </a>
+                                <button onclick="openEmailReportModal(${r.id}, '${(r.session_name || '').replace(/'/g, "\\'")}', \`${r.sent_emails_history || '[]'}\`)" style="flex:1.2; text-align:center; padding:8px; background:rgba(14,165,233,0.1); color:#0ea5e9; border:1px solid rgba(14,165,233,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
+                                    <span>✉️</span> EMAIL
+                                </button>
                             </div>
                         </div>
                     `;
@@ -5744,6 +6298,33 @@ NOTAS: ${s.observations || 'N/A'}
         }
     };
 
+    window.sendCredentialsEmail = async function() {
+        const sel = document.getElementById('credentials-user-select');
+        if (!sel || !sel.value) {
+            toast('⚠️ Selecciona un empleado', 'error');
+            return;
+        }
+        const userId = sel.value;
+        const userName = sel.options[sel.selectedIndex].text.split(' (')[0];
+        if (!confirm(`¿Enviar credenciales de acceso a "${userName}"?`)) return;
+        showLoading('ENVIANDO CREDENCIALES...');
+        try {
+            const res = await apiFetch('/api/reports/send-credentials', {
+                method: 'POST',
+                body: JSON.stringify({ user_id: userId })
+            });
+            if (res && res.success) {
+                toast('✅ CREDENCIALES ENVIADAS CON ÉXITO', 'success');
+            } else {
+                throw new Error(res.error || 'Error de servidor');
+            }
+        } catch(e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
     async function renderInformesYReportes(el) {
         setTimeout(() => window.scrollTo(0, 0), 100);
         
@@ -5759,16 +6340,34 @@ NOTAS: ${s.observations || 'N/A'}
                 <p style="font-size:0.8rem; color:var(--muted); line-height:1.6; margin:0;">
                     El ecosistema de <b>Valet Eye</b> recopila y procesa en tiempo real toda la actividad operativa de la flota, el personal y la auditoría de seguridad. A continuación se detallan todos los informes y reportes configurados en el sistema, clasificados por su disparador y método de distribución:
                 </p>
-                <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="renderEventReports(document.getElementById('current-view'))" style="border-radius:20px; padding:10px 25px; font-size:0.75rem; font-weight:900; background:var(--brand-red); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                        📊 VER BBDD DE EVENTOS CERRADOS
-                    </button>
-                </div>
             </div>
 
             <!-- Listado de Reportes en Grid -->
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:40px;">
                 
+                <!-- 0. BBDD de Eventos Cerrados -->
+                <div class="card" style="border-top:4px solid #ec4899; background:rgba(236, 72, 153, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span style="font-size:1.5rem;">📊</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(236,72,153,0.15); color:#ec4899; padding:4px 8px; border-radius:6px; text-transform:uppercase;">CONSULTA EN VIVO</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">BBDD de Eventos Cerrados</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Histórico completo de eventos finalizados. Permite auditar ingresos de vehículos, revisar la asistencia del personal y descargar dossiers digitales y hojas de cálculo individuales.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Consola / Descarga</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Base de Datos Histórica</b></span>
+                        </div>
+                        <button class="btn btn-sm" onclick="renderEventReports(document.getElementById('current-view'))" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📊 VER EVENTOS CERRADOS
+                        </button>
+                    </div>
+                </div>
+
                 <!-- 1. Notificación de Convocatoria -->
                 <div class="card" style="border-top:4px solid #f59e0b; background:rgba(245, 158, 11, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
                     <div>
@@ -5897,6 +6496,54 @@ NOTAS: ${s.observations || 'N/A'}
                     </div>
                 </div>
 
+                <!-- 7. Matriz Completa de Personal -->
+                <div class="card" style="border-top:4px solid #14b8a6; background:rgba(20, 184, 166, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span style="font-size:1.5rem;">👥</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(20,184,166,0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">CONSULTA EN VIVO</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Matriz Completa de Personal</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Visualización y control interactivo en tiempo real de la base de datos completa de empleados del sistema, estados, rangos de EYE ID y perfiles administrativos.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Tabla Interactiva</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Gestión de Personal</b></span>
+                        </div>
+                        <button class="btn btn-sm" onclick="window.showAllStaff = true; renderAdmin(document.getElementById('current-view'), 'personal');" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📊 VER MATRIZ COMPLETA
+                        </button>
+                    </div>
+                </div>
+                <!-- 8. Envío de Credenciales de Acceso -->
+                <div class="card" style="border-top:4px solid #eab308; background:rgba(234,179,8,0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span style="font-size:1.5rem;">🔑</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(234,179,8,0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ENVÍO MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Credenciales de Acceso</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Envía las instrucciones de acceso y credenciales (usuario + contraseña) a cualquier empleado registrado, directamente a su correo electrónico registrado en el sistema.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formato: <b style="color:white;">Email HTML</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email del empleado</b></span>
+                        </div>
+                        <select id="credentials-user-select" style="width:100%; background:var(--surface); border:1px solid var(--border); color:#fff; border-radius:10px; padding:10px; font-size:0.8rem; font-weight:700; outline:none;">
+                            <option value="">Seleccionar empleado...</option>
+                        </select>
+                        <button class="btn btn-sm" onclick="sendCredentialsEmail()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
+                            📧 ENVIAR CREDENCIALES POR EMAIL
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Volver footer -->
@@ -5906,6 +6553,22 @@ NOTAS: ${s.observations || 'N/A'}
                 </button>
             </div>
         `;
+
+        // Cargar lista de empleados con email
+        try {
+            const res = await apiFetch('/api/staff');
+            const users = (res.staff || []).filter(u => u.email && u.is_active !== 0);
+            const sel = document.getElementById('credentials-user-select');
+            if (sel) {
+                users.sort((a, b) => a.name.localeCompare(b.name));
+                users.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = `${u.name} (${u.email})`;
+                    sel.appendChild(opt);
+                });
+            }
+        } catch(e) { console.error('Error cargando empleados:', e); }
     }
 
 
@@ -5939,25 +6602,7 @@ NOTAS: ${s.observations || 'N/A'}
                         </div>
                     </div>
 
-                    <!-- NÓMINA Y PAGOS -->
-                    ${hasCfoAccess ? `
-                    <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); background: rgba(16, 185, 129, 0.05);">
-                        <i>💰</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
-                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REVISIÓN Y AUTORIZACIÓN</span>
-                        </div>
-                    </div>
-                    ` : ''}
 
-                    <!-- INFORMES Y REPORTES -->
-                    <div class="menu-item" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
-                        <i>📈</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
-                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REPORTES GENERALES Y ESTADÍSTICAS</span>
-                        </div>
-                    </div>
 
                     <!-- BBDD DE EVENTOS -->
                     <div class="menu-item" onclick="renderEventReports(document.getElementById('current-view'))" style="border-top: 4px solid var(--brand-red); background: rgba(239, 68, 68, 0.05);">
@@ -6004,14 +6649,6 @@ NOTAS: ${s.observations || 'N/A'}
                         </div>
                     </div>
 
-                    <!-- IMAGEN & RRSS -->
-                    <div class="menu-item" onclick="toast('📸 IMAGEN & RRSS estará disponible próximamente', 'info')" style="border-top: 4px solid #64748b; background: rgba(100, 116, 139, 0.03); opacity: 0.6; cursor: not-allowed;">
-                        <i style="filter: grayscale(100%);">📸</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900; color: #94a3b8;">IMAGEN & RRSS</span>
-                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; color: #64748b; font-weight:bold; letter-spacing:1px;">PRÓXIMAMENTE</span>
-                        </div>
-                    </div>
 
                     <!-- AUDITORÍA Y SEGURIDAD (Solo Superadmins) -->
                     ${(() => {
@@ -6659,13 +7296,13 @@ NOTAS: ${s.observations || 'N/A'}
     let fullStaffData = [];
     let availableSessions = [];
     let showInactive = false;
-    let showAllStaff = false;
+    window.showAllStaff = false;
 
     function toggleStaffList() {
-        showAllStaff = !showAllStaff;
+        window.showAllStaff = !window.showAllStaff;
         const btn = document.querySelector('button[onclick="toggleStaffList()"]');
         if (btn) {
-            btn.innerHTML = showAllStaff ? "📊 COLAPSAR MATRIZ (MUESTRA)" : "📊 MOSTRAR MATRIZ COMPLETA";
+            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (MUESTRA)" : "📊 MOSTRAR MATRIZ COMPLETA";
         }
         renderFilteredStaff();
     }
@@ -6778,7 +7415,7 @@ NOTAS: ${s.observations || 'N/A'}
         }
 
         const totalFiltered = list.length;
-        if (!showAllStaff && !query) {
+        if (!window.showAllStaff && !query) {
             // Dejar solo el empleado "INVITADO" o "VISITANTE" de muestra cuando la tabla está colapsada
             const invitado = list.find(u => u.name.toUpperCase().includes('INVITADO') || u.name.toUpperCase().includes('VISITANTE'));
             if (invitado) {
@@ -6823,8 +7460,8 @@ NOTAS: ${s.observations || 'N/A'}
                             <td style="padding:4px 12px; cursor:pointer;" onclick="openStaffEditModal(${u.id})">
                                 <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
                             </td>
-                            <td style="padding:4px 12px;">
-                                <select class="table-control" style="font-weight:900; color:${color};" 
+                            <td style="padding:4px 8px;">
+                                <select class="table-control" style="font-weight:900; color:${color}; font-size:0.72rem; padding:4px 4px;" 
                                     onchange="updateStaffField(${u.id}, 'eye_id', this.value); setTimeout(() => loadStaffList(), 500);">
                                     <option value="" ${u.eye_id === '' ? 'selected' : ''}>---</option>
                                     <option value="ORO" ${eyeId === 'ORO' ? 'selected' : ''}>ORO</option>
@@ -6870,7 +7507,7 @@ NOTAS: ${s.observations || 'N/A'}
                     }).join('')}
                 </tbody>
             </table>
-            ${!showAllStaff && !query ? `
+            ${!window.showAllStaff && !query ? `
                 <div style="padding:15px; text-align:center; color:var(--muted); font-size:0.75rem; border-top:1px solid var(--border); font-weight:700; background:rgba(255,255,255,0.01);">
                     💡 MOSTRANDO EL EMPLEADO DE MUESTRA (INVITADO / VISITANTE). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
                 </div>
@@ -7919,10 +8556,12 @@ NOTAS: ${s.observations || 'N/A'}
         const typeSelect = document.getElementById('lista-tipo');
         if (typeSelect) {
             const val = (s.type || '').toLowerCase();
-            if (val.includes('valet')) typeSelect.value = 'valet';
+            if (val.includes('valet')) typeSelect.value = 'valet parking';
             else if (val.includes('boda')) typeSelect.value = 'boda';
-            else if (val.includes('cumple')) typeSelect.value = 'cumple';
-            else typeSelect.value = 'valet';
+            else if (val.includes('cumple')) typeSelect.value = 'cumpleaños';
+            else if (val.includes('corpo')) typeSelect.value = 'corporativo';
+            else if (val.includes('conci')) typeSelect.value = 'concierto';
+            else typeSelect.value = val;
         }
         
         document.getElementById('lista-nombre').value = s.name || '';
@@ -7932,10 +8571,11 @@ NOTAS: ${s.observations || 'N/A'}
         document.getElementById('lista-telefono').value = s.phone || '';
         document.getElementById('lista-observaciones').value = s.observations || '';
         
-        // Horas
+        // Horas y Fechas Fin
         if (document.getElementById('lista-hora-convocatoria')) document.getElementById('lista-hora-convocatoria').value = s.convocation_time || '';
         if (document.getElementById('lista-hora-inicio')) document.getElementById('lista-hora-inicio').value = s.event_start_time || '';
         if (document.getElementById('lista-hora-fin')) document.getElementById('lista-hora-fin').value = s.event_end_time || '';
+        if (document.getElementById('lista-fecha-fin')) document.getElementById('lista-fecha-fin').value = s.event_end_date ? s.event_end_date.split('T')[0] : '';
         
         // Actualizar mapa
         handleAddressChange(s.address || '');
@@ -7969,7 +8609,7 @@ NOTAS: ${s.observations || 'N/A'}
             }
         }
 
-        renderStaffTags('supervisor');
+        updateStaffList('supervisor');
         updateStaffList('employee');
         
         window.editingSessionId = id;
@@ -8044,21 +8684,7 @@ NOTAS: ${s.observations || 'N/A'}
         }
 
         resultsEl.innerHTML = filtered.map(s => {
-            const busySession = (window.activeSessions || []).find(sess => {
-                if (sess.id == window.editingSessionId) return false;
-                
-                // 1. Si está activo ahora mismo
-                if (sess.status === 'active' && s.current_session_id == sess.id) return true;
-                
-                // 2. Si el evento es el mismo día y está asignado (aunque sea planificación)
-                if (targetDate) {
-                    const sessDate = new Date(sess.started_at).toISOString().split('T')[0];
-                    if (sessDate === targetDate) {
-                        return (sess.assigned_staff_list || []).some(u => u.id == s.id);
-                    }
-                }
-                return false;
-            });
+            const busySession = isStaffMemberBusy(s.id, s.current_session_id);
 
             const isBusy = !!busySession;
             const statusColor = isBusy ? 'var(--brand-red)' : 'var(--muted)';
@@ -8094,22 +8720,25 @@ NOTAS: ${s.observations || 'N/A'}
         if (!listEl) return;
         
         const staff = (window.allStaffData || []).slice().sort((a, b) => a.name.localeCompare(b.name));
-        const selection = window.staffSelection.employees;
-        const supervisors = window.staffSelection.supervisors;
+        const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        const otherSelection = type === 'supervisor' ? window.staffSelection.employees : window.staffSelection.supervisors;
 
         // Actualizar visual de la sección según supervisores
-        const employeeSection = document.getElementById('employee-selection-section');
-        if (employeeSection) {
-            if (supervisors.length > 0) {
-                employeeSection.style.opacity = '1';
-                employeeSection.style.pointerEvents = 'auto';
-                const warning = employeeSection.querySelector('div');
-                if (warning) warning.style.display = 'none';
-            } else {
-                employeeSection.style.opacity = '0.3';
-                employeeSection.style.pointerEvents = 'none';
-                const warning = employeeSection.querySelector('div');
-                if (warning) warning.style.display = 'block';
+        if (type === 'employee') {
+            const employeeSection = document.getElementById('employee-selection-section');
+            if (employeeSection) {
+                const supervisors = window.staffSelection.supervisors;
+                if (supervisors.length > 0) {
+                    employeeSection.style.opacity = '1';
+                    employeeSection.style.pointerEvents = 'auto';
+                    const warning = employeeSection.querySelector('div');
+                    if (warning) warning.style.display = 'none';
+                } else {
+                    employeeSection.style.opacity = '0.3';
+                    employeeSection.style.pointerEvents = 'none';
+                    const warning = employeeSection.querySelector('div');
+                    if (warning) warning.style.display = 'block';
+                }
             }
         }
         
@@ -8117,33 +8746,22 @@ NOTAS: ${s.observations || 'N/A'}
 
         listEl.innerHTML = staff.filter(s => 
             s.name.toLowerCase().includes(query) && 
-            !supervisors.includes(s.id)
+            !otherSelection.includes(s.id)
         ).map(s => {
             const isSelected = selection.includes(s.id);
-            const busySession = (window.activeSessions || []).find(sess => {
-                if (sess.id == window.editingSessionId) return false;
-                
-                // 1. Si está activo ahora mismo
-                if (sess.status === 'active' && s.current_session_id == sess.id) return true;
-                
-                // 2. Si el evento es el mismo día y está asignado (aunque sea planificación)
-                if (targetDate) {
-                    const sessDate = new Date(sess.started_at).toISOString().split('T')[0];
-                    if (sessDate === targetDate) {
-                        return (sess.assigned_staff_list || []).some(u => u.id == s.id);
-                    }
-                }
-                return false;
-            });
+            const busySession = isStaffMemberBusy(s.id, s.current_session_id);
             
             const isBusy = !!busySession;
             const onclick = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `toggleStaffSelection('${type}', ${s.id})`;
             
+            const checkboxColor = type === 'supervisor' ? 'var(--warning)' : 'var(--accent)';
+            const nameColor = isSelected ? (type === 'supervisor' ? 'var(--warning)' : 'var(--accent)') : (isBusy ? 'var(--brand-red)' : '#fff');
+            
             return `
-                <div style="display:flex; align-items:center; padding:8px 12px; gap:12px; border-bottom:1px solid rgba(255,255,255,0.03); cursor:${isBusy ? 'not-allowed' : 'pointer'}; transition:0.2s; background:${isSelected ? 'rgba(99, 102, 241, 0.05)' : (isBusy ? 'rgba(239, 68, 68, 0.02)' : 'transparent')}; opacity:${isBusy && !isSelected ? '0.5' : '1'};" onclick="${onclick}">
-                    <input type="checkbox" ${isSelected ? 'checked' : ''} ${isBusy && !isSelected ? 'disabled' : ''} style="width:16px; height:16px; cursor:pointer; accent-color:var(--accent);">
+                <div style="display:flex; align-items:center; padding:8px 12px; gap:12px; border-bottom:1px solid rgba(255,255,255,0.03); cursor:${isBusy ? 'not-allowed' : 'pointer'}; transition:0.2s; background:${isSelected ? (type === 'supervisor' ? 'rgba(245, 158, 11, 0.05)' : 'rgba(99, 102, 241, 0.05)') : (isBusy ? 'rgba(239, 68, 68, 0.02)' : 'transparent')}; opacity:${isBusy && !isSelected ? '0.5' : '1'};" onclick="${onclick}">
+                    <input type="checkbox" ${isSelected ? 'checked' : ''} ${isBusy && !isSelected ? 'disabled' : ''} style="width:16px; height:16px; cursor:pointer; accent-color:${checkboxColor};">
                     <div style="flex:1;">
-                        <div style="color:${isSelected ? 'var(--accent)' : (isBusy ? 'var(--brand-red)' : '#fff')}; font-weight:${isSelected ? '900' : '600'}; font-size:0.75rem; display:flex; align-items:center; gap:5px;">
+                        <div style="color:${nameColor}; font-weight:${isSelected ? '900' : '600'}; font-size:0.75rem; display:flex; align-items:center; gap:5px;">
                             ${s.name.toUpperCase()}
                             ${isBusy ? `<span style="font-size:0.5rem; background:rgba(239, 68, 68, 0.1); color:var(--brand-red); padding:2px 6px; border-radius:4px;">OCUPADO</span>` : ''}
                         </div>
@@ -8155,12 +8773,14 @@ NOTAS: ${s.observations || 'N/A'}
     }
 
     window.toggleStaffSelection = function(type, id) {
-        const selection = window.staffSelection.employees;
+        const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
         const index = selection.indexOf(id);
         if (index > -1) selection.splice(index, 1);
         else selection.push(id);
         
         updateStaffList(type);
+        const otherType = type === 'supervisor' ? 'employee' : 'supervisor';
+        updateStaffList(otherType);
     }
 
     window.removeStaffFromEvent = function(type, id) {
@@ -8248,9 +8868,12 @@ NOTAS: ${s.observations || 'N/A'}
                             <div style="font-size:0.5rem; color:var(--accent); font-weight:800; text-transform:uppercase;">🚀 INICIO EVENTO</div>
                             <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.event_start_time || '--:--'}</div>
                         </div>
-                        <div style="flex:1;">
+                        <div style="flex:1.2;">
                             <div style="font-size:0.5rem; color:var(--muted); font-weight:800; text-transform:uppercase;">🏁 FIN (EST.)</div>
-                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.event_end_time || '--:--'}</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; flex-direction:column;">
+                                <span>${s.event_end_time || '--:--'}</span>
+                                ${s.event_end_date ? `<span style="font-size:0.65rem; color:var(--muted); margin-top:2px; font-weight:500;">📅 ${s.event_end_date.split('T')[0].split('-').reverse().join('/')}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -9183,16 +9806,65 @@ NOTAS: ${s.observations || 'N/A'}
     window.saveStaffEdit = saveStaffEdit;
     window.deleteCurrentStaff = deleteCurrentStaff;
 
+    // ── WHATSAPP CLICK-TO-CHAT: Chat directo con empleado ──
     window.openDirectWhatsApp = function(phone, name) {
-        toast('❌ WhatsApp desactivado temporalmente', 'info');
+        if (!phone) {
+            toast('⚠️ ' + name + ' no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const msg = `Hola ${name}, te contactamos desde EYE STAFF.`;
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+        toast('✅ Abriendo WhatsApp con ' + name, 'success');
     };
 
+    // ── WHATSAPP CLICK-TO-CHAT: Enlace de convocatoria pre-redactado ──
     window.openDirectConvocationLink = function(name, phone, sessionName, convocationTime, startTime, endTime, address) {
-        toast('❌ WhatsApp desactivado temporalmente', 'info');
+        if (!phone) {
+            toast('⚠️ ' + name + ' no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const msg =
+            `📋 *CONVOCATORIA EYE STAFF*\n\n` +
+            `Hola *${name}*, tienes una asignación confirmada:\n\n` +
+            `🎯 *Evento:* ${sessionName}\n` +
+            `⏰ *Convocatoria:* ${convocationTime || 'Por confirmar'}\n` +
+            `🕐 *Inicio evento:* ${startTime || 'Por confirmar'}\n` +
+            `🏁 *Fin evento:* ${endTime || 'Por confirmar'}\n` +
+            `📍 *Dirección:* ${address || 'Por confirmar'}\n\n` +
+            `_Confirma tu asistencia respondiendo este mensaje._`;
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+        toast('✅ Abriendo WhatsApp con convocatoria para ' + name, 'success');
     };
 
+    // ── CALLMEBOT: Notificación automática vía servidor (requiere API Key del empleado) ──
     window.triggerManualCallMeBotWhatsApp = async function(userId, name, sessionName, convocationTime, startTime, endTime, address) {
-        toast('❌ WhatsApp desactivado temporalmente', 'info');
+        try {
+            showLoading('ENVIANDO WHATSAPP...');
+            const res = await apiFetch('/api/whatsapp/send-convocation', {
+                method: 'POST',
+                body: JSON.stringify({ userId, sessionName, convocationTime, startTime, endTime, address })
+            });
+            hideLoading();
+            if (res && res.success) {
+                toast('✅ WhatsApp enviado a ' + name + ' via CallMeBot', 'success');
+            } else {
+                // Fallback a Click-to-Chat si no tiene API Key
+                const staffData = fullStaffData ? fullStaffData.find(u => u.id === userId) : null;
+                if (staffData && staffData.phone) {
+                    toast('⚠️ Sin API Key — Abriendo WhatsApp manual para ' + name, 'warning');
+                    window.openDirectConvocationLink(name, staffData.phone, sessionName, convocationTime, startTime, endTime, address);
+                } else {
+                    toast('❌ ' + (res && res.error ? res.error : 'Error al enviar WhatsApp'), 'error');
+                }
+            }
+        } catch(e) {
+            hideLoading();
+            toast('❌ Error al enviar: ' + e.message, 'error');
+        }
     };
 
     // ==========================================
