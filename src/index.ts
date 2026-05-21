@@ -17,6 +17,7 @@ export interface Env {
   RESEND_API_KEY?: string;
   ADMIN_KEY?: string;
   DIRECTOR_EMAIL?: string;
+  AI: any;
 }
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
@@ -240,7 +241,7 @@ app.post('/api/staff/apply', async (c) => {
 // ===============================
 app.get('/api/sessions/active', async (c) => {
   const sessionsRes = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("planning", "active") ORDER BY id ASC').all();
-  const sessions = sessionsRes.results || [] as any[];
+  const sessions = (sessionsRes.results || []) as any[];
   
   // Fetch assigned staff and vehicle counts for each session
   for (let s of sessions) {
@@ -322,7 +323,7 @@ app.get('/api/admin/clients', async (c) => {
   const result = await c.env.DB.prepare(query).all();
   const clients = (result.results || []).map((cl: any) => ({
     ...cl,
-    history: (cl.visit_history || '').split('::').filter(h => h.includes('|')).map((h: string) => {
+    history: ((cl.visit_history as string) || '').split('::').filter((h: string) => h.includes('|')).map((h: string) => {
         const [event, date, plate] = h.split('|');
         return { event: event || 'S/E', date, plate };
     })
@@ -1033,7 +1034,7 @@ app.get('/api/event-reports/:id/download/:filetype', async (c) => {
 app.post('/api/event-reports/:id/send-email', async (c) => {
   try {
     const reportId = c.req.param('id');
-    const body = await c.req.json<{ additionalEmails?: string[], ccEmail?: string }>().catch(() => ({}));
+    const body = await c.req.json<{ additionalEmails?: string[], ccEmail?: string }>().catch(() => ({}) as any);
     
     const report = await c.env.DB.prepare('SELECT * FROM event_reports WHERE id = ?').bind(reportId).first<any>();
     if (!report) return c.json({ error: 'Reporte no encontrado' }, 404);
@@ -1140,7 +1141,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
       if (cleanCc && cleanCc !== primaryEmail) ccEmailsSet.add(cleanCc);
     }
     if (body.additionalEmails && Array.isArray(body.additionalEmails)) {
-      body.additionalEmails.forEach(email => {
+      body.additionalEmails.forEach((email: string) => {
         const cleanEmail = email.trim().toLowerCase();
         if (cleanEmail && cleanEmail !== primaryEmail) ccEmailsSet.add(cleanEmail);
       });
@@ -3122,7 +3123,7 @@ app.get('/api/chat/newest', async (c) => {
       `;
     } else if (currentSessionId) {
       // 3. Usuario regular ve chat de su evento asignado
-      const assignedIds = currentSessionId.toString().split(',').map(x => x.trim()).filter(Boolean);
+      const assignedIds = currentSessionId.toString().split(',').map((x: string) => x.trim()).filter(Boolean);
       if (assignedIds.length > 0) {
         query += `
           OR (m.session_id IS NOT NULL AND m.session_id IN (${assignedIds.join(',')}))
@@ -3150,7 +3151,7 @@ app.get('/api/chat/users', async (c) => {
   ).all();
   const allUsers = allUsersRes.results || [];
   
-  let activeContacts = [];
+  let activeContacts: any[] = [];
   if (userId && userId !== 'undefined') {
     const activeRes = await c.env.DB.prepare(`
       SELECT id, name, role FROM users WHERE id IN (
@@ -3277,7 +3278,7 @@ app.post('/api/staff/import', async (c) => {
 
   for (let line of lines.slice(1)) { // Skip header
     // Usar regex para dividir por comas respetando comas dentro de comillas
-    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((c: string) => c.trim().replace(/^"|"$/g, ''));
     
     if (cols.length < 5) continue; // Línea inválida
 
@@ -5328,11 +5329,11 @@ export default {
       // EXTRAER ADJUNTOS (FOTOS)
       let photoUrl = '';
       if (email.attachments && email.attachments.length > 0) {
-        const image = email.attachments.find(a => a.contentType.startsWith('image/'));
+        const image = email.attachments.find((a: any) => a.contentType && a.contentType.startsWith('image/'));
         if (image) {
           const key = `job_app_${Date.now()}_${image.filename}`;
           await env.PHOTOS.put(key, image.content, {
-            httpMetadata: { contentType: image.contentType }
+            httpMetadata: { contentType: (image as any).contentType }
           });
           photoUrl = key;
         }
@@ -5343,7 +5344,7 @@ export default {
         Resume la experiencia en máximo 200 caracteres basándote en lo que el candidato dice que puede APORTAR o su TRAYECTORIA.
         
         CORREO:
-        Remitente: ${email.from.address}
+        Remitente: ${email.from?.address || ''}
         Asunto: ${email.subject}
         Texto: ${email.text}`
       }) as any;
@@ -5355,7 +5356,7 @@ export default {
         const data = JSON.parse(rawJson);
         if (data.name && data.name.trim() !== "") {
           await env.DB.prepare('INSERT INTO job_applications (name, cedula, email, phone, address, birth_date, experience, category, status, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-            .bind(data.name.toUpperCase(), data.cedula || 'S/D', data.email || email.from.address, data.phone || 'S/D', data.address || '', data.birth_date || '', data.experience || email.text, 'solicitud_empleo', 'pending', photoUrl)
+            .bind(data.name.toUpperCase(), data.cedula || 'S/D', data.email || email.from?.address || '', data.phone || 'S/D', data.address || '', data.birth_date || '', data.experience || email.text, 'solicitud_empleo', 'pending', photoUrl)
             .run();
 
           /* DESACTIVADO TEMPORALMENTE - AUTO-RESPUESTA
