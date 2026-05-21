@@ -1,6 +1,6 @@
 {
   "name": "valet-eye",
-  "version": "2.2.70",
+  "version": "2.3.52",
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
@@ -21,6 +21,7 @@
     "jose": "^6.2.2",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^2.4.5",
+    "postal-mime": "^2.7.4",
     "stripe": "^22.0.2",
     "xlsx": "^0.18.5"
   }

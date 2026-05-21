@@ -24,7 +24,4 @@ binding = "AI"
 [triggers]
 crons = ["* * * * *"]
 
-[[routes]]
-pattern = "eye-staff.app"
-custom_domain = true
 

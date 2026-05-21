@@ -1,50 +1,65 @@
-const API_KEY = "re_Fu3JRkwq_Lxt6DeWEKoey8xkdn8ijbCRF";
-const TO = "ncarrillok@gmail.com";
+const fs = require('fs');
 
-const html = `
-    <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 30px; border-radius: 20px; border-top: 10px solid #22c55e;">
-      <h1 style="color: #22c55e; margin-bottom: 5px;">RESPALDO EXITOSO - v2.2.10</h1>
-      <p style="color: #666; font-weight: bold;">BACKUP Y RESUMEN DE ACTUALIZACIONES</p>
-      <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-      
-      <p>Hola, se ha realizado un respaldo completo de la base de datos y se ha desplegado la versión <b>v2.2.10</b> con los siguientes ajustes:</p>
-      
-      <ul style="line-height: 1.8;">
-        <li><b>📥 Estabilidad en Recepción:</b> Se ha eliminado el temporizador de retorno en la pantalla de ingreso para permitir inspecciones sin interrupciones.</li>
-        <li><b>🕒 Formato de Tiempo Mejorado:</b> El contador ahora se muestra como <code>[ 15 SEG ]</code> para una lectura clara y profesional.</li>
-        <li><b>🏠 Iconografía:</b> Sustitución de texto por iconos en la navegación superior.</li>
-        <li><b>🧠 Inteligencia Predictiva:</b> Auto-completado de placas, clientes y marcas totalmente operativo.</li>
-      </ul>
+async function sendBackupSummary() {
+    const apiKey = 're_Fu3JRkwq_Lxt6DeWEKoey8xkdn8ijbCRF';
+    
+    const payload = {
+        from: 'EYE STAFF BACKUP <onboarding@resend.dev>',
+        to: ['ncarrillok@gmail.com'],
+        subject: '📦 BACKUP FINAL & RESUMEN DE CAMBIOS - v2.3.70',
+        html: `
+            <div style="font-family: sans-serif; color: #333; max-width: 700px; margin: 0 auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+                <div style="background: #0f172a; color: #fff; padding: 30px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">EYE STAFF SYSTEM</h1>
+                    <p style="margin: 5px 0 0 0; opacity: 0.7;">Resumen de Actualización y Backup</p>
+                </div>
+                
+                <div style="padding: 30px;">
+                    <h2 style="color: #6366f1; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Versión Actualizada: v2.3.70</h2>
+                    
+                    <h3 style="margin-top: 25px;">🛠️ Mejoras y Correcciones:</h3>
+                    <ul style="line-height: 1.6;">
+                        <li><b>Recuperación del Sistema:</b> Se restauró la estabilidad tras el colapso de la v2.3.62 (causado por una etiqueta de script mal cerrada).</li>
+                        <li><b>Módulo de Personal:</b> Se integró el campo <b>EMAIL</b> en el formulario de registro y en la matriz administrativa (editable).</li>
+                        <li><b>Estabilidad del Servidor:</b> Se corrigió un crash (Error 500) que ocurría al intentar guardar personal mientras la seguridad está en modo bypass.</li>
+                        <li><b>Consistencia UI:</b> Actualización de etiquetas de versión en cabeceras y footers.</li>
+                    </ul>
 
-      <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; margin-top: 30px; text-align: center; border: 1px solid #bbf7d0;">
-        <p style="margin: 0; font-size: 0.9rem; color: #166534;">El sistema está actualizado y respaldado correctamente.</p>
-      </div>
+                    <h3 style="margin-top: 25px;">💾 Respaldos Generados:</h3>
+                    <ul style="line-height: 1.6;">
+                        <li><b>Database:</b> Export de D1 completado (<code>backups/database_backup_20260429_final.sql</code>).</li>
+                        <li><b>Frontend:</b> Copia local <code>frontend/backup_v2370_index.html</code>.</li>
+                        <li><b>Backend:</b> Copia local <code>backup_v2370_index.ts</code>.</li>
+                    </ul>
 
-      <div style="text-align: center; margin-top: 30px; font-size: 0.8rem; color: #999;">EYE STAFF 2026 — Smart Group Operations</div>
-    </div>
-`;
+                    <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 15px; border-radius: 8px; margin-top: 30px;">
+                        <p style="margin: 0; color: #92400e; font-size: 0.9rem;">
+                            <b>Nota:</b> El sistema ya se encuentra desplegado y operativo en el entorno de producción.
+                        </p>
+                    </div>
+                </div>
 
-async function send() {
-    console.log("Enviando resumen de backup y actualizaciones...");
+                <div style="background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #f1f5f9;">
+                    EYE STAFF — Gestión Operativa 2026
+                </div>
+            </div>
+        `
+    };
+
     try {
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
-            headers: { 
-                'Authorization': `Bearer ${API_KEY}`, 
-                'Content-Type': 'application/json' 
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                from: 'EYE STAFF <onboarding@resend.dev>',
-                to: [TO],
-                subject: '✅ EYE STAFF: Respaldo de Seguridad y Resumen de Mejoras',
-                html: html
-            })
+            body: JSON.stringify(payload)
         });
         const data = await res.json();
-        console.log("Respuesta de Resend:", data);
+        console.log('Summary email sent:', data);
     } catch (e) {
-        console.error("Error al enviar email:", e);
+        console.error('Error sending summary email:', e);
     }
 }
 
-send();
+sendBackupSummary();

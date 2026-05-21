@@ -337,4 +337,17 @@ CREATE TABLE IF NOT EXISTS social_insights (
 -- Register the RRSS module
 INSERT OR IGNORE INTO modules (id, display_name, category) VALUES ('rrss', 'Imagen y RRSS', 'Operaciones');
 INSERT OR IGNORE INTO role_permissions (role, module_id, can_view) VALUES ('director', 'rrss', 1);
-INSERT OR IGNORE INTO role_permissions (role, module_id, can_view) VALUES ('supervisor', 'rrss', 1);
+-- Tabla de Postulaciones (Job Applications)
+CREATE TABLE IF NOT EXISTS job_applications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  cedula TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  address TEXT,
+  birth_date TEXT,
+  experience TEXT,
+  photo_url TEXT,
+  status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'interviewed', 'hired', 'rejected')),
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

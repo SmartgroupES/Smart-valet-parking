@@ -1,142 +1,98 @@
+                  (function() {
+                    let timeLeft = 28800;
+                    const timerEl = document.getElementById('timer-countdown');
+                    const interval = setInterval(async () => {
+                      timeLeft--;
+                      if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        logout();
+                      }
+                      if (timeLeft === 600) {
+                        const extend = confirm('⚠️ LA SESIÓN EXPIRARÁ EN 10 MINUTOS. ¿DESEA EXTENDERLA 8 HORAS MÁS?');
+                        if (extend) {
+                            timeLeft = 28800;
+                            const res = await fetch('/api/auth/refresh', { method: 'POST', headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')} });
+                            const data = await res.json();
+                            if(data.token) localStorage.setItem('token', data.token);
+                        }
+                      }
+                    }, 1000);
+                  })();
+                </script>
+<script>
     // --- CONFIG & STATE ---
     const API_BASE = window.location.origin;
-    const VERSION_TAG = "V2.2.28 25/04/26 18:00";
+    const VERSION = '2.3.68';
+    
+    // Time & Date Helpers for cross-browser consistency
+    function formatTime24h(dateInput) {
+        if (!dateInput) return '--:--';
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return '--:--';
+        const h = d.getHours().toString().padStart(2, '0');
+        const m = d.getMinutes().toString().padStart(2, '0');
+        return `${h}:${m}`;
+    }
+
+    function formatDateExplicit(dateInput) {
+        if (!dateInput) return 'S/F';
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return 'S/F';
+        const dd = d.getDate().toString().padStart(2, '0');
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+        const yy = d.getFullYear().toString().slice(-2);
+        return `${dd}/${mm}/${yy}`;
+    }
+    let currentTab = 'dashboard';
     let currentStaff = { id: 1, name: 'Director Valet', role: 'director' };
     let vehicles = [];
     let settings = { currency: '$', company_name: 'EYE STAFF' };
-    let currentTab = 'portal';
-
-
-    // --- INACTIVITY REDIRECT LOGIC (10s) ---
-    let inactivityTimeout;
-
-    function resetInactivityTimer() {
-        clearTimeout(inactivityTimeout);
-        
-        // Vistas operativas que deben retornar al menú tras inactividad
-        const operationalTabs = ['eventos', 'resumen', 'checkin', 'checkout'];
-        
-        if (operationalTabs.includes(currentTab)) {
-            inactivityTimeout = setTimeout(async () => {
-                if (currentTab !== 'home' && currentTab !== 'valet-menu') {
-                    await smoothTransition(() => showTab('home'));
-                    toast('RETORNO AL MENÚ POR INACTIVIDAD', 'info');
-                }
-            }, 10000); // 10 segundos
-        }
-    }
-
-
-    async function smoothTransition(callback) {
-        const overlay = document.getElementById('fade-overlay');
-        overlay.classList.add('active');
-        await new Promise(r => setTimeout(r, 600));
-        if (callback) callback();
-        await new Promise(r => setTimeout(r, 200));
-        overlay.classList.remove('active');
-    }
-
-    // --- REAL-TIME TRACKING LOGIC ---
-    let watchId = null;
-    let isTracking = false;
-
-    async function toggleTracking() {
-        if (!isTracking) {
-            if (!navigator.geolocation) return toast('Geolocation no soportada', 'error');
-            
-            showLoading('ACTIVANDO RASTREO...');
-            watchId = navigator.geolocation.watchPosition(
-                async (pos) => {
-                    const { latitude, longitude, accuracy } = pos.coords;
-                    const userId = localStorage.getItem('userId') || 1; // Default to 1 for tests
-                    
-                    // Actualizar UI
-                    const statusText = document.getElementById('tracking-status-text');
-                    if (statusText) {
-                        statusText.innerHTML = `COMPARTIENDO UBICACIÓN ACTIVAMENTE <br><span style="color:var(--success); font-weight:900;">PRECISIÓN: ${Math.round(accuracy)}m</span>`;
-                    }
-
-                    await apiFetch('/api/locations/update', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            entity_id: parseInt(userId),
-                            entity_type: 'staff',
-                            latitude,
-                            longitude,
-                            accuracy
-                        })
-                    }, true); // Silent update
-
-                    document.getElementById('tracking-pulse').style.display = 'inline-block';
-                    document.getElementById('btn-tracking').innerText = 'DETENER';
-                    document.getElementById('btn-tracking').style.background = 'var(--danger)';
-                    isTracking = true;
-                },
-                (err) => {
-                    console.error('GPS Error:', err);
-                    hideLoading();
-                    let msg = 'Error GPS: ' + err.message;
-                    if (err.code === 1) msg = '⚠️ PERMISO DENEGADO: Por favor activa el GPS en tu navegador';
-                    toast(msg, 'error');
-                    
-                    const statusText = document.getElementById('tracking-status-text');
-                    if (statusText) {
-                        statusText.innerHTML = `<span style="color:var(--danger); font-weight:800;">${msg}</span>`;
-                    }
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-            hideLoading();
-        } else {
-            if (watchId) navigator.geolocation.clearWatch(watchId);
-            document.getElementById('tracking-pulse').style.display = 'none';
-            document.getElementById('btn-tracking').innerText = 'ACTIVAR';
-            document.getElementById('btn-tracking').style.background = 'var(--accent)';
-            isTracking = false;
-            
-            const statusText = document.getElementById('tracking-status-text');
-            if (statusText) {
-                statusText.innerText = 'DESACTIVADO (USAR DURANTE TRASLADOS)';
-            }
-            toast('RASTREO DESACTIVADO', 'info');
-        }
-    }
-
 
     // --- INITIALIZATION ---
     window.onload = async () => {
-        // 1. UI Inmediato
-        updateFooterInfo();
+        updateClock();
+        setInterval(updateClock, 1000); 
         initScreenSaver();
-        exitToPortal(); 
-        
-        console.log('EYE STAFF v2.2.28 Initialized');
-        
-        // 2. Cache Kill
-        try {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-            }
-            if ('caches' in window) {
-                caches.keys().then(names => names.forEach(n => caches.delete(n)));
-            }
-        } catch(e) {}
 
         const splash = document.getElementById('splash-screen');
         if (splash) splash.style.display = 'flex';
         
-        // 3. Auth
-        if (!localStorage.getItem('token')) {
-            localStorage.setItem('token', 'master-bypass-token');
-        }
+        // BYPASS TEMPORAL DESACTIVADO
+        /*
+        localStorage.setItem('token', 'emergency-bypass-token');
+        localStorage.setItem('user', JSON.stringify({ id: 1, name: 'ADMIN BYPASS', role: 'director', is_superadmin: true }));
+        */
         
+        const userStr = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+
+        if (!token || !userStr) {
+            renderLoginWall();
+            return;
+        }
+
+        let user;
+        try {
+            user = JSON.parse(userStr);
+            if (!user || !user.name) throw new Error('Sesión inválida');
+        } catch (e) {
+            localStorage.clear();
+            renderLoginWall();
+            return;
+        }
+
         const loginView = document.getElementById('login-view');
         if (loginView) loginView.style.display = 'none';
-
-        // 4. Data (Non-blocking)
-        loadSettings().then(() => checkActiveSession()).catch(e => console.error('Data error:', e));
+        document.getElementById('app').style.display = 'block';
         
-        // 5. Hide Splash
+        const navName = document.getElementById('nav-user-name');
+        if (navName) navName.textContent = user.name;
+
+        // Cargar datos
+        loadSettings().then(() => checkActiveSession()).catch(e => console.error('Data error:', e));
+        exitToPortal();
+
+        // Hide Splash
         setTimeout(() => {
             if (splash) {
                 splash.style.opacity = '0';
@@ -145,92 +101,585 @@
         }, 800);
     };
 
-    async function handleLogin() {
-        const pin = document.getElementById('login-pin').value;
-        if (!pin) return toast('INGRESE PIN', 'error');
+    function renderLoginWall() {
+        const loginView = document.getElementById('login-view');
+        if (!loginView) return;
         
+        loginView.innerHTML = `
+            <div class="login-wall">
+                <div class="logo-text" style="font-size: 3rem; margin-bottom: 40px; flex-direction: column; align-items: center; gap: 0;">
+                    <span style="color:var(--brand-white); font-size: 1rem; letter-spacing: 10px; margin-bottom: -10px;">GRUPO</span>
+                    <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
+                </div>
+                
+                <div class="login-card">
+                    <h2 style="margin: 0; font-size: 1.2rem; letter-spacing: 2px;">ACCESO RESTRINGIDO</h2>
+                    <p style="color: var(--muted); font-size: 0.8rem; margin: -10px 0 10px 0;">INGRESE SUS CREDENCIALES</p>
+                    
+                    <div class="field" style="margin:0;">
+                        <input type="text" id="login-name" class="login-input" placeholder="USUARIO" autocomplete="off">
+                    </div>
+                    
+                    <div class="field" style="margin:0;">
+                        <input type="password" id="login-cedula" class="login-input" placeholder="CONTRASEÑA" autocomplete="off" onmouseover="this.type='text'" onmouseout="this.type='password'">
+                    </div>
+                    
+                    <button class="btn" onclick="handleLogin()" style="height: 65px; border-radius: 18px; font-size: 1.2rem; font-weight: 900; background: var(--accent);">
+                        ENTRAR AL PORTAL
+                    </button>
+                    
+                </div>
+            </div>
+        `;
+        loginView.style.display = 'block';
+        document.getElementById('app').style.display = 'none';
+    }
+
+    async function handleLogin() {
+        const name = document.getElementById('login-name').value;
+        const cedula = document.getElementById('login-cedula').value;
+        
+        if (!name || !cedula) return toast('COMPLETE LOS CAMPOS', 'error');
+        
+        showLoading('VERIFICANDO IDENTIDAD...');
         try {
             const res = await fetch(API_BASE + '/api/staff/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pin })
+                body: JSON.stringify({ name, cedula })
             });
             const data = await res.json();
             
+            hideLoading();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data));
-                location.reload(); // Recargar para inicializar todo
+                localStorage.setItem('web_session_id', data.web_session_id); // Almacenar ID de sesión
+                toast('ACCESO CONCEDIDO', 'success');
+                setTimeout(() => location.reload(), 800);
             } else {
-                toast(data.error || 'PIN INCORRECTO', 'error');
+                toast(data.error || 'DATOS INCORRECTOS', 'error');
+                console.error('Login failed:', data);
             }
         } catch (e) {
+            hideLoading();
+            toast('ERROR DE CONEXIÓN: ' + e.message, 'error');
+            console.error('Fetch error:', e);
+        }
+    }
+
+    function openChangePasswordModal() {
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div style="text-align:center;">
+                <h2 style="margin-bottom:20px;">CAMBIAR CONTRASEÑA</h2>
+                <div class="field">
+                    <label>NUEVA CONTRASEÑA</label>
+                    <input type="password" id="new-password-input" class="login-input" placeholder="MIN 4 CARACTERES">
+                </div>
+                <button class="btn" style="width:100%; margin-top:10px;" onclick="saveNewPassword()">GUARDAR NUEVA CLAVE</button>
+            </div>
+        `;
+        openModal();
+    }
+
+    async function saveNewPassword() {
+        const newPassword = document.getElementById('new-password-input').value;
+        if (!newPassword || newPassword.length < 4) return toast('MÍNIMO 4 CARACTERES', 'error');
+        
+        showLoading('ACTUALIZANDO...');
+        try {
+            const res = await fetch(API_BASE + '/api/staff/change-password', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify({ newPassword })
+            });
+            hideLoading();
+            if (res.ok) {
+                toast('CLAVE ACTUALIZADA', 'success');
+                closeModal();
+            } else {
+                toast('ERROR AL ACTUALIZAR', 'error');
+            }
+        } catch (e) {
+            hideLoading();
             toast('ERROR DE CONEXIÓN', 'error');
         }
     }
 
+    function updateClock() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const timeStr = formatTime24h(now);
 
-    function updateFooterInfo() {
+        // Actualizar todos los footers dinámicamente
+        const footerStr = `EYE STAFF 2026 - V 2.6.0 260515 2202`;
         document.querySelectorAll('.footer-info').forEach(el => {
-            el.textContent = `EYE STAFF COPYRIGHT 2026 - ${VERSION_TAG}`;
+            el.textContent = footerStr;
         });
     }
 
+    function getElapsedTime(start) {
+        if (!start) return '--:--';
+        const s = new Date(start);
+        const now = new Date();
+        const diff = Math.floor((now - s) / 1000);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        return `${h}h ${m}m`;
+    }
+
     function enterModule(module) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = user.role === 'director' || 
+                           user.name.toUpperCase().includes('NELSON') || 
+                           user.name.toUpperCase().includes('NICOLAS') ||
+                           user.name.toUpperCase().includes('BILLY') ||
+                           user.name.toUpperCase().includes('RAMOS') ||
+                           user.name.toUpperCase().includes('SESCUN');
+        
+        // RESTRICCIÓN: Supervisor y Valet solo pueden acceder a Valet Parking y Formatos
+        if (!isDirector && module !== 'valet' && module !== 'formatos') {
+            return toast('⚠️ ACCESO RESTRINGIDO PARA SU NIVEL', 'warning');
+        }
+
         const view = document.getElementById('current-view');
         const btn = document.getElementById('btn-back-portal');
         btn.style.display = 'flex';
-        btn.innerHTML = '🏠';
+        btn.innerHTML = '🏠 PORTAL';
         btn.onclick = exitToPortal;
         
         if (module === 'valet') {
-            const valetSessions = (window.activeSessions || []).filter(s => (s.type === 'valet' || !s.type) && s.status === 'active');
-            if (valetSessions.length === 1) {
-                window.activeSession = valetSessions[0];
-                localStorage.setItem('selectedSessionId', valetSessions[0].id);
-            }
-            renderHome(view);
+            checkActiveSession().then(() => renderHome(view));
         } else if (module === 'hr') {
-            showTab('staff');
+            showTab('admin');
+        } else if (module === 'listas') {
+            apiFetch('/api/sessions/next-correlativo').then(res => {
+                window.nextCorrelativo = res.next || 1;
+                renderListas(view);
+            });
         } else if (module === 'eventos') {
             renderEventsDashboard(view);
-        } else if (module === 'accesos' || module === 'renta' || module === 'formatos' || module === 'eyekids' || module === 'xpress' || module === 'ranking') {
-            const pass = prompt('INTRODUZCA CLAVE DE ACCESO (MÓDULO EN DESARROLLO):');
-            if (pass === '1234') {
-                if (module === 'accesos') renderAccessControl(view);
-                else if (module === 'renta') renderRentaEquipos(view);
-                else if (module === 'formatos') renderFormatos(view);
-                else {
-                    toast('🚀 MÓDULO EN DESARROLLO - PRÓXIMAMENTE', 'info');
-                }
-            } else if (pass !== null) {
-                toast('❌ CLAVE INCORRECTA', 'error');
-            }
-        } else if (module === 'monitoreo') {
-            renderMonitoring(view);
+        } else if (module === 'accesos' || module === 'renta' || module === 'formatos' || module === 'traslados' || module === 'guardia' || module === 'custodia_portal') {
+            if (module === 'accesos') renderAccessControl(view);
+            else if (module === 'renta') renderRentaEquipos(view);
+            else if (module === 'traslados') showToast('MÓDULO DE TRASLADOS PRÓXIMAMENTE');
+            else if (module === 'guardia') showToast('MÓDULO DE GUARDIA PRÓXIMAMENTE');
+            else if (module === 'custodia_portal') showToast('MÓDULO DE CUSTODIA PRÓXIMAMENTE');
+            else renderFormatos(view);
         }
     }
 
+    
+    
+    
+    function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
+    }
 
+    function generateWeeklyCalendarHTML() {
+        const today = new Date();
+        const currentDay = today.getDay();
+        const diff = today.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+        const startOfCurrentWeek = new Date(today.setDate(diff));
+        
+        const startOfCalendar = new Date(startOfCurrentWeek);
+        startOfCalendar.setDate(startOfCalendar.getDate() - 14);
+        
+        const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
+        const isDirector = user.role === 'director' || 
+                           user.name.toUpperCase().includes('NELSON') || 
+                           user.name.toUpperCase().includes('NICOLAS') ||
+                           user.name.toUpperCase().includes('BILLY') ||
+                           user.name.toUpperCase().includes('RAMOS') ||
+                           user.name.toUpperCase().includes('SESCUN');
 
+        const allSessionsRaw = window.allSessions || [];
+        const allSessions = allSessionsRaw.filter(s => {
+            if (isDirector) return true;
+            return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+        
+        function getEventColor(s) {
+            if (s.status === 'closed' || s.status === 'concluded') {
+                return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--muted)', grayscale: true };
+            }
+            const type = s.type;
+            const t = (type || '').toLowerCase();
+            if (t.includes('valet')) return { bg: 'rgba(239, 68, 68, 0.15)', border: 'var(--brand-red)', text: '#ef4444' };
+            if (t.includes('boda')) return { bg: 'rgba(245, 158, 11, 0.15)', border: 'var(--warning)', text: '#f59e0b' };
+            if (t.includes('corp')) return { bg: 'rgba(99, 102, 241, 0.15)', border: 'var(--accent)', text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16, 185, 129, 0.15)', border: 'var(--brand-green)', text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        let html = `
+        <div id="calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">Calendario de Eventos</h3>
+                <div style="font-size:0.7rem; color:var(--muted); font-weight:700; background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:10px;">${today.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase()}</div>
+            </div>
+            <div style="display:grid; grid-template-columns: 35px repeat(7, 1fr); gap:8px; text-align:center; flex:1;">
+                <div></div>
+                ${weekDays.map(d => `<div style="font-size:0.6rem; color:var(--muted); font-weight:900; padding-bottom:5px; letter-spacing:1px;">${d}</div>`).join('')}
+        `;
+        
+        const currentDateIterator = new Date(startOfCalendar);
+        const actualToday = new Date();
+        actualToday.setHours(0,0,0,0);
+        
+        for (let w = 0; w < 5; w++) {
+            const weekNum = getWeekNumber(new Date(currentDateIterator));
+            const isCurrentWeek = w === 2;
+            
+            html += `<div style="display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:${isCurrentWeek ? 'var(--accent)' : 'var(--muted)'}; font-weight:900; opacity:0.4;">S${weekNum}</div>`;
+            
+            for (let d = 0; d < 7; d++) {
+                currentDateIterator.setHours(0,0,0,0);
+                const isToday = currentDateIterator.getTime() === actualToday.getTime();
+                const dateStr = currentDateIterator.getDate();
+                
+                const sessionsThisDay = allSessions.filter(s => {
+                    if (s.status === 'budgeted') return false;
+                    const rawDate = s.started_at || s.created_at;
+                    
+                    let sDate;
+                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                        // Formato YYYY-MM-DD: Forzar interpretación LOCAL
+                        const parts = rawDate.split('-');
+                        sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    } else {
+                        sDate = new Date(rawDate);
+                    }
+                    
+                    sDate.setHours(0,0,0,0);
+                    return sDate.getTime() === currentDateIterator.getTime();
+                });
+                
+                let bg = 'rgba(255,255,255,0.015)';
+                let border = '1px solid rgba(255,255,255,0.03)';
+                if (isToday) {
+                    bg = 'rgba(99, 102, 241, 0.05)';
+                    border = '1px solid var(--accent)';
+                } else if (isCurrentWeek) {
+                    bg = 'rgba(255,255,255,0.025)';
+                }
+                
+                const eventsHtml = sessionsThisDay.slice(0, 3).map(s => {
+                    const colorSet = getEventColor(s);
+                    const isClosed = s.status === 'closed' || s.status === 'concluded';
+                    const tooltip = `
+EVENTO: ${s.name}
+TIPO: ${s.type ? s.type.toUpperCase() : 'N/A'}
+ESTADO: ${s.status.toUpperCase()}
+CONTACTO: ${s.contact_name || 'N/A'}
+TEL: ${s.phone || 'N/A'}
+DIRECCIÓN: ${s.address || 'N/A'}
+PERSONAL: ${s.assigned_staff || 'SIN ASIGNAR'}
+NOTAS: ${s.observations || 'N/A'}
+`.trim();
+
+                    return `
+                        <div title="${tooltip}" style="background:${colorSet.bg}; border-left:3px solid ${colorSet.border}; color:${colorSet.text}; font-size:0.5rem; padding:3px 6px; border-radius:4px; margin-bottom:2px; width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:800; text-align:left; filter:${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:${colorSet.grayscale ? '0.6' : '1'};">
+                            ${s.name.toUpperCase()} ${isClosed ? ' (FIN)' : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                const extraCount = sessionsThisDay.length > 3 ? `<div style="font-size:0.45rem; color:var(--muted); font-weight:800; margin-top:2px; text-align:left;">+${sessionsThisDay.length - 3} más...</div>` : '';
+
+                html += `
+                    <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="position:relative; background:${bg}; border:${border}; border-radius:12px; padding:8px 6px; min-height:100px; display:flex; flex-direction:column; cursor:pointer; transition:all 0.2s; overflow:hidden;" onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.zIndex='5'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='${bg}'; this.style.zIndex='1'; this.style.transform='translateY(0)';">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:0.75rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:${isToday ? '1' : '0.5'};">${dateStr}</span>
+                            ${isToday ? `<div style="width:6px; height:6px; background:var(--accent); border-radius:50%; box-shadow:0 0 8px var(--accent);"></div>` : ''}
+                        </div>
+                        <div style="flex:1; overflow:hidden;">
+                            ${eventsHtml}
+                            ${extraCount}
+                        </div>
+                    </div>
+                `;
+                
+                currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+            }
+        }
+        
+        html += `</div>
+            <div style="margin-top:20px; display:flex; gap:15px; font-size:0.55rem; color:var(--muted); align-items:center; justify-content:center; text-transform:uppercase; letter-spacing:1px; font-weight:800;">
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(99, 102, 241, 0.2); border:1px solid var(--accent); border-radius:2px;"></div> HOY</div>
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(239, 68, 68, 0.2); border-left:2px solid var(--brand-red); border-radius:1px;"></div> VALET</div>
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(245, 158, 11, 0.2); border-left:2px solid var(--warning); border-radius:1px;"></div> BODA</div>
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(16, 185, 129, 0.2); border-left:2px solid var(--brand-green); border-radius:1px;"></div> CUMPLE</div>
+            </div>
+        </div>`;
+        
+        return html;
+    }
+
+    async function saveListaEvento() {
+        const baseName = document.getElementById('lista-nombre').value;
+        const correlativo = document.getElementById('lista-correlativo').value;
+        const name = `${baseName} ${correlativo}`;
+        const type = document.getElementById('lista-tipo').value;
+        const date = document.getElementById('lista-fecha').value;
+        
+        if (!baseName || !type || !date) {
+            return toast('POR FAVOR COMPLETE LOS CAMPOS OBLIGATORIOS (NOMBRE, TIPO, FECHA)', 'error');
+        }
+        
+        // Colectar personal seleccionado desde window.staffSelection
+        const staff_ids = [
+            ...(window.staffSelection?.supervisors || []),
+            ...(window.staffSelection?.employees || [])
+        ];
+        
+        if (staff_ids.length === 0) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN PERSONAL AL EVENTO', 'error');
+        }
+        
+        const hasSupervisor = (window.staffSelection?.supervisors || []).length > 0;
+        if (!hasSupervisor) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN ENCARGADO O SUPERVISOR', 'error');
+        }
+
+        showLoading('GUARDANDO EVENTO...');
+        
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const supervisor_id = window.staffSelection.supervisors[0] || user.id;
+            
+            const isEditing = !!window.editingSessionId;
+            const endpoint = isEditing ? '/api/sessions/update' : '/api/sessions/plan';
+            
+            const res = await apiFetch(endpoint, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    id: window.editingSessionId,
+                    name: baseName, 
+                    correlativo: correlativo,
+                    type: type.toLowerCase(), 
+                    supervisor_id: supervisor_id,
+                    staff_ids: staff_ids,
+                    started_at: date,
+                    phone: document.getElementById('lista-telefono').value,
+                    address: document.getElementById('lista-direccion').value,
+                    contact_name: document.getElementById('lista-contacto').value,
+                    observations: document.getElementById('lista-observaciones')?.value || '',
+                    convocation_time: document.getElementById('lista-hora-convocatoria')?.value || '',
+                    event_start_time: document.getElementById('lista-hora-inicio')?.value || '',
+                    event_end_time: document.getElementById('lista-hora-fin')?.value || ''
+                })
+            });
+            
+            if (res && res.error) throw new Error(res.error);
+
+            await checkActiveSession();
+            toast(isEditing ? '📝 EVENTO ACTUALIZADO CORRECTAMENTE' : '🚀 EVENTO GUARDADO Y PROGRAMADO', 'success');
+            
+            // Reset state and re-render to clear form
+            window.editingSessionId = null;
+            window.staffSelection = { supervisors: [], employees: [] };
+            renderListas(document.getElementById('current-view'));
+            handleAddressChange(''); 
+            
+        } catch (e) {
+            toast('❌ ERROR AL GUARDAR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderListas(view) {
+        showLoading('CARGANDO PERSONAL...');
+        try {
+            const staffRes = await apiFetch('/api/staff');
+            const allStaff = staffRes?.staff || [];
+            
+            view.innerHTML = `
+                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+                </div>
+                <div class="header" style="margin-bottom: 20px;">
+                    <h1 class="view-title">📋 GESTIÓN DE LISTAS</h1>
+                </div>
+                <div class="listas-grid" style="display:grid; grid-template-columns: 1.1fr 1.1fr 2.8fr; gap: 20px; align-items:stretch; width:100%; max-width:100%; box-sizing:border-box;">
+                    <!-- COLUMNA 1: PANEL DE ENTRADA -->
+                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.3s ease-out;">
+                        <h3 style="margin-bottom:20px; color:var(--accent);">Datos del Evento</h3>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; text-align:left;">
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">FECHA DEL EVENTO</label>
+                                <input type="date" id="lista-fecha" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;" onchange="updateStaffList('employee')">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
+                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;">
+                                    <option value="" disabled selected>Seleccione...</option>
+                                    <option value="Valet Parking">Valet Parking</option>
+                                    <option value="Boda">Boda</option>
+                                    <option value="Corporativo">Corporativo</option>
+                                    <option value="Cumpleaños">Cumpleaños</option>
+                                    <option value="Concierto">Concierto</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOMBRE DEL EVENTO</label>
+                                <input type="text" id="lista-nombre" class="input-field" placeholder="Ej. Boda Martínez" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            <div style="display: none;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CORRELATIVO</label>
+                                <input type="text" id="lista-correlativo" class="input-field" value="${window.nextCorrelativo || ''}" readonly>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DIRECCIÓN</label>
+                                <input type="text" id="lista-direccion" class="input-field" placeholder="Dirección del lugar" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;"
+                                    oninput="handleAddressChange(this.value)">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CONTACTO</label>
+                                <input type="text" id="lista-contacto" class="input-field" placeholder="Nombre" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TELÉFONO</label>
+                                <input type="tel" id="lista-telefono" class="input-field" placeholder="+58 ..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            
+                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px;">
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.6rem; color:var(--warning); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🕗 CONVOCATORIA</label>
+                                    <input type="time" id="lista-hora-convocatoria" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                </div>
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.6rem; color:var(--accent); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🚀 INICIO EVENTO</label>
+                                    <input type="time" id="lista-hora-inicio" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                </div>
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.6rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🏁 FIN (EST.)</label>
+                                    <input type="time" id="lista-hora-fin" class="input-field" step="60" lang="en-GB" style="width:100%; border-radius:10px; padding:10px 5px; box-sizing:border-box; font-size:0.75rem; text-align:center;">
+                                </div>
+                            </div>
+
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOTAS / OBSERVACIONES</label>
+                                <textarea id="lista-observaciones" class="input-field" placeholder="Notas adicionales..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box; height:60px; resize:none; background:var(--surface); color:#fff; border:1px solid var(--border);"></textarea>
+                            </div>
+                        </div>
+
+                        <div onclick="showExpandedMap()" style="margin-top:20px; border-radius:16px; overflow:hidden; border:1px solid var(--border); height:160px; background:rgba(0,0,0,0.2); position:relative; cursor:zoom-in;">
+                            <div id="map-label" style="position:absolute; top:10px; left:10px; z-index:10; background:rgba(15,23,42,0.8); padding:4px 8px; border-radius:6px; font-size:0.5rem; color:var(--accent); font-weight:900; border:1px solid var(--border); backdrop-filter:blur(4px);">📍 OFICINA EYE STAFF</div>
+                            <iframe 
+                                id="planning-map-iframe"
+                                width="100%" 
+                                height="100%" 
+                                frameborder="0" 
+                                style="border:0; filter: grayscale(0.5) contrast(1.2) opacity(0.8);" 
+                                src="https://www.google.com/maps?q=F4PG%2BF97%2C%20Calle%20Garcilazo%2C%20Caracas%201080%2C%20Miranda%2C%20Venezuela&output=embed" 
+                                allowfullscreen>
+                            </iframe>
+                            <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:5;"></div>
+                        </div>
+                    </div>
+
+                    <!-- COLUMNA 2: ASIGNACIÓN DE PERSONAL (BÚSQUEDA) -->
+                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.4s ease-out; display:flex; flex-direction:column;">
+                        <h3 style="margin-bottom:20px; color:var(--warning);">Asignación de Personal</h3>
+                        
+                        <!-- SECCIÓN SUPERVISORES -->
+                        <div style="margin-bottom:25px;">
+                            <label style="font-size:0.65rem; color:var(--warning); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">🛡️ SUPERVISORES / ENCARGADOS</label>
+                            <div style="position:relative;">
+                                <input type="text" id="search-supervisor" class="input-field" placeholder="Escriba nombre..." 
+                                    style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box;"
+                                    oninput="handleStaffSearch('supervisor', this.value)">
+                                <div id="results-supervisor" class="search-results"></div>
+                            </div>
+                            <div id="selected-supervisors" style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;"></div>
+                        </div>
+
+                        <!-- SECCIÓN EMPLEADOS -->
+                        <div id="employee-selection-section" style="flex:1; display:flex; flex-direction:column; min-height:0; transition:0.3s; opacity:0.3; pointer-events:none;">
+                            <label style="font-size:0.65rem; color:var(--accent); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">👥 EMPLEADOS / VALETS</label>
+                            <div style="font-size:0.5rem; color:var(--warning); font-weight:800; margin-bottom:5px;">⚠ SELECCIONE SUPERVISOR PRIMERO</div>
+                            <input type="text" id="filter-employee" class="input-field" placeholder="Filtrar por nombre..." 
+                                style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
+                                oninput="updateStaffList('employee')">
+                            <div id="list-employee" style="height:240px; overflow-y:auto; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--accent) transparent;">
+                                <!-- Cargado dinámicamente -->
+                            </div>
+                        </div>
+
+                        <button class="btn" style="width:100%; margin-top:20px; border-radius:16px; padding:18px; font-size:1rem; font-weight:900; background:var(--brand-green); color:white;" onclick="saveListaEvento()">GUARDAR EVENTO</button>
+                    </div>
+                    
+                    <!-- COLUMNA 3: CALENDARIO SEMANAL -->
+                    <div style="height:100%; animation: slideInUp 0.5s ease-out;">
+                        ${generateWeeklyCalendarHTML()}
+                    </div>
+                </div>
+            `;
+            window.allStaffData = allStaff;
+            window.staffSelection = { supervisors: [], employees: [] };
+            
+            // Inicializar lista de empleados
+            updateStaffList('employee');
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR DATOS', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
     function showSessionPicker(type) {
-        const sessions = window.activeSessions.filter(s => (s.type === type || (!s.type && type === 'valet')) && s.status === 'active');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = user.role === 'director' || 
+                           user.name?.toUpperCase().includes('NELSON') || 
+                           user.name?.toUpperCase().includes('NICOLAS') ||
+                           user.name?.toUpperCase().includes('BILLY') ||
+                           user.name?.toUpperCase().includes('RAMOS') ||
+                           user.name?.toUpperCase().includes('SESCUN');
+
+        const sessions = (window.activeSessions || []).filter(s => {
+            if (!isDirector) {
+                const isAssigned = s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                if (!isAssigned) return false;
+            }
+            return (s.type === type || (!s.type && type === 'valet')) && (s.status === 'active' || s.status === 'planning');
+        });
         const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.style.display = 'flex';
+        modal.className = 'modal-overlay open';
         modal.innerHTML = `
-            <div class="modal-content" style="max-width:400px; text-align:center; background:var(--surface2); border:1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-                <h2 style="margin-bottom:20px; font-size:1.2rem; color:var(--brand-white); letter-spacing:1px;">SELECCIONE EVENTO ACTIVO</h2>
+            <div class="modal-content" style="max-width:400px; text-align:center;">
+                <h2 style="margin-bottom:20px; font-size:1.2rem; color:var(--brand-white); letter-spacing:1px;">SELECCIONE EVENTO</h2>
                 <div style="display:flex; flex-direction:column; gap:10px;">
-                    ${sessions.map(s => `
-                        <button class="btn" style="padding:15px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); border:1px solid var(--border);" onclick="selectSession(${s.id}, '${type}')">
-                            <span style="font-weight:700;">${s.name}</span>
-                            <span style="font-size:0.7rem; opacity:0.6;">ID: ${s.id}</span>
-                        </button>
-                    `).join('')}
+                    ${sessions.map(s => {
+                        const isPlanning = s.status === 'planning';
+                        const bg = isPlanning ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)';
+                        const opacity = isPlanning ? '0.5' : '1';
+                        return `
+                            <button class="btn" style="padding:15px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:${bg}; border:1px solid var(--border); opacity:${opacity};" onclick="selectSession(${s.id}, '${type}')">
+                                <div style="display:flex; flex-direction:column;">
+                                    <span style="font-weight:700;">${s.name}</span>
+                                    <span style="font-size:0.55rem; color:var(--muted);">${isPlanning ? '🕒 PLANIFICADO' : '✅ ACTIVO'}</span>
+                                </div>
+                                <span style="font-size:0.7rem; opacity:0.6;">ID: ${s.id}</span>
+                            </button>
+                        `;
+                    }).join('')}
                     <hr style="border:0; border-top:1px solid var(--border); margin:15px 0; opacity:0.3;">
-                    <button class="btn" style="background:var(--success); color:white; font-weight:800;" onclick="selectSession('new', '${type}')">+ INICIAR OTRO EVENTO</button>
-                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="margin-top:10px;">CANCELAR</button>
+                    <button class="btn" style="background:var(--success); color:white; font-weight:800;" onclick="protectedAction(startNewSession)">+ INICIAR OTRO EVENTO</button>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="margin-top:10px;">CANCELAR</button>
                 </div>
             </div>
         `;
@@ -238,10 +687,15 @@
     }
 
     window.selectSession = async function(id, type) {
-        document.querySelector('.modal')?.remove();
+        document.querySelector('.modal-overlay.open')?.remove();
         if (id === 'new') {
             window.activeSession = null;
             localStorage.removeItem('selectedSessionId');
+            if (type === 'valet') renderHome(document.getElementById('current-view'));
+            if (type === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
+        } else if (id === '') {
+            window.activeSession = null;
+            localStorage.setItem('selectedSessionId', 'none');
             if (type === 'valet') renderHome(document.getElementById('current-view'));
             if (type === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
         } else {
@@ -253,6 +707,68 @@
         }
         await checkActiveSession(); // Refrescar conteos y UI
     }
+    
+    window.switchGlobalSession = async function(id) {
+        const session = window.activeSessions.find(s => s.id == id);
+        if (session) {
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', id);
+            await checkActiveSession();
+            
+            // Refrescar vista actual si es necesario
+            const currentView = document.getElementById('current-view');
+            if (document.getElementById('home-view')) renderHome(currentView);
+            else if (document.getElementById('events-dashboard')) renderEventsDashboard(currentView);
+        }
+    }
+
+    window.activatePlannedSession = async function(id) {
+        const session = (window.activeSessions || []).find(s => s.id == id);
+        if (session) {
+            // Validar restricción de 3 horas previas
+            let schedDate;
+            const rawDate = session.started_at || session.created_at;
+            if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                const parts = rawDate.split('-');
+                schedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            } else {
+                schedDate = new Date(rawDate);
+            }
+            
+            const [h, m] = (session.event_start_time || '00:00').split(':');
+            schedDate.setHours(parseInt(h), parseInt(m), 0, 0);
+            
+            const diffMs = schedDate.getTime() - Date.now();
+            const diffHours = diffMs / (1000 * 60 * 60);
+            
+            if (diffHours > 3) {
+                const bypass = prompt(`⚠️ RESTRICCIÓN DE SEGURIDAD:\n\nEL EVENTO ESTÁ PROGRAMADO PARA LAS ${session.event_start_time}.\n\nNO SE PUEDE INICIAR CON MÁS DE 3 HORAS DE ANTELACIÓN SIN AUTORIZACIÓN.\n\nINGRESE CÓDIGO DE AUTORIZACIÓN RRHH PARA CONTINUAR:`);
+                if (!bypass) return;
+                window.bypassCode = bypass;
+            }
+        }
+
+        if (!confirm('¿DESEA INICIAR OPERACIÓN PARA ESTE EVENTO AHORA?')) return;
+        showLoading('ACTIVANDO EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/activate', {
+                method: 'POST',
+                body: JSON.stringify({ id: id, bypass_code: window.bypassCode })
+            });
+            if (res && res.error) throw new Error(res.error);
+            
+            toast('🚀 EVENTO ACTIVADO CORRECTAMENTE', 'success');
+            await checkActiveSession();
+            // Refrescar para que window.activeSession tenga el nuevo status y renderizar
+            const s = window.activeSessions.find(s => s.id == id);
+            window.activeSession = s;
+            renderHome(document.getElementById('current-view'));
+        } catch (e) {
+            toast('❌ ERROR AL ACTIVAR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
 
     function exitToPortal() {
         const view = document.getElementById('current-view');
@@ -260,9 +776,26 @@
         renderPortal(view);
     }
 
+    window.isPlanningExpanded = false;
+    window.togglePlanningSection = function() {
+        window.isPlanningExpanded = !window.isPlanningExpanded;
+        const view = document.getElementById('current-view');
+        renderPortal(view);
+    }
+
     function renderPortal(el) {
         if (!el) return;
+        setTimeout(() => window.scrollTo(0, 0), 50);
         
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
+        const isDirector = user.role === 'director' || 
+                           user.name.toUpperCase().includes('NELSON') || 
+                           user.name.toUpperCase().includes('NICOLAS') ||
+                           user.name.toUpperCase().includes('BILLY') ||
+                           user.name.toUpperCase().includes('RAMOS') ||
+                           user.name.toUpperCase().includes('SESCUN');
+
         // Calcular estado de Valet Parking
         const valetSessions = (window.activeSessions || []).filter(s => (s.type === 'valet' || !s.type) && s.status === 'active');
         let valetStatus = 'GESTIÓN VEHÍCULOS';
@@ -271,126 +804,265 @@
         else if (valetSessions.length === 1) valetStatus = `${hasPulse}<b>${window.activeVehiclesCount || 0}</b> VEHÍCULOS ACTIVOS`;
 
         el.innerHTML = `
-            <div id="portal-view">
-                <div class="view-header" style="text-align: center; display: block; margin-bottom: 20px;">
-                    <h1 class="view-title" style="font-size: 2.4rem; letter-spacing: -1px; color:var(--brand-white);">¡PASIÓN POR LOS <span style="color:var(--brand-red)">EVENTOS!</span></h1>
+            <div id="portal-view" style="width:90%; margin:0 auto; padding-top:10px; padding-bottom: 10vh;">
+                <div class="view-header" style="text-align: center; display: block; margin-bottom: 10px;">
+                    <h1 class="view-title" style="font-size: 1.8rem; letter-spacing: -1px; color:var(--brand-white);">¡PASIÓN POR LOS <span style="color:var(--brand-red)">EVENTOS!</span></h1>
                 </div>
 
-                <!-- SECCIÓN DE RASTREO RÁPIDO -->
-                <div style="background:var(--surface2); border:1px solid var(--border); padding:15px; border-radius:20px; display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span id="tracking-pulse" class="status-pulse" style="display:${isTracking ? 'inline-block' : 'none'};"></span>
-                        <div>
-                            <div style="font-size:0.75rem; font-weight:800; color:white;">📍 RASTREO EN TIEMPO REAL</div>
-                            <div id="tracking-status-text" style="font-size:0.55rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; line-height:1.2;">
-                                ${isTracking ? 'COMPARTIENDO UBICACIÓN ACTIVAMENTE' : 'DESACTIVADO (USAR DURANTE TRASLADOS)'}
+                <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">EVENTOS</h2>
+                
+                <!-- 1. EVENTOS ACTIVOS (SITUACIÓN LIVE) -->
+                <div style="margin-bottom: 25px;">
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        <div class="menu-item" onclick="enterModule('eventos')" style="grid-column: span 3; border-top: 4px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding: 20px;">
+                            <div class="menu-item-content" style="width:100%">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <div style="display:flex; align-items:center; gap:10px; width:100%; justify-content:center;">
+                                        <i style="font-size:1.8rem">📊</i>
+                                        <div>
+                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">EVENTOS ACTIVOS</span>
+                                            </div>
+                                    </div>
+                                    <div style="position:absolute; top:15px; right:20px;">
+                                        <span class="status-pulse" style="position:static; display:inline-block;"></span>
+                                        <span style="font-size:0.65rem; color:var(--success); font-weight:900; margin-left:5px;">LIVE</span>
+                                    </div>
+                                </div>
+
+                                <div style="width:100%; overflow-x:auto;">
+                                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left;">
+                                        <thead>
+                                            <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.55rem; text-transform:uppercase; letter-spacing:1px;">
+                                                <th style="padding:5px;">EVENTO / TIPO</th>
+                                                <th style="padding:5px;">HORA INICIO</th>
+                                                <th style="padding:5px;">TRANSCURRIDO</th>
+                                                <th style="padding:5px;">PERSONAL</th>
+                                                <th style="padding:5px;">ASISTENTES</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${(() => {
+                                                const active = (window.activeSessions || []).filter(s => {
+                                                    if (s.status !== 'active') return false;
+                                                    if (isDirector) return true;
+                                                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                                                });
+                                                if (active.length > 0) {
+                                                    return active.map(s => `
+                                                        <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                                                            <td style="padding:8px 5px;">
+                                                                 <div style="font-weight:900; color:#fff; font-size:0.85rem;">${s.name}</div>
+                                                            </td>
+                                                            <td style="padding:8px 5px; color:var(--muted); font-weight:700;">
+                                                                ${formatTime24h(s.started_at)}
+                                                            </td>
+                                                            <td style="padding:8px 5px; color:var(--warning); font-weight:900; font-size:0.9rem;">
+                                                                ${getElapsedTime(s.started_at)}
+                                                            </td>
+                                                            <td style="padding:8px 5px;">
+                                                                <div class="staff-tooltip-trigger">
+                                                                    <div style="font-weight:900; color:var(--accent); font-size:0.9rem; display:flex; align-items:center; gap:5px;">
+                                                                        👤 ${s.assigned_staff_count || 0}
+                                                                    </div>
+                                                                    <div class="staff-tooltip">
+                                                                        <div style="font-weight:900; margin-bottom:10px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; font-size:0.7rem; letter-spacing:1px;">EQUIPO ASIGNADO</div>
+                                                                        ${s.assigned_staff_list && s.assigned_staff_list.length > 0 ? s.assigned_staff_list.map(u => `
+                                                                            <div class="tooltip-row">
+                                                                                <span style="color:#fff; font-weight:800;">${u.name.toUpperCase()}</span>
+                                                                                <span style="color:var(--muted); font-size:0.6rem; font-weight:700;">${u.role.toUpperCase()}</span>
+                                                                            </div>
+                                                                        `).join('') : '<div style="color:var(--muted); font-style:italic; font-size:0.7rem;">SIN PERSONAL ASIGNADO</div>'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td style="padding:8px 5px;">
+                                                                <div style="font-weight:900; color:var(--success); font-size:1rem; line-height:1;">
+                                                                    ${s.active_vehicles || 0}
+                                                                </div>
+                                                                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; margin-top:2px;">${s.total_entries || 0} IN / ${s.total_exits || 0} OUT</div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('');
+                                                }
+                                                return '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS ACTIVOS</td></tr>';
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button id="btn-tracking" class="btn btn-sm" onclick="toggleTracking()" style="background:${isTracking ? 'var(--danger)' : 'var(--accent)'}; font-size:0.65rem; padding:8px 15px; border-radius:12px; font-weight:800;">
-                        ${isTracking ? 'DETENER' : 'ACTIVAR'}
-                    </button>
                 </div>
 
-                <!-- SECCIÓN 1: SERVICIOS -->
-                <div style="margin-bottom: 40px;">
-                    <h2 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; letter-spacing: 2px;">SERVICIOS</h2>
-                    <div class="menu-grid" style="margin-top:0;">
-                        <!-- VALET PARKING -->
-                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 4px solid var(--brand-red); background: rgba(239, 68, 68, 0.05);">
-                            <i style="font-size:2rem">🚗</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">VALET PARKING</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">${valetStatus}</span>
-                            </div>
-                        </div>
-                        <!-- CONTROL DE ACCESOS -->
-                        <div class="menu-item disabled" style="opacity:0.3; filter:grayscale(1);">
-                            <i style="font-size:2rem">🆔</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">CONTROL DE ACCESOS</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">PRÓXIMAMENTE</span>
-                            </div>
-                        </div>
-                        <!-- RENTA EQUIPOS -->
-                        <div class="menu-item disabled" style="opacity:0.3; filter:grayscale(1);">
-                            <i style="font-size:2rem">🏗️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">RENTA EQUIPOS</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">PRÓXIMAMENTE</span>
-                            </div>
-                        </div>
-                        <!-- EYE KIDS -->
-                        <div class="menu-item" onclick="enterModule('eyekids')" style="border-top: 4px solid #60a5fa; background: rgba(96, 165, 250, 0.05);">
-                            <i style="font-size:2rem">🧸</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">EYE KIDS</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">CUIDADO INFANTIL</span>
-                            </div>
-                        </div>
-                        <!-- XPRESS PROTECTION -->
-                        <div class="menu-item" onclick="enterModule('xpress')" style="border-top: 4px solid #94a3b8; background: rgba(148, 163, 184, 0.05);">
-                            <i style="font-size:2rem">🛡️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">XPRESS PROTECTION</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">PROTECCIÓN Y SEGURO</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 1.5 EVENTOS PROGRAMADOS -->
+                <div style="margin-bottom: 25px;">
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        <div class="menu-item" onclick="togglePlanningSection()" style="grid-column: span 3; border-top: 4px solid #64748b; background: rgba(100, 116, 139, 0.05); padding: 12px 20px; cursor:pointer;">
+                            <div class="menu-item-content" style="width:100%">
+                                <div style="display:flex; justify-content:center; align-items:center; position:relative; ${window.isPlanningExpanded ? 'margin-bottom:12px;' : ''}">
+                                    <div style="display:flex; align-items:center; gap:10px; justify-content:center; width:100%;">
+                                        <i style="font-size:1.8rem; opacity:0.6;">📅</i>
+                                        <div>
+                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">EVENTOS PROGRAMADOS</span>
+                                            </div>
+                                    </div>
+                                    <div style="position:absolute; right:0; display:flex; align-items:center; gap:15px;">
+                                        <span style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; opacity:0.8;">${window.isPlanningExpanded ? 'OCULTAR' : 'VER TODO'}</span>
+                                        <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); display:grid; place-items:center; font-size:0.6rem; transition:0.3s; transform:${window.isPlanningExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}">▼</div>
+                                    </div>
+                                </div>
 
-                <!-- SECCIÓN 2: OPERACIONES -->
-                <div>
-                    <h2 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; letter-spacing: 2px;">OPERACIONES</h2>
-                    <div class="menu-grid" style="margin-top:0;">
-                        <!-- EVENTOS -->
-                        <div class="menu-item" onclick="enterModule('eventos')" style="border-top: 4px solid var(--warning); background: rgba(245, 158, 11, 0.05);">
-                            <i>📊</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">EVENTOS</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem; display: block; line-height: 1.4; margin-top: 5px;">
-                                    ${(() => {
-                                        const active = (window.activeSessions || []).filter(s => s.status === 'active');
-                                        if (active.length > 0) {
-                                            const list = active.map(s => `<div style="display:flex; align-items:center; gap:5px;"><span class="status-pulse" style="position:static; margin:0;"></span><b>${(s.type || 'Valet').toUpperCase()} ${s.name}</b></div>`).join('');
-                                            return list;
-                                        }
-                                        return 'ESTADÍSTICAS EN VIVO';
-                                    })()}
-                                </span>
-                            </div>
-                        </div>
-                        <!-- MONITOREO GPS -->
-                        <div class="menu-item" onclick="enterModule('monitoreo')" style="border-top: 4px solid var(--accent); background: rgba(99, 102, 241, 0.05);">
-                            <i>🛰️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">MONITOREO</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">UBICACIÓN EQUIPOS Y STAFF</span>
-                            </div>
-                        </div>
-                        <!-- RANKING DE EMPLEADOS -->
-                        <div class="menu-item" onclick="enterModule('ranking')" style="border-top: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05);">
-                            <i>🏆</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">RANKING EMPLEADOS</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">METAS Y DESEMPEÑO</span>
-                            </div>
-                        </div>
-                        <!-- ADMINISTRACIÓN (RRHH) -->
-                        <div class="menu-item" onclick="enterModule('hr')" style="border-top: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05);">
-                            <i>⚙️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:1rem;">ADMINISTRACIÓN</span>
-                                <span class="menu-item-desc" style="font-size:0.6rem;">CONTROL GENERAL</span>
+                                ${window.isPlanningExpanded ? `
+                                <div style="width:100%; overflow-x:auto;">
+                                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:left;">
+                                        <thead>
+                                            <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px;">
+                                                <th style="padding:5px;">EVENTO</th>
+                                                <th style="padding:5px;">FECHA PROGRAMADA</th>
+                                                <th style="padding:5px;">TIPO DE EVENTO</th>
+                                                <th style="padding:5px;">PERSONAL</th>
+                                                <th style="padding:5px;">CLIENTE</th>
+                                                <th style="padding:5px;">CONTACTO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${(() => {
+                                                const planning = (window.activeSessions || []).filter(s => {
+                                                    if (s.status !== 'planning') return false;
+                                                    if (isDirector) return true;
+                                                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                                                });
+                                                if (planning.length > 0) {
+                                                    return planning.map(s => `
+                                                        <tr style="border-bottom:1px solid rgba(255,255,255,0.03); opacity:0.8;">
+                                                            <td style="padding:8px 5px;">
+                                                                <div style="font-weight:900; color:#fff; font-size:0.95rem;">${s.name}</div>
+                                                            </td>
+                                                            <td style="padding:8px 5px; color:var(--muted); font-weight:700;">
+                                                                ${new Date(s.started_at).toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'})} - <span style="color:#fff; font-weight:900;">${s.event_start_time || formatTime24h(s.started_at)}</span>
+                                                            </td>
+                                                            <td style="padding:8px 5px; color:var(--accent2); font-weight:800; font-size:0.7rem; text-transform:uppercase;">
+                                                                ${s.type || 'SERVICIO'}
+                                                            </td>
+                                                            <td style="padding:8px 5px;">
+                                                                <div style="font-weight:900; color:var(--accent); font-size:0.95rem; display:flex; align-items:center; gap:5px;">
+                                                                    👤 ${s.assigned_staff_count || 0}
+                                                                </div>
+                                                            </td>
+                                                            <td style="padding:8px 5px;">
+                                                                <div style="font-weight:700; color:#fff; font-size:0.85rem;">${s.client || 'N/A'}</div>
+                                                            </td>
+                                                            <td style="padding:8px 5px;">
+                                                                <div style="font-size:0.65rem; color:var(--muted); font-weight:700;">${s.phone || '-'}</div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('');
+                                                }
+                                                return '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS PROGRAMADOS</td></tr>';
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="footer-info" style="margin-top: 60px;"></div>
+                <!-- 2. OPERACIONES -->
+                <div style="margin-bottom: 25px;">
+                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">OPERACIONES</h2>
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        ${isDirector ? `
+                        <div class="menu-item" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; background: rgba(244, 63, 94, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">📋</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">LISTAS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">GESTIÓN EVENTOS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        <div class="menu-item" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">📄</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">FORMATOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">DOCUMENTACIÓN</span>
+                            </div>
+                        </div>
+                        ${isDirector ? `
+                        <!-- ADMINISTRACIÓN (RRHH) -->
+                        <div class="menu-item" onclick="enterModule('hr')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">⚙️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">ADMINISTRACIÓN</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">CONTROL GENERAL</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- 3. SERVICIOS -->
+                <div>
+                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">SERVICIOS</h2>
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        <!-- VALET PARKING -->
+                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 3px solid var(--brand-red); background: rgba(239, 68, 68, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🚗</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">VALET PARKING</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">${valetStatus}</span>
+                            </div>
+                        </div>
+                        ${isDirector ? `
+                        <!-- CONTROL DE ACCESOS -->
+                        <div class="menu-item disabled" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🆔</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
+                            </div>
+                        </div>
+                        <!-- ALQUILER DE EQUIPOS -->
+                        <div class="menu-item disabled" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🏗️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
+                            </div>
+                        </div>
+                        <!-- TRASLADOS -->
+                        <div class="menu-item disabled" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🚐</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
+                            </div>
+                        </div>
+                        <!-- GUARDIA DIURNA/NOCTURNA -->
+                        <div class="menu-item disabled" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🌙</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
+                            </div>
+                        </div>
+                        <!-- CUSTODIA -->
+                        <div class="menu-item disabled" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🛡️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
+                                <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <div class="footer-info" style="margin-top: 30px;"></div>
             </div>
         `;
-        updateFooterInfo();
+        updateClock();
     }
 
     // --- SCREEN SAVER LOGIC ---
@@ -400,10 +1072,7 @@
     const SAVED_PATTERN = "012"; // Default pattern, could be fetched from API
 
     function initScreenSaver() {
-        document.onmousemove = document.onkeypress = document.ontouchstart = () => {
-            idleTime = 0;
-            resetInactivityTimer();
-        };
+        document.onmousemove = document.onkeypress = document.ontouchstart = () => idleTime = 0;
         setInterval(() => {
             idleTime++;
             if (idleTime >= 300) { // 5 minutes inactivity
@@ -417,28 +1086,63 @@
         idleTime = 0;
     }
 
+
+
+    window.finalizeEvent = async function() {
+        if (!window.activeSession) return;
+        const confirmMsg = `¿ESTÁ COMPLETAMENTE SEGURO DE QUE DESEA FINALIZAR EL EVENTO "${window.activeSession.name.toUpperCase()}"?\n\nESTA ACCIÓN ES IRREVERSIBLE, SE ENVIARÁN LOS REPORTES Y NO SE PODRÁ REALIZAR MÁS REGISTROS EN ESTA JORNADA.`;
+        if (!confirm(confirmMsg)) return;
+
+        showLoading('FINALIZANDO EVENTO Y ENVIANDO REPORTES...');
+        try {
+            const res = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id: window.activeSession.id })
+            });
+            if (res && res.success) {
+                toast('🚀 EVENTO FINALIZADO Y REPORTES ENVIADOS', 'success');
+                await checkActiveSession();
+                renderHome(document.getElementById('current-view'));
+            } else {
+                throw new Error(res.error || 'Error al finalizar');
+            }
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
     async function checkActiveSession() {
         const res = await apiFetch('/api/sessions/active');
-        const sessions = (res && res.sessions) ? res.sessions : [];
-        window.activeSessions = sessions;
+        const activeSessions = (res && res.sessions) ? res.sessions : [];
+        
+        const resC = await apiFetch('/api/sessions/concluded');
+        const concludedSessions = (resC && resC.sessions) ? resC.sessions : [];
+        
+        window.activeSessions = activeSessions;
+        window.allSessions = [...activeSessions, ...concludedSessions];
         
         // Intentar recuperar sesión seleccionada previamente
         const savedId = localStorage.getItem('selectedSessionId');
-        let session = sessions.find(s => s.id == savedId && s.status === 'active');
+        let session = activeSessions.find(s => s.id == savedId);
         
-        // Si no hay guardada o no es válida, tomar la primera activa si existe
-        if (!session) {
-            session = sessions.find(s => s.status === 'active');
+        // Si no hay guardada o no es válida, tomar la primera activa (prioridad 'active') si existe
+        if (!session && savedId !== 'none') {
+            session = activeSessions.find(s => s.status === 'active') || activeSessions[0];
             if (session) localStorage.setItem('selectedSessionId', session.id);
         }
 
         window.activeSession = session;
-        const display = document.getElementById('active-session-display');
+        const container = document.getElementById('active-session-container');
+        const selector = document.getElementById('active-session-selector');
         
         if (session) {
-            if (display) {
-                display.textContent = session.name;
-                display.style.display = 'block';
+            if (container && selector) {
+                selector.innerHTML = activeSessions.map(s => `
+                    <option value="${s.id}" ${s.id == session.id ? 'selected' : ''}>${s.name.toUpperCase()}</option>
+                `).join('');
+                container.style.display = 'flex';
             }
             
             // Cargar conteo de vehículos activos para la sesión seleccionada
@@ -446,15 +1150,20 @@
             window.activeVehiclesCount = vRes ? (vRes.vehicles || []).length : 0;
         } else {
             window.activeVehiclesCount = 0;
-            if (display) display.style.display = 'none';
+            if (container) container.style.display = 'none';
         }
 
         // Actualizar habilitación de botones de menú si existen
         if (document.getElementById('menu-checkin')) {
-            const hasAnyActive = sessions.some(s => s.status === 'active');
+            const hasAnyActive = activeSessions.length > 0;
             if (hasAnyActive) {
                 document.getElementById('menu-checkin').classList.remove('disabled');
+                document.getElementById('menu-checkin').style.opacity = '1';
+                document.getElementById('menu-checkin').style.cursor = 'pointer';
+                
                 document.getElementById('menu-eventos').classList.remove('disabled');
+                document.getElementById('menu-eventos').style.opacity = '1';
+                document.getElementById('menu-eventos').style.cursor = 'pointer';
             } else {
                 document.getElementById('menu-checkin').classList.add('disabled');
                 document.getElementById('menu-eventos').classList.add('disabled');
@@ -469,14 +1178,13 @@
 
     // NAVIGATION
     async function showTab(tab) {
-        currentTab = tab;
-        resetInactivityTimer();
+        setTimeout(() => window.scrollTo(0, 0), 0);
         const view = document.getElementById('current-view');
         const btn = document.getElementById('btn-back-portal');
         
         if (tab === 'home' || tab === 'valet-menu') {
-            await renderHome(view);
-            btn.innerHTML = '🏠';
+            renderHome(view);
+            btn.innerHTML = '🏠 PORTAL';
             btn.onclick = exitToPortal;
             return;
         }
@@ -503,7 +1211,7 @@
         }
     }
 
-    async function renderHome(el) {
+    function renderHome(el) {
         document.getElementById('btn-back-portal').style.display = 'flex';
         el.innerHTML = `
             <div id="home-view">
@@ -511,32 +1219,96 @@
                     <h1 class="view-title">MENÚ VALET PARKING</h1>
                 </div>
 
-                <!-- SELECTOR DE EVENTO SUPERIOR -->
-                <div style="display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:25px;">
-                    <div style="background:var(--surface2); border:1px solid var(--border); padding:8px 20px; border-radius:40px; display:flex; align-items:center; gap:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width:320px; max-width:90%; justify-content:center;">
-                        <span class="status-pulse"></span>
-                        <div style="flex:1; display:flex; flex-direction:column; min-width:140px;">
-                            <label style="font-size:0.55rem; color:var(--muted); margin-bottom:0; font-weight:800; letter-spacing:0.5px; text-align:left;">EVENTO SELECCIONADO</label>
-                            <select onchange="selectSession(this.value, 'valet')" style="background:transparent; border:none; color:#fff; font-weight:900; font-size:1.1rem; cursor:pointer; padding:0; width:100%; outline:none;">
-                                ${!window.activeSession ? '<option value="" selected disabled>— SELECCIONE —</option>' : ''}
-                                ${(window.activeSessions || []).filter(s => (s.type === 'valet' || !s.type) && s.status === 'active').map(s => `
-                                    <option value="${s.id}" ${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''}>
-                                        ${s.name.toUpperCase()}
-                                    </option>
-                                `).join('')}
-                            </select>
+                <!-- SELECTOR DE EVENTO INTEGRADO -->
+                <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">EVENTO SELECCIONADO</label>
+                            ${window.activeSession ? `
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <span style="font-size:0.6rem; color:var(--muted); font-weight:800;">EN CUSTODIA:</span>
+                                <span style="font-size:0.8rem; font-weight:900; color:var(--success);">${window.activeVehiclesCount || 0}</span>
+                            </div>` : ''}
                         </div>
-                        ${window.activeSession ? `
-                        <div style="border-left:1px solid var(--border); padding-left:15px; text-align:right;">
-                            <div style="font-size:0.55rem; color:var(--muted); font-weight:800;">CUSTODIA</div>
-                            <div style="font-size:1.3rem; font-weight:900; color:var(--success); line-height:1;" id="header-custody-count">${window.activeVehiclesCount || 0}</div>
-                        </div>
-                        ` : ''}
+                        <select id="home-session-selector" onchange="selectSession(this.value, 'valet')" 
+                            style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
+                            <option value="">-- SELECCIONE UN EVENTO --</option>
+                            ${(window.activeSessions || []).filter(s => {
+                                // Solo Valet Parking (o sin tipo especificado)
+                                const isValet = !s.type || s.type.toLowerCase().includes('valet');
+                                if (!isValet) return false;
+                                
+                                if (s.status === 'active') return true;
+                                if (s.status === 'planning') {
+                                    // Validar ventana de 3 horas
+                                    let schedDate;
+                                    const rawDate = s.started_at || s.created_at;
+                                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                                        const parts = rawDate.split('-');
+                                        schedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                                    } else {
+                                        schedDate = new Date(rawDate);
+                                    }
+                                    const [hh, mm] = (s.event_start_time || '00:00').split(':');
+                                    schedDate.setHours(parseInt(hh), parseInt(mm), 0, 0);
+                                    const diffMs = schedDate.getTime() - Date.now();
+                                    const diffHours = diffMs / (1000 * 60 * 60);
+                                    return diffHours <= 3;
+                                }
+                                return false;
+                            }).map(s => 
+                                `<option value="${s.id}" ${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="${s.status === 'planning' ? 'color:var(--muted);' : 'color:var(--success);'}">${s.name.toUpperCase()} ${s.status === 'planning' ? '(PLANIFICADO)' : ''}</option>`
+                            ).join('')}
+                        </select>
                     </div>
                 </div>
 
-                <div class="menu-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 1000px; margin: 20px auto;">
-                    <div id="menu-checkin" class="menu-item ${!window.activeSession ? 'disabled' : ''}" onclick="${window.activeSession ? "showTab('checkin')" : "toast('⚠️ SELECCIONE UN EVENTO ACTIVO', 'warning')"}" style="${!window.activeSession ? 'opacity:0.4; cursor:not-allowed;' : ''}">
+                ${window.activeSession && window.activeSession.status === 'planning' ? `
+                <div class="stat-card" style="margin: 20px auto; max-width: 500px; text-align:center; background:rgba(245, 158, 11, 0.05); border:1px solid var(--warning); padding:25px; border-radius:24px;">
+                    <i style="font-size:2.5rem; display:block; margin-bottom:15px;">🕒</i>
+                    <h2 style="color:var(--warning); margin:0 0 10px 0; font-size:1.2rem; font-weight:900;">EVENTO PLANIFICADO</h2>
+                    <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px; font-weight:700;">EL EVENTO ESTÁ EN LISTA PERO AÚN NO HA INICIADO OPERATIVAMENTE.</p>
+                    
+                    ${(() => {
+                        const session = window.activeSession;
+                        let schedDate;
+                        const rawDate = session.started_at || session.created_at;
+                        if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                            const parts = rawDate.split('-');
+                            schedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                        } else {
+                            schedDate = new Date(rawDate);
+                        }
+                        const [hh, mm] = (session.event_start_time || '00:00').split(':');
+                        schedDate.setHours(parseInt(hh), parseInt(mm), 0, 0);
+
+                        const diffMs = schedDate.getTime() - Date.now();
+                        const diffHoursTotal = diffMs / (1000 * 60 * 60);
+
+                        if (diffHoursTotal > 3) {
+                            return `
+                                <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
+                                    <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                                    <div id="countdown-timer" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
+                                        FALTAN ${Math.floor(diffHoursTotal)}H ${Math.floor((diffMs % 3600000) / 60000)}M
+                                    </div>
+                                    <div style="font-size:0.55rem; color:var(--muted); margin-top:10px; font-weight:700;">EL BOTÓN DE INICIO SE ACTIVARÁ 3 HORAS ANTES DEL EVENTO.</div>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
+                            `;
+                        }
+                    })()}
+                </div>
+                ` : ''}
+
+
+
+                <div class="menu-grid" style="max-width: 1000px; margin: 20px auto;">
+                    <div id="menu-checkin" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('checkin')" : "toast('⚠️ ACTIVE EL EVENTO PARA OPERAR', 'warning')"}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
                         <i>🚗</i>
                         <div class="menu-item-content">
                             <span class="menu-item-title">RECEPCIÓN</span>
@@ -544,7 +1316,7 @@
                         </div>
                     </div>
                     
-                    <div id="menu-eventos" class="menu-item ${!window.activeSession ? 'disabled' : ''}" onclick="${window.activeSession ? "showTab('eventos')" : ""}" style="${!window.activeSession ? 'opacity:0.4; cursor:not-allowed;' : ''}">
+                    <div id="menu-eventos" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('eventos')" : ""}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
                         <i>📊</i>
                         <div class="menu-item-content">
                             <span class="menu-item-title">CUSTODIA <span id="custody-count-inline" style="color:var(--success); margin-left:5px; font-weight:900;"></span></span>
@@ -552,146 +1324,173 @@
                         </div>
                     </div>
 
-                    <div id="menu-resumen" class="menu-item ${!window.activeSession ? 'disabled' : ''}" onclick="${window.activeSession ? "showTab('resumen')" : ""}" style="${!window.activeSession ? 'opacity:0.4; cursor:not-allowed;' : ''}">
+                    <div id="menu-resumen" class="menu-item ${(!window.activeSession || window.activeSession.status !== 'active') ? 'disabled' : ''}" onclick="${(window.activeSession && window.activeSession.status === 'active') ? "showTab('resumen')" : ""}" style="${(!window.activeSession || window.activeSession.status !== 'active') ? 'opacity:0.4; cursor:not-allowed;' : ''}">
                         <i>📋</i>
                         <div class="menu-item-content">
                             <span class="menu-item-title">RESUMEN</span>
-                            <span class="menu-item-desc">REPORTE Y CIERRE</span>
+                            <span class="menu-item-desc">REPORTES Y ESTADÍSTICAS</span>
                         </div>
                     </div>
                 </div>
 
-
+                <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
                 ${window.activeSession ? `
-                <!-- SECCIÓN DE SEGUIMIENTO OPERATIVO -->
-                <div class="operational-section">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <div>
-                            <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:1px;">📊 Seguimiento Operativo</div>
-                            <div style="font-size:0.75rem; color:white; font-weight:700; margin-top:2px;">INICIADO: ${new Date(window.activeSession.started_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
-                        </div>
-                        <button class="btn btn-sm" onclick="showAssignStaffModal(${window.activeSession.id})" style="background:var(--accent); font-size:0.65rem; padding:6px 12px; border-radius:8px; font-weight:800;">+ ASIGNAR PERSONAL</button>
+                <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
+                    <div style="text-align:center; margin-bottom:25px;">
+                        <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                        <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO</div>
                     </div>
+                    
+                    <div class="staff-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
+                        ${(window.activeSession.assigned_staff_list || []).map(u => {
+                            const isSupervisor = u.role === 'supervisor' || u.role === 'director';
+                            const att = u.attendance || [];
+                            const entry = att.find(a => a.type === 'entry')?.timestamp;
+                            const breakStart = att.find(a => a.type === 'break_start')?.timestamp;
+                            const exit = att.find(a => a.type === 'exit')?.timestamp;
+                            
+                            let totalTime = '0:00h';
+                            if (entry && exit) {
+                                const diff = new Date(exit) - new Date(entry);
+                                const hours = Math.floor(diff / 3600000);
+                                const mins = Math.floor((diff % 3600000) / 60000);
+                                totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                            }
 
-                    <div id="home-staff-list" class="staff-grid">
-                        Cargando personal...
+                            const formatTime = formatTime24h;
+
+                            const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                            const canEntry = !lastAction || lastAction === 'exit' || lastAction === 'break_start';
+                            const canBreak = lastAction === 'entry';
+                            const canExit = lastAction === 'entry' || lastAction === 'break_start';
+
+                            let statusText = 'INACTIVO';
+                            let statusColor = 'var(--muted)';
+                            if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                            else if (lastAction === 'break_start') { statusText = 'EN DESCANSO'; statusColor = 'var(--warning)'; }
+
+                            return `
+                                <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                                        <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                            ${u.name.toUpperCase()}
+                                            ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                        </div>
+                                        <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                            ${statusText}
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--warning); border-right:1px solid rgba(255,255,255,0.05);">DESC: <span style="color:#fff; margin-top:2px;">${formatTime(breakStart)}</span></div>
+                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                    </div>
+
+                                    <div style="display:flex; gap:6px;">
+                                        <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}">ENTRADA</button>
+                                        <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
+                                        <button onclick="logStaffAttendance(${u.id}, 'exit')" ${!canExit ? 'disabled' : ''} style="flex:1; background:var(--success); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}">SALIDA</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
-                
+
+                <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
+                    ${(() => {
+                        const staff = window.activeSession.assigned_staff_list || [];
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit'));
+                        
+                        return `
+                            <button class="btn" 
+                                    onclick="finalizeEvent()" 
+                                    ${!allExited ? 'disabled' : ''} 
+                                    style="background:${allExited ? 'var(--brand-red)' : 'rgba(255,255,255,0.05)'}; color:white; padding:18px 50px; border-radius:50px; font-weight:900; font-size:1.1rem; border:1px solid ${allExited ? 'var(--brand-red)' : 'var(--border)'}; cursor:${allExited ? 'pointer' : 'not-allowed'}; opacity:${allExited ? '1' : '0.4'}; box-shadow: ${allExited ? '0 10px 30px rgba(239,68,68,0.3)' : 'none'}; transition:0.3s;">
+                                🏁 FINALIZAR EVENTO
+                            </button>
+                        `;
+                    })()}
+                </div>
                 ` : ''}
-
-                <!-- CONTROL DE JORNADA REUBICADO Y REDUCIDO -->
-                <div class="card" style="max-width: 450px; margin: 30px auto 30px auto; border: 1px solid var(--border); padding: 15px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 15px;">
-                    <div style="font-size: 0.65rem; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Gestión de Eventos</div>
-                    <div style="display: flex; gap: 8px; justify-content: center;">
-                        <button class="btn btn-success" 
-                                onclick="protectedAction(startNewSession)" 
-                                style="flex: 1; height: 38px; font-weight: 800; font-size: 0.75rem;">
-                            + INICIAR OTRO
-                        </button>
-                        <button class="btn btn-danger" 
-                                onclick="protectedAction(closeSession)" 
-                                style="flex: 1; height: 38px; font-weight: 800; font-size: 0.75rem; ${!window.activeSession ? 'opacity:0.3; pointer-events:none;' : ''}">
-                            FINALIZAR ACTUAL
-                        </button>
-                    </div>
-                    ${!window.activeSession ? '<div style="color: var(--warning); font-size: 0.7rem; margin-top: 10px; font-weight: 700;">⚠️ SELECCIONE O INICIE UN EVENTO</div>' : ''}
-                </div>
 
                 <div style="display: flex; justify-content: center; margin-top: 20px; padding-bottom: 20px;">
                     <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                        🏠 VOLVER
+                        ← VOLVER AL PORTAL
                     </button>
                 </div>
-
-                <div class="footer-info" style="margin-top: 40px;"></div>
             </div>
         `;
         
-        updateFooterInfo();
+        updateClock();
         // Cargar contador de custodia si hay sesión
         if (window.activeSession) {
             updateCustodyCounter();
-            loadHomeStaffTracking(window.activeSession.id);
-            loadAttendanceStatus();
         }
     }
 
-    function calculateDuration(start, end) {
-        if (!start) return '--:--';
-        const s = new Date(start);
-        const e = new Date(end);
-        const diffMs = e - s;
-        if (diffMs < 0) return '00:00';
-        const diffHrs = Math.floor(diffMs / 3600000);
-        const diffMins = Math.floor((diffMs % 3600000) / 60000);
-        return `${String(diffHrs).padStart(2, '0')}:${String(diffMins).padStart(2, '0')}`;
+    async function updateAttendanceUI() {
+        const res = await apiFetch('/api/attendance/current?session_id=' + window.activeSession.id);
+        const status = res ? res.status : 'none';
+        const el = document.getElementById('attendance-status');
+        if (!el) return;
+        
+        if (status === 'entry') {
+            el.innerHTML = '<span style="color:var(--success)">✅ ESTÁS ACTIVO EN ESTE EVENTO</span>';
+            document.getElementById('btn-entry').style.opacity = '0.3';
+            document.getElementById('btn-entry').style.pointerEvents = 'none';
+            document.getElementById('btn-exit').style.opacity = '1';
+            document.getElementById('btn-exit').style.pointerEvents = 'auto';
+        } else {
+            el.innerHTML = '<span style="color:var(--danger)">⚠️ NO HAS MARCADO ENTRADA</span>';
+            document.getElementById('btn-entry').style.opacity = '1';
+            document.getElementById('btn-entry').style.pointerEvents = 'auto';
+            document.getElementById('btn-exit').style.opacity = '0.3';
+            document.getElementById('btn-exit').style.pointerEvents = 'none';
+        }
     }
 
-    async function loadHomeStaffTracking(sessionId) {
-        const staffListEl = document.getElementById('home-staff-list');
-        if (!staffListEl) return;
-
+    async function logAttendance(type) {
+        if (!window.activeSession) return;
+        showLoading('REGISTRANDO...');
         try {
-            const [staffRes, attendance] = await Promise.all([
-                apiFetch('/api/staff'),
-                apiFetch('/api/attendance/session/' + sessionId)
-            ]);
-
-            const allStaff = staffRes?.staff || [];
-            const sessionStaff = allStaff.filter(u => u.current_session_id == sessionId);
-
-            // Ya no manipulamos gridTemplateColumns aquí, se maneja por CSS (clase staff-grid)
-            
-            staffListEl.innerHTML = sessionStaff.map(u => {
-                const userLogs = (attendance || []).filter(l => l.user_id === u.id).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-                const lastLog = userLogs[0];
-                const lastType = lastLog?.type || 'none';
-                
-                // Calcular tiempos
-                const entries = userLogs.filter(l => l.type === 'entry').sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-                const exits = userLogs.filter(l => l.type === 'exit').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-                const arrival = entries.length > 0 ? entries[0].timestamp : null;
-                const departure = exits.length > 0 ? exits[0].timestamp : null;
-                
-                const activeTime = arrival ? calculateDuration(arrival, departure || new Date()) : '--:--';
-
-                return `
-                <div class="staff-card">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:10px; height:10px; border-radius:50%; background:${u.role === 'supervisor' ? 'var(--warning)' : 'var(--accent)'}; box-shadow:0 0 8px ${u.role === 'supervisor' ? 'var(--warning)' : 'var(--accent)'}"></div>
-                        <div style="font-size:0.85rem; font-weight:800; color:white; flex:1;">${u.name.toUpperCase()}</div>
-                        <button onclick="unassignStaff(${sessionId}, ${u.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.9rem; opacity:0.3; padding:5px;">✕</button>
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                        <button class="btn btn-sm" onclick="logAttendance('entry', ${u.id})" style="font-size:0.55rem; height:32px; background:var(--success); ${(lastType !== 'none' && lastType !== 'exit') ? 'opacity:0.2; pointer-events:none;' : ''}">ENTRADA</button>
-                        <button class="btn btn-sm" onclick="logAttendance('${lastType === 'break_start' ? 'break_end' : 'break_start'}', ${u.id})" style="font-size:0.55rem; height:32px; background:var(--warning); ${(lastType === 'none' || lastType === 'exit') ? 'opacity:0.2; pointer-events:none;' : ''}">${lastType === 'break_start' ? 'VUELTA' : 'DESCANSO'}</button>
-                        <button class="btn btn-sm" onclick="logAttendance('exit', ${u.id})" style="font-size:0.55rem; height:32px; background:var(--danger); ${(lastType === 'none' || lastType === 'exit' || lastType === 'break_start') ? 'opacity:0.2; pointer-events:none;' : ''}">SALIDA</button>
-                    </div>
-
-                    <div style="display:flex; flex-direction:column; gap:6px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
-                            <span style="color:var(--muted)">LLEGADA:</span>
-                            <span style="color:${arrival ? 'var(--success)' : 'var(--danger)'}; font-weight:800;">${arrival ? new Date(arrival).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--'}</span>
-                        </div>
-                        
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; margin:2px 0;">
-                            <span style="font-size:0.6rem; color:var(--muted); font-weight:800;">TIEMPO ACTIVO:</span>
-                            <span style="font-size:0.8rem; font-weight:900; color:${departure ? 'var(--muted)' : '#fff'}; letter-spacing:1px;">${activeTime}</span>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
-                            <span style="color:var(--muted)">SALIDA:</span>
-                            <span style="color:${departure ? 'var(--muted)' : (arrival ? 'var(--warning)' : 'var(--danger)')}; font-weight:800;">${departure ? new Date(departure).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : (arrival ? (lastType === 'break_start' ? 'EN DESCANSO' : 'ACTIVO') : '--:--')}</span>
-                        </div>
-                    </div>
-                </div>
-            `; }).join('') || '<div style="font-size:0.65rem; color:var(--muted); text-align:center; padding:20px; grid-column: 1/-1;">Sin personal asignado</div>';
-
+            const res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({ type, session_id: window.activeSession.id })
+            });
+            if (res && res.error) {
+                toast(res.error, 'error');
+            } else {
+                toast(type === 'entry' ? '📥 ENTRADA REGISTRADA' : '📤 SALIDA REGISTRADA', 'success');
+                updateAttendanceUI();
+            }
         } catch (e) {
-            console.error(e);
-            staffListEl.innerHTML = '<div style="font-size:0.6rem; color:var(--danger);">Error al cargar personal</div>';
+            toast('ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function logAttendanceForStaff(type, sessionId, userId, name) {
+        if (!confirm(`¿REGISTRAR "${type.toUpperCase()}" PARA ${name.toUpperCase()}?`)) return;
+        showLoading('REGISTRANDO...');
+        try {
+            const res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({ type, session_id: sessionId, user_id: userId })
+            });
+            if (res && res.error) {
+                toast(res.error, 'error');
+            } else {
+                toast(`✅ ${type.toUpperCase()} REGISTRADA PARA ${name.toUpperCase()}`, 'success');
+                renderEventsDashboard(document.getElementById('current-view'));
+            }
+        } catch (e) {
+            toast('ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
         }
     }
 
@@ -716,10 +1515,10 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         el.innerHTML = `
             <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-                <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">🏠 VOLVER</button>
+                <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
             </div>
             <div class="view-header">
-                <h1 class="view-title">📄 FORMATOS DE COBRO</h1>
+                <h1 class="view-title">📄 FORMATOS Y NÓMINA</h1>
                 <div id="payroll-view-toggle" style="display:flex; gap:10px;">
                     ${user.role === 'director' ? `
                         <button class="btn btn-secondary btn-sm" onclick="renderAdminPayrollDashboard(document.getElementById('payroll-content'))">📊 DASHBOARD CFO</button>
@@ -731,7 +1530,7 @@
             <div class="footer-info" style="margin-top:60px;"></div>
         `;
         
-        updateFooterInfo();
+        updateClock();
         if (user.role === 'director') {
             renderAdminPayrollDashboard(document.getElementById('payroll-content'));
         } else {
@@ -741,138 +1540,220 @@
 
     async function renderStaffPayrollForm(el) {
         el.innerHTML = '<div class="spinner"></div>';
+        const [staffRes, ratesRes] = await Promise.all([
+            apiFetch('/api/staff'),
+            apiFetch('/api/payroll/rates')
+        ]);
         
-        // El usuario logueado por defecto
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const staff = (staffRes && staffRes.staff) ? staffRes.staff : [];
+        const rates = (ratesRes && ratesRes.rates) ? ratesRes.rates : [];
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+        window.venezuelanBanks = [
+            "BANCO CENTRAL DE VENEZUELA", "BANCO INDUSTRIAL DE VENEZUELA", "BANCO DE VENEZUELA",
+            "BANCO VENEZOLANO DE CRÉDITO", "BANCO MERCANTIL", "BBVA PROVINCIAL", "BANCARIBE",
+            "BANCO EXTERIOR", "BANCO OCCIDENTAL DE DESCUENTO", "CORP BANCA", "BANCO CARONÍ",
+            "BANESCO BANCO UNIVERSAL", "BANCO SOFITASA", "BANCO PLAZA",
+            "BANCO DE LA GENTE EMPRENDEDORA (BANGENTE)", "BANCO DEL PUEBLO SOBERANO",
+            "BANCO FONDO COMÚN", "100% BANCO", "DEL SUR BANCO UNIVERSAL", "BANCO DEL TESORO",
+            "BANCO DE DESARROLLO DEL MICROEMPRESARIO", "BANCO AGRÍCOLA DE VENEZUELA",
+            "BANCRECER", "MI BANCO", "BANCO ACTIVO", "BANCAMIGA BANCO UNIVERSAL",
+            "BANCO INTERNACIONAL DE DESARROLLO", "BANPLUS BANCO UNIVERSAL",
+            "BANCO DIGITAL DE LOS TRABAJADORES", "BANCO ESPÍRITU SANTO",
+            "BANCO DE LA FUERZA ARMADA NACIONAL BOLIVARIANA (BANFANB)", "CITIBANK",
+            "BANCO NACIONAL DE CRÉDITO", "R4 BANCO", "N58 BANCO DIGITAL",
+            "INSTITUTO MUNICIPAL DE CRÉDITO POPULAR"
+        ];
+        
+        window.allStaff = staff;
 
         el.innerHTML = `
-            <div class="card" style="max-width:600px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:24px;">
-                <h2 style="margin-bottom:20px; font-size:1.2rem; color:#fff;">REPORTE DE EVENTO</h2>
+            <div class="card" style="max-width:650px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:24px;">
+                <h2 style="margin-bottom:25px; font-size:1.4rem; color:#fff; text-align:center; font-weight:800; letter-spacing:1px;">REPORTE DE JORNADA</h2>
                 <form id="payroll-form" onsubmit="submitPayroll(event)">
-                    <div class="field">
-                        <label>NOMBRE</label>
-                        <input type="text" id="staff-search-input" placeholder="BUSCAR NOMBRE..." list="staff-datalist" autocomplete="off" required value="${user.name || ''}">
-                        <datalist id="staff-datalist"></datalist>
-                        <input type="hidden" name="user_id" id="selected-user-id" value="${user.id || ''}">
-                    </div>
                     
-                    <div id="event-matrix-section" style="display:none; margin-top:20px;">
-                        <label style="font-size:0.75rem; color:var(--muted); font-weight:800; display:block; margin-bottom:10px;">SELECCIONE EVENTOS PARA COBRO</label>
-                        <div id="event-matrix-container" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-                            <!-- Matrix items will be rendered here -->
+                    <div class="field" style="position:relative;">
+                        <label>EMPLEADO / OPERADOR</label>
+                        <div style="position:relative;">
+                            <input type="text" id="staff-search-input" placeholder="BUSCAR O SELECCIONAR..." oninput="filterStaffSearch(this.value)" onclick="filterStaffSearch(this.value)" autocomplete="off" style="background:var(--surface2); border:1px solid var(--border); padding-right:70px;">
+                            <div style="position:absolute; right:10px; top:50%; transform:translateY(-50%); display:flex; gap:10px; color:var(--muted); pointer-events:none;">
+                                <span>🔍</span>
+                                <span>▼</span>
+                            </div>
                         </div>
+                        <div id="staff-search-results" style="position:absolute; top:85px; left:0; width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; z-index:100; display:none; max-height:300px; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8);"></div>
+                        <input type="hidden" name="user_id" id="payroll-staff-id" required>
                     </div>
 
-                    <div class="field">
+                    <div class="field" style="margin-top:25px;">
+                        <label>EVENTOS / SESIONES TRABAJADAS (SELECCIONE)</label>
+                        <div id="payroll-sessions-list" style="background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border); max-height:250px; overflow-y:auto; display:grid; grid-template-columns:1fr; gap:10px;">
+                            <div style="color:var(--muted); text-align:center; font-size:0.8rem; padding:20px;">SELECCIONE UN EMPLEADO PARA VER SU HISTORIAL</div>
+                        </div>
+                        <input type="hidden" name="session_id" id="payroll-selected-session" required>
+                    </div>
+
+                    <div class="field" style="margin-top:20px;">
                         <label>ENTIDAD BANCARIA</label>
-                        <select name="bank_select" id="bank-select" required onchange="toggleManualBank(this.value)">
+                        <select name="bank_name" id="bank-select" required onchange="toggleManualBank(this.value)">
                             <option value="">SELECCIONE BANCO...</option>
-                            <option value="BDV" ${user.bank_name === 'BDV' ? 'selected' : ''}>BANCO DE VENEZUELA (BDV)</option>
-                            <option value="BNC" ${user.bank_name === 'BNC' ? 'selected' : ''}>BANCO NACIONAL DE CRÉDITO (BNC)</option>
-                            <option value="BANESCO" ${user.bank_name === 'BANESCO' ? 'selected' : ''}>BANESCO</option>
-                            <option value="MERCANTIL" ${user.bank_name === 'MERCANTIL' ? 'selected' : ''}>MERCANTIL</option>
-                            <option value="PROVINCIAL" ${user.bank_name === 'PROVINCIAL' ? 'selected' : ''}>BBVA PROVINCIAL</option>
-                            <option value="BBVA" ${user.bank_name === 'BBVA' ? 'selected' : ''}>BBVA</option>
-                            <option value="EXTERIOR" ${user.bank_name === 'EXTERIOR' ? 'selected' : ''}>BANCO EXTERIOR</option>
-                            <option value="VENEZOLANO DE CREDITO" ${user.bank_name === 'VENEZOLANO DE CREDITO' ? 'selected' : ''}>VENEZOLANO DE CRÉDITO</option>
-                            <option value="BANCAMIGA" ${user.bank_name === 'BANCAMIGA' ? 'selected' : ''}>BANCAMIGA</option>
-                            <option value="BANCARIBE" ${user.bank_name === 'BANCARIBE' ? 'selected' : ''}>BANCARIBE</option>
-                            <option value="OTRO" ${user.bank_name && !['BDV','BNC','BANESCO','MERCANTIL','PROVINCIAL','BBVA','EXTERIOR','VENEZOLANO DE CREDITO','BANCAMIGA','BANCARIBE'].includes(user.bank_name) ? 'selected' : ''}>OTRO (ESPECIFICAR)</option>
+                            ${window.venezuelanBanks.map(b => `<option value="${b}">${b}</option>`).join('')}
+                            <option value="OTRO">OTRO (ESPECIFICAR)</option>
                         </select>
                     </div>
 
-                    <div id="manual-bank-field" class="field" style="display: ${user.bank_name && !['BDV','BNC','BANESCO','MERCANTIL','PROVINCIAL','BBVA','EXTERIOR','VENEZOLANO DE CREDITO','BANCAMIGA','BANCARIBE'].includes(user.bank_name) ? 'block' : 'none'};">
+                    <div id="manual-bank-field" class="field" style="display: none;">
                         <label>ESPECIFIQUE ENTIDAD BANCARIA</label>
-                        <input type="text" name="bank_name_manual" id="bank-name-manual" value="${user.bank_name || ''}" placeholder="NOMBRE DEL BANCO EN MAYÚSCULAS" style="border: 2px solid var(--accent);">
+                        <input type="text" name="bank_name_manual" id="bank-name-manual" placeholder="NOMBRE DEL BANCO EN MAYÚSCULAS" style="border: 2px solid var(--accent);">
                     </div>
 
                     <div class="field">
-                        <label>CUENTA / CLABE / EMAIL PAGO</label>
-                        <input type="text" name="bank_account" id="bank-account-input" value="${user.bank_account || ''}" placeholder="NÚMERO DE CUENTA O CORREO" required>
+                        <label>CUENTA / PAGO MÓVIL / EMAIL</label>
+                        <input type="text" name="bank_account" id="bank-account" placeholder="NÚMERO DE CUENTA O CORREO" required>
+                        <div style="font-size:0.6rem; color:var(--muted); margin-top:5px;">LOS DATOS SE CARGAN AUTOMÁTICAMENTE SI ESTÁN EN EL PERFIL</div>
                     </div>
 
-                    <button type="submit" class="btn" style="width:100%; height:55px; font-size:1.1rem; background:var(--success); margin-top:10px;">
-                        ENVIAR REPORTE DE COBRO
+                    <button type="submit" class="btn" style="width:100%; height:60px; font-size:1.2rem; font-weight:800; background:var(--success); margin-top:20px; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);">
+                        ENVIAR REPORTE DE PAGO
                     </button>
                 </form>
             </div>
         `;
 
-        // Si ya hay un usuario seleccionado (el logueado), cargar sus sesiones
-        if (user.id) loadEventMatrix(user.id);
-
-        // Listeners para búsqueda predictiva
-        const searchInput = document.getElementById('staff-search-input');
-        searchInput.addEventListener('input', async () => {
-            const val = searchInput.value;
-            if (val.length < 2) return;
-            const res = await apiFetch('/api/staff/search?q=' + encodeURIComponent(val));
-            if (res) {
-                const dl = document.getElementById('staff-datalist');
-                dl.innerHTML = res.map(s => `<option value="${s.name}" data-id="${s.id}" data-bank="${s.bank_name || ''}" data-account="${s.bank_account || ''}">${s.name}</option>`).join('');
-            }
-        });
-
-        searchInput.addEventListener('change', async () => {
-            const val = searchInput.value;
-            const options = document.querySelectorAll('#staff-datalist option');
-            const match = Array.from(options).find(o => o.value === val);
-            if (match) {
-                const userId = match.getAttribute('data-id');
-                const bankName = match.getAttribute('data-bank');
-                const bankAccount = match.getAttribute('data-account');
-                
-                document.getElementById('selected-user-id').value = userId;
-                
-                // Auto-fill bank
-                const bankSelect = document.getElementById('bank-select');
-                const manualInput = document.getElementById('bank-name-manual');
-                const manualField = document.getElementById('manual-bank-field');
-                
-                if (bankName) {
-                    const optionExists = Array.from(bankSelect.options).some(o => o.value === bankName);
-                    if (optionExists) {
-                        bankSelect.value = bankName;
-                        manualField.style.display = 'none';
-                    } else {
-                        bankSelect.value = 'OTRO';
-                        manualInput.value = bankName;
-                        manualField.style.display = 'block';
-                    }
-                }
-                
-                const accountInput = document.getElementById('bank-account-input');
-                if (bankAccount) accountInput.value = bankAccount;
-                
-                loadEventMatrix(userId);
-            }
-        });
+        // Cargar datos iniciales del usuario actual
+        const me = staff.find(u => u.id == currentUser.id);
+        if (me) {
+            document.getElementById('staff-search-input').value = me.name;
+            document.getElementById('payroll-staff-id').value = me.id;
+            onPayrollStaffChange(me.id);
+        }
+        window.payrollSelections = [];
     }
 
-    async function loadEventMatrix(userId) {
-        const matrixSection = document.getElementById('event-matrix-section');
-        const matrixContainer = document.getElementById('event-matrix-container');
-        if (!matrixSection || !matrixContainer) return;
+    window.filterStaffSearch = function(val) {
+        const resultsEl = document.getElementById('staff-search-results');
+        
+        const matches = window.allStaff.filter(u => !val || u.name.toLowerCase().includes(val.toLowerCase()));
+        
+        if (matches.length > 0) {
+            resultsEl.innerHTML = matches.map(u => {
+                const isBusy = !!u.current_session_id;
+                const statusTag = isBusy 
+                    ? '<span style="color:var(--accent); font-size:0.55rem; font-weight:800; border:1px solid var(--accent); padding:2px 6px; border-radius:4px; opacity:0.8;">EN EVENTO</span>' 
+                    : '<span style="color:var(--success); font-size:0.55rem; opacity:0.7;">DISPONIBLE</span>';
 
-        matrixContainer.innerHTML = '<div class="spinner" style="scale:0.5"></div>';
-        matrixSection.style.display = 'block';
-
-        const sessions = await apiFetch(`/api/staff/${userId}/available-sessions`);
-        if (sessions && sessions.length > 0) {
-            matrixContainer.innerHTML = sessions.map(s => `
-                <div class="card" style="padding:12px; display:flex; align-items:center; gap:15px; background:var(--surface2); border:1px solid var(--border);">
-                    <input type="checkbox" name="selected_sessions" value="${s.id}" data-name="${s.name}" data-date="${new Date(s.ended_at).toLocaleDateString()}" data-role="${s.role}" style="width:20px; height:20px; accent-color:var(--accent);">
-                    <div style="flex:1">
-                        <div style="font-weight:800; color:var(--accent); font-size:0.85rem">${s.name}</div>
-                        <div style="font-size:0.7rem; color:var(--muted)">${new Date(s.ended_at).toLocaleDateString()} • ${s.role.toUpperCase()}</div>
+                return `
+                    <div onclick="selectStaffResult(${u.id}, '${u.name}')" style="padding:15px; border-bottom:1px solid var(--border); cursor:pointer; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); transition: background 0.2s;">
+                        <div style="flex:1">
+                            <b style="color:#fff;">${u.name}</b>
+                            <div style="color:var(--muted); font-size:0.6rem; text-transform:uppercase;">${u.role}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            ${statusTag}
+                        </div>
                     </div>
+                `;
+            }).join('');
+            resultsEl.style.display = 'block';
+        } else {
+            resultsEl.innerHTML = '<div style="padding:15px; color:var(--danger); font-size:0.7rem; text-align:center;">NO SE ENCONTRARON COINCIDENCIAS</div>';
+            resultsEl.style.display = 'block';
+        }
+        
+        const closeResults = (e) => {
+            if (!resultsEl.contains(e.target) && e.target.id !== 'staff-search-input') {
+                resultsEl.style.display = 'none';
+                document.removeEventListener('click', closeResults);
+            }
+        };
+        document.addEventListener('click', closeResults);
+    }
+
+    window.selectStaffResult = function(id, name) {
+        document.getElementById('staff-search-input').value = name;
+        document.getElementById('payroll-staff-id').value = id;
+        document.getElementById('staff-search-results').style.display = 'none';
+        onPayrollStaffChange(id);
+    }
+
+    window.onPayrollStaffChange = async function(userId) {
+        if (!userId) return;
+        
+        // Resetear selecciones previas al cambiar de empleado
+        window.payrollSelections = [];
+        const hiddenInput = document.getElementById('payroll-selected-session');
+        if (hiddenInput) hiddenInput.value = '';
+        
+        // Cargar sesiones trabajadas
+        const listEl = document.getElementById('payroll-sessions-list');
+        listEl.innerHTML = '<div class="spinner-sm"></div>';
+        
+        const [sessionsRes, staffRes] = await Promise.all([
+            apiFetch(`/api/staff/${userId}/sessions`),
+            apiFetch(`/api/staff`) // Para obtener datos bancarios
+        ]);
+        
+        const sessions = (sessionsRes && sessionsRes.sessions) ? sessionsRes.sessions : [];
+        const staffMember = (staffRes && staffRes.staff) ? staffRes.staff.find(u => u.id == userId) : null;
+
+        if (sessions.length === 0) {
+            listEl.innerHTML = '<div style="color:var(--danger); text-align:center; font-size:0.7rem; padding:15px;">NO SE ENCONTRÓ ACTIVIDAD REGISTRADA PARA ESTE EMPLEADO</div>';
+        } else {
+            listEl.innerHTML = sessions.map(s => `
+                <div class="session-selector-item" onclick="selectPayrollSession(${s.id}, '${s.started_at.split('T')[0]}', '${s.role}')" 
+                     style="padding:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition: all 0.2s;">
+                    <div>
+                        <div style="font-weight:800; font-size:0.85rem; color:#fff;">${s.name}</div>
+                        <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">${s.role} | ${new Date(s.started_at).toLocaleDateString()}</div>
+                    </div>
+                    <div class="check-indicator" id="check-${s.id}" style="width:20px; height:20px; border:2px solid var(--border); border-radius:50%; display:grid; place-items:center; font-size:0.7rem; color:var(--success);"></div>
                 </div>
             `).join('');
-        } else {
-            matrixContainer.innerHTML = '<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:10px;">NO HAY EVENTOS DISPONIBLES PARA ESTE NOMBRE</div>';
+        }
+
+        // Actualizar datos bancarios
+        if (staffMember) {
+            const bankSelect = document.getElementById('bank-select');
+            const bankAccount = document.getElementById('bank-account');
+            
+            if (staffMember.bank_name) {
+                if (window.venezuelanBanks.includes(staffMember.bank_name)) {
+                    bankSelect.value = staffMember.bank_name;
+                    toggleManualBank(staffMember.bank_name);
+                } else {
+                    bankSelect.value = 'OTRO';
+                    toggleManualBank('OTRO');
+                    document.getElementById('bank-name-manual').value = staffMember.bank_name;
+                }
+            } else {
+                bankSelect.value = '';
+                toggleManualBank('');
+            }
+            bankAccount.value = staffMember.bank_account || '';
         }
     }
 
+    window.selectPayrollSession = function(id, date, role) {
+        const item = event.currentTarget;
+        const index = window.payrollSelections.findIndex(s => s.id === id);
+        
+        if (index > -1) {
+            // Deseleccionar
+            window.payrollSelections.splice(index, 1);
+            item.style.borderColor = 'var(--border)';
+            item.style.background = 'rgba(255,255,255,0.03)';
+            document.getElementById(`check-${id}`).innerHTML = '';
+        } else {
+            // Seleccionar
+            window.payrollSelections.push({ id, date, role });
+            item.style.borderColor = 'var(--success)';
+            item.style.background = 'rgba(34, 197, 94, 0.05)';
+            document.getElementById(`check-${id}`).innerHTML = '✓';
+        }
+
+        // Actualizar input oculto de IDs
+        document.getElementById('payroll-selected-session').value = window.payrollSelections.map(s => s.id).join(',');
+    }
 
     window.toggleManualBank = function(val) {
         const manualField = document.getElementById('manual-bank-field');
@@ -889,208 +1770,83 @@
     window.submitPayroll = async function(e) {
         e.preventDefault();
         const form = e.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        // Recolectar sesiones seleccionadas
-        const selectedCheckboxes = Array.from(form.querySelectorAll('input[name="selected_sessions"]:checked'));
-        if (selectedCheckboxes.length === 0) {
+        const btn = form.querySelector('button[type="submit"]');
+        
+        if (window.payrollSelections.length === 0) {
             return toast('⚠️ SELECCIONE AL MENOS UN EVENTO', 'warning');
         }
 
-        const sessionsData = selectedCheckboxes.map(cb => ({
-            session_id: cb.value,
-            name: cb.getAttribute('data-name'),
-            date: cb.getAttribute('data-date'),
-            role: cb.getAttribute('data-role')
-        }));
+        if (btn.disabled) return;
 
-        data.session_ids = sessionsData.map(s => s.session_id);
-        data.sessions_data = sessionsData;
+        const formData = new FormData(form);
+        const baseData = Object.fromEntries(formData.entries());
 
-        // Manejar Banco (Matrix vs Manual)
-        let finalBank = data.bank_select;
+        // Manejar Banco
+        let finalBank = baseData.bank_name;
         if (finalBank === 'OTRO') {
-            finalBank = data.bank_name_manual;
+            finalBank = baseData.bank_name_manual;
         }
-        data.bank_name = (finalBank || '').toUpperCase();
+        const bankName = (finalBank || '').toUpperCase();
+        if (!bankName) return toast('INDIQUE ENTIDAD BANCARIA', 'error');
 
-        if (!data.bank_name) return toast('INDIQUE ENTIDAD BANCARIA', 'error');
-
-        showLoading('ENVIANDO REPORTE...');
+        btn.disabled = true;
+        btn.innerHTML = 'PROCESANDO...';
+        showLoading('ENVIANDO REPORTES...');
+        
         try {
-            // 1. Enviar Reporte
-            const res = await apiFetch('/api/payroll/submit', {
+            const sessionsData = window.payrollSelections.map(s => ({
+                session_id: s.id,
+                date: s.date,
+                role: s.role,
+                name: s.name
+            }));
+
+            const data = { 
+                ...baseData, 
+                bank_name: bankName,
+                session_ids: window.payrollSelections.map(s => s.id),
+                sessions_data: sessionsData
+            };
+
+            await apiFetch('/api/payroll/submit', {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
 
-            if (res && res.success) {
-                // Actualizar LocalStorage
-                const user = JSON.parse(localStorage.getItem('user') || '{}');
-                user.bank_name = data.bank_name;
-                user.bank_account = data.bank_account;
-                localStorage.setItem('user', JSON.stringify(user));
-
-                toast('REPORTE ENVIADO CON ÉXITO', 'success');
-                exitToPortal();
-            }
-        } catch (err) {
-            toast('ERROR AL ENVIAR', 'error');
-        } finally {
-            hideLoading();
-        }
-    }
-
-
-    window.renderAdminPayrollDashboard = async function(el) {
-        el.innerHTML = '<div class="spinner"></div>';
-        const res = await apiFetch('/api/payroll/submissions');
-        const submissions = (res && res.submissions) ? res.submissions : [];
-        
-        // Calcular Totales Generales
-        const totalToPay = submissions.reduce((sum, s) => sum + (s.amount || 0), 0);
-        
-        // Agrupar por empleado para el resumen lateral
-        const byEmployee = submissions.reduce((acc, s) => {
-            if (!acc[s.user_name]) acc[s.user_name] = 0;
-            acc[s.user_name] += (s.amount || 0);
-            return acc;
-        }, {});
-
-        el.innerHTML = `
-            <div class="grid" style="grid-template-columns: 1fr 3fr; gap:20px; align-items: start;">
-                <!-- PANEL LATERAL: RESUMEN POR EMPLEADO -->
-                <div style="display:flex; flex-direction:column; gap:20px; position:sticky; top:10px;">
-                    <div class="card" style="background:linear-gradient(135deg, #1e253c, #0b0f19); border:1px solid var(--accent); padding:20px; border-radius:20px;">
-                        <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-bottom:15px;">💰 PRESUPUESTO ESTIMADO</div>
-                        <div style="font-size:2.2rem; font-weight:900; color:var(--accent); margin-bottom:5px;">${settings.currency}${totalToPay.toLocaleString()}</div>
-                        <div style="font-size:0.6rem; color:var(--muted);">SUMATORIA TOTAL DE JORNADA</div>
-                    </div>
-
-                    <div class="card" style="padding:20px; border-radius:20px; background:var(--surface); border:1px solid var(--border);">
-                        <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-bottom:15px;">👥 TOTAL POR EMPLEADO</div>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            ${Object.entries(byEmployee).map(([name, total]) => `
-                                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:5px;">
-                                    <span style="font-size:0.75rem; font-weight:700;">${name}</span>
-                                    <span style="font-size:0.85rem; font-weight:900; color:var(--success);">${settings.currency}${total.toLocaleString()}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MATRIZ PRINCIPAL: DETALLE DE EVENTOS -->
-                <div class="card" style="padding:0; border-radius:24px; overflow:hidden; background:var(--surface); border:1px solid var(--border);">
-                    <div style="padding:20px; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="margin:0; font-size:1rem; font-weight:800;">📊 MATRIZ DE COBROS PENDIENTES</h3>
-                        <button class="btn btn-secondary btn-sm" onclick="renderAdminPayrollDashboard(document.getElementById('payroll-content'))">🔄 ACTUALIZAR</button>
-                    </div>
-                    
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
-                            <thead>
-                                <tr style="background:rgba(0,0,0,0.2); text-align:left; color:var(--muted);">
-                                    <th style="padding:15px;">NOMBRE</th>
-                                    <th style="padding:10px;">EVENTO / FECHA</th>
-                                    <th style="padding:10px;">ROL</th>
-                                    <th style="padding:10px;">INFO BANCARIA</th>
-                                    <th style="text-align:right; padding:15px;">MONTO A PAGAR</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${submissions.map(s => `
-                                    <tr style="border-bottom:1px solid var(--border);">
-                                        <td style="padding:15px;">
-                                            <div style="font-weight:900; color:#fff;">${s.user_name}</div>
-                                            <div style="font-size:0.6rem; color:var(--muted);">ID: ${s.user_id}</div>
-                                        </td>
-                                        <td style="padding:10px;">
-                                            <div style="font-weight:800; color:var(--accent);">${s.session_name}</div>
-                                            <div style="font-size:0.65rem; color:var(--muted);">${s.date}</div>
-                                        </td>
-                                        <td style="padding:10px; font-weight:700; opacity:0.8;">${s.role_at_event.toUpperCase()}</td>
-                                        <td style="padding:10px;">
-                                            <div style="font-size:0.65rem; color:var(--muted);">${s.bank_name || 'N/A'}</div>
-                                            <div style="font-family:var(--font-mono); font-size:0.7rem;">${s.bank_account || 'N/A'}</div>
-                                        </td>
-                                        <td style="text-align:right; padding:15px;">
-                                            <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
-                                                <span style="font-weight:900; color:var(--success); font-size:1rem;">${settings.currency}</span>
-                                                <input type="number" 
-                                                       value="${s.amount || 0}" 
-                                                       onchange="updateSubmissionAmount(${s.id}, this.value)"
-                                                       style="width:90px; height:35px; background:rgba(0,0,0,0.3); border:1px solid var(--accent); color:#fff; text-align:right; padding:5px; border-radius:8px; font-weight:900; font-size:1rem;">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    window.updateSubmissionAmount = async function(id, val) {
-        const amount = parseFloat(val) || 0;
-        try {
-            const res = await apiFetch('/api/payroll/update-amount', {
+            // Persistir Info Bancaria en Perfil (Automático)
+            await apiFetch('/api/staff/update-bank-info', {
                 method: 'POST',
-                body: JSON.stringify({ id, amount })
+                body: JSON.stringify({ 
+                    user_id: baseData.user_id,
+                    bank_name: bankName, 
+                    bank_account: baseData.bank_account 
+                })
             });
-            if (res && res.success) {
-                toast('MONTO ACTUALIZADO', 'success');
-                // Recargar para actualizar totales sin refrescar toda la página
-                renderAdminPayrollDashboard(document.getElementById('payroll-content'));
-            }
-        } catch (e) {
-            toast('ERROR AL ACTUALIZAR', 'error');
-        }
-    }
 
-    window.approvePayroll = async function(id, status) {
-        if (!confirm(`¿CONFIRMA ${status === 'approved' ? 'APROBAR' : 'RECHAZAR'} ESTA SOLICITUD?`)) return;
-        
-        try {
-            const res = await apiFetch('/api/payroll/approve', {
-                method: 'POST',
-                body: JSON.stringify({ id, status })
-            });
-            
-            if (res && res.success) {
-                toast(`SOLICITUD ${status.toUpperCase()}`, 'success');
-                renderAdminPayrollDashboard(document.getElementById('payroll-content'));
-            }
+            toast('✅ REPORTES ENVIADOS CORRECTAMENTE', 'success');
+            renderFormatos(document.getElementById('current-view'));
         } catch (e) {
             toast('ERROR DE CONEXIÓN', 'error');
         }
     }
     async function protectedAction(callback) {
-        const pass = prompt('INTRODUZCA CLAVE DE AUTORIZACIÓN (ADMIN):');
-        if (!pass) return;
-        
-        // Validar contra la clave de admin
-        if (pass === 'EYE-ADMIN-2026') {
-            callback();
-        } else {
-            toast('❌ CLAVE INCORRECTA', 'error');
-        }
+        callback();
     }
 
     async function renderEventsDashboard(el) {
+        window.scrollTo(0, 0);
         showLoading('CARGANDO EVENTOS...');
         try {
             const res = await apiFetch('/api/sessions/active');
-            const sessions = (res && res.sessions) ? res.sessions : [];
+            const sessions = (res && res.sessions) 
+                ? res.sessions.filter(s => s.status === 'active').sort((a,b) => new Date(a.started_at) - new Date(b.started_at)) 
+                : [];
             window.activeSessions = sessions;
             
             if (sessions.length === 0) {
                 el.innerHTML = `
                     <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-                        <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">🏠 VOLVER</button>
+                        <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
                     </div>
                     <div class="view-header"><h1 class="view-title">📅 EVENTOS</h1></div>
                     <div class="stat-card" style="text-align:center; padding:50px;">
@@ -1107,109 +1863,138 @@
 
             let html = `
                 <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">🏠 VOLVER</button>
+                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
                 </div>
                 <div class="view-header">
                     <h1 class="view-title">📅 MONITOREO DE EVENTOS</h1>
                 </div>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:25px; align-items: stretch; max-width:1400px; margin:0 auto;">
             `;
 
             for (const session of sessions) {
+                const isPlanning = session.status === 'planning';
                 const stats = await apiFetch('/api/events/stats?session_id=' + session.id);
-                const attendance = await apiFetch('/api/attendance/session/' + session.id);
                 const sessionStaff = allStaff.filter(u => u.current_session_id == session.id);
-
-                const staffWithTimes = sessionStaff.map(u => {
-                    const userLogs = (attendance || []).filter(l => l.user_id === u.id);
-                    // Agrupar por tipo para obtener la primera entrada y última salida
-                    const entries = userLogs.filter(l => l.type === 'entry').sort((a,b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-                    const exits = userLogs.filter(l => l.type === 'exit').sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-                    
-                    const arrival = entries.length > 0 ? entries[0].timestamp : null;
-                    const departure = exits.length > 0 ? exits[0].timestamp : null;
-                    return { ...u, arrival, departure };
-                });
+                const attendance = await apiFetch('/api/attendance/session/' + session.id) || [];
                 
                 html += `
-                    <div class="stat-card" style="margin-top:20px; border-top:4px solid var(--accent); padding:20px; background: rgba(99, 102, 241, 0.03);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; gap:10px; flex-wrap:wrap;">
+                    <div class="stat-card" style="border-top:4px solid ${isPlanning ? '#475569' : 'var(--accent2)'}; padding:25px; background: ${isPlanning ? 'rgba(255, 255, 255, 0.01)' : 'rgba(255, 255, 255, 0.02)'}; display:flex; flex-direction:column; height:100%; border-radius:24px; position:relative; ${isPlanning ? 'opacity:0.8;' : ''}">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:10px;">
                             <div>
-                                <h2 style="margin:0; font-size:1.1rem; color:white;">${session.name.toUpperCase()}</h2>
-                                <div style="font-size:0.65rem; color:var(--muted); margin-top:4px;">ID: ${session.id} • INICIADO: ${new Date(session.started_at).toLocaleTimeString()}</div>
+                                <h2 style="margin:0; font-size:1.2rem; color:white; font-weight:900; letter-spacing:-0.5px; ${isPlanning ? 'filter:grayscale(1); opacity:0.5;' : ''}">${session.name.toUpperCase()}</h2>
+                                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:2px; ${isPlanning ? 'filter:grayscale(1); opacity:0.4;' : ''}">${session.type || 'SERVICIO'}</div>
+                                <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                    <div style="width:10px; height:10px; border-radius:50%; background:${isPlanning ? 'var(--danger)' : 'var(--success)'}; box-shadow: 0 0 10px ${isPlanning ? 'var(--danger)' : 'var(--success)'}44;"></div>
+                                    <span style="font-size:0.7rem; color:${isPlanning ? 'var(--danger)' : 'var(--success)'}; font-weight:900;">${isPlanning ? 'INACTIVO' : 'ACTIVO'}</span>
+                                </div>
                             </div>
-                            <button class="btn btn-danger btn-sm" onclick="closeSessionFromDashboard(${session.id}, '${session.name}')" style="padding: 6px 12px; border-radius:10px; font-size:0.7rem;">
-                                🏁 CERRAR JORNADA
+                            <button class="btn btn-danger btn-sm" onclick="closeSessionFromDashboard(${session.id}, '${session.name}')" style="padding: 6px 12px; border-radius:10px; font-size:0.65rem; font-weight:900; background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.2);">
+                                🏁 CERRAR
                             </button>
                         </div>
 
-                        <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:20px;">
-                            <div class="stat-card category-btn" onclick="toggleVehicleCategory(${session.id}, 'total')" style="background:var(--surface2); padding:10px; text-align:center; cursor:pointer; transition: transform 0.2s;">
-                                <div style="font-size:0.6rem; color:var(--muted); margin-bottom:5px;">ENTRADAS</div>
-                                <div style="font-size:1.2rem; font-weight:800; color:var(--accent)">${stats?.total || 0}</div>
+                        <div class="stats-mini-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:25px; ${isPlanning ? 'filter:grayscale(1); opacity:0.3;' : ''}">
+                            <div onclick="showSessionStatsDetail(${session.id}, 'entries', '${session.name}')" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px; text-align:center; border-radius:16px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                <div style="font-size:0.5rem; color:var(--muted); margin-bottom:5px; font-weight:900; letter-spacing:1px;">ENTRADA</div>
+                                <div style="font-size:1.4rem; font-weight:900; color:var(--accent2)">${stats?.total || 0}</div>
                             </div>
-                            <div class="stat-card category-btn" onclick="toggleVehicleCategory(${session.id}, 'custody')" style="background:var(--surface2); padding:10px; text-align:center; cursor:pointer; transition: transform 0.2s;">
-                                <div style="font-size:0.6rem; color:var(--muted); margin-bottom:5px;">CUSTODIA</div>
-                                <div style="font-size:1.2rem; font-weight:800; color:var(--success)">${stats?.custody || 0}</div>
+                            <div onclick="showSessionStatsDetail(${session.id}, 'custody', '${session.name}')" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px; text-align:center; border-radius:16px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                <div style="font-size:0.5rem; color:var(--muted); margin-bottom:5px; font-weight:900; letter-spacing:1px;">EN RECINTO</div>
+                                <div style="font-size:1.4rem; font-weight:900; color:var(--success)">${stats?.custody || 0}</div>
                             </div>
-                            <div class="stat-card category-btn" onclick="toggleVehicleCategory(${session.id}, 'exits')" style="background:var(--surface2); padding:10px; text-align:center; cursor:pointer; transition: transform 0.2s;">
-                                <div style="font-size:0.6rem; color:var(--muted); margin-bottom:5px;">SALIDAS</div>
-                                <div style="font-size:1.2rem; font-weight:800; color:var(--muted)">${stats?.exits || 0}</div>
-                            </div>
-                        </div>
-
-                        <!-- LISTADO DE VEHÍCULOS POR CATEGORÍA -->
-                        <div id="vehicle-list-${session.id}" style="display:none; margin-bottom:20px; background:rgba(0,0,0,0.4); border-radius:15px; padding:18px; border:2px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
-                                <h4 id="vehicle-list-title-${session.id}" style="margin:0; font-size:0.85rem; letter-spacing:1px; font-weight:900; color:var(--accent);">LISTADO</h4>
-                                <button class="btn btn-sm" onclick="closeVehicleCategory(${session.id})" style="background:rgba(255,255,255,0.1); border:none; color:white; font-size:0.7rem; font-weight:800; cursor:pointer; padding:4px 10px; border-radius:6px;">CERRAR ✕</button>
-                            </div>
-                            <div id="vehicle-list-content-${session.id}" style="max-height:400px; overflow-y:auto; display:grid; gap:10px;">
-                                <div style="text-align:center; padding:20px; color:var(--muted);">Cargando...</div>
+                            <div onclick="showSessionStatsDetail(${session.id}, 'exits', '${session.name}')" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px; text-align:center; border-radius:16px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                <div style="font-size:0.5rem; color:var(--muted); margin-bottom:5px; font-weight:900; letter-spacing:1px;">SALIDA</div>
+                                <div style="font-size:1.4rem; font-weight:900; color:var(--muted)">${stats?.exits || 0}</div>
                             </div>
                         </div>
 
-                        <div style="border-top: 1px solid var(--border); padding-top:15px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                <div style="font-size:0.7rem; color:var(--muted); font-weight:800; letter-spacing:1px;">👥 PERSONAL ASIGNADO (${sessionStaff.length})</div>
-                                <button class="btn btn-sm" onclick="showAssignStaffModal(${session.id})" style="font-size:0.6rem; padding:4px 10px; background:var(--accent); color:white; border-radius:6px;">+ AGREGAR PERSONAL</button>
-                            </div>
-                            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:10px;">
-                                ${staffWithTimes.length > 0 ? staffWithTimes.map(u => `
-                                    <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border:1px solid var(--border); position:relative;">
-                                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                                            <div style="width:8px; height:8px; border-radius:50%; background:${u.role === 'supervisor' ? 'var(--warning)' : 'var(--accent)'}; box-shadow:0 0 5px ${u.role === 'supervisor' ? 'var(--warning)' : 'var(--accent)'}"></div>
-                                            <div style="font-size:0.75rem; font-weight:800; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">${u.name.toUpperCase()}</div>
-                                            <button onclick="unassignStaff(${session.id}, ${u.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem; font-weight:bold; opacity:0.6; padding:0 5px;">✕</button>
-                                        </div>
-                                        <div style="display:flex; flex-direction:column; gap:4px;">
-                                            <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
-                                                <span style="color:var(--muted)">LLEGADA:</span>
-                                                <span style="color:${u.arrival ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${u.arrival ? new Date(u.arrival).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--'}</span>
+                        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:20px; flex-grow:1; ${isPlanning ? 'filter:grayscale(1); opacity:0.3;' : ''}">
+                            <div style="font-size:0.7rem; color:var(--warning); font-weight:900; margin-bottom:15px; letter-spacing:2px; text-transform:uppercase;">📋 CONTROL DE PERSONAL</div>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                ${(() => {
+                                    const sortedStaff = sessionStaff.sort((a, b) => {
+                                        const isASuper = (a.role || '').toUpperCase().includes('SUPERVISOR') || (a.role || '').toUpperCase().includes('DIRECTOR');
+                                        const isBSuper = (b.role || '').toUpperCase().includes('SUPERVISOR') || (b.role || '').toUpperCase().includes('DIRECTOR');
+                                        if (isASuper && !isBSuper) return -1;
+                                        if (!isASuper && isBSuper) return 1;
+                                        return a.name.localeCompare(b.name);
+                                    });
+
+                                    return sortedStaff.length > 0 ? sortedStaff.map(u => {
+                                        const userLogs = attendance.filter(a => a.user_id == u.id);
+                                        const entryLog = [...userLogs].reverse().find(a => a.type === 'entry');
+                                        const lastLog = userLogs[0]; // Descending order
+                                        
+                                        const entryTime = formatTime24h(entryLog?.timestamp);
+                                        
+                                        // Calcular Horas Trabajadas
+                                        let totalMs = 0;
+                                        if (entryLog) {
+                                            const now = new Date();
+                                            // Simplificado: (Ahora - Entrada) - Tiempo en Break
+                                            let breakMs = 0;
+                                            const sortedLogs = [...userLogs].reverse(); // Chronological
+                                            let lastBreakStart = null;
+                                            
+                                            sortedLogs.forEach(log => {
+                                                if (log.type === 'break_start') lastBreakStart = new Date(log.timestamp);
+                                                if (log.type === 'break_end' && lastBreakStart) {
+                                                    breakMs += (new Date(log.timestamp) - lastBreakStart);
+                                                    lastBreakStart = null;
+                                                }
+                                            });
+                                            
+                                            // Si está actualmente en break, contar el break hasta ahora
+                                            if (lastLog?.type === 'break_start') {
+                                                breakMs += (now - new Date(lastLog.timestamp));
+                                            }
+                                            
+                                            totalMs = (now - new Date(entryLog.timestamp)) - breakMs;
+                                        }
+                                        
+                                        const hours = Math.floor(totalMs / 3600000);
+                                        const minutes = Math.floor((totalMs % 3600000) / 60000);
+                                        const workedTime = `${hours}h ${minutes}m`;
+
+                                        let statusColor = 'var(--muted)';
+                                        if (lastLog?.type === 'entry') statusColor = 'var(--success)';
+                                        else if (lastLog?.type === 'break_start') statusColor = 'var(--warning)';
+                                        
+                                        return `
+                                            <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                                                <div style="display:flex; align-items:center; gap:12px;">
+                                                    <div style="width:10px; height:10px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 10px ${statusColor}44;"></div>
+                                                    <div style="font-size:0.95rem; font-weight:900; color:white;">${u.name.toUpperCase()}</div>
+                                                </div>
+                                                <div style="text-align:right;">
+                                                    <div style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase;">
+                                                        ENT: <span style="color:#fff">${entryTime}</span> • <span style="color:var(--accent2)">${workedTime}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
-                                                <span style="color:var(--muted)">SALIDA:</span>
-                                                <span style="color:${u.departure ? 'var(--muted)' : (u.arrival ? 'var(--warning)' : 'var(--danger)')}; font-weight:700;">${u.departure ? new Date(u.departure).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : (u.arrival ? 'ACTIVO' : '--:--')}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('') : '<div style="font-size:0.6rem; color:var(--muted); grid-column:1/-1; text-align:center; padding:10px;">Sin personal asignado</div>'}
+                                        `;
+                                    }).join('') : '<div style="font-size:0.65rem; color:var(--muted); font-style:italic; text-align:center; padding:20px;">SIN PERSONAL ASIGNADO</div>';
+                                })()}
                             </div>
                         </div>
                     </div>
                 `;
             }
 
+            html += `</div>`; // Cerrar grid de eventos
+
+
             html += `
-                <div style="display: flex; justify-content: center; margin-top: 30px;">
-                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                        🏠 VOLVER
+                <div style="display: flex; justify-content: center; margin-top: 40px;">
+                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 12px 40px; font-size: 1rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                        ← VOLVER AL PORTAL
                     </button>
                 </div>
-                <div class="footer-info" style="margin-top:60px;"></div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.4.0</div>
             `;
 
             el.innerHTML = html;
-            updateFooterInfo();
+            updateClock();
         } catch (e) {
             console.error('Events Dashboard Error:', e);
             toast('ERROR AL CARGAR EVENTOS', 'error');
@@ -1217,79 +2002,53 @@
             hideLoading();
         }
     }
-
-    window.toggleVehicleCategory = async (sessionId, category) => {
-        console.log('Toggling Category:', category, 'for Session:', sessionId);
-        const container = document.getElementById(`vehicle-list-${sessionId}`);
-        const content = document.getElementById(`vehicle-list-content-${sessionId}`);
-        const title = document.getElementById(`vehicle-list-title-${sessionId}`);
-        
-        if (!container) {
-            console.error('Container not found:', `vehicle-list-${sessionId}`);
-            return;
-        }
-
-        // Si ya está abierto y es la misma categoría, cerrar
-        if (container.style.display === 'block' && container.dataset.category === category) {
-            container.style.display = 'none';
-            return;
-        }
-
-        container.style.display = 'block';
-        content.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted);"><div class="spinner" style="margin:0 auto 10px auto; width:30px; height:30px;"></div>CARGANDO DATOS...</div>';
-        container.dataset.category = category;
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+    
+    async function showSessionStatsDetail(sessionId, type, sessionName) {
+        showLoading('CARGANDO DETALLES...');
         try {
-            const res = await apiFetch('/api/vehicles?session_id=' + sessionId);
-            if (!res || !res.vehicles) {
-                content.innerHTML = '<p style="text-align:center; color:var(--danger); padding:20px;">Error al cargar datos</p>';
-                return;
+            const itemsRaw = await apiFetch('/api/vehicles/all?session_id=' + sessionId);
+            let items = (itemsRaw && Array.isArray(itemsRaw.vehicles)) ? itemsRaw.vehicles : [];
+            
+            if (type === 'custody') {
+                items = items.filter(e => !['delivered', 'retrieved', 'pre-registered'].includes(e.status));
+            } else if (type === 'exits') {
+                items = items.filter(e => ['delivered', 'retrieved'].includes(e.status));
             }
             
-            let filtered = res.vehicles;
-            let titleText = 'TODAS LAS ENTRADAS';
-            let color = 'var(--accent)';
-            
-            if (category === 'custody') {
-                filtered = res.vehicles.filter(v => !v.check_out_at);
-                titleText = 'VEHÍCULOS EN CUSTODIA';
-                color = 'var(--success)';
-            } else if (category === 'exits') {
-                filtered = res.vehicles.filter(v => v.check_out_at);
-                titleText = 'VEHÍCULOS ENTREGADOS (SALIDAS)';
-                color = '#ff4d4d';
-            }
-            
-            title.innerText = titleText;
-            title.style.color = color;
-            container.style.borderColor = color;
-            
-            content.innerHTML = filtered.map(v => `
-                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center; animation: fadeIn 0.3s ease;">
-                    <div>
-                        <div style="font-weight:900; font-size:1rem; color:white; letter-spacing:1px; margin-bottom:4px;">${v.plate.toUpperCase()}</div>
-                        <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; font-weight:700;">${v.brand || ''} ${v.model || ''} • ${v.color || ''}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:0.7rem; color:white; font-weight:800; margin-bottom:4px;">${v.owner_name ? v.owner_name.toUpperCase() : 'SIN NOMBRE'}</div>
-                        <div style="font-size:0.6rem; color:var(--muted); font-weight:600; background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:4px;">
-                            ${new Date(v.check_in_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                            ${v.check_out_at ? ' → ' + new Date(v.check_out_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<p style="text-align:center; color:var(--muted); font-size:0.8rem; padding:40px;">No hay registros para mostrar</p>';
-            
-        } catch (e) {
-            console.error('Toggle Category Error:', e);
-            content.innerHTML = '<p style="text-align:center; color:var(--danger); padding:20px;">Error crítico al procesar</p>';
-        }
-    };
+            const title = type === 'entries' ? 'ENTRADA' : type === 'custody' ? 'EN RECINTO' : 'SALIDA';
+            const icon = type === 'entries' ? '📥' : type === 'custody' ? '🅿️' : '📤';
+            const color = type === 'entries' ? 'var(--accent2)' : type === 'custody' ? 'var(--success)' : 'var(--muted)';
 
-    window.closeVehicleCategory = (sessionId) => {
-        document.getElementById(`vehicle-list-${sessionId}`).style.display = 'none';
-    };
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div style="text-align:center; padding:10px;">
+                    <div style="font-size:2rem; margin-bottom:10px;">${icon}</div>
+                    <h2 style="color:${color}; font-weight:900; margin-bottom:5px;">${title}</h2>
+                    <p style="font-size:0.8rem; color:var(--muted); margin-bottom:20px;">EVENTO: ${sessionName.toUpperCase()}</p>
+                    
+                    <div style="max-height:60vh; overflow-y:auto; text-align:left;">
+                        ${items.length > 0 ? items.map(v => `
+                            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:15px; padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div style="font-size:1.1rem; font-weight:900; color:white;">${v.plate.toUpperCase()}</div>
+                                    <div style="font-size:0.65rem; color:var(--accent); font-weight:800; text-transform:uppercase; margin-bottom:2px;">👤 ${v.owner_name || 'SIN NOMBRE'}</div>
+                                    <div style="font-size:0.65rem; color:var(--muted); font-weight:700;">${v.brand || 'V. SIN MARCA'} • ${v.color || 'COLOR N/A'}</div>
+                                    <div style="font-size:0.6rem; color:var(--muted); margin-top:5px;">ENT: ${v.check_in_at ? formatTime24h(v.check_in_at) : 'N/A'} ${v.check_out_at ? '• SAL: ' + formatTime24h(v.check_out_at) : ''}</div>
+                                </div>
+                                <div style="font-size:0.8rem; font-weight:900; color:var(--accent2)">#${String(v.daily_seq || 0).padStart(3, '0')}</div>
+                            </div>
+                        `).join('') : `<p style="text-align:center; color:var(--muted); padding:20px;">NO HAY REGISTROS EN ESTA CATEGORÍA</p>`}
+                    </div>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:20px; border-radius:15px;" onclick="closeModal()">CERRAR</button>
+                </div>
+            `;
+            openModal();
+        } catch (e) {
+            toast('ERROR AL CARGAR DETALLES', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
 
     async function closeSessionFromDashboard(id, name) {
         if (!confirm(`¿ESTÁ SEGURO QUE DESEA CERRAR LA JORNADA DE "${name.toUpperCase()}"?\n\nESTO ENVIARÁ LOS REPORTES AUTOMÁTICAMENTE.`)) return;
@@ -1329,8 +2088,8 @@
 
             <div id="custodia-list-detail"></div>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                <button class="btn btn-secondary" onclick="showTab('home')" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-                    🏠 VOLVER
+                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
+                    ← VOLVER AL PORTAL
                 </button>
                 <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
             </div>
@@ -1477,26 +2236,85 @@
         const name = prompt('Nombre del evento o jornada (ej: Boda Familia Perez):');
         if (!name) return;
         
-        // Detectar tipo según la vista actual o por defecto valet
-        const type = document.getElementById('home-view') ? 'valet' : 'valet';
-
-        showLoading('Iniciando sesión...');
-        try {
-            const res = await apiFetch('/api/sessions/plan', { 
-                method: 'POST', 
-                body: JSON.stringify({ name, type }) 
-            });
-            if (res) {
-                await apiFetch('/api/sessions/activate', { method: 'POST', body: JSON.stringify({ id: res.id }) });
-                // ENVIAR REPORTE DE INICIO (No bloquea si falla)
-                apiFetch('/api/reports/send-start', { method: 'POST', body: JSON.stringify({ id: res.id }) }).catch(e => console.error('Error enviando reporte inicio:', e));
+        // Obtener lista de staff disponible (que no esté en sesión activa)
+        const staffRes = await apiFetch('/api/staff');
+        const staff = (staffRes && staffRes.staff) ? staffRes.staff : [];
+        const availableStaff = staff.filter(s => !s.current_session_id);
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:450px; text-align:left;">
+                <h2 style="margin-bottom:20px; font-size:1.4rem; color:#fff; text-align:center; font-weight:800;">🚀 INICIAR EVENTO</h2>
                 
-                toast('Sesión iniciada', 'success');
-                await checkActiveSession();
-                showTab('home');
+                <div class="field">
+                    <label>NOMBRE DEL EVENTO</label>
+                    <input type="text" value="${name}" readonly style="background:rgba(255,255,255,0.03); border:1px solid var(--border); opacity:0.8;">
+                </div>
+
+                <div class="field" style="margin-top:15px;">
+                    <label>ASIGNAR SUPERVISOR (OBLIGATORIO)</label>
+                    <select id="new-session-supervisor" required style="background:var(--surface2); border:1px solid var(--accent); color:#fff; height:45px;">
+                        <option value="">SELECCIONE...</option>
+                        ${availableStaff.map(s => `<option value="${s.id}">${s.name.toUpperCase()} (${s.role.toUpperCase()})</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="field" style="margin-top:15px;">
+                    <label>PERSONAL ASIGNADO ADICIONAL</label>
+                    <div id="new-session-staff-list" style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; max-height:180px; overflow-y:auto; padding:5px;">
+                        ${availableStaff.map(s => `
+                            <label style="display:flex; align-items:center; gap:12px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+                                <input type="checkbox" class="staff-checkbox" value="${s.id}" style="width:18px; height:18px;">
+                                <div style="flex:1">
+                                    <div style="font-size:0.85rem; font-weight:600; color:#fff;">${s.name}</div>
+                                    <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">${s.role}</div>
+                                </div>
+                            </label>
+                        `).join('')}
+                        ${availableStaff.length === 0 ? '<div style="padding:20px; text-align:center; color:var(--danger); font-size:0.8rem;">TODOS LOS EMPLEADOS ESTÁN OCUPADOS</div>' : ''}
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; margin-top:25px;">
+                    <button class="btn btn-success" style="flex:1; height:50px; font-weight:800;" onclick="confirmNewSession('${name}')">INICIAR EVENTO</button>
+                    <button class="btn btn-secondary" style="flex:1; height:50px; font-weight:800;" onclick="this.closest('.modal-overlay').remove()">CANCELAR</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.confirmNewSession = async function(name) {
+        const supervisor_id = document.getElementById('new-session-supervisor').value;
+        if (!supervisor_id) return toast('DEBE ASIGNAR UN SUPERVISOR', 'error');
+        
+        const staff_ids = Array.from(document.querySelectorAll('.staff-checkbox:checked')).map(cb => cb.value);
+        
+        document.querySelector('.modal-overlay.open').remove();
+        showLoading('INICIANDO EVENTO...');
+        
+        try {
+            // 1. Planificar
+            const res = await apiFetch('/api/sessions/plan', {
+                method: 'POST',
+                body: JSON.stringify({ name, type: 'valet', supervisor_id, staff_ids })
+            });
+
+            if (res && res.error) return toast(res.error, 'error');
+
+            if (res && res.id) {
+                // 2. Activar inmediatamente con todo el personal
+                await apiFetch('/api/sessions/activate', {
+                    method: 'POST',
+                    body: JSON.stringify({ id: res.id, supervisor_id, staff_ids })
+                });
+                
+                toast('🚀 EVENTO INICIADO CON ÉXITO', 'success');
+                location.reload();
             }
         } catch (e) {
-            toast('Error al iniciar sesión: ' + e.message, 'danger');
+            toast('❌ ERROR AL INICIAR', 'error');
         } finally {
             hideLoading();
         }
@@ -1510,7 +2328,6 @@
                 <h1 class="view-title">🚗 RECEPCIÓN</h1>
                 <a href="manual.html" target="_blank" style="text-decoration:none; background:rgba(255,255,255,0.05); padding:8px 15px; border-radius:10px; font-size:0.7rem; color:var(--muted); font-weight:800; border:1px solid var(--border);">📖 MANUAL</a>
             </div>
-
             
             <div class="grid" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                 <!-- SECCIÓN DE ESCANEO IA (REGLA DE LAS 4 FOTOS) -->
@@ -1562,6 +2379,14 @@
                         ⚠️ ¡ALERTA! ESTA PLACA YA SE ENCUENTRA EN EL RECINTO
                     </div>
 
+                    <div class="field">
+                        <label>TIPO DE VEHÍCULO <span style="color:var(--brand-red)">*</span></label>
+                        <select id="in-vehicle-type" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;" onchange="updateBlueprint(this.value)">
+                            <option value="car">🚗 VEHÍCULO / COCHE</option>
+                            <option value="moto">🏍️ MOTO / SCOOTER</option>
+                        </select>
+                    </div>
+
                     <div class="field"><label>PLACA * OBLIGATORIO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-plate" placeholder="EJ: ABC-123" oninput="handlePlateInput(this.value)" list="predictive-plates" required></div>
                     <datalist id="predictive-plates"></datalist>
                     
@@ -1573,8 +2398,8 @@
                     <div class="field"><label>COLOR <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-color" placeholder="EJ: BLANCO" required></div>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                        <div class="field"><label>NOMBRE <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-owner" placeholder="EJ: JUAN PEREZ" oninput="handleNameInput(this.value)" list="predictive-names" required></div>
-                        <datalist id="predictive-names"></datalist>
+                        <div class="field"><label>NOMBRE <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-owner" placeholder="EJ: JUAN PEREZ" oninput="handleOwnerInput(this.value)" list="predictive-owners" required></div>
+                        <datalist id="predictive-owners"></datalist>
                         <div class="field"><label>CONTACTO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-phone" placeholder="EJ: +584141234567" required></div>
                     </div>
                     <div class="field"><label>EMAIL <span style="color:var(--brand-red)">*</span></label><input type="email" id="in-email" placeholder="EJ: CLIENTE@CORREO.COM" required></div>
@@ -1582,7 +2407,7 @@
                     <div class="detail-section-title" style="margin-top:20px">INSPECCIÓN DE ENTRADA</div>
                     <div style="border-bottom: 1px solid var(--border); margin: 10px 0 20px 0; opacity: 0.3;"></div>
                     <div class="damage-canvas" onclick="markDamage(event)" style="max-width:320px; background:white; padding:0; border-radius:15px; position:relative; overflow:hidden; border:1px solid var(--border);">
-                        <img src="car-blueprint.png" style="width:100%; display:block; pointer-events:none;">
+                        <img id="blueprint-img" src="car-blueprint.png" style="width:100%; display:block; pointer-events:none;">
                         <svg viewBox="0 0 1000 1000" id="damage-svg" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
                             <g id="damage-marks"></g>
                         </svg>
@@ -1595,18 +2420,25 @@
                     
                     <button class="btn" style="width:100%; margin-top:30px; height:70px; font-size:1.4rem" onclick="processCheckin()">GENERAR TICKET</button>
                 </div>
+            </div>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                <button class="btn btn-secondary" onclick="showTab('home')" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-                    🏠 VOLVER
+                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
+                    ← VOLVER AL PORTAL
                 </button>
                 <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
             </div>
             <div class="chat-access-btn" onclick="showGlobalChat()">💬 CONTÁCTANOS</div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
         `;
-        
-        // Inicializar estado de asistencia
-        loadAttendanceStatus();
+    }
+
+    window.updateBlueprint = function(type) {
+        const img = document.getElementById('blueprint-img');
+        if (img) {
+            img.src = type === 'moto' ? 'moto-blueprint.png' : 'car-blueprint.png';
+        }
+        currentDamageMarks = [];
+        renderDamageMarks();
     }
 
     let currentDamageMarks = [];
@@ -1768,8 +2600,8 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                <button class="btn btn-secondary" onclick="showTab('home')" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-                    🏠 VOLVER
+                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
+                    ← VOLVER AL PORTAL
                 </button>
                 <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
             </div>
@@ -1862,7 +2694,7 @@
             <div class="detail-section-title">INSPECCIÓN DE ENTRADA</div>
             <div style="border-bottom: 1px solid var(--border); margin: 10px 0 20px 0; opacity: 0.3;"></div>
             <div class="damage-canvas" style="margin-bottom:20px; max-width:320px; background:white; padding:0; border-radius:15px; position:relative; overflow:hidden; border:1px solid var(--border);">
-                <img src="car-blueprint.png" style="width:100%; display:block; pointer-events:none;">
+                <img src="${v.vehicle_type === 'moto' ? 'moto-blueprint.png' : 'car-blueprint.png'}" style="width:100%; display:block; pointer-events:none;">
                 <svg viewBox="0 0 1000 1000" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
                     <g id="detail-damage-marks">
                         ${marks.map(m => `<circle cx="${m.x}" cy="${m.y}" r="25" fill="var(--accent2)" stroke="white" stroke-width="5"/>`).join('')}
@@ -1986,71 +2818,86 @@
     }
 
     // --- PREDICTIVE CHECK-IN ---
-    let predictiveData = [];
     async function handlePlateInput(val) {
         if (val.length < 2) {
             document.getElementById('duplicate-plate-alert').style.display = 'none';
             return;
         }
 
-        // Verificar duplicados activos
-        const activeRes = await apiFetch('/api/vehicles/active');
-        if (activeRes && activeRes.vehicles) {
-            const isDuplicate = activeRes.vehicles.some(v => v.plate.toUpperCase() === val.toUpperCase());
-            document.getElementById('duplicate-plate-alert').style.display = isDuplicate ? 'block' : 'none';
-        }
-
-        // Búsqueda predictiva para el datalist
-        const res = await apiFetch('/api/vehicles/predictive?q=' + encodeURIComponent(val));
-        if (res) {
-            const dl = document.getElementById('predictive-plates');
-            dl.innerHTML = res.map(v => `<option value="${v.plate}">${v.brand || ''} ${v.owner_name ? '— ' + v.owner_name : ''}</option>`).join('');
-            
-        // Si la placa coincide exactamente, traer ÚLTIMOS datos completos (SILENCIOSO)
-        if (val.length >= 4) {
-            const latest = await apiFetch('/api/vehicles/by-plate/' + encodeURIComponent(val.toUpperCase()), {}, true);
-            if (latest && !latest.error) {
-                if (latest.brand) document.getElementById('in-brand').value = latest.brand;
-                if (latest.model) document.getElementById('in-model').value = latest.model;
-                if (latest.color) document.getElementById('in-color').value = latest.color;
-                if (latest.owner_name) document.getElementById('in-owner').value = latest.owner_name;
-                if (latest.owner_phone) document.getElementById('in-phone').value = latest.owner_phone;
-                if (latest.owner_email) document.getElementById('in-email').value = latest.owner_email;
-                // Toast eliminado a petición del usuario
+        // 1. Verificar duplicados activos (en recinto)
+        apiFetch('/api/vehicles/active').then(res => {
+            if (res && res.vehicles) {
+                const isDuplicate = res.vehicles.some(v => v.plate.toUpperCase() === val.toUpperCase());
+                document.getElementById('duplicate-plate-alert').style.display = isDuplicate ? 'block' : 'none';
             }
+        });
+
+        // 2. Sugerencias predictivas (Datalist)
+        apiFetch('/api/vehicles/predictive?q=' + encodeURIComponent(val)).then(res => {
+            if (res) {
+                const dl = document.getElementById('predictive-plates');
+                dl.innerHTML = res.map(v => `<option value="${v.plate}">${v.brand || ''} ${v.model || ''} — ${v.owner_name || ''}</option>`).join('');
+            }
+        });
+
+        // 3. Autocompletar si la placa está completa (6+ caracteres) o coincide exactamente
+        if (val.length >= 6) {
+            apiFetch('/api/vehicles/by-plate/' + encodeURIComponent(val)).then(data => {
+                if (data && !data.error) {
+                    if (data.brand) document.getElementById('in-brand').value = data.brand;
+                    if (data.model) document.getElementById('in-model').value = data.model;
+                    if (data.color) document.getElementById('in-color').value = data.color;
+                    if (data.owner_name) document.getElementById('in-owner').value = data.owner_name;
+                    if (data.owner_phone) document.getElementById('in-phone').value = data.owner_phone;
+                    if (data.owner_email) document.getElementById('in-email').value = data.owner_email;
+                    toast('✨ DATOS RECUPERADOS POR PLACA', 'success');
+                }
+            });
         }
     }
-}
 
-    async function handleNameInput(val) {
+    async function handleOwnerInput(val) {
         if (val.length < 3) return;
 
-        // Búsqueda predictiva para nombres
-        const res = await apiFetch('/api/customers/predictive?q=' + encodeURIComponent(val));
-        if (res) {
-            const dl = document.getElementById('predictive-names');
-            dl.innerHTML = res.map(c => `<option value="${c.owner_name}">${c.owner_phone || ''}</option>`).join('');
-
-            // Si el nombre coincide exactamente, traer ÚLTIMOS datos de contacto (SILENCIOSO)
-            const latest = await apiFetch('/api/customers/by-name/' + encodeURIComponent(val.toUpperCase()), {}, true);
-            if (latest && !latest.error) {
-                if (latest.owner_phone) document.getElementById('in-phone').value = latest.owner_phone;
-                if (latest.owner_email) document.getElementById('in-email').value = latest.owner_email;
-                // Toast eliminado a petición del usuario
+        // Sugerencias de nombres
+        apiFetch('/api/customers/predictive?q=' + encodeURIComponent(val)).then(res => {
+            if (res) {
+                const dl = document.getElementById('predictive-owners');
+                dl.innerHTML = res.map(v => `<option value="${v.owner_name}">${v.owner_phone || ''}</option>`).join('');
+                
+                // Si el nombre coincide exactamente, autocompletar contacto
+                const match = res.find(v => v.owner_name.toUpperCase() === val.toUpperCase());
+                if (match) {
+                    if (match.owner_phone) document.getElementById('in-phone').value = match.owner_phone;
+                    if (match.owner_email) document.getElementById('in-email').value = match.owner_email;
+                }
             }
-        }
+        });
     }
 
-    function verifySecurityTokens(id) {
-        // En una implementación real con cámara, aquí se activaría el escáner.
-        // Por ahora simulamos la validación que activa el botón.
-        const confirm = window.confirm("¿HA ESCANEADO EL QR DEL CLIENTE Y COINCIDEN LAS CLAVES DINÁMICAS?");
-        if (confirm) {
-            document.getElementById('btn-do-checkout').disabled = false;
-            document.getElementById('btn-do-checkout').style.opacity = '1';
-            document.getElementById('btn-verify-security').style.display = 'none';
-            document.getElementById('verification-status').innerHTML = '✅ CLAVE DINÁMICA CONFIRMADA';
-            document.getElementById('verification-status').style.display = 'block';
+    window.verifySecurityTokens = async function(id) {
+        console.log("Verifying security for vehicle ID:", id);
+        if (confirm("¿HA ESCANEADO EL QR DEL CLIENTE Y COINCIDEN LAS CLAVES DINÁMICAS?")) {
+            // Registrar en el historial de auditoría
+            await apiFetch('/api/events/verify-qr', {
+                method: 'POST',
+                body: JSON.stringify({ id: id })
+            });
+
+            const btn = document.getElementById('btn-do-checkout');
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.background = 'var(--brand-green)';
+            }
+            const verifyBtn = document.getElementById('btn-verify-security');
+            if (verifyBtn) verifyBtn.style.display = 'none';
+            
+            const status = document.getElementById('verification-status');
+            if (status) {
+                status.innerHTML = '✅ IDENTIDAD VERIFICADA';
+                status.style.display = 'block';
+            }
             toast('IDENTIDAD VERIFICADA', 'success');
         }
     }
@@ -2089,7 +2936,7 @@
                         <a href="/manual.html" target="_blank" class="btn" style="background:var(--accent2); text-decoration:none;">📘 VER MANUAL DE OPERACIÓN (PDF)</a>
                         <div style="background:var(--surface2); padding:15px; border-radius:10px; font-size:0.85rem; border:1px solid var(--border);">
                             <strong>Claves de Acceso del Sistema:</strong><br>
-                            • Administración: <code>EYE-ADMIN-2026</code><br>
+                            • Operaciones: Libres de clave<br>
                             • Operativo: <code>STAFF-EYE-01</code>
                         </div>
                     </div>
@@ -2097,7 +2944,7 @@
 
                 <div style="text-align:center; margin-top: 40px; margin-bottom: 60px;">
                     <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                        🏠 VOLVER
+                        ← VOLVER AL PORTAL
                     </button>
                 </div>
             </div>
@@ -2157,57 +3004,6 @@
         renderHistoryTable(filtered);
     }
 
-    async function renderVehicles(el) {
-        const vehicles = await apiFetch('/api/vehicles');
-        el.innerHTML = `
-            <div class="view-header"><h1 class="view-title">🏎️ Inventario de Autos</h1></div>
-            <div class="stat-card" style="overflow-x:auto">
-                <table style="width:100%; border-collapse:collapse; min-width:800px">
-                    <thead>
-                        <tr style="text-align:left; border-bottom:1px solid var(--border)">
-                            <th style="padding:15px">Placa (Hover para Foto)</th>
-                            <th>Marca / Color</th>
-                            <th>NOMBRE / TELÉFONO</th>
-                            <th>Hora Entrada</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${vehicles?.map(v => `
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-                                <td style="padding:15px">
-                                    <div class="plate-tag photo-tooltip-trigger" style="display:inline-block">
-                                        ${v.plate}
-                                        ${v.first_photo ? `
-                                            <div class="photo-tooltip">
-                                                <div style="font-size:0.7rem; margin-bottom:5px; color:var(--accent2)">VISTA RÁPIDA</div>
-                                                <img src="/api/photos/${v.first_photo}" style="width:200px; border-radius:8px; display:block">
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style="font-weight:600">${v.brand || '-'}</div>
-                                    <div style="font-size:0.75rem; color:var(--muted)">${v.color || ''}</div>
-                                </td>
-                                <td>
-                                    <div style="font-size:0.9rem">${v.owner_name || '-'}</div>
-                                    <div style="font-size:0.75rem; color:var(--muted)">${v.owner_phone || ''}</div>
-                                </td>
-                                <td style="font-size:0.8rem">${new Date(v.created_at).toLocaleString()}</td>
-                                <td><span class="status-badge status-${v.status}">${v.status.toUpperCase()}</span></td>
-                                <td>
-                                    <button class="btn btn-sm" onclick="viewVehicleDetail(${v.id})">Detalles</button>
-                                </td>
-                            </tr>
-                        `).join('') || '<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--muted)">No hay vehículos registrados</td></tr>'}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-
     async function renderResumen(el) {
         el.innerHTML = `
             <div class="view-header"><h1 class="view-title">📋 RESUMEN JORNADA</h1></div>
@@ -2227,8 +3023,8 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                <button class="btn btn-secondary" onclick="showTab('home')" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-                    🏠 VOLVER
+                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
+                    ← VOLVER AL PORTAL
                 </button>
                 <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
             </div>
@@ -2295,7 +3091,7 @@
             <div class="vehicle-card" style="border-left:4px solid var(--accent2)">
                 <div style="display:flex; justify-content:space-between; align-items:center">
                     <div class="plate-tag">${v.plate}</div>
-                    <div style="font-size:0.75rem; color:var(--muted)">ENTREGA: ${new Date(v.check_out_at).toLocaleTimeString()}</div>
+                    <div style="font-size:0.75rem; color:var(--muted)">ENTREGA: ${formatTime24h(v.check_out_at)}</div>
                 </div>
                 <div style="margin-top:10px; font-weight:700;">${v.owner_name || 'SIN NOMBRE'}</div>
                 <div style="font-size:0.8rem; color:var(--muted)">${v.brand || ''} ${v.model || ''}</div>
@@ -2308,373 +3104,36 @@
         renderResumenItems(filtered);
     }
 
-    // --- ASISTENCIA (FICHAJE) ---
-    async function loadAttendanceStatus() {
-        if (!window.activeSession) return;
-        
-        try {
-            const statusRes = await apiFetch('/api/attendance/current?session_id=' + window.activeSession.id);
-            const status = statusRes?.status || 'none';
-            
-            const badge = document.getElementById('attendance-status-badge');
-            const btnEntry = document.getElementById('btn-att-entry');
-            const btnBreak = document.getElementById('btn-att-break');
-            const btnExit = document.getElementById('btn-att-exit');
-            
-            if (!badge) return;
-
-            // Reset states
-            [btnEntry, btnBreak, btnExit].forEach(b => {
-                b.disabled = false;
-                b.style.opacity = '1';
-                b.style.boxShadow = 'none';
-                b.style.background = b.id === 'btn-att-entry' ? 'var(--success)' : 
-                                   b.id === 'btn-att-break' ? 'var(--warning)' : 'var(--danger)';
-            });
-
-            switch(status) {
-                case 'entry':
-                    badge.textContent = '🟢 EN TURNO';
-                    badge.style.background = 'rgba(34, 197, 94, 0.1)';
-                    badge.style.color = 'var(--success)';
-                    btnEntry.disabled = true;
-                    btnEntry.style.opacity = '0.3';
-                    btnBreak.textContent = 'DESCANSO';
-                    btnBreak.onclick = () => logAttendance('break_start');
-                    break;
-                case 'break_start':
-                    badge.textContent = '🟠 EN DESCANSO';
-                    badge.style.background = 'rgba(245, 158, 11, 0.1)';
-                    badge.style.color = 'var(--warning)';
-                    btnEntry.disabled = true;
-                    btnEntry.style.opacity = '0.3';
-                    btnBreak.textContent = 'VOLVER';
-                    btnBreak.onclick = () => logAttendance('break_end');
-                    btnExit.disabled = true;
-                    btnExit.style.opacity = '0.3';
-                    break;
-                case 'break_end':
-                    badge.textContent = '🟢 EN TURNO (VUELTA)';
-                    badge.style.background = 'rgba(34, 197, 94, 0.1)';
-                    badge.style.color = 'var(--success)';
-                    btnEntry.disabled = true;
-                    btnEntry.style.opacity = '0.3';
-                    btnBreak.textContent = 'DESCANSO';
-                    btnBreak.onclick = () => logAttendance('break_start');
-                    break;
-                case 'exit':
-                    badge.textContent = '⚪ JORNADA FINALIZADA';
-                    badge.style.background = 'rgba(255, 255, 255, 0.05)';
-                    badge.style.color = 'var(--muted)';
-                    [btnEntry, btnBreak, btnExit].forEach(b => {
-                        b.disabled = true;
-                        b.style.opacity = '0.3';
-                    });
-                    break;
-                default:
-                    badge.textContent = '🔴 SIN FICHAJE';
-                    badge.style.background = 'rgba(239, 68, 68, 0.1)';
-                    badge.style.color = 'var(--danger)';
-                    btnBreak.disabled = true;
-                    btnBreak.style.opacity = '0.3';
-                    btnExit.disabled = true;
-                    btnExit.style.opacity = '0.3';
-            }
-
-            // Load active staff list
-            const staffLogs = await apiFetch('/api/attendance/session/' + window.activeSession.id);
-            updateAttendanceUI(staffLogs);
-
-        } catch (e) {
-            console.error('Attendance Load Error:', e);
-        }
-    }
-
-
-    function updateAttendanceUI(logs) {
-        const list = document.getElementById('active-staff-list');
-        if (!list) return;
-
-        if (!logs || logs.length === 0) {
-            list.innerHTML = '<div style="font-size:0.6rem; color:var(--muted); text-align:center; padding:10px;">Nadie ha fichado aún</div>';
-            return;
-        }
-
-        // Get latest status for each user
-        const latestByUser = {};
-        logs.forEach(log => {
-            if (!latestByUser[log.user_id]) {
-                latestByUser[log.user_id] = log;
-            }
-        });
-
-        const statusMap = {
-            'entry': { label: 'ENTRADA', color: 'var(--success)' },
-            'break_start': { label: 'DESCANSO', color: 'var(--warning)' },
-            'break_end': { label: 'RETORNO', color: 'var(--success)' },
-            'exit': { label: 'SALIDA', color: 'var(--danger)' }
-        };
-
-        list.innerHTML = Object.values(latestByUser).map(log => {
-            const st = statusMap[log.type] || { label: log.type.toUpperCase(), color: 'var(--muted)' };
-            const time = new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:10px; border:1px solid var(--border);">
-                    <div>
-                        <div style="font-size:0.7rem; font-weight:800; color:#fff;">${log.user_name.toUpperCase()}</div>
-                        <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">ÚLTIMO: ${st.label} A LAS ${time}</div>
-                    </div>
-                    <div style="width:8px; height:8px; border-radius:50%; background:${st.color}; box-shadow:0 0 5px ${st.color};"></div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // --- GESTIÓN DE PERSONAL EN EVENTOS ---
-    async function showAssignStaffModal(sessionId) {
-        showLoading('CARGANDO PERSONAL...');
-        const res = await apiFetch('/api/staff');
-        hideLoading();
-        
-        if (!res || !res.staff) return;
-        
-        const availableStaff = res.staff.filter(u => u.current_session_id != sessionId);
-        
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = `
-            <h2 style="margin-top:0; color:var(--accent); text-align:center; letter-spacing:1px;">ASIGNAR PERSONAL</h2>
-            
-            <div style="margin-bottom:20px;">
-                <input type="text" id="staff-search" placeholder="🔍 BUSCAR PERSONAL..." 
-                       style="width:100%; padding:15px; background:rgba(0,0,0,0.2); border:1px solid var(--accent); border-radius:12px; color:white; font-size:0.9rem; font-weight:700; outline:none;"
-                       oninput="filterStaffList(this.value)">
-            </div>
-            
-            <div id="assign-staff-list" style="max-height:400px; overflow-y:auto; display:grid; gap:12px; padding:5px;">
-                ${availableStaff.map(u => `
-                    <div class="staff-row" data-name="${u.name.toLowerCase()}" style="background:var(--surface2); padding:15px; border-radius:15px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:900; font-size:0.9rem; color:white;">${u.name.toUpperCase()}</div>
-                            <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-top:2px;">${u.role}</div>
-                        </div>
-                        <button class="btn btn-sm" onclick="assignStaff(${sessionId}, ${u.id})" style="background:var(--accent); padding:8px 15px; border-radius:10px; font-weight:800; font-size:0.7rem;">ASIGNAR</button>
-                    </div>
-                `).join('') || '<p style="text-align:center; color:var(--muted); padding:20px;">No hay personal disponible</p>'}
-            </div>
-            
-            <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:25px; width:100%; border-radius:12px; font-weight:800;">CERRAR VENTANA</button>
-        `;
-
-        window.filterStaffList = (val) => {
-            const query = val.toLowerCase();
-            document.querySelectorAll('.staff-row').forEach(row => {
-                const name = row.getAttribute('data-name');
-                row.style.display = name.includes(query) ? 'flex' : 'none';
-            });
-        };
-
-        openModal();
-        setTimeout(() => document.getElementById('staff-search').focus(), 100);
-    }
-
-    async function assignStaff(sessionId, userId) {
-        showLoading('ASIGNANDO...');
-        const res = await apiFetch(`/api/sessions/${sessionId}/assign-staff`, {
-            method: 'POST',
-            body: JSON.stringify({ user_id: userId })
-        });
-        if (res) {
-            toast('✅ PERSONAL ASIGNADO', 'success');
-            if (currentTab === 'home') loadHomeStaffTracking(sessionId);
-            else if (currentTab === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
-            closeModal();
-        }
-        hideLoading();
-    }
-
-    async function unassignStaff(sessionId, userId) {
-        if (!confirm('¿QUITAR PERSONAL DE ESTE EVENTO?')) return;
-        
-        showLoading('QUITANDO...');
-        const res = await apiFetch(`/api/sessions/${sessionId}/unassign-staff`, {
-            method: 'POST',
-            body: JSON.stringify({ user_id: userId })
-        });
-        if (res) {
-            toast('✅ PERSONAL REMOVIDO', 'info');
-            if (currentTab === 'home') loadHomeStaffTracking(sessionId);
-            else if (currentTab === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
-        }
-        hideLoading();
-    }
-
-    async function renderMonitoring(el) {
-        currentTab = 'monitoreo';
-        el.innerHTML = `
-            <div id="monitoring-view" style="height: calc(100vh - 140px); display: flex; flex-direction: column; gap:15px;">
-                <div class="view-header" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <h1 class="view-title">CENTRO DE MONITOREO</h1>
-                        <p style="font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:5px;">Rastreo Satelital de Activos y Personal</p>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-sm btn-secondary" onclick="updateMonitoringData()" style="padding:10px 15px; border-radius:12px;">🔄</button>
-                        <button class="btn btn-sm" onclick="exitToPortal()" style="padding:10px 20px; border-radius:12px; font-weight:800; background:rgba(255,255,255,0.05);">SALIR</button>
-                    </div>
-                </div>
-                
-                <div style="flex:1; display:flex; gap:15px; min-height:0;">
-                    <!-- LISTA DE ENTIDADES (LADO IZQUIERDO EN PC, OCULTO O BOTTOM EN MÓVIL) -->
-                    <div id="entity-list" style="width:280px; background:var(--surface); border-radius:24px; border:1px solid var(--border); overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="font-size:0.7rem; font-weight:800; color:var(--muted); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:5px;">PERSONAL Y EQUIPOS</div>
-                        <div id="entity-items-container" style="display:flex; flex-direction:column; gap:8px;">
-                            <p style="font-size:0.7rem; color:var(--muted); text-align:center; margin-top:20px;">Cargando activos...</p>
-                        </div>
-                    </div>
-
-                    <!-- MAPA -->
-                    <div id="map" style="flex:1; border-radius:24px; border:1px solid var(--border); background:var(--surface1); overflow:hidden; z-index:1;"></div>
-                </div>
-                
-                <div id="monitoring-stats" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
-                    <div class="card" style="padding:15px; text-align:center; border-radius:20px; background:var(--surface);">
-                        <div style="font-size:0.5rem; color:var(--muted); font-weight:800;">ACTIVOS EN LÍNEA</div>
-                        <div id="count-online" style="font-size:1.5rem; font-weight:900; color:var(--success);">0</div>
-                    </div>
-                    <div class="card" style="padding:15px; text-align:center; border-radius:20px; background:var(--surface);">
-                        <div style="font-size:0.5rem; color:var(--muted); font-weight:800;">EQUIPOS RUTA</div>
-                        <div id="count-assets" style="font-size:1.5rem; font-weight:900; color:var(--accent);">0</div>
-                    </div>
-                    <div class="card" style="padding:15px; text-align:center; border-radius:20px; background:var(--surface);">
-                        <div style="font-size:0.5rem; color:var(--muted); font-weight:800;">ÚLTIMA SYNC</div>
-                        <div id="last-sync-time" style="font-size:0.8rem; font-weight:900; color:white; margin-top:10px;">--:--</div>
-                    </div>
-                </div>
-            </div>
-            <style>
-                @media (max-width: 768px) {
-                    #monitoring-view { height: auto; min-height: calc(100vh - 120px); }
-                    #monitoring-view > div:nth-child(2) { flex-direction: column-reverse; height: 600px; }
-                    #entity-list { width: 100% !important; height: 250px; }
-                    #map { height: 350px; flex: none; width: 100%; }
-                }
-            </style>
-        `;
-
-        // Inicializar Mapa
-        setTimeout(() => {
-            map = L.map('map').setView([10.4806, -66.9036], 13); // Caracas default
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap'
-            }).addTo(map);
-
-            updateMonitoringData();
-            if (monitoringInterval) clearInterval(monitoringInterval);
-            monitoringInterval = setInterval(updateMonitoringData, 30000); // Cada 30s
-        }, 100);
-    }
-
-    async function updateMonitoringData() {
-        if (currentTab !== 'monitoreo') {
-            if (monitoringInterval) clearInterval(monitoringInterval);
-            return;
-        }
-
-        const res = await apiFetch('/api/locations/latest');
-        if (!res || !res.locations) return;
-
-        const locs = res.locations;
-        let onlineCount = 0;
-        let assetCount = 0;
-        const container = document.getElementById('entity-items-container');
-        if (container) container.innerHTML = '';
-
-        locs.forEach(l => {
-            const lastUpdate = new Date(l.ts);
-            const diffMin = (new Date() - lastUpdate) / 60000;
-            const isOnline = diffMin < 10; // Online si reportó hace menos de 10 min
-
-            if (isOnline) onlineCount++;
-            if (l.entity_type === 'asset') assetCount++;
-
-            const markerKey = `${l.entity_type}_${l.entity_id}`;
-            const pos = [l.latitude, l.longitude];
-            
-            const color = l.entity_type === 'staff' ? 'var(--accent)' : 'var(--warning)';
-            const iconHtml = `
-                <div style="background:${color}; width:35px; height:35px; border-radius:50%; border:3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:1rem; position:relative;">
-                    ${l.entity_type === 'staff' ? '👤' : '🚚'}
-                    <div style="position:absolute; bottom:-2px; right:-2px; width:12px; height:12px; background:${isOnline ? 'var(--success)' : 'var(--muted)'}; border-radius:50%; border:2px solid white;"></div>
-                </div>
-            `;
-            const icon = L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [35, 35],
-                iconAnchor: [17, 17]
-            });
-
-            if (markers[markerKey]) {
-                markers[markerKey].setLatLng(pos);
-            } else {
-                markers[markerKey] = L.marker(pos, { icon }).addTo(map)
-                    .bindPopup(`<b>${l.entity_name}</b><br>${l.entity_subinfo}<br><small>${lastUpdate.toLocaleString()}</small>`);
-            }
-
-            // Agregar a la lista lateral
-            if (container) {
-                const item = document.createElement('div');
-                item.className = 'menu-item';
-                item.style.padding = '10px';
-                item.style.borderRadius = '15px';
-                item.style.background = 'rgba(255,255,255,0.03)';
-                item.style.fontSize = '0.65rem';
-                item.style.display = 'flex';
-                item.style.alignItems = 'center';
-                item.style.gap = '10px';
-                item.onclick = () => focusOnMarker(markerKey, pos);
-                
-                item.innerHTML = `
-                    <div style="width:30px; height:30px; background:${color}20; color:${color}; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem;">
-                        ${l.entity_type === 'staff' ? '👤' : '🚚'}
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:800; color:white;">${l.entity_name}</div>
-                        <div style="font-size:0.55rem; color:var(--muted);">${l.entity_subinfo.toUpperCase()}</div>
-                    </div>
-                    <div style="width:8px; height:8px; background:${isOnline ? 'var(--success)' : 'var(--muted)'}; border-radius:50%;"></div>
-                `;
-                container.appendChild(item);
-            }
-        });
-
-        document.getElementById('count-online').innerText = onlineCount;
-        document.getElementById('count-assets').innerText = assetCount;
-        document.getElementById('last-sync-time').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function focusOnMarker(key, pos) {
-        if (!map || !markers[key]) return;
-        map.setView(pos, 16);
-        markers[key].openPopup();
-    }
-
-
-    async function apiFetch(path, options = {}, silent = false) {
+    // --- API FUNCTIONS ---
+    async function apiFetch(path, options = {}) {
         const token = localStorage.getItem('token');
-        const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', ...options.headers };
+        const webSessionId = localStorage.getItem('web_session_id');
+        const headers = { 
+            'Authorization': 'Bearer ' + token, 
+            'Content-Type': 'application/json',
+            'X-Web-Session-ID': webSessionId, // Header para rastrear actividad
+            ...options.headers 
+        };
         try {
-            const res = await fetch(API_BASE + path, { ...options, headers });
+            const url = API_BASE + path + (path.includes('?') ? '&' : '?') + 't=' + Date.now();
+            const res = await fetch(url, { ...options, headers, cache: 'no-store' });
+            
+            if (res.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                location.reload();
+                return null;
+            }
+
             const data = await res.json();
             if (!res.ok) {
-                if (!silent) toast(data.error || 'Error en la solicitud', 'error');
+                toast(data.error || 'Error en la solicitud', 'error');
                 return null;
             }
             return data;
         } catch (e) {
             console.error('API Fetch Error:', e);
-            if (!silent) toast('Error de conexión con el servidor', 'error');
+            toast('Error de conexión con el servidor', 'error');
             return null;
         }
     }
@@ -2733,7 +3192,7 @@
                             <div style="background:var(--accent); color:white; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px;">#${(v.daily_seq || 0).toString().padStart(5, '0')}</div>
                             <div class="plate-tag">${v.plate}</div>
                         </div>
-                        <div style="font-size:0.7rem; color:var(--muted)">${new Date(v.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        <div style="font-size:0.7rem; color:var(--muted)">${formatTime24h(v.created_at)}</div>
                     </div>
                     <div style="margin-top:12px; font-weight:700; color:var(--accent2)">${v.brand || 'Vehículo'}</div>
                     <div style="font-size:0.85rem; margin-top:4px;">${v.owner_name || 'Sin nombre'}</div>
@@ -2762,7 +3221,8 @@
             damage_json: JSON.stringify(currentDamageMarks),
             damage_notes: document.getElementById('in-notes').value,
             photos: photoData,
-            session_id: window.activeSession?.id
+            session_id: window.activeSession?.id,
+            vehicle_type: document.getElementById('in-vehicle-type')?.value || 'car'
         };
         
         if (!body.plate) return toast('LA PLACA ES OBLIGATORIA', 'error');
@@ -2895,39 +3355,526 @@
         document.getElementById('modal-container').classList.remove('open'); 
         if (window.lastTimer) { clearInterval(window.lastTimer); window.lastTimer = null; }
     }
+    function showModal(html) {
+        const modalBody = document.getElementById('modal-body');
+        if (modalBody) {
+            modalBody.innerHTML = html;
+            openModal();
+        }
+    }
     function fmtDate(d) { return d ? new Date(d).toLocaleString('es-VE') : '—'; }
     // --- ADMIN & HISTORY ---
     let isAdminAuthenticated = false;
 
-    async function renderAdmin(el, tab = 'personal') {
-        if (!isAdminAuthenticated) {
-            const key = prompt('INGRESE CLAVE DE ADMINISTRADOR:');
-            if (!key) return exitToPortal();
-            const res = await apiFetch('/api/admin/verify', { method: 'POST', body: JSON.stringify({ key }) });
-            if (res && res.valid) {
-                isAdminAuthenticated = true;
-            } else {
-                toast('CLAVE INCORRECTA', 'error');
-                return exitToPortal();
+    async function renderCaptacion(el) {
+        showLoading('CARGANDO POSTULACIONES...');
+        const res = await apiFetch('/api/admin/applications');
+        hideLoading();
+
+        if (!res || !res.applications) return;
+        const apps = res.applications;
+
+        el.innerHTML = `
+            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 class="view-title">🎓 CAPTACIÓN Y FORMACIÓN</h1>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-sm" onclick="window.open('/join', '_blank')" style="background:#22c55e;">🌐 VER FORMULARIO PÚBLICO</button>
+                    <button class="btn btn-sm btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="font-size:0.6rem; padding:8px 15px; border-radius:8px;">← VOLVER AL MENÚ ADMIN</button>
+                </div>
+            </div>
+
+            <div class="stat-card" style="margin-bottom:20px;">
+                <div style="font-size:0.8rem; color:var(--muted); font-weight:800; margin-bottom:15px;">POSTULACIONES RECIBIDAS (${apps.length})</div>
+                <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:20px;">
+                    ${apps.map(a => `
+                        <div class="card" style="background:var(--surface2); border:1px solid var(--border); display:flex; gap:15px; align-items:start; padding:15px;">
+                            <div style="width:80px; height:80px; border-radius:10px; overflow:hidden; background:var(--surface); border:1px solid var(--border);">
+                                ${a.photo_url ? `<img src="/api/photos/${a.photo_url}" style="width:100%; height:100%; object-fit:cover;">` : `<i style="font-size:2rem; display:grid; place-items:center; height:100%;">👤</i>`}
+                            </div>
+                            <div style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:start;">
+                                    <div style="font-weight:900; font-size:1rem; color:white;">${a.name.toUpperCase()}</div>
+                                    <span style="font-size:0.6rem; padding:3px 8px; border-radius:5px; background:${a.status === 'pending' ? 'var(--warning)' : a.status === 'hired' ? 'var(--success)' : 'var(--danger)'}; color:white;">${a.status === 'pending' ? 'PENDIENTE' : a.status.toUpperCase()}</span>
+                                </div>
+                                <div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">C.I: ${a.cedula} | TEL: ${a.phone}</div>
+                                <div style="font-size:0.75rem; color:var(--accent); font-weight:700; margin-top:5px;">${a.email}</div>
+                                <div style="font-size:0.65rem; color:var(--muted); margin-top:8px; line-height:1.4;">${a.experience.substring(0, 100)}${a.experience.length > 100 ? '...' : ''}</div>
+                                <div style="display:flex; gap:8px; margin-top:15px; align-items:center;">
+                                    <button class="btn btn-sm btn-secondary" style="font-size:0.6rem;" onclick="viewApplicationDetail(${a.id})">VER DETALLE</button>
+                                    <select onchange="updateAppStatus(${a.id}, this.value)" style="font-size:0.6rem; height:32px; background:var(--surface); border:1px solid var(--border); color:white; border-radius:6px; padding:0 5px;">
+                                        <option value="pending" ${a.status === 'pending' ? 'selected' : ''}>PENDIENTE</option>
+                                        <option value="interviewed" ${a.status === 'interviewed' ? 'selected' : ''}>ENTREVISTADO</option>
+                                        <option value="hired" ${a.status === 'hired' ? 'selected' : ''}>CONTRATADO</option>
+                                        <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>RECHAZADO</option>
+                                    </select>
+                                    <button onclick="deleteApplication(${a.id})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; padding:5px; font-size:1.1rem; display:flex; align-items:center;" title="ELIMINAR REGISTRO">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${apps.length === 0 ? '<div style="color:var(--muted); padding:40px; text-align:center; grid-column: 1/-1;">NO HAY POSTULACIONES REGISTRADAS</div>' : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    window.deleteApplication = async function(id) {
+        if (!confirm('¿ESTÁS SEGURO DE ELIMINAR ESTA POSTULACIÓN? ESTA ACCIÓN NO SE PUEDE DESHACER.')) return;
+        showLoading('ELIMINANDO...');
+        const res = await apiFetch('/api/admin/applications/' + id, { method: 'DELETE' });
+        hideLoading();
+        if (res && res.success) {
+            toast('REGISTRO ELIMINADO', 'success');
+            renderCaptacion(document.getElementById('current-view'));
+        }
+    };
+
+    window.updateAppStatus = async function(id, status) {
+        if (!confirm('¿CAMBIAR ESTADO DE LA POSTULACIÓN?')) return;
+        const res = await apiFetch('/api/admin/applications/' + id + '/status', {
+            method: 'POST',
+            body: JSON.stringify({ status })
+        });
+        if (res && res.success) {
+            toast('ESTADO ACTUALIZADO', 'success');
+            renderCaptacion(document.getElementById('current-view'));
+        }
+    };
+
+    window.viewApplicationDetail = async function(id) {
+        const apps = (await apiFetch('/api/admin/applications')).applications;
+        const a = apps.find(x => x.id === id);
+        if (!a) return;
+
+        showModal(`
+            <div style="text-align:left;">
+                <div style="display:flex; gap:20px; align-items:start; margin-bottom:20px;">
+                    <div style="width:150px; height:150px; border-radius:15px; overflow:hidden; border:2px solid var(--border);">
+                        ${a.photo_url ? `<img src="/api/photos/${a.photo_url}" style="width:100%; height:100%; object-fit:cover;">` : `<i style="font-size:4rem;">👤</i>`}
+                    </div>
+                    <div>
+                        <h2 style="margin:0">${a.name.toUpperCase()}</h2>
+                        <div style="font-weight:800; color:var(--accent); margin-top:5px;">C.I: ${a.cedula}</div>
+                        <div style="margin-top:10px; font-size:0.8rem; color:var(--muted);">NACIMIENTO: ${a.birth_date}</div>
+                        <div style="margin-top:5px; font-size:0.8rem; color:var(--muted);">REGISTRO: ${new Date(a.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="color:var(--accent); font-weight:800; font-size:0.7rem; letter-spacing:1px;">DATOS DE CONTACTO</label>
+                    <div style="background:var(--surface2); padding:15px; border-radius:12px; margin-top:5px; border:1px solid var(--border);">
+                        <div style="margin-bottom:8px;">📞 ${a.phone}</div>
+                        <div style="margin-bottom:8px; color:var(--accent); font-weight:700;">✉️ ${a.email}</div>
+                        <div style="font-size:0.8rem; line-height:1.4;">📍 ${a.address}</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="color:var(--accent); font-weight:800; font-size:0.7rem; letter-spacing:1px;">EXPERIENCIA LABORAL</label>
+                    <div style="background:var(--surface2); padding:15px; border-radius:12px; margin-top:5px; font-size:0.85rem; line-height:1.6; white-space:pre-wrap; border:1px solid var(--border);">${a.experience}</div>
+                </div>
+
+                <button class="btn" onclick="closeModal()" style="background:var(--surface2); border:1px solid var(--border);">CERRAR</button>
+            </div>
+        `);
+    };
+
+    async function renderVehiculos(el) {
+        showLoading('CARGANDO BASE DE DATOS...');
+        try {
+            const data = await apiFetch('/api/admin/vehicles');
+            const vehicles = data?.vehicles || [];
+            window.fullVehiclesList = vehicles;
+            
+            el.innerHTML = `
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1 class="view-title">🏎️ BBDD DE VEHÍCULOS <small style="font-size:0.7rem; color:var(--muted)" id="veh-count">${vehicles.length} REGISTROS</small></h1>
+                    <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
+                </div>
+
+                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
+                    <div style="position:relative;">
+                        <input type="text" id="veh-search" placeholder="🔍 BUSCAR PLACA..." 
+                            style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:15px; padding:15px 20px; color:white; font-weight:900; letter-spacing:1px; text-transform:uppercase;"
+                            oninput="filterVehiculos(this.value)">
+                    </div>
+                </div>
+
+                <div id="veh-grid" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:15px; margin-bottom:40px;">
+                    ${renderVehiculosGrid(vehicles)}
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                        ← VOLVER AL MENÚ ADMIN
+                    </button>
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR BBDD', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.filterVehiculos = function(q) {
+        const filtered = window.fullVehiclesList.filter(v => v.plate.includes(q.toUpperCase()));
+        document.getElementById('veh-grid').innerHTML = renderVehiculosGrid(filtered);
+        document.getElementById('veh-count').textContent = `${filtered.length} REGISTROS`;
+    }
+
+    window.deleteVehicle = async function(plate) {
+        if (!confirm(`¿ESTÁ SEGURO DE ELIMINAR EL VEHÍCULO ${plate} Y TODO SU HISTORIAL? ESTA ACCIÓN ES IRREVERSIBLE.`)) return;
+        showLoading('ELIMINANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/vehicles/${plate}`, { method: 'DELETE' });
+            if (res) {
+                toast('VEHÍCULO ELIMINADO', 'success');
+                renderVehiculos(document.getElementById('current-view'));
             }
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL ELIMINAR', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function renderVehiculosGrid(list) {
+        if (!list || list.length === 0) return '<div style="grid-column:1/-1; text-align:center; padding:50px; opacity:0.5;">NO SE ENCONTRARON VEHÍCULOS</div>';
+        return list.map(v => {
+            const photos = v.all_photos ? v.all_photos.split(',') : [];
+            return `
+            <div class="admin-globo" style="padding:15px; border-radius:20px; flex-direction:row; justify-content:space-between; align-items:stretch; gap:15px; height:100%; border-left:4px solid var(--warning); position:relative; cursor:default;" onclick="expandVehicleInfo(${JSON.stringify(v).replace(/"/g, '&quot;')})">
+                <div style="flex:1; display:flex; flex-direction:column; gap:5px; cursor:pointer;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="plate-tag" style="margin:0; font-size:1rem; padding:4px 12px;">${v.plate}</div>
+                    </div>
+                    
+                    <div style="margin-top:5px;">
+                        <div style="font-size:0.85rem; font-weight:900; color:#fff; text-transform:uppercase;">${(v.brand || 'S/M')} ${v.model || ''}</div>
+                        <div style="font-size:0.65rem; color:var(--muted); font-weight:700;">COLOR: <span style="color:var(--accent2)">${(v.color || 'N/A').toUpperCase()}</span></div>
+                        <div style="font-size:0.6rem; color:var(--muted); margin-top:4px;">PROPIETARIO:</div>
+                        <div style="font-size:0.7rem; font-weight:800; color:#fff;">${(v.owner_name || 'NO REGISTRADO').toUpperCase()}</div>
+                    </div>
+                    
+                    <div style="font-size:0.5rem; color:var(--muted); margin-top:auto;">ÚLTIMA VISITA: ${new Date(v.created_at).toLocaleDateString()}</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px; width:100px;">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); deleteVehicle('${v.plate}')" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.2); padding:4px 8px; border-radius:8px; font-size:0.6rem; width:fit-content; font-weight:900;">ELIMINAR</button>
+                    
+                    ${photos.length > 0 ? `
+                        <div style="width:100px; height:70px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+                            <img src="/api/photos/${photos[0]}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    ` : `
+                        <div style="width:100px; height:70px; border-radius:10px; border:1px dashed rgba(255,255,255,0.1); display:grid; place-items:center; font-size:0.5rem; color:var(--muted);">SIN FOTO</div>
+                    `}
+                </div>
+            </div>
+        `;}).join('');
+    }
+
+    window.expandVehicleInfo = function(v) {
+        const photos = v.all_photos ? v.all_photos.split(',') : [];
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:600px; padding:0; overflow:hidden; border-radius:28px; background:var(--bg);">
+                <div style="padding:30px; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div class="plate-tag" style="margin:0; font-size:1.8rem; padding:10px 25px;">${v.plate}</div>
+                        <button class="btn btn-secondary btn-sm" onclick="this.closest('.modal-overlay').remove()" style="border-radius:50%; width:40px; height:40px; display:grid; place-items:center; padding:0;">✕</button>
+                    </div>
+                    
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">MARCA / MODELO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.brand || '-').toUpperCase()} ${v.model || ''}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">COLOR</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.color || '-').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">PROPIETARIO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.owner_name || '-').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">TELÉFONO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${v.owner_phone || '-'}</div>
+                        </div>
+                    </div>
+
+                    ${v.damage_notes ? `
+                        <div style="margin-top:20px; padding:15px; background:rgba(239, 68, 68, 0.05); border:1px solid rgba(239, 68, 68, 0.2); border-radius:12px;">
+                            <div style="font-size:0.6rem; color:var(--danger); font-weight:900; letter-spacing:1px;">NOTAS DE DAÑOS</div>
+                            <div style="font-size:0.85rem; color:#fff; margin-top:5px;">${v.damage_notes}</div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div style="padding:20px; background:rgba(0,0,0,0.2);">
+                    <div style="font-size:0.7rem; color:var(--accent2); font-weight:900; margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">📸 REGISTRO FOTOGRÁFICO</div>
+                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+                        ${photos.map(p => `
+                            <img src="/api/photos/${p}" style="height:200px; border-radius:12px; border:1px solid var(--border); cursor:pointer;" onclick="window.open('/api/photos/${p}', '_blank')">
+                        `).join('') || '<div style="color:var(--muted); font-size:0.75rem; font-style:italic;">No hay fotos disponibles</div>'}
+                    </div>
+                </div>
+
+                <div style="padding:20px; display:flex; justify-content:center;">
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="padding:10px 40px; border-radius:20px; font-weight:800;">CERRAR DETALLES</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+
+    async function renderClientes(el) {
+        showLoading('CARGANDO BBDD DE CLIENTES...');
+        try {
+            const data = await apiFetch('/api/admin/clients');
+            const clients = data?.clients || [];
+            window.fullClientsList = clients;
+
+            el.innerHTML = `
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1 class="view-title">📑 BBDD DE CLIENTES <small style="font-size:0.7rem; color:var(--muted)" id="cli-count">${clients.length} REGISTROS</small></h1>
+                    <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
+                </div>
+
+                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
+                    <div style="position:relative;">
+                        <input type="text" id="cli-search" placeholder="🔍 BUSCAR POR NOMBRE O TELÉFONO..." 
+                            style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:15px; padding:15px 20px; color:white; font-weight:900; letter-spacing:1px; text-transform:uppercase;"
+                            oninput="filterClientes(this.value)">
+                    </div>
+                </div>
+
+                <div id="cli-table-container" style="background:var(--surface); border-radius:20px; border:1px solid var(--border); overflow:hidden;">
+                    ${renderClientesTable(clients)}
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
+                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                        ← VOLVER AL MENÚ ADMIN
+                    </button>
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR CLIENTES', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.filterClientes = function(q) {
+        const query = q.toUpperCase();
+        const filtered = window.fullClientsList.filter(c => 
+            c.owner_name.toUpperCase().includes(query) || 
+            (c.owner_phone && c.owner_phone.includes(query))
+        );
+        document.getElementById('cli-table-container').innerHTML = renderClientesTable(filtered);
+        document.getElementById('cli-count').textContent = `${filtered.length} REGISTROS`;
+    }
+
+    function renderClientesTable(list) {
+        if (!list || list.length === 0) return '<div style="text-align:center; padding:50px; opacity:0.5;">NO SE ENCONTRARON CLIENTES</div>';
+        
+        return `
+            <table style="width:100%; border-collapse: collapse; text-align:left;">
+                <thead>
+                    <tr style="background:rgba(255,255,255,0.03); color:var(--muted); border-bottom:1px solid var(--border);">
+                        <th style="padding:15px;">NOMBRE DEL CLIENTE</th>
+                        <th style="padding:15px;">CONTACTO</th>
+                        <th style="padding:15px; text-align:center;">VISITAS</th>
+                        <th style="padding:15px;">ESTADO</th>
+                        <th style="padding:15px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${list.map((c, idx) => `
+                        <tr style="border-bottom:1px solid var(--border); transition:background 0.2s;">
+                            <td style="padding:15px; font-weight:900; color:#fff;">${(c.owner_name || 'SIN NOMBRE').toUpperCase()}</td>
+                            <td style="padding:15px; font-family:var(--font-mono); font-size:0.85rem;">${c.owner_phone || '—'}</td>
+                            <td style="padding:15px; text-align:center;">
+                                <span style="background:var(--accent2); color:white; padding:4px 10px; border-radius:20px; font-weight:800; font-size:0.8rem;">
+                                    ${c.total_visits}
+                                </span>
+                            </td>
+                            <td style="padding:15px;">
+                                ${c.total_visits > 1 ? 
+                                    '<span style="color:var(--success); font-weight:900; font-size:0.7rem;">⭐ RECURRENTE</span>' : 
+                                    '<span style="color:var(--muted); font-size:0.7rem;">NUEVO</span>'}
+                            </td>
+                            <td style="padding:15px; text-align:right;">
+                                <button class="btn btn-secondary btn-sm" onclick="toggleClientHistory(${idx})" style="padding:6px 12px; border-radius:8px; font-size:0.7rem;">
+                                    DETALLE EVENTOS ↓
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="history-${idx}" style="display:none; background:rgba(0,0,0,0.2);">
+                            <td colspan="5" style="padding:20px; border-bottom:1px solid var(--border);">
+                                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+                                    ${(c.history || []).map(h => {
+                                        const d = h.date ? new Date(h.date) : null;
+                                        const dateStr = d && !isNaN(d) ? d.toLocaleDateString() : 'FECHA N/A';
+                                        const timeStr = d && !isNaN(d) ? formatTime24h(d) : '';
+                                        return `
+                                            <div style="background:var(--surface2); padding:12px; border-radius:12px; border:1px solid var(--border);">
+                                                <div style="font-size:0.6rem; color:var(--accent); font-weight:900; margin-bottom:4px;">${(h.event || 'EVENTO').toUpperCase()}</div>
+                                                <div style="font-size:0.8rem; font-weight:800; color:#fff;">${h.plate || '—'}</div>
+                                                <div style="font-size:0.65rem; color:var(--muted); margin-top:4px;">${dateStr} ${timeStr}</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    window.toggleClientHistory = function(idx) {
+        const el = document.getElementById(`history-${idx}`);
+        if (el.style.display === 'none') {
+            el.style.display = 'table-row';
+            el.style.animation = 'fadeIn 0.3s ease';
+        } else {
+            el.style.display = 'none';
+        }
+    }
+
+
+    async function renderAdmin(el, tab = 'menu') {
+        isAdminAuthenticated = true;
+        setTimeout(() => window.scrollTo(0, 0), 100);
+
+        if (tab === 'menu') {
+            el.innerHTML = `
+                <div class="view-header">
+                    <h1 class="view-title">ADMINISTRACIÓN</h1>
+                </div>
+
+
+
+                <div class="menu-grid" style="margin-top:20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width:1100px; margin-left:auto; margin-right:auto;">
+                    <!-- GESTIÓN DE PERSONAL -->
+                    <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'personal')" style="border-top: 4px solid var(--accent2); background: rgba(67, 97, 238, 0.05);">
+                        <i>👥</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GESTIÓN DE PERSONAL</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE RRHH Y STAFF</span>
+                        </div>
+                    </div>
+
+                    <!-- NÓMINA Y PAGOS -->
+                    <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); background: rgba(16, 185, 129, 0.05);">
+                        <i>💰</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REVISIÓN Y AUTORIZACIÓN</span>
+                        </div>
+                    </div>
+
+                    <!-- IMAGEN & RRSS -->
+                    <div class="menu-item" onclick="renderMarketing(document.getElementById('current-view'))" style="border-top: 4px solid var(--accent); background: rgba(99, 102, 241, 0.05);">
+                        <i>📸</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">IMAGEN & RRSS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">PLAN ESTRATÉGICO Y DASHBOARD</span>
+                        </div>
+                    </div>
+
+                    <!-- GEOLOCALIZACIÓN -->
+                    <div class="menu-item" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+                        <i>📍</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GEOLOCALIZACIÓN</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">MONITOREO REAL-TIME</span>
+                        </div>
+                    </div>
+
+                    <!-- BBDD DE CLIENTES -->
+                    <div class="menu-item" onclick="renderClientes(document.getElementById('current-view'))" style="border-top: 4px solid #10b981; background: rgba(16, 185, 129, 0.05);">
+                        <i>📑</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE CLIENTES</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">HISTORIAL Y RECURRENCIA</span>
+                        </div>
+                    </div>
+
+                    <!-- BBDD DE VEHÍCULOS -->
+                    <div class="menu-item" onclick="renderVehiculos(document.getElementById('current-view'))" style="border-top: 4px solid var(--warning); background: rgba(245, 158, 11, 0.05);">
+                        <i>🚗</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE VEHÍCULOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">HISTORIAL DE FLOTA</span>
+                        </div>
+                    </div>
+
+                    <!-- CAPTACIÓN DE PERSONAL Y FORMACIÓN -->
+                    <div class="menu-item" onclick="renderCaptacion(document.getElementById('current-view'))" style="border-top: 4px solid #0ea5e9; background: rgba(14, 165, 233, 0.05);">
+                        <i>🎓</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CAPTACIÓN Y FORMACIÓN</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">RECLUTAMIENTO Y CAPACITACIÓN</span>
+                        </div>
+                    </div>
+
+                    <!-- AUDITORÍA Y SEGURIDAD (Solo Superadmins) -->
+                    ${(() => {
+                        try {
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            if (user && user.is_superadmin) {
+                                return `
+                                    <div class="menu-item" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+                                        <i>🛡️</i>
+                                        <div class="menu-item-content">
+                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">AUDITORÍA</span>
+                                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REGISTRO DE ACCESOS Y ACCIONES</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        } catch(e) {}
+                        return '';
+                    })()}
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-top: 40px;">
+                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                        ← VOLVER AL PORTAL
+                    </button>
+                </div>
+                <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+            `;
+            return;
+        }
+
+        if (tab === 'vehiculos') {
+            renderVehiculos(el);
+            return;
         }
 
         el.innerHTML = `
-            <div class="view-header">
-                <h1 class="view-title">🔒 ADMINISTRACIÓN <small style="font-size:0.8rem; opacity:0.6;">v2.2.28</small></h1>
+            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 class="view-title">${tab === 'personal' ? '👥 GESTIÓN DE PERSONAL' : '💰 NÓMINA Y PAGOS'}</h1>
+                <button class="btn btn-sm btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="font-size:0.6rem; padding:8px 15px; border-radius:8px;">← VOLVER AL MENÚ ADMIN</button>
             </div>
 
-            <div class="admin-tabs">
-                <div class="admin-tab ${tab === 'personal' ? 'active' : ''}" onclick="renderAdmin(document.getElementById('current-view'), 'personal')">GESTIÓN DE PERSONAL</div>
-                <div class="admin-tab ${tab === 'equipos' ? 'active' : ''}" onclick="renderAdmin(document.getElementById('current-view'), 'equipos')">GESTIÓN DE EQUIPOS</div>
-                <div class="admin-tab ${tab === 'formatos' ? 'active' : ''}" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')">GESTIÓN DE FORMATOS</div>
-            </div>
-
-            <div id="admin-content"></div>
+            <div id="admin-content" style="margin-top:20px;"></div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
                 <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-                    🏠 VOLVER
+                    ← VOLVER AL PORTAL
                 </button>
             </div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
@@ -2935,210 +3882,17 @@
 
         const content = document.getElementById('admin-content');
         if (tab === 'personal') {
-            // Combinar General (Estadísticas/Control) y Personal (Staff)
-            content.innerHTML = '<div id="admin-general-sub"></div><hr style="border:0; border-top:2px solid var(--border); margin:40px 0;"><div id="admin-staff-sub"></div>';
-            renderAdminGeneral(document.getElementById('admin-general-sub'));
+            content.innerHTML = '<div id="admin-staff-sub"></div><hr style="border:0; border-top:2px solid var(--border); margin:40px 0;"><div id="admin-general-sub"></div>';
             renderStaff(document.getElementById('admin-staff-sub'));
-        } else if (tab === 'equipos') {
-            renderAdminAssets(content);
+            renderAdminGeneral(document.getElementById('admin-general-sub'));
         } else if (tab === 'formatos') {
             renderAdminPayrollDashboard(content);
-        }
-    }
-
-    async function renderAdminAssets(el) {
-        el.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0">INVENTARIO DE EQUIPOS (TRACKING)</h3>
-                <button class="btn btn-sm" onclick="showAddAssetModal()" style="padding:10px 20px; border-radius:12px; font-weight:800;">+ NUEVO EQUIPO</button>
-            </div>
-            <div id="assets-list-container" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-                <p style="text-align:center; color:var(--muted); grid-column:1/-1;">Cargando inventario...</p>
-            </div>
-        `;
-
-        const res = await apiFetch('/api/assets');
-        const list = document.getElementById('assets-list-container');
-        if (!res || !res.assets || res.assets.length === 0) {
-            list.innerHTML = '<p style="text-align:center; color:var(--muted); grid-column:1/-1;">No hay equipos registrados para tracking.</p>';
-            return;
-        }
-
-        list.innerHTML = res.assets.map(a => `
-            <div class="card" style="padding:20px; border:1px solid var(--border); position:relative;">
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                    <div style="width:45px; height:45px; background:var(--accent)20; color:var(--accent); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
-                        ${a.type === 'equipment' ? '🛠️' : '🚚'}
-                    </div>
-                    <div>
-                        <div style="font-weight:900; color:white; font-size:1.1rem;">${a.name}</div>
-                        <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">ID: ${a.id} • ${a.type}</div>
-                    </div>
-                </div>
-                <div style="font-size:0.75rem; color:var(--muted); margin-bottom:15px;">${a.description || 'Sin descripción'}</div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn btn-sm btn-secondary" onclick="showEditAssetModal(${JSON.stringify(a).replace(/"/g, '&quot;')})" style="flex:1;">EDITAR</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteAsset(${a.id})" style="width:40px;">🗑️</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function showAddAssetModal() {
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = `
-            <h2 style="margin-top:0">NUEVO EQUIPO/ACTIVO</h2>
-            <div class="field">
-                <label>Nombre del Activo</label>
-                <input type="text" id="asset-name" placeholder="Ej: GRÚA 01, MOTO 05...">
-            </div>
-            <div class="field">
-                <label>Tipo</label>
-                <select id="asset-type">
-                    <option value="equipment">Equipamiento (General)</option>
-                    <option value="vehicle">Vehículo / Traslado</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>Descripción / Observaciones</label>
-                <textarea id="asset-desc" rows="3"></textarea>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="flex:1" onclick="saveAsset()">GUARDAR ACTIVO</button>
-                <button class="btn btn-secondary" onclick="closeModal()">CANCELAR</button>
-            </div>
-        `;
-        openModal();
-    }
-
-    async function saveAsset() {
-        const name = document.getElementById('asset-name').value;
-        const type = document.getElementById('asset-type').value;
-        const description = document.getElementById('asset-desc').value;
-
-        if (!name) return toast('Nombre requerido', 'error');
-
-        showLoading('GUARDANDO...');
-        const res = await apiFetch('/api/assets', {
-            method: 'POST',
-            body: JSON.stringify({ name, type, description })
-        });
-        hideLoading();
-
-        if (res) {
-            toast('✅ ACTIVO REGISTRADO', 'success');
-            closeModal();
-            renderAdmin(document.getElementById('current-view'), 'equipos');
-        }
-    }
-
-    async function deleteAsset(id) {
-        if (!confirm('¿Seguro que deseas eliminar este activo del inventario de tracking?')) return;
-        showLoading('ELIMINANDO...');
-        const res = await apiFetch('/api/assets/' + id, { method: 'DELETE' });
-        hideLoading();
-        if (res) {
-            toast('🗑️ ACTIVO ELIMINADO', 'info');
-            renderAdmin(document.getElementById('current-view'), 'equipos');
-        }
-    }
-
-    function showEditAssetModal(a) {
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = `
-            <h2 style="margin-top:0">EDITAR ACTIVO</h2>
-            <div class="field">
-                <label>Nombre del Activo</label>
-                <input type="text" id="edit-asset-name" value="${a.name}">
-            </div>
-            <div class="field">
-                <label>Tipo</label>
-                <select id="edit-asset-type">
-                    <option value="equipment" ${a.type === 'equipment' ? 'selected' : ''}>Equipamiento (General)</option>
-                    <option value="vehicle" ${a.type === 'vehicle' ? 'selected' : ''}>Vehículo / Traslado</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>Estado</label>
-                <select id="edit-asset-status">
-                    <option value="available" ${a.status === 'available' ? 'selected' : ''}>Disponible</option>
-                    <option value="in_use" ${a.status === 'in_use' ? 'selected' : ''}>En Uso / Ruta</option>
-                    <option value="maintenance" ${a.status === 'maintenance' ? 'selected' : ''}>Mantenimiento</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>Descripción / Observaciones</label>
-                <textarea id="edit-asset-desc" rows="3">${a.description || ''}</textarea>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="flex:1" onclick="updateAsset(${a.id})">ACTUALIZAR</button>
-                <button class="btn btn-secondary" onclick="closeModal()">CANCELAR</button>
-            </div>
-        `;
-        openModal();
-    }
-
-    async function updateAsset(id) {
-        const name = document.getElementById('edit-asset-name').value;
-        const type = document.getElementById('edit-asset-type').value;
-        const status = document.getElementById('edit-asset-status').value;
-        const description = document.getElementById('edit-asset-desc').value;
-
-        if (!name) return toast('Nombre requerido', 'error');
-
-        showLoading('ACTUALIZANDO...');
-        const res = await apiFetch('/api/assets/' + id, {
-            method: 'PUT',
-            body: JSON.stringify({ name, type, status, description })
-        });
-        hideLoading();
-
-        if (res) {
-            toast('✅ ACTIVO ACTUALIZADO', 'success');
-            closeModal();
-            renderAdmin(document.getElementById('current-view'), 'equipos');
         }
     }
 
 
     async function renderAdminGeneral(el) {
         el.innerHTML = `
-            <div class="stat-card" style="margin-bottom:30px; border-left:4px solid var(--accent2); background:rgba(67, 97, 238, 0.05);">
-                <div class="stat-label" style="color:var(--accent2); font-size:0.9rem;">📚 DOCUMENTACIÓN OFICIAL</div>
-                <div style="margin-top:15px; display:flex; flex-direction:column; gap:12px;">
-                    <a href="/manual.html" target="_blank" class="btn" style="background:var(--accent2); text-decoration:none; height:45px; font-weight:800; display:grid; place-items:center;">📘 DESCARGAR MANUAL PDF</a>
-                    <div style="background:var(--surface2); padding:15px; border-radius:10px; font-size:0.85rem; border:1px solid var(--border);">
-                        <strong>Claves de Acceso del Sistema:</strong><br>
-                        • Administración: <code>EYE-ADMIN-2026</code><br>
-                        • Operativo: <code>STAFF-EYE-01</code>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stat-card" style="margin-bottom:30px; border-left:4px solid ${window.activeSession ? 'var(--success)' : 'var(--danger)'}">
-                <h3 style="margin-top:0; font-size:1rem;">CONTROL DE JORNADA (EVENTOS)</h3>
-                <div id="admin-session-status-container">
-                    <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px;">
-                        ${window.activeSession ? 'Actualmente hay un evento en curso.' : 'No hay ningún evento activo. Inicie uno para comenzar la jornada.'}
-                    </p>
-                    <div style="display:flex; gap:12px;">
-                        <button class="btn btn-secondary" onclick="startNewSession()" style="flex:1; height:50px; font-weight:800; ${window.activeSession ? 'opacity:0.5; pointer-events:none;' : ''}">INICIAR EVENTO</button>
-                        <button class="btn btn-danger" onclick="closeSession()" style="flex:1; height:50px; font-weight:800; ${!window.activeSession ? 'opacity:0.5; pointer-events:none;' : ''}">FINALIZAR EVENTO</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" style="margin-bottom:30px">
-                <h3 style="margin-top:0">CARGAR LISTA PREVIA (EXCEL/CSV)</h3>
-                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:15px;">FORMATO: PLACA, NOMBRE, CONTACTO, MARCA, MODELO</p>
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    <div style="display:flex; gap:10px;">
-                        <input type="file" id="csv-file" accept=".csv" style="flex:1; padding:10px; background:var(--surface2); border-radius:8px; font-size:0.8rem;">
-                        <button class="btn" onclick="uploadCSV()" style="padding:0 20px; font-weight:800;">SUBIR</button>
-                    </div>
-                    <button class="btn btn-secondary" onclick="downloadTemplate()" style="width:100%; height:45px; font-size:0.8rem; font-weight:800;">📥 DESCARGAR PLANTILLA (EXCEL)</button>
-                </div>
-            </div>
 
             <div class="card">
                 <h3 style="margin-top:0">HISTORIAL DE EVENTOS CERRADOS</h3>
@@ -3179,15 +3933,28 @@
             return;
         }
 
-        list.innerHTML = sessions.map(s => `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="viewAdminDetail(${s.id})">
-                <div>
-                    <div style="font-weight:700;">${s.name}</div>
-                    <div style="font-size:0.8rem; color:var(--muted)">Finalizado: ${new Date(s.ended_at).toLocaleString()}</div>
+        list.innerHTML = sessions.map(s => {
+            const typeMap = {
+                'valet': 'VALET PARKING',
+                'renta': 'RENTA EQUIPOS',
+                'xpress': 'XPRESS PRO',
+                'kids': 'EYE KIDS',
+                'eventos': 'EVENTOS',
+                'listas': 'LISTAS'
+            };
+            const typeLabel = typeMap[s.type] || s.type.toUpperCase();
+            const fullTitle = `${typeLabel} - ${s.name.toUpperCase()}`;
+
+            return `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="viewAdminDetail(${s.id})">
+                    <div>
+                        <div style="font-weight:700;">${fullTitle}</div>
+                        <div style="font-size:0.8rem; color:var(--muted)">Finalizado: ${new Date(s.ended_at).toLocaleString()}</div>
+                    </div>
+                    <div style="color:var(--accent)">Ver Detalle →</div>
                 </div>
-                <div style="color:var(--accent)">Ver Detalle →</div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     async function viewAdminDetail(id) {
@@ -3228,8 +3995,8 @@
                                 <tr>
                                     <td>${v.daily_seq || '—'}</td>
                                     <td><b>${v.plate}</b></td>
-                                    <td>${new Date(v.check_in_at).toLocaleTimeString()}</td>
-                                    <td>${v.check_out_at ? new Date(v.check_out_at).toLocaleTimeString() : '—'}</td>
+                                    <td>${formatTime24h(v.check_in_at)}</td>
+                                    <td>${v.check_out_at ? formatTime24h(v.check_out_at) : '—'}</td>
                                     <td>${v.valet_in || '—'}</td>
                                     <td style="color:${v.status === 'retrieved' ? 'var(--accent2)' : 'var(--accent)'}">${v.status.toUpperCase()}</td>
                                 </tr>
@@ -3306,6 +4073,142 @@
         }
     }
 
+    async function renderActivityMonitor() {
+        const container = document.getElementById('online-users-list');
+        const badge = document.getElementById('active-count-badge');
+        if (!container) return;
+
+        try {
+            const res = await apiFetch('/api/admin/online-now');
+            if (!res || !res.success) {
+                container.innerHTML = '<p style="color:var(--muted)">Error al cargar datos</p>';
+                return;
+            }
+
+            const users = res.users;
+            badge.textContent = `${users.length} CONEXIONES`;
+
+            if (users.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:0.8rem;">No hay conexiones registradas hoy.</p>';
+                return;
+            }
+
+            container.innerHTML = users.map(u => {
+                const lastLogin = new Date(u.last_login);
+                const diffMin = Math.floor((new Date() - lastLogin) / 60000);
+                const isOnline = diffMin < 60; // Verde si conectó hace menos de 1h
+
+                return `
+                    <div style="background:var(--surface2); padding:15px; border-radius:16px; border:1px solid ${isOnline ? 'rgba(34, 197, 94, 0.3)' : 'var(--border)'}; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:900; font-size:0.8rem; color:white;">${u.name.toUpperCase()}</span>
+                            <span style="width:8px; height:8px; border-radius:50%; background:${isOnline ? '#22c55e' : '#94a3b8'}; box-shadow: ${isOnline ? '0 0 10px #22c55e' : 'none'}"></span>
+                        </div>
+                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800;">${u.role.toUpperCase()}</div>
+                        ${u.session_name ? `
+                            <div style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:0.55rem; font-weight:900; border:1px solid rgba(99, 102, 241, 0.2);">
+                                📍 ${u.session_name}
+                            </div>
+                        ` : `
+                            <div style="color:var(--muted); font-size:0.55rem; font-weight:600;">SIN EVENTO ASIGNADO</div>
+                        `}
+                        <div style="margin-top:5px; border-top:1px solid rgba(255,255,255,0.03); padding-top:8px; font-size:0.5rem; color:var(--muted);">
+                            🕒 ${lastLogin.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})} | ${u.last_device || 'N/A'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (e) {
+            container.innerHTML = '<p style="color:var(--muted)">Error de conexión</p>';
+        }
+    }
+
+    async function renderAuditLogs(el) {
+        el.innerHTML = `
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
+                <div class="back-nav" onclick="renderAdmin(document.getElementById('current-view'))" style="margin:0; width: fit-content; background:var(--surface2); border:1px solid var(--border); color:#fff;">← VOLVER A ADMIN</div>
+            </div>
+            <div class="view-header"><h1 class="view-title">🛡️ AUDITORÍA DE SEGURIDAD</h1></div>
+            
+            <!-- MONITOR DE ACTIVIDAD (HOY) -->
+            <div id="activity-monitor-container" style="margin-bottom:30px; background:var(--surface); border-radius:24px; padding:25px; border:1px solid var(--border); box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:900; letter-spacing:1px; display:flex; align-items:center; gap:10px;">
+                        <span class="status-pulse"></span> MONITOR DE ACTIVIDAD (HOY)
+                    </h3>
+                    <div id="active-count-badge" style="background:var(--accent); color:white; padding:4px 12px; border-radius:100px; font-size:0.7rem; font-weight:900;">0 ACTIVOS</div>
+                </div>
+                <div id="online-users-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+                    <p style="color:var(--muted); font-size:0.8rem;">Cargando conexiones...</p>
+                </div>
+            </div>
+
+            <!-- HISTORIAL DE ACTIVIDAD (COLAPSABLE - MÁX 25) -->
+            <details style="margin-bottom:30px; background:var(--surface); border-radius:18px; border:1px solid var(--border); padding:5px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <summary style="padding:15px 20px; cursor:pointer; font-weight:900; color:var(--accent); display:flex; align-items:center; gap:10px; font-size:0.9rem; letter-spacing:1px;">
+                    🛡️ HISTORIAL DE ACTIVIDAD
+                    <span style="font-size:0.6rem; color:var(--muted); font-weight:normal; margin-left:auto;">MÁS RECIENTES ▼</span>
+                </summary>
+                <div id="audit-logs-container" style="padding:0 15px 15px 15px; border-top:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
+                    <div style="text-align:center; padding:40px; color:var(--muted);">CARGANDO REGISTROS...</div>
+                </div>
+            </details>
+        `;
+
+        renderActivityMonitor();
+        
+        const res = await apiFetch('/api/admin/audit-logs');
+        if (res && res.logs) {
+            const container = document.getElementById('audit-logs-container');
+            if (res.logs.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--muted);">NO HAY ACCIONES REGISTRADAS AÚN</div>';
+                return;
+            }
+
+            // Limitamos a los 25 más recientes
+            const recentLogs = res.logs.slice(0, 25);
+            
+            container.innerHTML = `
+                <table style="width:100%; border-collapse: collapse; font-size:0.75rem; text-align:left;">
+                    <thead>
+                        <tr style="color:var(--muted); border-bottom:1px solid var(--border);">
+                            <th style="padding:12px;">LOGIN</th>
+                            <th style="padding:12px;">DESCONEXIÓN</th>
+                            <th style="padding:12px;">USUARIO</th>
+                            <th style="padding:12px;">DISPOSITIVO</th>
+                            <th style="padding:12px;">ACCIÓN</th>
+                            <th style="padding:12px;">DETALLES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${recentLogs.map(l => {
+                            const d = new Date(l.timestamp);
+                            const dOut = l.logout_at ? new Date(l.logout_at) : null;
+                            const isRecurrent = l.device_usage_count > 3;
+                            return `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
+                                    <td style="padding:12px; white-space:nowrap; font-family:var(--font-mono); color:var(--accent);">${formatDateExplicit(d)} ${formatTime24h(d)}</td>
+                                    <td style="padding:12px; white-space:nowrap; font-family:var(--font-mono); color:${dOut ? 'var(--muted)' : 'var(--success)'};">
+                                        ${dOut ? formatTime24h(dOut) : '<span style="font-size:0.6rem; background:rgba(34,197,94,0.1); padding:2px 5px; border-radius:4px;">ACTIVO</span>'}
+                                    </td>
+                                    <td style="padding:12px; font-weight:800;">${(l.user_name || 'S/U').toUpperCase()}</td>
+                                    <td style="padding:12px;">
+                                        <div style="font-size:0.6rem; color:var(--muted); display:flex; align-items:center; gap:5px;">
+                                            ${isRecurrent ? '<span title="Dispositivo Recurrente" style="color:var(--accent);">⭐</span>' : '<span title="Nuevo Dispositivo" style="color:var(--warning);">🆕</span>'}
+                                            ${l.device.substring(0, 30)}...
+                                        </div>
+                                    </td>
+                                    <td style="padding:12px;"><span style="background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:4px; font-weight:900; font-size:0.6rem;">${l.action}</span></td>
+                                    <td style="padding:12px; color:var(--muted);">${l.details || '—'}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+    }
+
     async function selectFromPreLista(id) {
         showLoading('CARGANDO DATOS...');
         const v = await apiFetch('/api/vehicles/' + id);
@@ -3331,46 +4234,144 @@
         a.click();
     };
 
-    function logout() { localStorage.removeItem('token'); location.reload(); }
+    async function logout() { 
+        const sessionId = localStorage.getItem('web_session_id');
+        const userStr = localStorage.getItem('user');
+        let userId = null;
+        try { if (userStr) userId = JSON.parse(userStr).id; } catch(e) {}
+
+        if (sessionId) {
+            await fetch(API_BASE + '/api/staff/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId, user_id: userId })
+            }).catch(() => {});
+        }
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('web_session_id');
+        localStorage.removeItem('user');
+        location.reload(); 
+    }
 
     async function renderStaff(el) {
         el.innerHTML = `
-            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
-                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                    🏠 VOLVER
-                </button>
-                <div class="back-nav" onclick="showTab('admin')" style="margin:0; width: fit-content; background:transparent; border:none;">← VOLVER ATRÁS</div>
-            </div>
-            <div class="view-header"><h1 class="view-title">👥 GESTIÓN DE PERSONAL</h1></div>
-            
             <!-- 1. REGISTRO -->
             <div class="stat-card" style="margin-bottom:30px; border-left:4px solid #6366f1;">
-                <h2 style="margin-top:0; margin-bottom:20px; font-size:1rem; letter-spacing:1px; color:#fff;">REGISTRAR NUEVO EMPLEADO</h2>
-                <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr 1fr; gap:15px; align-items: flex-end;">
-                    <div class="field" style="margin-bottom:0;"><label>NOMBRE COMPLETO</label><input type="text" id="staff-name" placeholder="EJ: JUAN PÉREZ"></div>
-                    <div class="field" style="margin-bottom:0;"><label>ROL</label>
-                        <select id="staff-role" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
-                            <option value="VALET / OPERADOR">VALET / OPERADOR</option>
-                            <option value="SUPERVISOR">SUPERVISOR</option>
-                            <option value="DIRECTOR">DIRECTOR</option>
-                            <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
-                        </select>
+                <h2 style="margin-top:0; margin-bottom:5px; font-size:1rem; letter-spacing:1px; color:#fff;">REGISTRAR NUEVO EMPLEADO</h2>
+                <div style="color:var(--danger); font-size:0.7rem; font-weight:800; margin-bottom:20px;">* Campos Obligatorios</div>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <!-- COLUMNA IZQUIERDA (3/4) -->
+                    <div style="flex: 3; min-width: 300px;">
+                        <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:15px;">
+                             <div class="field" style="margin-bottom:0;"><label>NOMBRE <span style="color:var(--danger);">*</span></label><input type="text" id="staff-name" placeholder="EJ: JUAN PÉREZ"></div>
+                             <div class="field" style="margin-bottom:0;"><label>CÉDULA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-cedula" placeholder="EJ: 12345678" inputmode="numeric" oninput="autoFillPin(this.value)"></div>
+                             <div class="field" style="margin-bottom:0;"><label>EMAIL <span style="color:var(--danger);">*</span></label><input type="email" id="staff-email" placeholder="EJ: CORREO@EJEMPLO.COM"></div>
+                             <div class="field" style="margin-bottom:0;"><label>EYE_ID <span style="color:var(--danger);">*</span></label>
+                                <select id="staff-eye-id" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                    <option value="">SIN ASIGNAR</option>
+                                    <option value="ORO">ORO</option>
+                                    <option value="PLATA">PLATA</option>
+                                    <option value="BRONCE">BRONCE</option>
+                                    <option value="LOGÍSTICA">LOGÍSTICA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
+                                <select id="staff-profile-admin" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                    <option value="">SIN ASIGNAR</option>
+                                    <option value="NO APLICA">NO APLICA</option>
+                                    <option value="DIRECTOR">DIRECTOR</option>
+                                    <option value="COORDINADOR">COORDINADOR</option>
+                                    <option value="EMPLEADO">EMPLEADO</option>
+                                </select>
+                            </div>
+                            <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
+                                <select id="staff-profile-opera" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                    <option value="">SIN ASIGNAR</option>
+                                    <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
+                                    <option value="SUPERVISOR">SUPERVISOR</option>
+                                    <option value="COORDINADOR GENERAL">COORDINADOR GENERAL</option>
+                                    <option value="COORDINADOR">COORDINADOR</option>
+                                    <option value="LOGÍSTICA">LOGÍSTICA</option>
+                                    <option value="CHOFER">CHOFER</option>
+                                    <option value="OPERADOR">OPERADOR</option>
+                                    <option value="ESCOLTA">ESCOLTA</option>
+                                    <option value="TRANSPORTE">TRANSPORTE</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div class="field" style="margin-bottom:0;"><label>TELÉFONO <span style="color:var(--danger);">*</span></label><input type="text" id="staff-phone" placeholder="EJ: 04121234567"></div>
+                            <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN <span style="color:var(--danger);">*</span></label><input type="text" id="staff-address" placeholder="EJ: AV. BOLIVAR, EDIF 1"></div>
+                        </div>
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA <span style="color:var(--danger);">*</span></label>
+                                <select id="staff-bank" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                    <option value="">Seleccione un banco...</option>
+                                    <option value="BANCO DE VENEZUELA">Banco de Venezuela</option>
+                                    <option value="BANCO DIGITAL DE LOS TRABAJADORES">Banco Digital de los Trabajadores (antes Bicentenario)</option>
+                                    <option value="BANCO DEL TESORO">Banco del Tesoro</option>
+                                    <option value="BANFANB">BANFANB</option>
+                                    <option value="BANCO AGRÍCOLA DE VENEZUELA">Banco Agrícola de Venezuela</option>
+                                    <option value="BANESCO">Banesco</option>
+                                    <option value="MERCANTIL">Mercantil</option>
+                                    <option value="BBVA PROVINCIAL">BBVA Provincial</option>
+                                    <option value="BANCO NACIONAL DE CRÉDITO (BNC)">Banco Nacional de Crédito (BNC)</option>
+                                    <option value="BANCARIBE">Bancaribe</option>
+                                    <option value="BANCO EXTERIOR">Banco Exterior</option>
+                                    <option value="BANCAMIGA">Bancamiga</option>
+                                    <option value="BANPLUS">Banplus</option>
+                                    <option value="BFC BANCO FONDO COMÚN">BFC Banco Fondo Común</option>
+                                    <option value="BANCO PLAZA">Banco Plaza</option>
+                                    <option value="100% BANCO">100% Banco</option>
+                                    <option value="VENEZOLANO DE CRÉDITO">Venezolano de Crédito</option>
+                                    <option value="BANCO ACTIVO">Banco Activo</option>
+                                    <option value="BANCO CARONÍ">Banco Caroní</option>
+                                    <option value="DELSUR">Delsur</option>
+                                    <option value="BANCO SOFITASA">Banco Sofitasa</option>
+                                    <option value="N58 BANCO DIGITAL">N58 Banco Digital</option>
+                                    <option value="BANCRECER">Bancrecer</option>
+                                    <option value="BANGENTE">Bangente</option>
+                                    <option value="MI BANCO">Mi Banco</option>
+                                    <option value="BANCO INTERNACIONAL DE DESARROLLO">Banco Internacional de Desarrollo</option>
+                                    <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR">Instituto Municipal de Crédito Popular</option>
+                                </select>
+                            </div>
+                            <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-account" placeholder="EJ: 0134..."></div>
+                        </div>
+                        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:20px;">
+                            <div class="field" style="margin-bottom:0;"><label>FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-e-contact" placeholder="EJ: MARIA PEREZ"></div>
+                            <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-e-phone" placeholder="EJ: 0412..."></div>
+                            <div class="field" style="margin-bottom:0;"><label>ALERGIAS <span style="color:var(--danger);">*</span></label><input type="text" id="staff-allergies" placeholder="EJ: NINGUNA / PENICILINA"></div>
+                        </div>
+                        <button class="btn" onclick="saveNewStaff()" style="width:100%; height:55px; border-radius:12px; font-size:1.1rem; background:var(--accent); font-weight:900; letter-spacing:1px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: transform 0.2s ease;">GUARDAR EMPLEADO</button>
                     </div>
-                    <div class="field" style="margin-bottom:0;"><label>PIN DE ACCESO (6 CARACT.)</label><input type="text" id="staff-pin" maxlength="6" value="eye001" placeholder="eye001"></div>
-                    <button class="btn" onclick="saveNewStaff()" style="height:45px; background:#6366f1; font-weight:800;">GUARDAR EMPLEADO</button>
+                    
+                    <!-- COLUMNA DERECHA (1/4) -->
+                    <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 10px;">
+                        <div class="field" style="margin-bottom:0; width: 100%; max-width: 280px; display: flex; flex-direction: column;">
+                            <label style="text-align: center; margin-bottom: 12px; font-size:0.85rem; letter-spacing: 1px;">📸 CARNET / FOTO <span style="color:var(--danger);">*</span></label>
+                            <div class="carnet-preview-container" onclick="document.getElementById('staff-carnet').click()" style="width: 100%; height: 310px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); cursor: pointer; position: relative;">
+                                <span id="carnet-label" style="position: absolute; z-index: 1; font-size: 0.8rem; font-weight: 800; color: var(--muted); text-align: center; display: none;">TAP PARA<br>CARGAR</span>
+                                <img id="carnet-preview-img" src="eye-staff-carnet-default.png" alt="" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; display: block;">
+                            </div>
+                            <input type="file" id="staff-carnet" hidden accept="image/*" onchange="previewCarnet(this)">
+                        </div>
+                    </div>
                 </div>
+                <input type="hidden" id="staff-pin" value="">
             </div>
 
             <!-- 2. BUSCADOR Y LISTA -->
             <div style="margin-bottom:40px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-                    <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">LISTA DE PERSONAL ACTIVO</h2>
-                    <button class="btn btn-sm btn-secondary" onclick="downloadStaffCSV()" style="font-size:0.7rem;">📥 DESCARGAR LISTA (CSV)</button>
-                </div>
-                
-                <div class="field" style="max-width:500px; margin-bottom:20px;">
-                    <label>🔍 BUSCAR POR NOMBRE...</label>
-                    <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList(this.value)" style="background:var(--surface2); border:2px solid var(--accent2);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:20px;">
+                    <div class="field" style="max-width:400px; margin-bottom:0; flex:1;">
+                        <label>🔍 BUSCAR POR NOMBRE...</label>
+                        <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                    </div>
                 </div>
 
                 <div id="staff-list-container" style="overflow-x:auto; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
@@ -3384,135 +4385,106 @@
                     <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">IMPORTACIÓN / ACTUALIZACIÓN RRHH</h2>
                     <button class="btn btn-sm btn-accent" onclick="downloadRRHHTemplate()" style="font-size:0.7rem;">📥 DESCARGAR PLANTILLA RRHH</button>
                 </div>
-                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:10px;">FORMATO CSV REQUERIDO (11 COLUMNAS). EL SISTEMA ACTUALIZARÁ POR PIN O CREARÁ NUEVOS.</p>
+                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:10px;">FORMATO EXCEL (.XLSX) REQUERIDO. EL SISTEMA ACTUALIZARÁ POR PIN O CREARÁ NUEVOS.</p>
                 <div style="display:flex; gap:10px;">
-                    <input type="file" id="staff-csv-file" accept=".csv" style="flex:1; padding:10px; background:var(--surface2); border-radius:8px; font-size:0.8rem;">
+                    <input type="file" id="staff-csv-file" accept=".xlsx" style="flex:1; padding:10px; background:var(--surface2); border-radius:8px; font-size:0.8rem;">
                     <button class="btn btn-secondary" onclick="importStaffCSV()" style="padding:0 20px; font-weight:800;">IMPORTAR</button>
                 </div>
             </div>
 
-            <div class="footer-info" style="margin-top:60px; text-align:center; opacity:0.5; font-size:0.8rem;">
-                COPYRIGHT EYE STAFF 2026
-            </div>
         `;
         loadStaffList();
     }
 
     let fullStaffData = [];
     let availableSessions = [];
+    let showInactive = false;
+
     async function loadStaffList() {
         const res = await apiFetch('/api/staff');
         if (res) {
             fullStaffData = res.staff || [];
             availableSessions = res.sessions || [];
-            renderFilteredStaff(fullStaffData);
+            renderFilteredStaff();
         }
     }
 
-    function filterStaffList(query) {
-        const filtered = fullStaffData.filter(u => u.name.toLowerCase().includes(query.toLowerCase()));
-        renderFilteredStaff(filtered);
+    function filterStaffList() {
+        renderFilteredStaff();
     }
 
-    function renderFilteredStaff(staffList) {
+    function renderFilteredStaff() {
+        const query = document.getElementById('staff-search-input').value.toLowerCase();
+        let list = fullStaffData;
+
+        // Filtrar por texto
+        if (query) {
+            list = list.filter(u => u.name.toLowerCase().includes(query));
+        }
+
+        // Siempre ocultar inactivos (Depurados)
+        list = list.filter(u => u.is_active !== 0);
+
         const container = document.getElementById('staff-list-container');
         if (!container) return;
 
-        if (staffList.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted);">Sin personal registrado</div>';
+        if (list.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted);">
+                NO HAY PERSONAL ACTIVO (DEPURACIÓN FILTRADA)
+            </div>`;
             return;
         }
 
         container.innerHTML = `
-            <table style="width:100%; border-collapse: collapse; font-size:0.75rem; text-align:left; min-width:1400px;">
+            <table style="width:100%; border-collapse: collapse; font-size:0.8rem; text-align:left;">
                 <thead>
                     <tr style="background:var(--surface2); color:var(--muted); border-bottom:1px solid var(--border);">
-                        <th style="padding:12px; min-width:150px;">NOMBRE</th>
-                        <th style="padding:12px; width:100px;">ROL</th>
-                        <th style="padding:12px; width:80px;">PIN (6)</th>
-                        <th style="padding:12px; width:100px;">CÉDULA</th>
-                        <th style="padding:12px; min-width:150px;">CARGO</th>
-                        <th style="padding:12px; width:100px;">ESTATUS</th>
-                        <th style="padding:12px; width:120px;">TELÉFONO</th>
-                        <th style="padding:12px; min-width:180px;">EMAIL</th>
-                        <th style="padding:12px; min-width:150px;">SECTOR</th>
-                        <th style="padding:12px; min-width:200px;">DIRECCIÓN</th>
-                        <th style="padding:12px; width:100px;">FECHA NAC.</th>
-                        <th style="padding:12px; width:130px;">ASIGNAR EVENTO</th>
-                        <th style="padding:12px;">ACCIONES</th>
+                        <th style="padding:12px;">NOMBRE</th>
+                        <th style="padding:12px;">ESTADO</th>
+                        <th style="padding:12px;">CÉDULA</th>
+                        <th style="padding:12px;">TELÉFONO</th>
+                        <th style="padding:12px; text-align:center;">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${staffList.map(u => `
-                        <tr style="border-bottom:1px solid var(--border);">
-                            <td style="padding:12px; font-weight:800; color:var(--brand-white); white-space:nowrap;">${u.name}</td>
-                            <td style="padding:12px;">
-                                <select onchange="updateStaffField(${u.id}, 'role', this.value)" style="background:transparent; border:none; color:var(--accent); font-weight:700; font-size:0.7rem;">
-                                    <option value="driver" ${u.role === 'driver' ? 'selected' : ''}>VALET</option>
-                                    <option value="supervisor" ${u.role === 'supervisor' ? 'selected' : ''}>SUPERVISOR</option>
-                                    <option value="director" ${u.role === 'director' ? 'selected' : ''}>DIRECTOR</option>
-                                </select>
+                    ${list.map(u => `
+                        <tr style="border-bottom:1px solid var(--border); ${u.is_active === 0 ? 'opacity:0.5; background:rgba(239,68,68,0.02);' : ''}">
+                            <td style="padding:12px; font-weight:800; color:var(--brand-white); white-space:nowrap; cursor:pointer;" onclick="openStaffEditModal(${u.id})">
+                                <span style="border-bottom: 1px dashed var(--accent);">${u.name}</span>
                             </td>
                             <td style="padding:12px;">
-                                <input type="text" value="${u.pin_hash || ''}" maxlength="6" 
-                                    style="width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:4px; border-radius:4px; color:var(--success); font-family:var(--font-mono); font-size:0.7rem;"
-                                    onchange="updateStaffField(${u.id}, 'pin_hash', this.value)">
+                                <span style="padding:4px 8px; border-radius:6px; font-size:0.6rem; font-weight:900; background:${u.is_active === 0 ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)'}; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'}">
+                                    ${u.is_active === 0 ? 'INACTIVO' : 'ACTIVO'}
+                                </span>
                             </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.cedula || ''}" placeholder="CÉDULA"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'cedula', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.cargo || ''}" placeholder="CARGO"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'cargo', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <select onchange="updateStaffField(${u.id}, 'status', this.value)" style="background:transparent; border:none; color: ${u.status === 'ACTIVO' ? 'var(--success)' : 'var(--muted)'}; font-weight:700; font-size:0.7rem;">
-                                    <option value="ACTIVO" ${u.status === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
-                                    <option value="INACTIVO" ${u.status === 'INACTIVO' ? 'selected' : ''}>INACTIVO</option>
-                                </select>
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.phone || ''}" placeholder="TEL"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'phone', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.email || ''}" placeholder="EMAIL"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'email', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.sector || ''}" placeholder="SECTOR"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'sector', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.address || ''}" placeholder="DIRECCIÓN"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'address', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <input type="text" value="${u.birth_date || ''}" placeholder="NACIMIENTO"
-                                    style="width:100%; background:transparent; border:none; color:var(--text); font-size:0.7rem;"
-                                    onblur="updateStaffField(${u.id}, 'birth_date', this.value)">
-                            </td>
-                            <td style="padding:12px;">
-                                <select onchange="updateStaffField(${u.id}, 'current_session_id', this.value)" style="background:var(--surface2); border:1px solid var(--border); color:var(--warning); font-weight:700; border-radius:6px; font-size:0.7rem; width:100%;">
-                                    <option value="">— SIN —</option>
-                                    ${availableSessions.map(s => `<option value="${s.id}" ${u.current_session_id == s.id ? 'selected' : ''}>${s.name.toUpperCase()}</option>`).join('')}
-                                </select>
-                            </td>
-                            <td style="padding:12px;">
-                                <button class="btn btn-sm btn-danger" onclick="deleteStaff(${u.id})" style="padding:4px 8px; font-size:0.6rem;">✕</button>
+                            <td style="padding:12px; color:var(--text); font-weight:700;">${u.cedula || '---'}</td>
+                            <td style="padding:12px; color:var(--text); font-weight:700;">${u.phone || '---'}</td>
+                            <td style="padding:12px; text-align:center;">
+                                <button class="btn btn-sm btn-danger" onclick="deleteStaff(${u.id})" style="padding:4px 8px; font-size:0.6rem;">ELIMINAR</button>
                             </td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
         `;
+    }
+
+    async function updateStaffStatus(id, isChecked) {
+        // isChecked true significa que queremos ponerlo INACTIVO (is_active = 0)
+        const status = isChecked ? 0 : 1;
+        showLoading('ACTUALIZANDO...');
+        try {
+            await apiFetch('/api/staff/update-status', {
+                method: 'POST',
+                body: JSON.stringify({ id, is_active: status })
+            });
+            toast(status === 1 ? 'EMPLEADO RE-ACTIVADO' : 'EMPLEADO DEPURADO (INACTIVO)', 'success');
+            loadStaffList();
+        } catch (e) {
+            toast('ERROR AL ACTUALIZAR', 'error');
+        } finally {
+            hideLoading();
+        }
     }
 
     async function updateStaffField(id, field, value) {
@@ -3525,46 +4497,50 @@
         }
     }
 
-    async function logAttendance(type, userId = null) {
-        if (!window.activeSession) return toast('No hay sesión activa', 'error');
-        
-        showLoading('REGISTRANDO...');
-        const res = await apiFetch('/api/attendance/log', {
-            method: 'POST',
-            body: JSON.stringify({
-                type: type,
-                session_id: window.activeSession.id,
-                user_id: userId
-            })
-        });
-        
-        if (res) {
-            toast('REGISTRO EXITOSO', 'success');
-            // Retardo de 500ms para asegurar persistencia en backend antes de refrescar
-            setTimeout(() => {
-                if (currentTab === 'home' && window.activeSession) {
-                    loadHomeStaffTracking(window.activeSession.id);
-                } else {
-                    loadAttendanceStatus();
-                }
-            }, 500);
+    window.previewCarnet = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('carnet-preview-img').src = e.target.result;
+                document.getElementById('carnet-preview-img').style.display = 'block';
+                document.getElementById('carnet-label').style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
         }
-        hideLoading();
     }
 
-    // Auto-refresco de seguimiento operativo cada 30s
-    setInterval(() => {
-        if (currentTab === 'home' && window.activeSession) {
-            loadHomeStaffTracking(window.activeSession.id);
-        }
-    }, 30000);
+    window.autoFillPin = function(val) {
+        document.getElementById('staff-pin').value = val;
+    }
 
     async function saveNewStaff() {
         let name = document.getElementById('staff-name').value.trim();
-        const role = document.getElementById('staff-role').value;
         const pin = document.getElementById('staff-pin').value.trim();
+        const cedula = document.getElementById('staff-cedula').value.trim();
+        const phone = document.getElementById('staff-phone').value.trim();
+        const sector = document.getElementById('staff-address').value.trim();
+        const bankName = document.getElementById('staff-bank')?.value.trim() || '';
+        const bankAccount = document.getElementById('staff-account')?.value.trim() || '';
+        const profileAdmin = document.getElementById('staff-profile-admin')?.value || '';
+        const profileOpera = document.getElementById('staff-profile-opera')?.value || '';
+        const eyeId = document.getElementById('staff-eye-id')?.value || '';
+        const email = document.getElementById('staff-email')?.value.trim() || '';
+        const eContact = document.getElementById('staff-e-contact')?.value.trim() || '';
+        const ePhone = document.getElementById('staff-e-phone')?.value.trim() || '';
+        const allergies = document.getElementById('staff-allergies')?.value.trim() || '';
+
+        const carnetFile = document.getElementById('staff-carnet').files[0];
+
+        if (!name || !cedula || !email || !eyeId || !profileAdmin || !profileOpera || !phone || !sector || !bankName || !bankAccount || !carnetFile || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (INCLUYENDO FOTO Y DATOS DE EMERGENCIA)', 'warning');
+        }
         
-        if (!name || !pin) return toast('Nombre y PIN son obligatorios', 'warning');
+        if (!pin) return toast('ERROR: PIN NO GENERADO', 'danger');
+
+        // Inferir ROL para el sistema legacy (driver, supervisor, director)
+        let role = 'driver';
+        if (profileAdmin === 'DIRECTOR') role = 'director';
+        else if (profileAdmin === 'COORDINADOR' || ['JEFE DE GRUPO', 'SUPERVISOR', 'COORDINADOR GENERAL'].includes(profileOpera)) role = 'supervisor';
         
         // Limpieza de nombre (LAST, FIRST -> FIRST LAST) y MAYÚSCULAS
         if (name.includes(',')) {
@@ -3574,16 +4550,59 @@
         name = name.toUpperCase();
 
         showLoading('REGISTRANDO...');
+        
+        let carnetBase64 = null;
+        if (carnetFile) {
+            carnetBase64 = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.readAsDataURL(carnetFile);
+            });
+        }
+
         const res = await apiFetch('/api/staff', {
             method: 'POST',
-            body: JSON.stringify({ name, role, pin_hash: pin })
+            body: JSON.stringify({ 
+                name, 
+                role, 
+                pin_hash: pin, 
+                cedula,
+                phone,
+                sector,
+                bank_name: bankName,
+                bank_account: bankAccount,
+                profile_admin: profileAdmin,
+                profile_opera: profileOpera,
+                eye_id: eyeId,
+                carnet: carnetBase64,
+                email: email,
+                emergency_contact: eContact,
+                emergency_phone: ePhone,
+                is_allergic: allergies
+            })
         });
         hideLoading();
         
         if (res) {
             toast('EMPLEADO REGISTRADO: ' + name, 'success');
             document.getElementById('staff-name').value = '';
+            document.getElementById('staff-cedula').value = '';
             document.getElementById('staff-pin').value = '';
+            document.getElementById('staff-phone').value = '';
+            document.getElementById('staff-address').value = '';
+            document.getElementById('staff-email').value = '';
+            document.getElementById('staff-account').value = '';
+            document.getElementById('staff-e-contact').value = '';
+            document.getElementById('staff-e-phone').value = '';
+            document.getElementById('staff-allergies').value = '';
+            document.getElementById('staff-bank').value = '';
+            document.getElementById('staff-profile-admin').value = '';
+            document.getElementById('staff-profile-opera').value = '';
+            document.getElementById('staff-eye-id').value = '';
+            document.getElementById('staff-carnet').value = '';
+            document.getElementById('carnet-preview-img').src = 'eye-staff-carnet-default.png';
+            document.getElementById('carnet-preview-img').style.display = 'block';
+            document.getElementById('carnet-label').style.display = 'none';
             loadStaffList();
         }
     }
@@ -3600,32 +4619,47 @@
 
     async function importStaffCSV() {
         const fileInput = document.getElementById('staff-csv-file');
-        if (!fileInput.files.length) return toast('Seleccione un archivo CSV', 'warning');
+        if (!fileInput.files.length) return toast('SELECCIONE UN ARCHIVO EXCEL (.XLSX)', 'warning');
         
         const file = fileInput.files[0];
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const text = e.target.result;
-            showLoading('IMPORTANDO PERSONAL...');
-            const res = await apiFetch('/api/staff/import', {
-                method: 'POST',
-                body: JSON.stringify({ csv: text })
-            });
-            hideLoading();
-            if (res && res.success) {
-                toast('IMPORTACIÓN EXITOSA: ' + res.count + ' EMPLEADOS', 'success');
-                loadStaffList();
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convertimos a CSV para mantener compatibilidad con el backend existente
+                const csvText = XLSX.utils.sheet_to_csv(worksheet);
+                
+                showLoading('IMPORTANDO PERSONAL...');
+                const res = await apiFetch('/api/staff/import', {
+                    method: 'POST',
+                    body: JSON.stringify({ csv: csvText })
+                });
+                hideLoading();
+                if (res && res.success) {
+                    toast('IMPORTACIÓN EXITOSA: ' + res.count + ' EMPLEADOS', 'success');
+                    loadStaffList();
+                } else {
+                    toast('ERROR: ' + (res.error || 'ERROR EN IMPORTACIÓN'), 'error');
+                }
+            } catch (err) {
+                hideLoading();
+                toast('ERROR AL LEER EL ARCHIVO EXCEL', 'error');
+                console.error(err);
             }
         };
-        reader.readAsText(file);
+        reader.readAsArrayBuffer(file);
     }
 
     async function downloadStaffCSV() {
         const res = await apiFetch('/api/staff');
         if (res && res.staff) {
             const csvRows = [
-                ['ID', 'NOMBRE', 'ROL', 'FECHA REGISTRO'].join(','),
-                ...res.staff.map(u => [u.id, `"${u.name}"`, u.role, u.created_at].join(','))
+                ['ID', 'NOMBRE', 'ROL', 'FECHA REGISTRO', 'PERFIL_ADMIN', 'PERFIL_OPERA', 'EYE_ID'].join(','),
+                ...res.staff.map(u => [u.id, `"${u.name}"`, u.role, u.created_at, u.profile_admin, u.profile_opera, u.eye_id].join(','))
             ];
             const csvString = csvRows.join('\n');
             const blob = new Blob([csvString], { type: 'text/csv' });
@@ -3639,29 +4673,30 @@
     async function downloadRRHHTemplate() {
         const res = await apiFetch('/api/staff');
         if (res && res.staff) {
-            const csvRows = [
-                ['Item', 'Codigo(PIN)', 'Status', 'Cargo', 'Nombre', 'Cedula', 'Sector', 'Telefono', 'Familiar', 'TelFamiliar', 'Alergias'].join(','),
+            const data = [
+                ['Item', 'Status', 'Nombre', 'Cedula', 'Email', 'EYE_ID', 'Perfil_Admin', 'Perfil_Opera', 'Telefono', 'Direccion', 'Entidad Bancaria', 'Numero de Cuenta', 'Familiar', 'TelFamiliar', 'Alergias'],
                 ...res.staff.map((u, i) => [
                     i + 1, 
-                    u.pin_hash || '1234', 
                     'ACTIVO', 
-                    u.role.toUpperCase(), 
-                    `"${u.name}"`, 
+                    u.name, 
                     u.cedula || '', 
-                    `"${u.sector || ''}"`, 
+                    u.email || '',
+                    u.eye_id || '',
+                    u.profile_admin || '',
+                    u.profile_opera || '', 
                     u.phone || '', 
-                    `"${u.emergency_contact || ''}"`, 
-                    u.emergency_phone || '', 
+                    u.sector || '', 
+                    u.bank_name || '',
+                    u.bank_account || '',
+                    u.emergency_contact || '',
+                    u.emergency_phone || '',
                     u.is_allergic || ''
-                ].join(','))
+                ])
             ];
-            const csvString = csvRows.join('\n');
-            const blob = new Blob([csvString], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'PLANTILLA_RRHH_EYE_STAFF.csv');
-            a.click();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Personal");
+            XLSX.writeFile(wb, 'PLANTILLA_RRHH_EYE_STAFF.xlsx');
         }
     }
 
@@ -3679,7 +4714,7 @@
         view.innerHTML = `
             <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
                 <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                    🏠 VOLVER
+                    ← VOLVER AL PORTAL
                 </button>
                 <div class="back-nav" onclick="showTab('admin')" style="margin:0; width: fit-content; background:transparent; border:none;">← VOLVER ATRÁS</div>
             </div>
@@ -3867,7 +4902,7 @@
 
                 <div style="text-align:center; margin-bottom:40px;">
                     <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                        🏠 VOLVER
+                        ← VOLVER AL PORTAL
                     </button>
                 </div>
             </div>
@@ -3960,7 +4995,7 @@
 
                 <div style="text-align:center; margin-bottom:40px;">
                     <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-                        🏠 VOLVER
+                        ← VOLVER AL PORTAL
                     </button>
                 </div>
             </div>
@@ -3968,7 +5003,7 @@
     }
 
     async function renderAdminPayrollDashboard(el) {
-        showLoading('CARGANDO FORMATOS DE COBRO...');
+        showLoading('CARGANDO NÓMINA PENDIENTE...');
         const res = await apiFetch('/api/admin/payroll-submissions');
         hideLoading();
 
@@ -3988,40 +5023,45 @@
         });
 
         el.innerHTML = `
-            <div class="stat-card" style="margin-bottom:30px; background:linear-gradient(135deg, var(--accent) 0%, #4361ee 100%); border:none; color:white;">
+            <div class="stat-card" style="margin-bottom:30px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:none; color:white; border-radius:20px; padding:30px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800; letter-spacing:1px;">TOTAL POR JORNADA DE RECEPCIÓN</div>
-                        <div style="font-size:2.5rem; font-weight:900; margin-top:5px;">$${totalGeneral.toLocaleString()}</div>
+                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800; letter-spacing:1px; text-transform:uppercase;">MONTO TOTAL POR PAGAR</div>
+                        <div style="font-size:3rem; font-weight:900; margin-top:5px; color:var(--success);">$${totalGeneral.toLocaleString()}</div>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800;">FORMATOS PROCESADOS</div>
-                        <div style="font-size:1.8rem; font-weight:800;">${res.submissions.length}</div>
+                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800;">FORMATOS EN COLA</div>
+                        <div style="font-size:2rem; font-weight:800;">${res.submissions.length}</div>
                     </div>
                 </div>
+                <button class="btn" style="margin-top:20px; background:var(--accent); font-weight:800;" onclick="window.print()">🖨️ GENERAR REPORTE PARA DIRECCIÓN</button>
             </div>
 
-            <div class="stat-card" style="margin-bottom:20px; border-top:4px solid var(--accent);">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--accent);">📊 RESUMEN CONSOLIDADO (POR EMPLEADO)</h3>
-                <div style="overflow-x:auto;">
-                    <table class="table" style="font-size:0.8rem;">
+            <div class="stat-card" style="margin-bottom:30px; border-top:4px solid var(--accent); background:rgba(255,255,255,0.02);">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
+                    <span>📊 RESUMEN POR EMPLEADO</span>
+                    <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(CONSOLIDADO DE TODOS LOS EVENTOS)</small>
+                </h3>
+                <div style="overflow-x:auto; margin-top:15px;">
+                    <table class="table" style="font-size:0.8rem; width:100%;">
                         <thead>
-                            <tr>
-                                <th>EMPLEADO</th>
+                            <tr style="background:rgba(255,255,255,0.05);">
+                                <th style="padding:15px;">EMPLEADO</th>
                                 <th>EVENTOS</th>
-                                <th>ENTIDAD BANCARIA</th>
-                                <th>NÚMERO DE CUENTA</th>
-                                <th>TOTAL ACUMULADO</th>
+                                <th>BANCO / CUENTA</th>
+                                <th style="text-align:right;">TOTAL ACUMULADO</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${Object.entries(consolidated).map(([name, data]) => `
-                                <tr>
-                                    <td style="font-weight:800;">${name}</td>
-                                    <td>${data.events}</td>
-                                    <td>${data.bank}</td>
-                                    <td style="font-family:var(--font-mono);">${data.account}</td>
-                                    <td style="color:var(--success); font-weight:800;">$${data.total.toLocaleString()}</td>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px; font-weight:800; color:#fff;">${name}</td>
+                                    <td><span style="background:var(--surface2); padding:2px 8px; border-radius:10px;">${data.events}</span></td>
+                                    <td style="font-size:0.7rem;">
+                                        <b>${data.bank}</b><br>
+                                        <span style="font-family:var(--font-mono); opacity:0.7;">${data.account}</span>
+                                    </td>
+                                    <td style="color:var(--success); font-weight:900; text-align:right; font-size:1rem;">$${data.total.toLocaleString()}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -4029,39 +5069,43 @@
                 </div>
             </div>
 
-            <div class="stat-card" style="border-top:4px solid var(--warning);">
-                <h3 style="margin-top:0; font-size:1rem; color:var(--warning);">📝 DETALLE DE FORMATOS GESTIONADOS</h3>
+            <div class="stat-card" style="border-top:4px solid var(--warning); background:rgba(255,255,255,0.02);">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#fff;">📝 DETALLE INDIVIDUAL DE REPORTES</h3>
+                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">Asigne el monto correspondiente a cada evento y pulse "GUARDAR" para procesar.</p>
                 <div style="overflow-x:auto;">
-                    <table class="table" style="font-size:0.75rem;">
+                    <table class="table" style="font-size:0.75rem; width:100%;">
                         <thead>
-                            <tr>
-                                <th>FECHA</th>
+                            <tr style="background:rgba(255,255,255,0.05);">
+                                <th style="padding:15px;">FECHA</th>
                                 <th>EMPLEADO</th>
-                                <th>EVENTO</th>
+                                <th>EVENTO / ROL</th>
                                 <th>MONTO ($)</th>
                                 <th>ESTADO</th>
-                                <th>ACCIÓN</th>
+                                <th>GESTIÓN</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${res.submissions.map(s => `
-                                <tr>
-                                    <td>${new Date(s.created_at).toLocaleDateString()}</td>
-                                    <td style="font-weight:700;">${s.staff_name}</td>
-                                    <td>${s.event_name}</td>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px; opacity:0.7;">${new Date(s.created_at).toLocaleDateString()}</td>
+                                    <td style="font-weight:700; color:#fff;">${s.staff_name}</td>
                                     <td>
-                                        <input type="number" value="${s.amount}" id="amount-${s.id}" 
-                                            style="width:80px; background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:4px; border-radius:4px; color:var(--success); font-weight:800;">
+                                        <div style="font-weight:600;">${s.event_name}</div>
+                                        <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">${s.role_at_event}</div>
                                     </td>
                                     <td>
-                                        <select id="status-${s.id}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.7rem; padding:4px; border-radius:4px;">
-                                            <option value="pending" ${s.status === 'pending' ? 'selected' : ''}>PENDIENTE</option>
-                                            <option value="approved" ${s.status === 'approved' ? 'selected' : ''}>APROBADO</option>
-                                            <option value="paid" ${s.status === 'paid' ? 'selected' : ''}>PAGADO</option>
+                                        <input type="number" value="${s.amount}" id="amount-${s.id}" 
+                                            style="width:90px; background:var(--surface2); border:1px solid var(--border); padding:8px; border-radius:8px; color:var(--success); font-weight:800; font-size:0.9rem;">
+                                    </td>
+                                    <td>
+                                        <select id="status-${s.id}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.7rem; padding:8px; border-radius:8px; width:110px;">
+                                            <option value="pending" ${s.status === 'pending' ? 'selected' : ''}>⏳ PENDIENTE</option>
+                                            <option value="approved" ${s.status === 'approved' ? 'selected' : ''}>✅ APROBADO</option>
+                                            <option value="paid" ${s.status === 'paid' ? 'selected' : ''}>💰 PAGADO</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm" onclick="updatePayrollSubmission(${s.id})" style="padding:4px 8px; font-size:0.6rem;">GUARDAR</button>
+                                        <button class="btn btn-sm" onclick="updatePayrollSubmission(${s.id})" style="background:var(--accent); color:#fff; font-weight:800; border-radius:8px; padding:8px 12px;">💾 GUARDAR</button>
                                     </td>
                                 </tr>
                             `).join('')}
@@ -4088,4 +5132,832 @@
             toast('FORMATO ACTUALIZADO', 'success');
             renderAdmin(document.getElementById('current-view'), 'formatos');
         }
+    }
+
+    window.editEventFromCalendar = function(id) {
+        const s = (window.allSessions || []).find(x => x.id == id);
+        if (!s) return;
+        
+        // Cerrar detalle
+        document.getElementById('calendar-detail-overlay')?.remove();
+        
+        // Poblar formulario
+        document.getElementById('lista-fecha').value = s.started_at ? s.started_at.split('T')[0] : '';
+        
+        // Mapeo robusto de tipo
+        const typeSelect = document.getElementById('lista-tipo');
+        if (typeSelect) {
+            const val = (s.type || '').toLowerCase();
+            if (val.includes('valet')) typeSelect.value = 'valet';
+            else if (val.includes('boda')) typeSelect.value = 'boda';
+            else if (val.includes('cumple')) typeSelect.value = 'cumple';
+            else typeSelect.value = 'valet';
+        }
+        
+        document.getElementById('lista-nombre').value = s.name || '';
+        document.getElementById('lista-correlativo').value = s.correlativo || '';
+        document.getElementById('lista-direccion').value = s.address || '';
+        document.getElementById('lista-contacto').value = s.contact_name || '';
+        document.getElementById('lista-telefono').value = s.phone || '';
+        document.getElementById('lista-observaciones').value = s.observations || '';
+        
+        // Horas
+        if (document.getElementById('lista-hora-convocatoria')) document.getElementById('lista-hora-convocatoria').value = s.convocation_time || '';
+        if (document.getElementById('lista-hora-inicio')) document.getElementById('lista-hora-inicio').value = s.event_start_time || '';
+        if (document.getElementById('lista-hora-fin')) document.getElementById('lista-hora-fin').value = s.event_end_time || '';
+        
+        // Actualizar mapa
+        handleAddressChange(s.address || '');
+        
+        // Personal
+        window.staffSelection = { supervisors: [], employees: [] };
+        
+        if (s.assigned_staff_list && s.assigned_staff_list.length > 0) {
+            window.staffSelection.supervisors = s.assigned_staff_list
+                .filter(x => x.role === 'supervisor' || x.role === 'director' || x.id == s.supervisor_id)
+                .map(x => x.id);
+            window.staffSelection.employees = s.assigned_staff_list
+                .filter(x => x.role !== 'supervisor' && x.role !== 'director' && x.id != s.supervisor_id)
+                .map(x => x.id);
+        } else {
+            // Fallback para registros huérfanos o antiguos
+            if (s.supervisor_id) window.staffSelection.supervisors = [s.supervisor_id];
+            
+            // Si el backend envió el string assigned_staff, intentamos buscar por nombre (muy básico)
+            if (s.assigned_staff && window.allStaffData) {
+                const names = s.assigned_staff.split(',').map(n => n.trim().toLowerCase());
+                window.allStaffData.forEach(st => {
+                    if (names.includes(st.name.toLowerCase())) {
+                        if (st.role === 'supervisor' || st.role === 'director' || st.id == s.supervisor_id) {
+                            if (!window.staffSelection.supervisors.includes(st.id)) window.staffSelection.supervisors.push(st.id);
+                        } else {
+                            if (!window.staffSelection.employees.includes(st.id)) window.staffSelection.employees.push(st.id);
+                        }
+                    }
+                });
+            }
+        }
+
+        renderStaffTags('supervisor');
+        updateStaffList('employee');
+        
+        window.editingSessionId = id;
+        
+        // Scroll al inicio del panel
+        document.querySelector('.vehicle-card')?.scrollIntoView({ behavior: 'smooth' });
+        toast('📝 MODO EDICIÓN: ' + s.name.toUpperCase(), 'warning');
+        
+        // Cambiar texto del botón guardar
+        const saveBtn = document.querySelector('button[onclick="saveListaEvento()"]');
+        if (saveBtn) {
+            saveBtn.innerText = '📝 ACTUALIZAR EVENTO';
+            saveBtn.style.background = 'var(--accent)';
+        }
+    }
+
+    window.DEFAULT_MAP_ADDRESS = 'F4PG+F97, Calle Garcilazo, Caracas 1080, Miranda, Venezuela';
+    
+    window.handleAddressChange = function(val) {
+        const addr = val.trim() || window.DEFAULT_MAP_ADDRESS;
+        const iframe = document.getElementById('planning-map-iframe');
+        const label = document.getElementById('map-label');
+        if (iframe) {
+            iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed`;
+        }
+        if (label) {
+            label.innerText = val.trim() ? '📍 UBICACIÓN DEL EVENTO (CLICK PARA AMPLIAR)' : '📍 OFICINA EYE STAFF';
+        }
+    }
+
+    window.showExpandedMap = function() {
+        const addr = document.getElementById('lista-direccion')?.value.trim() || window.DEFAULT_MAP_ADDRESS;
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.style.zIndex = '9999';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:95vw; width:1000px; height:85vh; padding:0; overflow:hidden; position:relative; border:2px solid var(--border);">
+                <div style="position:absolute; top:0; left:0; width:100%; background:rgba(15,23,42,0.95); padding:15px; z-index:100; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:900; font-size:0.8rem; letter-spacing:1px; color:var(--accent);">🗺️ DETALLE DE UBICACIÓN</span>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="padding:5px 15px; font-weight:900;">CERRAR ×</button>
+                </div>
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    style="border:0; margin-top:0;" 
+                    src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.handleStaffSearch = function(type, query) {
+        const resultsEl = document.getElementById(`results-${type}`);
+        if (!query || query.length < 2) {
+            resultsEl.style.display = 'none';
+            return;
+        }
+
+        const targetDate = document.getElementById('lista-fecha')?.value;
+
+        const filtered = window.allStaffData.filter(s => 
+            s.name.toLowerCase().includes(query.toLowerCase()) && 
+            !window.staffSelection.supervisors.includes(s.id)
+        ).slice(0, 10);
+
+        if (filtered.length === 0) {
+            resultsEl.style.display = 'none';
+            return;
+        }
+
+        resultsEl.innerHTML = filtered.map(s => {
+            const busySession = (window.activeSessions || []).find(sess => {
+                if (sess.id == window.editingSessionId) return false;
+                
+                // 1. Si está activo ahora mismo
+                if (sess.status === 'active' && s.current_session_id == sess.id) return true;
+                
+                // 2. Si el evento es el mismo día y está asignado (aunque sea planificación)
+                if (targetDate) {
+                    const sessDate = new Date(sess.started_at).toISOString().split('T')[0];
+                    if (sessDate === targetDate) {
+                        return (sess.assigned_staff_list || []).some(u => u.id == s.id);
+                    }
+                }
+                return false;
+            });
+
+            const isBusy = !!busySession;
+            const statusColor = isBusy ? 'var(--brand-red)' : 'var(--muted)';
+            const statusText = isBusy ? ` - OCUPADO EN: ${busySession.name.toUpperCase()}` : ` (${s.role.toUpperCase()})`;
+            const action = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `selectStaffForEvent('${type}', ${s.id}, '${s.name}')`;
+            
+            return `
+                <div class="search-item" onclick="${action}" style="${isBusy ? 'opacity:0.6; cursor:not-allowed;' : ''}">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:800;">${s.name.toUpperCase()}</span>
+                        <span style="font-size:0.55rem; color:${statusColor}; font-weight:700;">${statusText}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        resultsEl.style.display = 'block';
+    }
+
+    window.selectStaffForEvent = function(type, id, name) {
+        const targetList = window.staffSelection.supervisors;
+        targetList.push(id);
+        
+        document.getElementById(`search-${type}`).value = '';
+        document.getElementById(`results-${type}`).style.display = 'none';
+        
+        renderStaffTags(type);
+        updateStaffList('employee');
+    }
+
+    window.updateStaffList = function(type) {
+        const query = document.getElementById(`filter-${type}`)?.value.toLowerCase() || '';
+        const listEl = document.getElementById(`list-${type}`);
+        if (!listEl) return;
+        
+        const staff = (window.allStaffData || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+        const selection = window.staffSelection.employees;
+        const supervisors = window.staffSelection.supervisors;
+
+        // Actualizar visual de la sección según supervisores
+        const employeeSection = document.getElementById('employee-selection-section');
+        if (employeeSection) {
+            if (supervisors.length > 0) {
+                employeeSection.style.opacity = '1';
+                employeeSection.style.pointerEvents = 'auto';
+                const warning = employeeSection.querySelector('div');
+                if (warning) warning.style.display = 'none';
+            } else {
+                employeeSection.style.opacity = '0.3';
+                employeeSection.style.pointerEvents = 'none';
+                const warning = employeeSection.querySelector('div');
+                if (warning) warning.style.display = 'block';
+            }
+        }
+        
+        const targetDate = document.getElementById('lista-fecha')?.value;
+
+        listEl.innerHTML = staff.filter(s => 
+            s.name.toLowerCase().includes(query) && 
+            !supervisors.includes(s.id)
+        ).map(s => {
+            const isSelected = selection.includes(s.id);
+            const busySession = (window.activeSessions || []).find(sess => {
+                if (sess.id == window.editingSessionId) return false;
+                
+                // 1. Si está activo ahora mismo
+                if (sess.status === 'active' && s.current_session_id == sess.id) return true;
+                
+                // 2. Si el evento es el mismo día y está asignado (aunque sea planificación)
+                if (targetDate) {
+                    const sessDate = new Date(sess.started_at).toISOString().split('T')[0];
+                    if (sessDate === targetDate) {
+                        return (sess.assigned_staff_list || []).some(u => u.id == s.id);
+                    }
+                }
+                return false;
+            });
+            
+            const isBusy = !!busySession;
+            const onclick = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `toggleStaffSelection('${type}', ${s.id})`;
+            
+            return `
+                <div style="display:flex; align-items:center; padding:8px 12px; gap:12px; border-bottom:1px solid rgba(255,255,255,0.03); cursor:${isBusy ? 'not-allowed' : 'pointer'}; transition:0.2s; background:${isSelected ? 'rgba(99, 102, 241, 0.05)' : (isBusy ? 'rgba(239, 68, 68, 0.02)' : 'transparent')}; opacity:${isBusy && !isSelected ? '0.5' : '1'};" onclick="${onclick}">
+                    <input type="checkbox" ${isSelected ? 'checked' : ''} ${isBusy && !isSelected ? 'disabled' : ''} style="width:16px; height:16px; cursor:pointer; accent-color:var(--accent);">
+                    <div style="flex:1;">
+                        <div style="color:${isSelected ? 'var(--accent)' : (isBusy ? 'var(--brand-red)' : '#fff')}; font-weight:${isSelected ? '900' : '600'}; font-size:0.75rem; display:flex; align-items:center; gap:5px;">
+                            ${s.name.toUpperCase()}
+                            ${isBusy ? `<span style="font-size:0.5rem; background:rgba(239, 68, 68, 0.1); color:var(--brand-red); padding:2px 6px; border-radius:4px;">OCUPADO</span>` : ''}
+                        </div>
+                        <div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">
+                            ${s.role.toUpperCase()} ${isBusy ? `• EN: ${busySession.name.toUpperCase()}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.toggleStaffSelection = function(type, id) {
+        const selection = window.staffSelection.employees;
+        const index = selection.indexOf(id);
+        if (index > -1) selection.splice(index, 1);
+        else selection.push(id);
+        
+        updateStaffList(type);
+    }
+
+    window.removeStaffFromEvent = function(type, id) {
+        const targetList = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        const index = targetList.indexOf(id);
+        if (index > -1) targetList.splice(index, 1);
+        renderStaffTags(type);
+        updateStaffList('employee');
+    }
+
+    window.renderStaffTags = function(type) {
+        const container = document.getElementById(`selected-${type}s`);
+        const targetList = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        
+        container.innerHTML = targetList.map(id => {
+            const staff = window.allStaffData.find(s => s.id == id);
+            return `
+                <div class="staff-tag">
+                    ${staff ? staff.name.split(' ')[0].toUpperCase() : 'ID:'+id}
+                    <span class="tag-remove" onclick="removeStaffFromEvent('${type}', ${id})">×</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Reemplazamos la función anterior por compatibilidad si se llama
+    window.updateStaffAssignmentUI = function() { };
+
+    window.showDayDetails = function(dateIso) {
+        const date = new Date(dateIso);
+        date.setHours(0,0,0,0);
+        
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = user.role === 'director' || 
+                           user.name?.toUpperCase().includes('NELSON') || 
+                           user.name?.toUpperCase().includes('NICOLAS') ||
+                           user.name?.toUpperCase().includes('BILLY') ||
+                           user.name?.toUpperCase().includes('RAMOS') ||
+                           user.name?.toUpperCase().includes('SESCUN');
+
+        const sessions = (window.allSessions || []).filter(s => {
+            if (s.status === 'budgeted') return false;
+            
+            if (!isDirector) {
+                const isAssigned = s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                if (!isAssigned) return false;
+            }
+            const rawDate = s.started_at || s.created_at;
+            let sDate;
+            if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                const parts = rawDate.split('-');
+                sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            } else {
+                sDate = new Date(rawDate);
+            }
+            sDate.setHours(0,0,0,0);
+            return sDate.getTime() === date.getTime();
+        });
+
+        const wrapper = document.getElementById('calendar-wrapper');
+        const detailOverlay = document.createElement('div');
+        detailOverlay.id = 'calendar-detail-overlay';
+        detailOverlay.style = `
+            position: absolute; top:0; left:0; width:100%; height:100%; 
+            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px);
+            z-index: 2000; padding: 25px; box-sizing: border-box;
+            display: flex; flex-direction: column; animation: fadeIn 0.3s ease-out;
+        `;
+
+        let dateHeader = date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+        if (sessions.length > 0) {
+            dateHeader += ` (${sessions.length})`;
+        }
+        
+        let eventsHtml = sessions.length > 0 ? sessions.map(s => {
+            const isClosed = s.status === 'closed' || s.status === 'concluded';
+            const isActive = s.status === 'active';
+            return `
+            <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${s.name} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
+                    <span style="font-size:0.6rem; font-weight:900; padding:4px 10px; border-radius:20px; background:${isClosed ? 'var(--muted)' : 'var(--accent)'}; color:white;">${(s.type || 'Valet').toUpperCase()}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div style="grid-column:span 2; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="flex:1;">
+                            <div style="font-size:0.5rem; color:var(--warning); font-weight:800; text-transform:uppercase;">🕗 CONVOCATORIA</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.convocation_time || '--:--'}</div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:0.5rem; color:var(--accent); font-weight:800; text-transform:uppercase;">🚀 INICIO EVENTO</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.event_start_time || '--:--'}</div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:0.5rem; color:var(--muted); font-weight:800; text-transform:uppercase;">🏁 FIN (EST.)</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.event_end_time || '--:--'}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📞 Contacto / Tel</div>
+                        <div style="font-size:0.8rem; font-weight:700; color:#fff;">${s.contact_name || 'N/A'} - ${s.phone || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📍 Dirección</div>
+                        <div class="address-tooltip-trigger" style="font-size:0.8rem; font-weight:700; color:#fff; cursor:pointer;">
+                            ${s.address || 'N/A'}
+                            <div class="address-tooltip">
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    style="border:0;" 
+                                    src="https://www.google.com/maps?q=${encodeURIComponent(s.address)}&output=embed">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="grid-column:span 2;">
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">👤 Personal Asignado</div>
+                        <div style="font-size:0.8rem; font-weight:700; color:var(--warning);">${s.assigned_staff || 'SIN ASIGNAR'}</div>
+                    </div>
+                    <div style="grid-column:span 2;">
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📝 Notas / Observaciones</div>
+                        <div style="font-size:0.75rem; font-weight:500; color:#cbd5e1; font-style:italic;">"${s.observations || 'Sin notas'}"</div>
+                    </div>
+                </div>
+                <div style="display:${isClosed ? 'none' : 'flex'}; gap:10px; margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                    ${isActive ? `
+                        <button class="btn" style="flex:1; background:rgba(34, 197, 94, 0.2); color:var(--success); font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:1px solid var(--success); cursor:default;" disabled>✅ EN CURSO</button>
+                    ` : `
+                        <button class="btn" style="flex:1; background:#22c55e; color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none; box-shadow:0 4px 12px rgba(34, 197, 94, 0.2);" onclick="confirmEventFromCalendar(${s.id})">🚀 INICIAR</button>
+                    `}
+                    <button class="btn" style="flex:1; background:var(--accent); color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none;" onclick="editEventFromCalendar(${s.id})">📝 MODIFICAR</button>
+                    <button class="btn" style="flex:1; background:var(--brand-red); color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none;" onclick="budgetEventFromCalendar(${s.id})">🗑️ ELIMINAR</button>
+                </div>
+            </div>
+        `;
+        }).join('') : `
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0.5;">
+                <i style="font-size:3rem; margin-bottom:15px;">📅</i>
+                <div style="font-weight:800; letter-spacing:1px;">NO HAY EVENTOS PROGRAMADOS</div>
+            </div>
+        `;
+
+        detailOverlay.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+                <div>
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:2px; margin-bottom:5px;">DETALLE DE JORNADA</div>
+                    <div style="font-size:1.4rem; font-weight:900; color:#fff;">${dateHeader}</div>
+                </div>
+                <button class="btn btn-secondary" onclick="document.getElementById('calendar-detail-overlay').remove()" 
+                    style="border-radius:12px; padding:10px 20px; font-weight:900; background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.2);">
+                    CERRAR [X]
+                </button>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding-right:10px;">
+                ${eventsHtml}
+            </div>
+        `;
+
+        wrapper.appendChild(detailOverlay);
+    }
+
+    window.confirmEventFromCalendar = async function(id) {
+        if (!confirm('¿DESEA INICIAR LA OPERACIÓN DE ESTE EVENTO AHORA MISMO?')) return;
+        showLoading('CONFIRMANDO EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/activate', {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            if (res && res.success) {
+                toast('✅ EVENTO CONFIRMADO Y ACTIVADO', 'success');
+                document.getElementById('calendar-detail-overlay')?.remove();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (view) renderListas(view);
+            } else throw new Error(res.error || 'Error');
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.budgetEventFromCalendar = async function(id) {
+        if (!confirm('¿DESEA ELIMINAR ESTE EVENTO Y MOVERLO A PRESUPUESTADOS?')) return;
+        showLoading('MOVIENDO A PRESUPUESTADOS...');
+        try {
+            const res = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id, status: 'budgeted' })
+            });
+            if (res && res.success) {
+                toast('📂 EVENTO MOVIDO A PRESUPUESTADOS', 'success');
+                document.getElementById('calendar-detail-overlay')?.remove();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (view) renderListas(view);
+            } else throw new Error(res.error || 'Error');
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.logStaffAttendance = async function(userId, type) {
+        if (!window.activeSession) return toast('⚠️ SELECCIONE UN EVENTO', 'warning');
+        
+        showLoading('REGISTRANDO ASISTENCIA...');
+        try {
+            const res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user_id: userId,
+                    session_id: window.activeSession.id,
+                    type: type
+                })
+            });
+            
+            if (res && res.success) {
+                toast('✅ ASISTENCIA REGISTRADA', 'success');
+                await checkActiveSession();
+                renderHome(document.getElementById('current-view'));
+
+                // Verificar si todo el personal está inactivo para sugerir cierre
+                if (type === 'exit' && window.activeSession) {
+                    const staff = window.activeSession.assigned_staff_list || [];
+                    const allInactive = staff.every(u => {
+                        const att = u.attendance || [];
+                        const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                        return lastAction === 'exit' || !lastAction;
+                    });
+
+                    if (staff.length > 0 && allInactive) {
+                        setTimeout(() => {
+                            if (confirm('TODO EL PERSONAL HA FINALIZADO SU JORNADA.\n\n¿DESEA FINALIZAR EL EVENTO Y ENVIAR EL REPORTE DE CIERRE?')) {
+                                closeSession();
+                            }
+                        }, 500);
+                    }
+                }
+            } else {
+                throw new Error(res.error || 'Error desconocido');
+            }
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderMarketing(el) {
+        if (!el) return;
+        el.innerHTML = `
+            <div id="marketing-view" style="width:90%; margin:0 auto; padding-top:20px; padding-bottom:10vh;">
+                <div class="view-header" style="text-align:center; margin-bottom:30px;">
+                    <h1 class="view-title" style="font-size:2rem; letter-spacing:-1px; color:var(--brand-white);">📊 ESTRATEGIA <span style="color:var(--accent);">IMAGEN & RRSS</span></h1>
+                    <p style="color:var(--muted); font-size:0.8rem; margin-top:5px;">PLAN DE TRABAJO Y DASHBOARD GERENCIAL</p>
+                </div>
+
+                <div class="stat-card" style="margin-bottom:30px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:0; overflow:hidden; border-radius:24px;">
+                    <div style="background:var(--accent); padding:10px 20px; color:white; font-weight:900; font-size:0.7rem; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>DASHBOARD EJECUTIVO (BETA)</span>
+                        <span style="opacity:0.7;">DATOS EN TIEMPO REAL</span>
+                    </div>
+                    <img src="img/marketing_dashboard.png" style="width:100%; display:block; filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.1));">
+                </div>
+
+                <div class="grid" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
+                    <div class="stat-card" style="border-left:4px solid var(--success);">
+                        <h3 style="font-size:0.9rem; color:var(--brand-white); margin-bottom:15px; font-weight:900;">🎯 OBJETIVOS DE MARKETING</h3>
+                        <ul style="color:var(--muted); font-size:0.75rem; line-height:1.6; padding-left:20px; margin:0;">
+                            <li>Auditoría diaria de sentimiento en TikTok e Instagram.</li>
+                            <li>Conversión de "Seguidores" a "Leads de Venta" mediante CTA dirigidos.</li>
+                            <li>Monitoreo de calidad operativa basado en reseñas de clientes reales.</li>
+                        </ul>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning);">
+                        <h3 style="font-size:0.9rem; color:var(--brand-white); margin-bottom:15px; font-weight:900;">🔄 CRUCE OPERATIVO</h3>
+                        <ul style="color:var(--muted); font-size:0.75rem; line-height:1.6; padding-left:20px; margin:0;">
+                            <li>Ajuste de staff basado en reportes de fallas detectadas en RRSS.</li>
+                            <li>Promoción de servicios más consultados en canales digitales.</li>
+                            <li>Identificación de Super-Fans para fidelización y ventas recurrentes.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align:center;">
+                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'hr')" style="padding:12px 30px; font-size:0.8rem; font-weight:800;">← VOLVER A ADMINISTRACIÓN</button>
+                </div>
+            </div>
+        `;
+    }
+
+    async function renderGeolocalizacion(view) {
+        window.scrollTo(0, 0);
+        showLoading('INICIALIZANDO MAPA...');
+        try {
+            const res = await apiFetch('/api/location/latest');
+            const locations = res || { staff: [], assets: [] };
+            
+            view.innerHTML = `
+                <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; background:rgba(255,255,255,0.03); padding:8px 15px; border-radius:10px; border:1px solid var(--border);">
+                        📡 SEÑAL ACTIVA • MODO REAL-TIME
+                    </div>
+                </div>
+                
+                <div class="tracking-grid" style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; height:calc(100vh - 180px);">
+                    <!-- PANEL DE MAPA -->
+                    <div id="map-container" style="background:var(--surface); border-radius:24px; border:1px solid var(--border); overflow:hidden; position:relative;">
+                        <div id="map" style="width:100%; height:100%;"></div>
+                    </div>
+                    
+                    <!-- PANEL LATERAL: ACTIVOS Y PERSONAL -->
+                    <div style="display:flex; flex-direction:column; gap:15px; overflow-y:auto;">
+                        <!-- SECCIÓN PERSONAL -->
+                        <div class="vehicle-card" style="padding:20px; border-radius:20px; background:rgba(99, 102, 241, 0.05); border:1px solid rgba(99, 102, 241, 0.2);">
+                            <h3 style="font-size:0.8rem; color:var(--accent); margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                                👥 PERSONAL EN CAMPO
+                                <span style="font-size:0.6rem; background:var(--accent); color:white; padding:2px 8px; border-radius:10px;">${locations.staff.length}</span>
+                            </h3>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${locations.staff.map(s => `
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div>
+                                            <div style="font-size:0.75rem; font-weight:900; color:#fff;">${s.name.toUpperCase()}</div>
+                                            <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${s.role} • <span style="color:var(--success)">ACTIVO</span></div>
+                                        </div>
+                                        <button class="btn btn-sm" style="padding:4px 8px; font-size:0.6rem; border-radius:6px;" onclick="centerMapOn(${s.latitude}, ${s.longitude})">VER</button>
+                                    </div>
+                                `).join('') || '<div style="font-size:0.6rem; color:var(--muted); text-align:center;">SIN PERSONAL ACTIVO</div>'}
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN EQUIPOS / ACTIVOS -->
+                        <div class="vehicle-card" style="padding:20px; border-radius:20px; background:rgba(168, 85, 247, 0.05); border:1px solid rgba(168, 85, 247, 0.2);">
+                            <h3 style="font-size:0.8rem; color:#a855f7; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                                📻 EQUIPOS Y ACTIVOS
+                                <span style="font-size:0.6rem; background:#a855f7; color:white; padding:2px 8px; border-radius:10px;">${locations.assets.length}</span>
+                            </h3>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${locations.assets.map(a => `
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div>
+                                            <div style="font-size:0.75rem; font-weight:900; color:#fff;">${a.name.toUpperCase()}</div>
+                                            <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${a.type} • BATERÍA: <span style="color:var(--success)">85%</span></div>
+                                        </div>
+                                        <button class="btn btn-sm" style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#a855f7;" onclick="centerMapOn(${a.latitude}, ${a.longitude})">VER</button>
+                                    </div>
+                                `).join('') || '<div style="font-size:0.6rem; color:var(--muted); text-align:center;">SIN EQUIPOS REGISTRADOS</div>'}
+                            </div>
+                            <button class="btn" style="width:100%; margin-top:15px; font-size:0.65rem; padding:10px; border-radius:10px; background:rgba(168, 85, 247, 0.2); border:1px solid #a855f7; color:#fff;" onclick="showAddAssetForm()">+ REGISTRAR EQUIPO</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Inicializar Leaflet
+            setTimeout(() => {
+                const map = L.map('map', { zoomControl: false }).setView([10.4806, -66.8983], 13); // Caracas default
+                window.leafletMap = map;
+                
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO'
+                }).addTo(map);
+
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                // Agregar markers de Personal (Azules)
+                locations.staff.forEach(s => {
+                    const marker = L.circleMarker([s.latitude, s.longitude], {
+                        radius: 8,
+                        fillColor: "#6366f1",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                    marker.bindPopup(`<b>${s.name.toUpperCase()}</b><br>${s.role}`);
+                });
+
+                // Agregar markers de Assets (Violetas)
+                locations.assets.forEach(a => {
+                    const marker = L.circleMarker([a.latitude, a.longitude], {
+                        radius: 8,
+                        fillColor: "#a855f7",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                    marker.bindPopup(`<b>${a.name.toUpperCase()}</b><br>${a.type}`);
+                });
+
+                if (locations.staff.length > 0 || locations.assets.length > 0) {
+                    const group = new L.featureGroup([...locations.staff, ...locations.assets].map(x => L.marker([x.latitude, x.longitude])));
+                    map.fitBounds(group.getBounds().pad(0.2));
+                }
+            }, 100);
+
+        } catch (e) {
+            toast('❌ ERROR AL CARGAR MAPA: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.centerMapOn = function(lat, lon) {
+        if (window.leafletMap) {
+            window.leafletMap.setView([lat, lon], 17);
+        }
+    }
+
+    window.showAddAssetForm = async function() {
+        const name = prompt('NOMBRE DEL EQUIPO (EJ. RADIO #04):');
+        if (!name) return;
+        const type = prompt('TIPO (EQUIPMENT, VEHICLE, OTHER):', 'equipment');
+        if (!type) return;
+
+        showLoading('REGISTRANDO EQUIPO...');
+        try {
+            await apiFetch('/api/admin/assets', {
+                method: 'POST',
+                body: JSON.stringify({ name, type })
+            });
+            toast('✅ EQUIPO REGISTRADO EXITOSAMENTE', 'success');
+            renderGeolocalizacion(document.getElementById('current-view'));
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.openStaffEditModal = function(id) {
+        const u = fullStaffData.find(x => x.id === id);
+        if (!u) return;
+
+        const modalHtml = `
+            <div id="staff-edit-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:20000; display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div class="card" style="width:100%; max-width:800px; max-height:90vh; overflow-y:auto; background:var(--surface); border:1px solid var(--border); box-shadow:0 25px 50px rgba(0,0,0,0.8); position:relative; padding:30px; border-radius:20px;">
+                    <button onclick="closeStaffEditModal()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+                    
+                    <div style="display:flex; align-items:center; gap:20px; margin-bottom:30px; border-bottom:1px solid var(--border); padding-bottom:20px;">
+                        <div style="width:80px; height:80px; border-radius:15px; overflow:hidden; background:var(--surface2); border:2px solid var(--accent);">
+                            <img src="${u.photo_url || API_BASE + '/api/photos/' + u.photo_key}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='eye-staff-carnet-default.png'">
+                        </div>
+                        <div>
+                            <h2 style="margin:0; color:var(--brand-white); font-size:1.4rem;">${u.name}</h2>
+                            <div style="color:var(--muted); font-size:0.8rem;">ID: ${u.id} — EDITAR REGISTRO</div>
+                        </div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div class="field"><label>NOMBRE COMPLETO</label><input type="text" id="edit-staff-name" value="${u.name}"></div>
+                        <div class="field"><label>CÉDULA / DNI</label><input type="text" id="edit-staff-cedula" value="${u.cedula || ''}"></div>
+                        <div class="field"><label>EMAIL</label><input type="email" id="edit-staff-email" value="${u.email || ''}"></div>
+                        <div class="field"><label>TELÉFONO</label><input type="text" id="edit-staff-phone" value="${u.phone || ''}"></div>
+                        <div class="field" style="grid-column: span 2;"><label>DIRECCIÓN</label><input type="text" id="edit-staff-address" value="${u.sector || ''}"></div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px;">
+                        <div class="field"><label>PERFIL ADMINISTRATIVO</label>
+                            <select id="edit-staff-profile-admin" style="width:100%; height:45px; background:var(--surface2); color:white; border-radius:8px; padding:0 10px;">
+                                <option value="">SIN ASIGNAR</option>
+                                <option value="NO APLICA" ${u.profile_admin === 'NO APLICA' ? 'selected' : ''}>NO APLICA</option>
+                                <option value="DIRECTOR" ${u.profile_admin === 'DIRECTOR' ? 'selected' : ''}>DIRECTOR</option>
+                                <option value="COORDINADOR" ${u.profile_admin === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
+                                <option value="EMPLEADO" ${u.profile_admin === 'EMPLEADO' ? 'selected' : ''}>EMPLEADO</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>PERFIL OPERATIVO</label>
+                            <select id="edit-staff-profile-opera" style="width:100%; height:45px; background:var(--surface2); color:white; border-radius:8px; padding:0 10px;">
+                                <option value="">SIN ASIGNAR</option>
+                                <option value="JEFE DE GRUPO" ${u.profile_opera === 'JEFE DE GRUPO' ? 'selected' : ''}>JEFE DE GRUPO</option>
+                                <option value="SUPERVISOR" ${u.profile_opera === 'SUPERVISOR' ? 'selected' : ''}>SUPERVISOR</option>
+                                <option value="COORDINADOR GENERAL" ${u.profile_opera === 'COORDINADOR GENERAL' ? 'selected' : ''}>COORD. GEN</option>
+                                <option value="COORDINADOR" ${u.profile_opera === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
+                                <option value="LOGÍSTICA" ${u.profile_opera === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
+                                <option value="CHOFER" ${u.profile_opera === 'CHOFER' ? 'selected' : ''}>CHOFER</option>
+                                <option value="OPERADOR" ${u.profile_opera === 'OPERADOR' ? 'selected' : ''}>OPERADOR</option>
+                                <option value="ESCOLTA" ${u.profile_opera === 'ESCOLTA' ? 'selected' : ''}>ESCOLTA</option>
+                                <option value="TRANSPORTE" ${u.profile_opera === 'TRANSPORTE' ? 'selected' : ''}>TRANSPORTE</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>EYE_ID</label>
+                            <select id="edit-staff-eye-id" style="width:100%; height:45px; background:var(--surface2); color:white; border-radius:8px; padding:0 10px;">
+                                <option value="">SIN ASIGNAR</option>
+                                <option value="ORO" ${u.eye_id === 'ORO' ? 'selected' : ''}>ORO</option>
+                                <option value="PLATA" ${u.eye_id === 'PLATA' ? 'selected' : ''}>PLATA</option>
+                                <option value="BRONCE" ${u.eye_id === 'BRONCE' ? 'selected' : ''}>BRONCE</option>
+                                <option value="LOGÍSTICA" ${u.eye_id === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>ESTADO DE CUENTA</label>
+                            <select id="edit-staff-active" style="width:100%; height:45px; background:var(--surface2); color:white; border-radius:8px; padding:0 10px;">
+                                <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACTIVO</option>
+                                <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INACTIVO (DEPURADO)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div class="field"><label>ENTIDAD BANCARIA</label><input type="text" id="edit-staff-bank" value="${u.bank_name || ''}"></div>
+                        <div class="field"><label>NÚMERO DE CUENTA</label><input type="text" id="edit-staff-account" value="${u.bank_account || ''}"></div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-bottom:30px;">
+                        <div class="field"><label>FAMILIAR</label><input type="text" id="edit-staff-e-contact" value="${u.emergency_contact || ''}"></div>
+                        <div class="field"><label>TEL. FAMILIAR</label><input type="text" id="edit-staff-e-phone" value="${u.emergency_phone || ''}"></div>
+                        <div class="field"><label>ALERGIAS</label><input type="text" id="edit-staff-allergies" value="${u.is_allergic || ''}"></div>
+                    </div>
+
+                    <div style="display:flex; gap:15px;">
+                        <button class="btn" onclick="closeStaffEditModal()" style="flex:1; background:var(--surface2); color:var(--muted);">CANCELAR</button>
+                        <button class="btn" onclick="saveStaffEdit(${u.id})" style="flex:2; background:var(--success);">GUARDAR CAMBIOS</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    window.closeStaffEditModal = function() {
+        const modal = document.getElementById('staff-edit-modal');
+        if (modal) modal.remove();
+    }
+
+    window.saveStaffEdit = async function(id) {
+        const name = document.getElementById('edit-staff-name').value.trim().toUpperCase();
+        const cedula = document.getElementById('edit-staff-cedula').value.trim();
+        const email = document.getElementById('edit-staff-email').value.trim();
+        const phone = document.getElementById('edit-staff-phone').value.trim();
+        const sector = document.getElementById('edit-staff-address').value.trim();
+        const bank_name = document.getElementById('edit-staff-bank').value.trim();
+        const bank_account = document.getElementById('edit-staff-account').value.trim();
+        const profile_admin = document.getElementById('edit-staff-profile-admin').value;
+        const profile_opera = document.getElementById('edit-staff-profile-opera').value;
+        const eye_id = document.getElementById('edit-staff-eye-id').value;
+        const is_active = parseInt(document.getElementById('edit-staff-active').value);
+        const emergency_contact = document.getElementById('edit-staff-e-contact').value.trim();
+        const emergency_phone = document.getElementById('edit-staff-e-phone').value.trim();
+        const is_allergic = document.getElementById('edit-staff-allergies').value.trim();
+
+        showLoading('Guardando cambios...');
+        
+        // Actualizar todos los campos
+        const fields = { 
+            name, cedula, email, phone, sector, bank_name, bank_account, 
+            profile_admin, profile_opera, eye_id, is_active,
+            emergency_contact, emergency_phone, is_allergic
+        };
+
+        for (let [key, val] of Object.entries(fields)) {
+            await apiFetch(`/api/staff/${id}/field`, {
+                method: 'PATCH',
+                body: JSON.stringify({ field: key, value: val })
+            });
+        }
+
+        hideLoading();
+        toast('✅ REGISTRO ACTUALIZADO', 'success');
+        closeStaffEditModal();
+        loadStaffList();
     }
