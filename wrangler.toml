@@ -1,4 +1,4 @@
-name = "valet-eye-app"
+name = "grupo-eye-staff"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
@@ -17,9 +17,14 @@ bucket_name = "valet-parking-photos"
 
 [vars]
 JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
-RESEND_API_KEY = "re_Fu3JRkwq_Lxt6DeWEKoey8xkdn8ijbCRF"
-CALLMEBOT_API_KEY = "9863244"
-
+RESEND_API_KEY = "re_D2247Pmz_2w2BuqArEEmMvifyKmwtZwA5"
 [ai]
 binding = "AI"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[routes]]
+pattern = "eye-staff.app"
+custom_domain = true
 
