@@ -32,10 +32,10 @@ describe("Hello World worker", () => {
 			    <!-- <script src="https://office.kosak.es/legal.js"></script> -->
 			    <meta charset="UTF-8">
 			    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-			    <title>GRUPO EYE STAFF</title>
+			    <title>EYE STAFF</title>
 			    <link rel="manifest" href="manifest.json">
 			    <meta name="theme-color" content="#0b0f19">
-			    <meta name="description" content="Plataforma integral de operaciones para Grupo Eye Staff — Valet Parking, Eventos, RRHH y más.">
+			    <meta name="description" content="Plataforma integral de operaciones para EYE STAFF — Valet Parking, Eventos, RRHH y más.">
 			    <meta name="apple-mobile-web-app-capable" content="yes">
 			    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 			    <meta name="apple-mobile-web-app-title" content="EYE STAFF">
@@ -46,6 +46,29 @@ describe("Hello World worker", () => {
 			    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 			    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 			    <style>
+			        @keyframes btn-blink {
+			            0%, 100% { opacity: 1; transform: scale(1); }
+			            50% { opacity: 0.85; transform: scale(0.98); }
+			        }
+			        .btn-volver-ux {
+			            background: var(--brand-green) !important;
+			            color: white !important;
+			            border: none !important;
+			            font-weight: 900 !important;
+			            animation: btn-blink 2s infinite !important;
+			            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4) !important;
+			            margin: 10px auto !important;
+			            display: flex;
+			            justify-content: center;
+			            align-items: center;
+			            width: fit-content;
+			            padding: 12px 30px !important;
+			            border-radius: 30px !important;
+			            font-size: 0.9rem !important;
+			            text-transform: uppercase;
+			            cursor: pointer;
+			            transition: 0.3s;
+			        }
 			        @keyframes marker-pulse {
 			            0% { transform: scale(0.5); opacity: 0; }
 			            50% { opacity: 0.8; }
@@ -75,6 +98,7 @@ describe("Hello World worker", () => {
 			            --warning: #f59e0b;
 			            --danger: #ef4444;
 			            --brand-red: #ef4444;
+			            --brand-green: #22c55e;
 			            --brand-white: #ffffff;
 			            --bg: #0b0f19;
 			            --surface: #161b2c;
@@ -146,17 +170,6 @@ describe("Hello World worker", () => {
 			        }
 			        .login-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
 
-			        /* --- FLOATING CHAT --- */
-			        .floating-chat {
-			            position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px;
-			            background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-			            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4); cursor: pointer; z-index: 8000;
-			            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-			            border: 2px solid rgba(255,255,255,0.2);
-			        }
-			        .floating-chat:hover { transform: scale(1.1) rotate(5deg); }
-			        .floating-chat:active { transform: scale(0.9); }
-			        .floating-chat i { font-size: 2.2rem; }
 
 			        input, select, textarea, button { text-transform: uppercase !important; text-align: left !important; }
 			        ::placeholder { font-size: 0.8rem; opacity: 0.5; text-align: left; }
@@ -540,7 +553,7 @@ describe("Hello World worker", () => {
 			        }
 
 			        .listas-calendar-wrapper-col {
-			            grid-column: span 2;
+			            grid-column: span 1;
 			            animation: slideInUp 0.5s ease-out;
 			            margin-top: 10px;
 			            width: 100%;
@@ -639,6 +652,13 @@ describe("Hello World worker", () => {
 			            display: inline-block; margin-right: 8px;
 			            animation: pulse-green 2s infinite;
 			            vertical-align: middle;
+			        }
+
+			        .admin-card-bg {
+			            background: rgba(204, 204, 204, 0.2) !important;
+			        }
+			        .admin-card-bg:hover {
+			            background: rgba(204, 204, 204, 0.35) !important;
 			        }
 
 			        /* --- GLOBOS --- */
@@ -768,7 +788,7 @@ describe("Hello World worker", () => {
 			        }
 			        .events-grid {
 			            display: grid !important;
-			            grid-template-columns: repeat(2, 1fr) !important;
+			            grid-template-columns: 1fr !important;
 			            gap: 25px !important;
 			            align-items: stretch !important;
 			            max-width: 1400px !important;
@@ -846,7 +866,6 @@ describe("Hello World worker", () => {
 			<div id="loading-overlay">
 			    <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; text-align:center; display:block">
 			        <div class="logo-text" style="font-size: 2.5rem; justify-content: center; margin-bottom: 20px;">
-			            <span style="color:var(--brand-white); font-size: 0.8rem; letter-spacing: 4px; display: block; margin-bottom: -10px;">GRUPO</span>
 			            <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
 			        </div>
 			    </a>
@@ -859,7 +878,6 @@ describe("Hello World worker", () => {
 			        <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; display:block;">
 			            <div style="line-height:1">
 			                <div class="logo-text" style="font-size: 1.2rem; flex-direction: column; align-items: flex-start; gap: 0;">
-			                    <span style="color:var(--brand-white); font-size: 0.4rem; letter-spacing: 2px;">GRUPO</span>
 			                    <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
 			                </div>
 			            </div>
@@ -897,6 +915,7 @@ describe("Hello World worker", () => {
 			                <div id="btn-change-pin" onclick="openChangePinModal()" style="cursor:pointer; width:32px; height:32px; display:none; align-items:center; justify-content:center; background:var(--surface2); border-radius:8px; color:var(--warning); margin-right:5px;" title="PERSONALIZAR PIN">
 			                    <i>🔑</i>
 			                </div>
+
 			                <div onclick="logout()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:6px 12px; border-radius:8px; color:var(--danger); font-size:0.65rem; font-weight:800;" title="CAMBIAR USUARIO">
 			                    <span>SALIR</span><i>🚪</i>
 			                </div>
@@ -911,23 +930,17 @@ describe("Hello World worker", () => {
 
 			    <div id="splash-screen">
 			        <div class="logo-text" style="font-size: 3.5rem; flex-direction: column; align-items: center; gap: 0;">
-			            <span style="color:var(--brand-white); font-size: 1rem; letter-spacing: 10px; margin-bottom: -10px;">GRUPO</span>
 			            <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
 			        </div>
 			    </div>
 
 			    <div id="screensaver" onclick="hideScreenSaver()">
 			        <div class="logo-text" style="font-size: 3.5rem; letter-spacing: -2px; flex-direction: column; align-items: center; gap: 0;">
-			            <span style="color:var(--brand-white); font-size: 1rem; letter-spacing: 10px; margin-bottom: -10px;">GRUPO</span>
 			            <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
 			        </div>
 			        <div style="color:var(--danger); font-weight:800; margin-top:20px; font-size:0.7rem; opacity:0.8;">TOQUE PARA CONTINUAR</div>
 			    </div>
 
-			    <!-- Globo Flotante de Chat Interno (Estilo Chatbot) -->
-			    <div id="btn-floating-chat" class="floating-chat" onclick="enterModule('chat')" style="display:none;">
-			        <i>💬</i>
-			    </div>
 
 			    <main id="current-view">
 			        <div id="portal-view">
@@ -967,7 +980,7 @@ describe("Hello World worker", () => {
 			            </div>
 
 			            <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-			                GRUPO EYE STAFF — PLATAFORMA INTEGRAL v2.4.94
+			                EYE STAFF — PLATAFORMA INTEGRAL v2.5.30
 			            </div>
 			        </div>
 			    </main>
@@ -992,7 +1005,7 @@ describe("Hello World worker", () => {
 
 			    // --- CONFIG & STATE ---
 			    const API_BASE = window.location.origin;
-			    const VERSION = '2.4.94';
+			    const VERSION = '2.4.99';
 			    
 			    function formatPhone(phone) {
 			        if (!phone) return '---';
@@ -1040,6 +1053,33 @@ describe("Hello World worker", () => {
 			            'INVITADO', 'DEMO'
 			        ];
 			        return user.role === 'director' || adminNames.some(name => userName.includes(name));
+			    };
+
+			    window.hasPermission = function(perm) {
+			        const user = JSON.parse(localStorage.getItem('user') || '{}');
+			        if (user.id === 1 || (user.name || '').toUpperCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").includes('NELSON CARRILLO')) {
+			            return true;
+			        }
+			        if (user.permissions && user.permissions[perm] !== undefined) {
+			            return user.permissions[perm] === 1;
+			        }
+			        const isSuperadmin = user.role === 'director';
+			        const isSupervisor = user.role === 'supervisor';
+			        const isVIP = checkVipAccess(user);
+
+			        switch(perm) {
+			            case 'valet_ve': return true;
+			            case 'valet_mod': return isSuperadmin || isSupervisor;
+			            case 'eventos_ve': return isSuperadmin || isSupervisor;
+			            case 'eventos_mod': return isSuperadmin || isSupervisor;
+			            case 'admin_ve': return isSuperadmin;
+			            case 'admin_mod': return isSuperadmin;
+			            case 'vip_ve': return isVIP;
+			            case 'vip_mod': return isVIP;
+			            case 'seg_ve': return isSuperadmin;
+			            case 'seg_mod': return isSuperadmin;
+			            default: return false;
+			        }
 			    };
 			    
 			    // Time & Date Helpers for cross-browser consistency
@@ -1148,6 +1188,14 @@ describe("Hello World worker", () => {
 			        if (!token || !userStr) {
 			            renderLoginWall();
 			            return;
+			        } else {
+			            apiFetch('/api/my-permissions').then(res => {
+			                if (res && res.permissions) {
+			                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+			                    u.permissions = res.permissions;
+			                    localStorage.setItem('user', JSON.stringify(u));
+			                }
+			            }).catch(e => console.error('Error refreshing my-permissions:', e));
 			        }
 
 			        let user;
@@ -1180,6 +1228,67 @@ describe("Hello World worker", () => {
 			                setTimeout(() => splash.style.display = 'none', 500);
 			            }
 			        }, 800);
+
+			        // Deep Link Handler for Budget -> Event
+			        const urlParams = new URLSearchParams(window.location.search);
+			        if (urlParams.get('action') === 'create_session_from_budget') {
+			            const budgetId = urlParams.get('budget_id');
+			            if (budgetId) {
+			                setTimeout(async () => {
+			                    showLoading('CARGANDO DATOS DEL PRESUPUESTO...');
+			                    try {
+			                        const res = await apiFetch('/api/presupuestos');
+			                        if (res && res.success && res.budgets) {
+			                            const b = res.budgets.find(x => x.id === budgetId);
+			                            if (b) {
+			                                enterModule('listas');
+			                                
+			                                const form = typeof b.form_data === 'string' ? JSON.parse(b.form_data) : b.form_data || {};
+			                                
+			                                setTimeout(() => {
+			                                    if(document.getElementById('lista-presupuesto')) document.getElementById('lista-presupuesto').value = b.id || '';
+			                                    if(document.getElementById('lista-nombre')) document.getElementById('lista-nombre').value = b.evento || '';
+			                                    if(document.getElementById('lista-fecha')) document.getElementById('lista-fecha').value = b.fecha || '';
+			                                    
+			                                    const typeSelect = document.getElementById('lista-tipo');
+			                                    const tVal = (form.tipoEvento || '').toUpperCase();
+			                                    if (typeSelect && tVal) {
+			                                        for(let opt of typeSelect.options) {
+			                                            if (opt.value.toUpperCase() === tVal) { typeSelect.value = opt.value; break; }
+			                                        }
+			                                    }
+			                                    
+			                                    if(document.getElementById('lista-contacto')) document.getElementById('lista-contacto').value = form.atencion || '';
+			                                    if(document.getElementById('lista-telefono')) document.getElementById('lista-telefono').value = form.telefonos || '';
+			                                    if(document.getElementById('lista-direccion')) document.getElementById('lista-direccion').value = form.direccion || '';
+			                                    if(document.getElementById('lista-hora-convocatoria')) document.getElementById('lista-hora-convocatoria').value = form.convocatoria || '';
+			                                    if(document.getElementById('lista-hora-inicio')) document.getElementById('lista-hora-inicio').value = form.inicio || '';
+			                                    if(document.getElementById('lista-hora-fin')) document.getElementById('lista-hora-fin').value = form.fin || '';
+			                                    if(document.getElementById('lista-fecha-fin')) document.getElementById('lista-fecha-fin').value = form['fecha-fin'] || b.fecha || '';
+			                                    
+			                                    const content = document.getElementById('datos-evento-content');
+			                                    if (content) {
+			                                        content.style.display = 'block';
+			                                        const icon = document.getElementById('datos-evento-icon');
+			                                        if (icon) icon.innerText = '▼';
+			                                    }
+			                                    
+			                                    toast('DATOS DEL PRESUPUESTO CARGADOS', 'success');
+			                                }, 500);
+			                            } else {
+			                                toast('Presupuesto no encontrado', 'error');
+			                            }
+			                        }
+			                    } catch(e) {
+			                        toast('Error cargando presupuesto', 'error');
+			                    }
+			                    hideLoading();
+			                    
+			                    // Quitar los parametros de la URL para que no vuelva a recargarse al refrescar
+			                    window.history.replaceState({}, document.title, window.location.pathname);
+			                }, 1500);
+			            }
+			        }
 			    };
 
 			    function renderLoginWall() {
@@ -1189,8 +1298,7 @@ describe("Hello World worker", () => {
 			        loginView.innerHTML = \`
 			            <div class="login-wall">
 			                <div class="logo-text" style="font-size: 3rem; margin-bottom: 40px; flex-direction: column; align-items: center; gap: 0;">
-			                    <span style="color:var(--brand-white); font-size: 1rem; letter-spacing: 10px; margin-bottom: -10px;">GRUPO</span>
-			                    <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
+			                <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
 			                </div>
 			                
 			                <div class="login-card">
@@ -1299,7 +1407,7 @@ describe("Hello World worker", () => {
 			        const timeStr = formatTime24h(now);
 
 			        // Actualizar todos los footers dinámicamente
-			        const footerStr = \`EYE STAFF 2026 - v2.4.94 | \${dateStr} | \${timeStr}\`;
+			        const footerStr = \`EYE STAFF 2026 - v2.5.30 | \${dateStr} | \${timeStr}\`;
 			        document.querySelectorAll('.footer-info').forEach(el => {
 			            el.textContent = footerStr;
 			        });
@@ -1317,23 +1425,18 @@ describe("Hello World worker", () => {
 
 			    function enterModule(module) {
 			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const isDirector = isUserAdminOrStaff(user);
 			        
-			        const isAdmin = isDirector || (user && (
-			            user.profile_admin === 'DIRECTOR' || 
-			            user.profile_admin === 'COORDINADOR'
-			        ));
-
-			        const canSeeEvents = isAdmin && user.profile_admin !== 'NO APLICA';
-
-			        // RESTRICCIÓN: Solo perfiles con privilegios de Director o Coordinador pueden ingresar a los otros módulos
-			        if (!isAdmin && module !== 'valet' && module !== 'formatos' && module !== 'chat') {
+			        if (module === 'valet' && !hasPermission('valet_ve')) {
+			            return toast('⚠️ ACCESO RESTRINGIDO A VALET PARKING', 'warning');
+			        }
+			        if (module === 'hr' && !hasPermission('admin_ve')) {
+			            return toast('⚠️ ACCESO RESTRINGIDO A ADMINISTRACIÓN', 'warning');
+			        }
+			        if ((module === 'listas' || module === 'eventos') && !hasPermission('eventos_ve')) {
 			            return toast('⚠️ ACCESO RESTRINGIDO A EVENTOS Y OPERACIONES', 'warning');
 			        }
-
-			        // RESTRICCIÓN ADICIONAL: NO APLICA no puede ingresar a módulos de eventos ni listas
-			        if ((module === 'eventos' || module === 'listas') && !canSeeEvents) {
-			            return toast('⚠️ ACCESO RESTRINGIDO A EVENTOS', 'warning');
+			        if (module === 'vip_eye_staff' && !hasPermission('vip_ve')) {
+			            return toast('⚠️ ACCESO RESTRINGIDO A VIP EYE STAFF', 'warning');
 			        }
 
 			        window.currentModule = module;
@@ -1352,6 +1455,10 @@ describe("Hello World worker", () => {
 			        } else if (module === 'hr') {
 			            showTab('admin');
 			            setTimeout(updateFloatingChatVisibility, 100);
+			        } else if (module === 'accesos') {
+			            renderAccessControl(view);
+			        } else if (module === 'alquiler') {
+			            renderAlquiler(view);
 			        } else if (module === 'listas') {
 			            apiFetch('/api/sessions/next-correlativo').then(res => {
 			                window.nextCorrelativo = res.next || 1;
@@ -1388,16 +1495,30 @@ describe("Hello World worker", () => {
 			        return weekNo;
 			    }
 
+
+			    window.calendarViewDate = window.calendarViewDate || new Date();
+			    window.changeCalendarWeek = function(offset) {
+			        if (offset === 'today') {
+			            window.calendarViewDate = new Date();
+			        } else {
+			            window.calendarViewDate.setDate(window.calendarViewDate.getDate() + offset);
+			        }
+			        const container = document.getElementById('calendar-wrapper-container');
+			        if (container) {
+			            container.innerHTML = generateWeeklyCalendarHTML();
+			        }
+			    };
+
 			    function generateWeeklyCalendarHTML() {
-			        const today = new Date();
-			        const currentDay = today.getDay();
-			        const diff = today.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
-			        const startOfCurrentWeek = new Date(today.setDate(diff));
+			        const viewDate = window.calendarViewDate || new Date();
 			        
-			        const startOfCalendar = new Date(startOfCurrentWeek);
-			        startOfCalendar.setDate(startOfCalendar.getDate() - 14);
+			        // Find Monday of the viewed week
+			        const currentDay = viewDate.getDay();
+			        const diff = viewDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+			        const startOfWeek = new Date(viewDate.setDate(diff));
+			        startOfWeek.setHours(0,0,0,0);
 			        
-			        const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+			        const weekDays = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
 			        const userStr = localStorage.getItem('user');
 			        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
 			        const isDirector = isUserAdminOrStaff(user);
@@ -1422,112 +1543,127 @@ describe("Hello World worker", () => {
 			            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
 			        }
 
+			        const monthName = startOfWeek.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+			        
 			        let html = \`
-			        <div id="calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; height:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden;">
-			            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-			                <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">Calendario de Eventos</h3>
-			                <div style="font-size:0.7rem; color:var(--muted); font-weight:700; background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:10px;">\${today.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase()}</div>
+			        <div id="calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden;">
+			            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+			                <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="const content = document.getElementById('calendario-content'); content.style.display = content.style.display === 'none' ? 'flex' : 'none'; const icon = document.getElementById('calendario-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+			                    <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">CALENDARIO SEMANAL</h3>
+			                    <span id="calendario-icon" style="color:var(--accent); font-size:0.8rem;">▼</span>
+			                </div>
+			                <div style="display:flex; gap:10px; align-items:center;">
+			                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeCalendarWeek(-7)">⬅️</button>
+			                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:0.8rem; font-weight:bold; color:white;" onclick="changeCalendarWeek('today')">HOY</button>
+			                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeCalendarWeek(7)">➡️</button>
+			                </div>
 			            </div>
-			            <div style="width:100%; overflow-x:auto; min-width:0; -webkit-overflow-scrolling:touch; scrollbar-width:none;">
-			                <div style="display:grid; grid-template-columns: 35px repeat(7, 1fr); gap:8px; text-align:center; flex:1; min-width:680px;">
-			                    <div></div>
-			                    \${weekDays.map(d => \`<div style="font-size:0.6rem; color:var(--muted); font-weight:900; padding-bottom:5px; letter-spacing:1px;">\${d}</div>\`).join('')}
+			            
+			            <div id="calendario-content" style="display:flex; flex-direction:column; width:100%;">
+			            <div style="font-size:0.8rem; color:var(--accent); font-weight:900; background:rgba(99, 102, 241, 0.1); padding:8px 15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+			                \${monthName}
+			            </div>
+			            
+			            <div style="display:flex; gap:5px; width:100%; padding-bottom:5px; justify-content:space-between;">
 			        \`;
 			        
-			        const currentDateIterator = new Date(startOfCalendar);
+			        const currentDateIterator = new Date(startOfWeek);
 			        const actualToday = new Date();
 			        actualToday.setHours(0,0,0,0);
-			        
-			        for (let w = 0; w < 5; w++) {
-			            const weekNum = getWeekNumber(new Date(currentDateIterator));
-			            const isCurrentWeek = w === 2;
+			        let combinedSessions = [...(window.allSessions || [])];
+			        if (window._globalBudgets) {
+			            const futureBudgets = window._globalBudgets.filter(b => {
+			                if (b.estatus !== 'APROBADO') return false;
+			                if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+			                return true;
+			            }).map(b => ({
+			                id: 'budget-' + b.id,
+			                name: b.evento || 'PRESUPUESTO APROBADO',
+			                started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+			                event_start_time: (b.form && b.form.inicio) || '00:00',
+			                type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+			                assigned_staff: 'SIN ASIGNAR',
+			                address: (b.form && b.form.direccion) || 'N/A',
+			                status: 'planning',
+			                is_budget: true,
+			                budget_id: b.id
+			            }));
+			            combinedSessions.push(...futureBudgets);
+			        }
+
+			        for (let d = 0; d < 7; d++) {
+			            const isToday = currentDateIterator.getTime() === actualToday.getTime();
+			            const dateStr = currentDateIterator.getDate();
+			            const dayName = weekDays[d];
 			            
-			            html += \`<div style="display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:\${isCurrentWeek ? 'var(--accent)' : 'var(--muted)'}; font-weight:900; opacity:0.4;">S\${weekNum}</div>\`;
-			            
-			            for (let d = 0; d < 7; d++) {
-			                currentDateIterator.setHours(0,0,0,0);
-			                const isToday = currentDateIterator.getTime() === actualToday.getTime();
-			                const dateStr = currentDateIterator.getDate();
+			            const sessionsThisDay = combinedSessions.filter(s => {
+			                if (s.status === 'budgeted') return false;
+			                const rawDate = s.started_at || s.created_at;
 			                
-			                const sessionsThisDay = allSessions.filter(s => {
-			                    if (s.status === 'budgeted') return false;
-			                    const rawDate = s.started_at || s.created_at;
-			                    
-			                    let sDate;
-			                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
-			                        // Formato YYYY-MM-DD: Forzar interpretación LOCAL
-			                        const parts = rawDate.split('-');
-			                        sDate = new Date(parts[0], parts[1] - 1, parts[2]);
-			                    } else {
-			                        sDate = new Date(rawDate);
-			                    }
-			                    
-			                    sDate.setHours(0,0,0,0);
-			                    return sDate.getTime() === currentDateIterator.getTime();
-			                });
-			                
-			                let bg = 'rgba(255,255,255,0.015)';
-			                let border = '1px solid rgba(255,255,255,0.03)';
-			                if (isToday) {
-			                    bg = 'rgba(99, 102, 241, 0.05)';
-			                    border = '1px solid var(--accent)';
-			                } else if (isCurrentWeek) {
-			                    bg = 'rgba(255,255,255,0.025)';
+			                let sDate;
+			                if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+			                    const parts = rawDate.split('-');
+			                    sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+			                } else {
+			                    sDate = new Date(rawDate);
 			                }
 			                
-			                const eventsHtml = sessionsThisDay.slice(0, 3).map(s => {
+			                sDate.setHours(0,0,0,0);
+			                return sDate.getTime() === currentDateIterator.getTime();
+			            });
+			            
+			            let bg = 'rgba(255,255,255,0.015)';
+			            let border = '1px solid rgba(255,255,255,0.03)';
+			            if (isToday) {
+			                bg = 'rgba(99, 102, 241, 0.05)';
+			                border = '1px solid var(--accent)';
+			            }
+			            
+			            let eventsHtml = '';
+			            if (sessionsThisDay.length > 0) {
+			                eventsHtml = sessionsThisDay.map(s => {
 			                    const colorSet = getEventColor(s);
 			                    const isClosed = s.status === 'closed' || s.status === 'concluded';
-			                    const tooltip = \`
-			EVENTO: \${s.name}
-			TIPO: \${s.type ? s.type.toUpperCase() : 'N/A'}
-			ESTADO: \${s.status.toUpperCase()}
-			CONTACTO: \${s.contact_name || 'N/A'}
-			TEL: \${s.phone || 'N/A'}
-			DIRECCIÓN: \${s.address || 'N/A'}
-			PERSONAL: \${s.assigned_staff || 'SIN ASIGNAR'}
-			NOTAS: \${s.observations || 'N/A'}
-			\`.trim();
-
 			                    return \`
-			                        <div title="\${tooltip}" style="background:\${colorSet.bg}; border-left:3px solid \${colorSet.border}; color:\${colorSet.text}; font-size:0.5rem; padding:3px 6px; border-radius:4px; margin-bottom:2px; width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:800; text-align:left; filter:\${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:\${colorSet.grayscale ? '0.6' : '1'};">
-			                            \${s.name.toUpperCase()} \${isClosed ? ' (FIN)' : ''}
+			                        <div onclick="showDayDetails('\${currentDateIterator.toISOString()}')" style="cursor:pointer; background:\${colorSet.bg}; border-left:4px solid \${colorSet.border}; color:\${colorSet.text}; font-size:0.75rem; padding:8px 6px; border-radius:6px; margin-bottom:6px; display:flex; flex-direction:column; gap:4px; transition:0.2s; filter:\${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:\${colorSet.grayscale ? '0.85' : '1'}; text-align:center;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='\${colorSet.bg}';">
+			                            <div style="font-weight:900; font-size:0.75rem; line-height:1.2; word-break:break-word;">\${s.name.toUpperCase()} \${isClosed ? ' (FIN)' : ''}</div>
+			                            <div style="font-size:0.6rem; color:var(--muted); font-weight:bold;">
+			                                \${s.type ? s.type.toUpperCase() : 'N/A'}
+			                            </div>
 			                        </div>
 			                    \`;
 			                }).join('');
-			                
-			                const extraCount = sessionsThisDay.length > 3 ? \`<div style="font-size:0.45rem; color:var(--muted); font-weight:800; margin-top:2px; text-align:left;">+\${sessionsThisDay.length - 3} más...</div>\` : '';
-
-			                html += \`
-			                    <div onclick="showDayDetails('\${currentDateIterator.toISOString()}')" style="position:relative; background:\${bg}; border:\${border}; border-radius:12px; padding:8px 6px; min-height:100px; display:flex; flex-direction:column; cursor:pointer; transition:all 0.2s; overflow:hidden;" onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.zIndex='5'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='\${bg}'; this.style.zIndex='1'; this.style.transform='translateY(0)';">
-			                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-			                            <span style="font-size:0.75rem; font-weight:900; color:\${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:\${isToday ? '1' : '0.5'};">\${dateStr}</span>
-			                            \${isToday ? \`<div style="width:6px; height:6px; background:var(--accent); border-radius:50%; box-shadow:0 0 8px var(--accent);"></div>\` : ''}
-			                        </div>
-			                        <div style="flex:1; overflow:hidden;">
-			                            \${eventsHtml}
-			                            \${extraCount}
-			                        </div>
-			                    </div>
-			                \`;
-			                
-			                currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+			            } else {
+			                eventsHtml = \`<div style="color:var(--muted); font-size:0.7rem; font-style:italic; padding:10px 0; text-align:center;">Sin eventos programados.</div>\`;
 			            }
+
+			            html += \`
+			                <div style="background:\${bg}; border:\${border}; border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:6px; min-width: 0; width: 14.28%; box-sizing:border-box;">
+			                    <div style="display:flex; justify-content:center; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; position:relative;">
+			                        <span style="font-size:0.65rem; font-weight:900; color:\${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:\${isToday ? '1' : '0.8'}; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center;">
+			                            \${dayName.substring(0,3)} \${dateStr}
+			                        </span>
+			                        \${isToday ? \`<div style="position:absolute; right:0; background:var(--accent); color:white; font-size:0.4rem; font-weight:900; padding:1px 3px; border-radius:4px;">HOY</div>\` : ''}
+			                    </div>
+			                    <div style="display:flex; flex-direction:column; overflow-y:auto; max-height:400px; padding-right:5px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent;">
+			                        \${eventsHtml}
+			                    </div>
+			                </div>
+			            \`;
+			            
+			            
+			            currentDateIterator.setDate(currentDateIterator.getDate() + 1);
 			        }
 			        
-			        html += \`</div></div>
-			            <div style="margin-top:20px; display:flex; gap:15px; font-size:0.55rem; color:var(--muted); align-items:center; justify-content:center; text-transform:uppercase; letter-spacing:1px; font-weight:800;">
-			                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(99, 102, 241, 0.2); border:1px solid var(--accent); border-radius:2px;"></div> HOY</div>
-			                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(239, 68, 68, 0.2); border-left:2px solid var(--brand-red); border-radius:1px;"></div> VALET</div>
-			                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(245, 158, 11, 0.2); border-left:2px solid var(--warning); border-radius:1px;"></div> BODA</div>
-			                <div style="display:flex; align-items:center; gap:5px;"><div style="width:8px; height:8px; background:rgba(16, 185, 129, 0.2); border-left:2px solid var(--brand-green); border-radius:1px;"></div> CUMPLE</div>
+			        html += \`</div>
+
 			            </div>
 			        </div>\`;
 			        
 			        return html;
 			    }
 
-			    async function saveListaEvento() {
+			        async function saveListaEvento() {
 			        const baseName = document.getElementById('lista-nombre').value;
 			        const correlativo = document.getElementById('lista-correlativo').value;
 			        const name = \`\${baseName} \${correlativo}\`;
@@ -1553,11 +1689,82 @@ describe("Hello World worker", () => {
 			            return toast('❌ DEBE ASIGNAR AL MENOS UN ENCARGADO O SUPERVISOR', 'error');
 			        }
 
+			        // MOSTRAR MODAL DE VERIFICACION
+			        const modal = document.createElement('div');
+			        modal.className = 'modal-overlay open';
+			        modal.innerHTML = \`
+			            <div class="modal-content" style="max-width:500px;">
+			                <h2 style="margin-bottom:20px; font-size:1.2rem; color:var(--brand-white); text-align:center;">VERIFICACIÓN DE PERSONAL</h2>
+			                <p style="text-align:center; color:var(--muted); font-size:0.8rem; margin-bottom:20px;">Desmarque a quien desee eliminar de la lista antes de guardar.</p>
+			                
+			                <h3 style="color:var(--warning); font-size:0.8rem; margin-bottom:10px;">🛡️ SUPERVISORES / ENCARGADOS</h3>
+			                <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px; margin-bottom:20px;">
+			                    \${window.staffSelection.supervisors.map(id => {
+			                        const staff = window.allStaffData.find(s => s.id == id);
+			                        return staff ? \`
+			                            <label style="display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+			                                <input type="checkbox" checked value="\${id}" class="verify-supervisor-chk" style="width:18px; height:18px; accent-color:var(--warning);">
+			                                <span style="font-weight:700;">\${staff.name.toUpperCase()}</span>
+			                            </label>
+			                        \` : '';
+			                    }).join('') || '<div style="color:var(--muted); font-size:0.8rem; text-align:center;">Ninguno</div>'}
+			                </div>
+
+			                <h3 style="color:var(--accent); font-size:0.8rem; margin-bottom:10px;">👥 EMPLEADOS / VALETS</h3>
+			                <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px; margin-bottom:20px; max-height:200px; overflow-y:auto;">
+			                    \${window.staffSelection.employees.map(id => {
+			                        const staff = window.allStaffData.find(s => s.id == id);
+			                        return staff ? \`
+			                            <label style="display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+			                                <input type="checkbox" checked value="\${id}" class="verify-employee-chk" style="width:18px; height:18px; accent-color:var(--accent);">
+			                                <span style="font-weight:700;">\${staff.name.toUpperCase()}</span>
+			                            </label>
+			                        \` : '';
+			                    }).join('') || '<div style="color:var(--muted); font-size:0.8rem; text-align:center;">Ninguno</div>'}
+			                </div>
+
+			                <div style="display:flex; gap:10px; margin-top:20px;">
+			                    <button class="btn btn-secondary" style="flex:1;" onclick="this.closest('.modal-overlay').remove()">CANCELAR</button>
+			                    <button class="btn" style="flex:1; background:var(--brand-green); color:white; font-weight:900;" onclick="confirmSaveListaEvento(this)">APROBAR Y GUARDAR</button>
+			                </div>
+			            </div>
+			        \`;
+			        document.body.appendChild(modal);
+			    }
+
+			    window.confirmSaveListaEvento = async function(btn) {
+			        const modal = btn.closest('.modal-overlay');
+			        const supervisor_ids = Array.from(modal.querySelectorAll('.verify-supervisor-chk:checked')).map(chk => parseInt(chk.value));
+			        const employee_ids = Array.from(modal.querySelectorAll('.verify-employee-chk:checked')).map(chk => parseInt(chk.value));
+			        
+			        window.staffSelection.supervisors = supervisor_ids;
+			        window.staffSelection.employees = employee_ids;
+			        
+			        updateStaffList('supervisor');
+			        updateStaffList('employee');
+			        
+			        const staff_ids = [...supervisor_ids, ...employee_ids];
+			        
+			        if (staff_ids.length === 0) {
+			            return toast('❌ DEBE ASIGNAR AL MENOS UN PERSONAL AL EVENTO', 'error');
+			        }
+			        
+			        if (supervisor_ids.length === 0) {
+			            return toast('❌ DEBE ASIGNAR AL MENOS UN ENCARGADO O SUPERVISOR', 'error');
+			        }
+
+			        modal.remove();
+
+			        const baseName = document.getElementById('lista-nombre').value;
+			        const correlativo = document.getElementById('lista-correlativo').value;
+			        const type = document.getElementById('lista-tipo').value;
+			        const date = document.getElementById('lista-fecha').value;
+
 			        showLoading('GUARDANDO EVENTO...');
 			        
 			        try {
 			            const user = JSON.parse(localStorage.getItem('user') || '{}');
-			            const supervisor_id = window.staffSelection.supervisors[0] || user.id;
+			            const supervisor_id = supervisor_ids[0] || user.id;
 			            
 			            const isEditing = !!window.editingSessionId;
 			            const endpoint = isEditing ? '/api/sessions/update' : '/api/sessions/plan';
@@ -1579,7 +1786,8 @@ describe("Hello World worker", () => {
 			                    convocation_time: document.getElementById('lista-hora-convocatoria')?.value || '',
 			                    event_start_time: document.getElementById('lista-hora-inicio')?.value || '',
 			                    event_end_time: document.getElementById('lista-hora-fin')?.value || '',
-			                    event_end_date: document.getElementById('lista-fecha-fin')?.value || ''
+			                    event_end_date: document.getElementById('lista-fecha-fin')?.value || '',
+			                    budget_id: document.getElementById('lista-presupuesto')?.value || null
 			                })
 			            });
 			            
@@ -1613,7 +1821,7 @@ describe("Hello World worker", () => {
 			            
 			            view.innerHTML = \`
 			                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			                <div class="header" style="margin-bottom: 20px;">
 			                    <h1 class="view-title">📋 GESTIÓN DE LISTAS</h1>
@@ -1621,7 +1829,11 @@ describe("Hello World worker", () => {
 			                <div class="listas-grid" style="display:grid; grid-template-columns: 1fr; gap: 20px; align-items:stretch; width:100%; max-width:100%; box-sizing:border-box;">
 			                    <!-- COLUMNA 1: PANEL DE ENTRADA -->
 			                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.3s ease-out;">
-			                        <h3 style="margin-bottom:20px; color:var(--accent);">Datos del Evento</h3>
+			                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('datos-evento-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('datos-evento-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+			                            <h3 style="margin:0; color:var(--accent);">Datos del Evento</h3>
+			                            <span id="datos-evento-icon" style="color:var(--accent); font-size:0.8rem;">▼</span>
+			                        </div>
+			                        <div id="datos-evento-content" style="display:block;">
 			                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; text-align:left;">
 			                            <div style="grid-column: span 1;">
 			                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">FECHA DEL EVENTO</label>
@@ -1631,12 +1843,12 @@ describe("Hello World worker", () => {
 			                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
 			                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;">
 			                                    <option value="" disabled selected>Seleccione...</option>
-			                                    <option value="valet parking">Valet Parking</option>
-			                                    <option value="boda" disabled style="color:var(--muted);">Boda</option>
-			                                    <option value="corporativo" disabled style="color:var(--muted);">Corporativo</option>
-			                                    <option value="cumpleaños" disabled style="color:var(--muted);">Cumpleaños</option>
-			                                    <option value="concierto" disabled style="color:var(--muted);">Concierto</option>
-			                                    <option value="otro" disabled style="color:var(--muted);">Otro</option>
+			                                    <option value="valet parking">VALET PARKING</option>
+			                                    <option value="control de accesos">CONTROL DE ACCESOS</option>
+			                                    <option value="alquiler de equipos">ALQUILER DE EQUIPOS</option>
+			                                    <option value="traslados">TRASLADOS</option>
+			                                    <option value="guardia diurna/nocturna">GUARDIA DIURNA/NOCTURNA</option>
+			                                    <option value="custodia">CUSTODIA</option>
 			                                </select>
 			                            </div>
 			                            <div style="grid-column: span 2;">
@@ -1653,7 +1865,11 @@ describe("Hello World worker", () => {
 			                                    oninput="handleAddressChange(this.value)">
 			                            </div>
 			                            <div style="grid-column: span 1;">
-			                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CONTACTO</label>
+			                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">Nº PRESUPUESTO</label>
+			                                <input type="text" id="lista-presupuesto" class="input-field" placeholder="Opcional" readonly style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box; background:rgba(0,0,0,0.2); opacity:0.8;">
+			                            </div>
+			                            <div style="grid-column: span 1;">
+			                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOMBRE DE CLIENTE</label>
 			                                <input type="text" id="lista-contacto" class="input-field" placeholder="Nombre" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
 			                            </div>
 			                            <div style="grid-column: span 1;">
@@ -1703,10 +1919,15 @@ describe("Hello World worker", () => {
 			                            <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:5;"></div>
 			                        </div>
 			                    </div>
+			                        </div>
 
 			                    <!-- COLUMNA 2: ASIGNACIÓN DE PERSONAL (BÚSQUEDA) -->
 			                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.4s ease-out; display:flex; flex-direction:column;">
-			                        <h3 style="margin-bottom:20px; color:var(--warning);">Asignación de Personal</h3>
+			                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('asignacion-personal-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('asignacion-personal-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+			                            <h3 style="margin:0; color:var(--warning);">Asignación de Personal</h3>
+			                            <span id="asignacion-personal-icon" style="color:var(--warning); font-size:0.8rem;">▼</span>
+			                        </div>
+			                        <div id="asignacion-personal-content" style="display:block;">
 			                        
 			                        <!-- SECCIÓN SUPERVISORES -->
 			                        <div style="margin-bottom:25px;">
@@ -1720,9 +1941,8 @@ describe("Hello World worker", () => {
 			                        </div>
 
 			                        <!-- SECCIÓN EMPLEADOS -->
-			                        <div id="employee-selection-section" style="flex:1; display:flex; flex-direction:column; min-height:0; transition:0.3s; opacity:0.3; pointer-events:none;">
+			                        <div id="employee-selection-section" style="flex:1; display:flex; flex-direction:column; min-height:0; transition:0.3s;">
 			                            <label style="font-size:0.65rem; color:var(--accent); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">👥 EMPLEADOS / VALETS</label>
-			                            <div style="font-size:0.5rem; color:var(--warning); font-weight:800; margin-bottom:5px;">⚠ SELECCIONE SUPERVISOR PRIMERO</div>
 			                            <input type="text" id="filter-employee" class="input-field" placeholder="Filtrar por nombre..." 
 			                                style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
 			                                oninput="updateStaffList('employee')">
@@ -1732,10 +1952,11 @@ describe("Hello World worker", () => {
 			                        </div>
 
 			                        <button class="btn" style="width:100%; margin-top:20px; border-radius:16px; padding:18px; font-size:1rem; font-weight:900; background:var(--brand-green); color:white;" onclick="saveListaEvento()">GUARDAR EVENTO</button>
+			                        </div>
 			                    </div>
 			                    
 			                    <!-- COLUMNA 3: CALENDARIO SEMANAL (ABAJO A ANCHO COMPLETO) -->
-			                    <div class="listas-calendar-wrapper-col">
+			                    <div class="listas-calendar-wrapper-col" id="calendar-wrapper-container">
 			                        \${generateWeeklyCalendarHTML()}
 			                    </div>
 			                </div>
@@ -1891,19 +2112,47 @@ describe("Hello World worker", () => {
 			        }
 			    }
 
-			    window.updateFloatingChatVisibility = function() {
-			        const btn = document.getElementById('btn-floating-chat');
-			        if (!btn) return;
-			        
-			        const token = localStorage.getItem('token');
-			        const user = localStorage.getItem('user');
-			        
-			        if (!token || !user || document.getElementById('chat-view')) {
-			            btn.style.display = 'none';
-			        } else {
-			            btn.style.display = 'flex';
+			    window.activarSesionDirecta = async function(id) {
+			        if (!confirm('¿DESEA INICIAR OPERACIÓN PARA ESTE EVENTO AHORA?')) return;
+			        showLoading('INICIANDO EVENTO...');
+			        try {
+			            const res = await apiFetch('/api/sessions/activate', {
+			                method: 'POST',
+			                body: JSON.stringify({ id: id })
+			            });
+			            if (res && res.error) throw new Error(res.error);
+			            
+			            toast('🚀 EVENTO INICIADO CORRECTAMENTE', 'success');
+			            await checkActiveSession();
+			            renderHome(document.getElementById('current-view'));
+			        } catch (e) {
+			            toast('❌ ERROR AL INICIAR: ' + e.message, 'error');
+			        } finally {
+			            hideLoading();
 			        }
 			    };
+
+			    window.updateFloatingChatVisibility = function() {
+			        // Funcionalidad de chat deshabilitada para refactorización
+			    };
+
+			    function checkVipAccess(user) {
+			        if (!user || !user.name) return false;
+			        const allowedVipNames = [
+			            "NELSON CARRILLO",
+			            "JOSÉ GREGORIO RAMOS",
+			            "NICOLÁS BETANCOURT",
+			            "BILLY GONZÁLEZ",
+			            "ALFONSO CALABRESE",
+			            "INVITADO",
+			            "EMPLEADO INVITADO (DEMO)"
+			        ];
+			        return allowedVipNames.some(name => {
+			            const normalizedUser = user.name.toUpperCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+			            const normalizedAllowed = name.toUpperCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+			            return normalizedUser === normalizedAllowed || normalizedUser.includes(normalizedAllowed);
+			        });
+			    }
 
 			    function exitToPortal() {
 			        if (window.chatInterval) {
@@ -1952,14 +2201,18 @@ describe("Hello World worker", () => {
 			        const userStr = localStorage.getItem('user');
 			        const user = userStr ? JSON.parse(userStr) : { role: 'valet', name: 'INVITADO' };
 			        
-			        const isDirector = isUserAdminOrStaff(user);
+			        const isDirector = hasPermission('admin_ve');
+			        const canSeeVip = hasPermission('vip_ve');
 
 			        const isAdmin = isDirector || (user && (
 			            user.profile_admin === 'DIRECTOR' || 
 			            user.profile_admin === 'COORDINADOR'
 			        ));
 
-			        const canSeeEvents = true;
+			        const canSeeValet = hasPermission('valet_ve');
+			        const canSeeAccesos = hasPermission('accesos_ve');
+			        const canSeeAlquiler = hasPermission('alquiler_ve');
+			        const canSeeEvents = canSeeValet || canSeeAccesos || canSeeAlquiler;
 
 			        // Calcular estado de Valet Parking
 			        const activeSessions = window.activeSessions || [];
@@ -2000,7 +2253,8 @@ describe("Hello World worker", () => {
 			                                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:center;">
 			                                        <thead>
 			                                            <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.55rem; text-transform:uppercase; letter-spacing:1px;">
-			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">EVENTO / TIPO</th>
+			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">EVENTO</th>
+			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">TIPO</th>
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">HORA INICIO</th>
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">TRANSCURRIDO</th>
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">PERSONAL</th>
@@ -2018,7 +2272,10 @@ describe("Hello World worker", () => {
 			                                                    return active.map(s => \`
 			                                                        <tr onclick="selectSession(\${s.id}, '\${s.type || 'valet'}')" style="border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
 			                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
-			                                                                 <div style="font-weight:900; color:#fff; font-size:0.85rem; text-align:center;">\${s.name}</div>
+			                                                                 <div style="font-weight:900; color:#fff; font-size:0.85rem; text-align:center; text-transform:uppercase;">\${s.name}</div>
+			                                                             </td>
+			                                                             <td style="padding:12px 5px; color:var(--accent); font-weight:800; font-size:0.65rem; text-transform:uppercase; text-align:center; vertical-align:middle;">
+			                                                                 \${s.type || 'VALET PARKING'}
 			                                                             </td>
 			                                                            <td style="padding:12px 5px; color:var(--muted); font-weight:700; text-align:center; vertical-align:middle;">
 			                                                                \${formatTime24h(s.started_at)}
@@ -2089,15 +2346,45 @@ describe("Hello World worker", () => {
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">PERSONAL</th>
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">CLIENTE</th>
 			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">CONTACTO</th>
+			                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">ACCIÓN</th>
 			                                            </tr>
 			                                        </thead>
 			                                        <tbody>
 			                                            \${(() => {
 			                                                const planning = (window.activeSessions || []).filter(s => {
-			                                                    if (s.status !== 'planning') return false;
+			                                                    if (s.status !== 'planning' && s.status !== 'pending') return false;
 			                                                    if (isDirector) return true;
 			                                                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
 			                                                });
+			                                                
+			                                                // Inject approved budgets
+			                                                if (window._globalBudgets) {
+			                                                    const futureBudgets = window._globalBudgets.filter(b => {
+			                                                        if (b.estatus !== 'APROBADO') return false;
+			                                                        // Filter out if a session exists with this budget_id
+			                                                        if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+			                                                        const bDateStr = (b.fecha && b.fecha !== 'N/A') ? b.fecha : (b.form && b.form.fecha);
+			                                                        if (!bDateStr) return false;
+			                                                        const d = new Date(bDateStr);
+			                                                        d.setHours(23,59,59,999);
+			                                                        // Permitir presupuestos de hasta 48 horas en el pasado por si el evento inicia tarde en la noche o de madrugada
+			                                                        return d.getTime() >= Date.now() - (2 * 24 * 60 * 60 * 1000);
+			                                                    }).map(b => ({
+			                                                        id: 'budget-' + b.id,
+			                                                        name: b.evento || 'PRESUPUESTO APROBADO',
+			                                                        started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+			                                                        event_start_time: (b.form && b.form.inicio) || '00:00',
+			                                                        type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+			                                                        assigned_staff_count: 0,
+			                                                        client: (b.form && b.form.atencion) || 'N/A',
+			                                                        phone: (b.form && b.form.telefonos) || '-',
+			                                                        is_budget: true,
+			                                                        budget_id: b.id,
+			                                                        budget_timestamp: b.timestamp
+			                                                    }));
+			                                                    planning.push(...futureBudgets);
+			                                                }
+			                                                
 			                                                planning.sort((a, b) => {
 			                                                     const getVal = (s) => {
 			                                                         if (!s.started_at) return 0;
@@ -2112,7 +2399,7 @@ describe("Hello World worker", () => {
 			                                                });
 			                                                if (planning.length > 0) {
 			                                                    return planning.map(s => \`
-			                                                        <tr onclick="renderScheduledEventDetail(\${s.id})" style="border-bottom:1px solid rgba(255,255,255,0.03); opacity:0.8; cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+			                                                        <tr onclick="\${s.is_budget ? \`cargarPresupuestoDesdeHistorial('\${s.budget_id}', \${s.budget_timestamp}); document.getElementById('current-view').style.display='none'; document.getElementById('presupuestos-view').style.display='block'; window.scrollTo(0,0);\` : \`renderScheduledEventDetail(\${s.id})\`}" style="border-bottom:1px solid rgba(255,255,255,0.03); opacity:0.8; cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
 			                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
 			                                                                <div style="font-weight:900; color:#fff; font-size:0.95rem; text-align:center;">\${s.name}</div>
 			                                                            </td>
@@ -2136,15 +2423,18 @@ describe("Hello World worker", () => {
 			                                                                </div>
 			                                                            </td>
 			                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
-			                                                                <div style="font-weight:700; color:#fff; font-size:0.85rem; text-align:center;">\${s.client || 'N/A'}</div>
+			                                                                <div style="font-weight:700; color:#fff; font-size:0.85rem; text-align:center;">\${s.contact_name || s.client || 'N/A'}</div>
 			                                                            </td>
 			                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
 			                                                                <div style="font-size:0.65rem; color:var(--muted); font-weight:700; text-align:center;">\${s.phone || '-'}</div>
 			                                                            </td>
+			                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;" onclick="event.stopPropagation()">
+			                                                                \${s.is_budget ? \`<button onclick="window.location.href='/?view=listas&action=create_session_from_budget&budget_id=\${s.budget_id}'" style="background:#22c55e; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:900; cursor:pointer; font-size:0.65rem; box-shadow:0 0 10px rgba(34,197,94,0.3); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">▶ INICIAR</button>\` : \`<button onclick="window.activarSesionDirecta(\${s.id})" style="background:#22c55e; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:900; cursor:pointer; font-size:0.65rem; box-shadow:0 0 10px rgba(34,197,94,0.3); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">▶ INICIAR</button>\`}
+			                                                            </td>
 			                                                        </tr>
 			                                                    \`).join('');
 			                                                }
-			                                                return '<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS PROGRAMADOS</td></tr>';
+			                                                return '<tr><td colspan="7" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS PROGRAMADOS</td></tr>';
 			                                            })()}
 			                                        </tbody>
 			                                    </table>
@@ -2158,11 +2448,12 @@ describe("Hello World worker", () => {
 			                
 			                
 			                <!-- 2. SERVICIOS -->
-			                <div style="margin-bottom: 25px;">
+			                <div style="margin-bottom: 25px; \${canSeeEvents ? '' : 'display:none;'}">
 			                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">SERVICIOS</h2>
 			                    
 			                    <!-- Servicios Activos -->
 			                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+			                        \${canSeeValet ? \`
 			                        <!-- VALET PARKING (ACTIVO) -->
 			                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 3px solid var(--brand-red); background: rgba(239, 68, 68, 0.05); padding:12px 15px;">
 			                            <i style="font-size:1.5rem">🚗</i>
@@ -2171,6 +2462,27 @@ describe("Hello World worker", () => {
 			                                <span class="menu-item-desc" style="font-size:0.55rem;">\${valetStatus}</span>
 			                            </div>
 			                        </div>
+			                        \` : ''}
+			                        \${canSeeAccesos ? \`
+			                        <!-- CONTROL DE ACCESOS -->
+			                        <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+			                            <i style="font-size:1.5rem">🆔</i>
+			                            <div class="menu-item-content">
+			                                <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
+			                                <span class="menu-item-desc" style="font-size:0.55rem;">ACTIVO</span>
+			                            </div>
+			                        </div>
+			                        \` : ''}
+			                        \${canSeeAlquiler ? \`
+			                        <!-- ALQUILER DE EQUIPOS -->
+			                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
+			                            <i style="font-size:1.5rem">🏗️</i>
+			                            <div class="menu-item-content">
+			                                <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+			                                <span class="menu-item-desc" style="font-size:0.55rem;">ACTIVO</span>
+			                            </div>
+			                        </div>
+			                        \` : ''}
 			                    </div>
 
 			                    <!-- Servicios Inactivos / Colapsables -->
@@ -2178,28 +2490,12 @@ describe("Hello World worker", () => {
 			                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 16px; margin-top: 12px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
 			                        <div onclick="window.toggleServicesSection()" style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; cursor:pointer; background:rgba(255,255,255,0.01); transition: background 0.2s;">
 			                            <span style="font-size:0.75rem; font-weight:800; color:var(--muted); letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-			                                🗂️ VER OTROS SERVICIOS <span style="font-size:0.6rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:10px; color:#fff;">5</span>
+			                                🗂️ VER OTROS SERVICIOS <span style="font-size:0.6rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:10px; color:#fff;">3</span>
 			                            </span>
 			                            <span id="services-toggle-arrow" style="font-size:0.7rem; color:var(--muted); transition: transform 0.3s; display: inline-block; transform: \${window.isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</span>
 			                        </div>
 			                        <div id="collapsed-services-container" style="display: \${window.isServicesExpanded ? 'block' : 'none'}; padding: 15px; border-top: 1px solid var(--border); background:rgba(0,0,0,0.15);">
 			                            <div class="menu-grid" style="margin-top:0; gap:12px;">
-			                                <!-- CONTROL DE ACCESOS -->
-			                                <div class="menu-item disabled" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
-			                                    <i style="font-size:1.5rem">🆔</i>
-			                                    <div class="menu-item-content">
-			                                        <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
-			                                        <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
-			                                    </div>
-			                                </div>
-			                                <!-- ALQUILER DE EQUIPOS -->
-			                                <div class="menu-item disabled" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
-			                                    <i style="font-size:1.5rem">🏗️</i>
-			                                    <div class="menu-item-content">
-			                                        <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
-			                                        <span class="menu-item-desc" style="font-size:0.55rem;">PRÓXIMAMENTE</span>
-			                                    </div>
-			                                </div>
 			                                <!-- TRASLADOS -->
 			                                <div class="menu-item disabled" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
 			                                    <i style="font-size:1.5rem">🚐</i>
@@ -2236,7 +2532,7 @@ describe("Hello World worker", () => {
 			                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">OPERACIONES</h2>
 			                    <div class="menu-grid operations-grid-custom" style="margin-top:0; gap:12px;">
 			                        \${isDirector ? \`
-			                        <div class="menu-item" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; background: rgba(244, 63, 94, 0.05); padding:12px 15px;">
+			                        <div class="menu-item admin-card-bg" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; padding:12px 15px;">
 			                            <i style="font-size:1.5rem">📋</i>
 			                            <div class="menu-item-content">
 			                                <span class="menu-item-title" style="font-size:0.9rem;">LISTAS</span>
@@ -2245,7 +2541,7 @@ describe("Hello World worker", () => {
 			                        </div>
 			                        \` : ''}
 			                        
-			                        <div class="menu-item" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
+			                        <div class="menu-item admin-card-bg" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; padding:12px 15px;">
 			                            <i style="font-size:1.5rem">📄</i>
 			                            <div class="menu-item-content">
 			                                <span class="menu-item-title" style="font-size:0.9rem;">FORMATOS</span>
@@ -2255,7 +2551,7 @@ describe("Hello World worker", () => {
 			                        
 			                        \${isDirector ? \`
 			                        <!-- ADMINISTRACIÓN (RRHH) -->
-			                        <div class="menu-item" onclick="enterModule('hr')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+			                        <div class="menu-item admin-card-bg" onclick="enterModule('hr')" style="border-top: 3px solid #6366f1; padding:12px 15px;">
 			                            <i style="font-size:1.5rem">⚙️</i>
 			                            <div class="menu-item-content">
 			                                <span class="menu-item-title" style="font-size:0.9rem;">ADMINISTRACIÓN</span>
@@ -2264,9 +2560,9 @@ describe("Hello World worker", () => {
 			                        </div>
 			                        \` : ''}
 
-			                        \${isDirector ? \`
+			                        \${canSeeVip ? \`
 			                        <!-- VIP EYE STAFF -->
-			                        <div class="menu-item" onclick="enterModule('vip_eye_staff')" style="border-top: 3px solid #eab308; background: rgba(234, 179, 8, 0.05); padding:12px 15px;">
+			                        <div class="menu-item admin-card-bg" onclick="enterModule('vip_eye_staff')" style="border-top: 3px solid #eab308; padding:12px 15px;">
 			                            <i style="font-size:1.5rem">👑</i>
 			                            <div class="menu-item-content">
 			                                <span class="menu-item-title" style="font-size:0.9rem;">VIP EYE STAFF</span>
@@ -2278,6 +2574,9 @@ describe("Hello World worker", () => {
 			                </div>
 			                </div>
 			                
+			                <div style="display: flex; justify-content: center; margin-top: 40px;">
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                </div>
 			                <div class="footer-info" style="margin-top: 30px;"></div>
 			            </div>
 			        \`;
@@ -2464,7 +2763,7 @@ describe("Hello World worker", () => {
 			            </div>
 
 			            <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
-			                <button class="btn" onclick="exitToPortal()" style="border-radius:30px; padding:12px 35px; font-weight:900; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			            </div>
 			        </div>\`;
 			    }
@@ -2475,6 +2774,15 @@ describe("Hello World worker", () => {
 			        
 			        const resC = await apiFetch('/api/sessions/concluded');
 			        const concludedSessions = (resC && resC.sessions) ? resC.sessions : [];
+			        
+			        const resB = await apiFetch('/api/presupuestos');
+			        if (resB && resB.budgets) {
+			            window._globalBudgets = resB.budgets.map(d => ({
+			                ...d,
+			                form: typeof d.form_data === 'string' ? JSON.parse(d.form_data) : d.form_data,
+			                items: typeof d.items_data === 'string' ? JSON.parse(d.items_data) : d.items_data
+			            }));
+			        }
 			        
 			        window.allSessions = [...activeSessions, ...concludedSessions];
 			        
@@ -2707,10 +3015,9 @@ describe("Hello World worker", () => {
 			                                if (!isValet) return false;
 			                                
 			                                if (s.status === 'active') return true;
-			                                if (s.status === 'planning') return true;
 			                                return false;
 			                            }).map(s => 
-			                                \`<option value="\${s.id}" \${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="\${s.status === 'planning' ? 'color:var(--muted);' : 'color:var(--success);'}">\${s.name.toUpperCase()} \${s.status === 'planning' ? '(PLANIFICADO)' : ''}</option>\`
+			                                \`<option value="\${s.id}" \${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="color:var(--success);">\${s.name.toUpperCase()}</option>\`
 			                            ).join('')}
 			                        </select>
 			                    </div>
@@ -2849,6 +3156,7 @@ describe("Hello World worker", () => {
 			                                <span class="menu-item-desc">REPORTES Y ESTADÍSTICAS</span>
 			                            </div>
 			                        </div>
+
 			                    </div>
 			                    \`;
 			                })()}
@@ -3006,9 +3314,7 @@ describe("Hello World worker", () => {
 			                \` : ''}
 
 			                <div style="display: flex; justify-content: center; margin-top: 20px; padding-bottom: 20px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
-			                    </button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			            </div>
 			        \`;
@@ -3127,16 +3433,83 @@ describe("Hello World worker", () => {
 
 			    // --- VIP EYE STAFF ---
 			    async function renderVipEyeStaff(el) {
+			        const user = JSON.parse(localStorage.getItem('user') || '{}');
+			        if (!hasPermission('vip_ve')) {
+			            exitToPortal();
+			            return;
+			        }
+			        const hasCfoAccess = hasPermission('vip_mod');
+
 			        el.innerHTML = \`
-			            <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
-			            </div>
+
 			            <div class="view-header">
 			                <h1 class="view-title">👑 VIP EYE STAFF</h1>
 			            </div>
 			            <div class="menu-grid operations-grid-custom" style="margin-top:20px; gap:12px;">
+			                <!-- PRESUPUESTOS -->
+			                \${hasCfoAccess ? \`
+			                <div class="menu-item admin-card-bg" onclick="renderPresupuestos(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7; padding: 24px; border-radius: 24px;">
+			                    <i style="font-size:1.8rem">📊</i>
+			                    <div class="menu-item-content">
+			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PRESUPUESTOS</span>
+			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">PLANIFICACIÓN Y CONTROL</span>
+			                    </div>
+			                </div>
+			                \` : ''}
+
+			                <!-- NÓMINA Y PAGOS -->
+			                \${hasCfoAccess ? \`
+			                <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); padding: 24px; border-radius: 24px;">
+			                    <i style="font-size:1.8rem">💰</i>
+			                    <div class="menu-item-content">
+			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
+			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REVISIÓN Y AUTORIZACIÓN</span>
+			                    </div>
+			                </div>
+			                \` : ''}
+
+			                <!-- CIERRES -->
+			                <div class="menu-item admin-card-bg" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981; padding: 24px; border-radius: 24px;">
+			                    <i style="font-size:1.8rem">🔒</i>
+			                    <div class="menu-item-content">
+			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES</span>
+			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE CIERRES DIARIOS</span>
+			                    </div>
+			                </div>
+
+			                <!-- INFORMES Y REPORTES -->
+			                \${hasCfoAccess ? \`
+			                <div class="menu-item admin-card-bg" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b; padding: 24px; border-radius: 24px;">
+			                    <i style="font-size:1.8rem">📈</i>
+			                    <div class="menu-item-content">
+			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
+			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REPORTES GENERALES Y ESTADÍSTICAS</span>
+			                    </div>
+			                </div>
+			                \` : ''}
+
+
+			                <!-- AUDITORÍA -->
+			                \${(() => {
+			                    try {
+			                        const user = JSON.parse(localStorage.getItem('user'));
+			                        if (user && user.is_superadmin) {
+			                            return \`
+			                            <div class="menu-item admin-card-bg" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger); padding: 24px; border-radius: 24px;">
+			                                <i style="font-size:1.8rem">🛡️</i>
+			                                <div class="menu-item-content">
+			                                    <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">AUDITORÍA</span>
+			                                    <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REGISTRO DE ACCESOS Y ACCIONES</span>
+			                                </div>
+			                            </div>
+			                            \`;
+			                        }
+			                    } catch(e) {}
+			                    return '';
+			                })()}
+
 			                <!-- PROYECTOS -->
-			                <div class="menu-item" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05); padding: 24px; border-radius: 24px;">
+			                <div class="menu-item admin-card-bg" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6; padding: 24px; border-radius: 24px;">
 			                    <i style="font-size:1.8rem">📁</i>
 			                    <div class="menu-item-content">
 			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PROYECTOS</span>
@@ -3145,7 +3518,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <!-- PUBLICIDAD -->
-			                <div class="menu-item" onclick="toast('📢 PUBLICIDAD estará disponible próximamente', 'info')" style="border-top: 4px solid #d946ef; background: rgba(217, 70, 239, 0.05); padding: 24px; border-radius: 24px;">
+			                <div class="menu-item admin-card-bg" onclick="renderMarketing(document.getElementById('current-view'))" style="border-top: 4px solid #d946ef; padding: 24px; border-radius: 24px;">
 			                    <i style="font-size:1.8rem">📢</i>
 			                    <div class="menu-item-content">
 			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PUBLICIDAD</span>
@@ -3154,22 +3527,16 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <!-- LEGAL -->
-			                <div class="menu-item" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316; background: rgba(249, 115, 22, 0.05); padding: 24px; border-radius: 24px;">
+			                <div class="menu-item admin-card-bg" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316; padding: 24px; border-radius: 24px;">
 			                    <i style="font-size:1.8rem">⚖️</i>
 			                    <div class="menu-item-content">
 			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">LEGAL</span>
 			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTRATOS Y NORMATIVAS</span>
 			                    </div>
 			                </div>
-
-			                <!-- CIERRES -->
-			                <div class="menu-item" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981; background: rgba(16, 185, 129, 0.05); padding: 24px; border-radius: 24px;">
-			                    <i style="font-size:1.8rem">🔒</i>
-			                    <div class="menu-item-content">
-			                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES</span>
-			                        <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE CIERRES DIARIOS</span>
-			                    </div>
-			                </div>
+			            </div>
+			            <div style="display: flex; justify-content: center; margin-top: 40px;">
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			            </div>
 			            <div class="footer-info" style="margin-top:60px;"></div>
 			        \`;
@@ -3180,12 +3547,15 @@ describe("Hello World worker", () => {
 			    async function renderFormatos(el) {
 			        el.innerHTML = \`
 			            <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			            </div>
 			            <div class="view-header">
 			                <h1 class="view-title">📄 FORMATOS Y NÓMINA</h1>
 			            </div>
 			            <div id="payroll-content"></div>
+			            <div style="display: flex; justify-content: center; margin-top: 40px;">
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			            </div>
 			            <div class="footer-info" style="margin-top:60px;"></div>
 			        \`;
 			        
@@ -3457,7 +3827,7 @@ describe("Hello World worker", () => {
 			            if (sessions.length === 0) {
 			                el.innerHTML = \`
 			                    <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                        <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                        \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                    </div>
 			                    <div class="view-header"><h1 class="view-title">📅 EVENTOS</h1></div>
 			                    <div class="stat-card" style="text-align:center; padding:50px;">
@@ -3474,7 +3844,7 @@ describe("Hello World worker", () => {
 
 			            let html = \`
 			                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			                <div class="view-header">
 			                    <h1 class="view-title">📅 MONITOREO DE EVENTOS</h1>
@@ -3661,11 +4031,9 @@ describe("Hello World worker", () => {
 
 			            html += \`
 			                <div style="display: flex; justify-content: center; margin-top: 40px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 12px 40px; font-size: 1rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
-			                    </button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
-			                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.4.0</div>
+			                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.5.30</div>
 			            \`;
 
 			            el.innerHTML = html;
@@ -3714,7 +4082,7 @@ describe("Hello World worker", () => {
 
 			            let html = \`
 			                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-			                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			                <div class="view-header">
 			                    <h1 class="view-title">📅 DETALLE DE EVENTO PROGRAMADO</h1>
@@ -4018,10 +4386,8 @@ describe("Hello World worker", () => {
 
 			            <div id="custodia-list-detail"></div>
 			            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-			                    ← VOLVER AL PORTAL
-			                </button>
-			                <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                \${getVolverBtn('MENÚ VALET', 'showTab(\\'home\\')')}
 			            </div>
 			            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
 			        \`;
@@ -4315,7 +4681,7 @@ describe("Hello World worker", () => {
 			                        </select>
 			                    </div>
 
-			                    <div class="field"><label>PLACA * OBLIGATORIO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-plate" placeholder="EJ: ABC-123" oninput="handlePlateInput(this.value)" list="predictive-plates" required></div>
+			                    <div class="field"><label>PLACA * OBLIGATORIO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-plate" placeholder="EJ: ABC-123" oninput="handlePlateInput(this.value)" onblur="checkPlateComplete(this.value)" list="predictive-plates" required></div>
 			                    <datalist id="predictive-plates"></datalist>
 			                    
 			                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
@@ -4350,10 +4716,8 @@ describe("Hello World worker", () => {
 			                </div>
 			            </div>
 			            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-			                    ← VOLVER AL PORTAL
-			                </button>
-			                <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                \${getVolverBtn('MENÚ VALET', 'showTab(\\'home\\')')}
 			            </div>
 			            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
 			        \`;
@@ -4409,12 +4773,12 @@ describe("Hello World worker", () => {
 			            });
 
 			            if (res && res.success) {
-			                if (res.plate && res.plate !== 'REVISAR') document.getElementById('in-plate').value = res.plate.toUpperCase();
-			                if (res.brand && res.brand !== 'REVISAR') document.getElementById('in-brand').value = res.brand.toUpperCase();
-			                if (res.model && res.model !== 'REVISAR') document.getElementById('in-model').value = res.model.toUpperCase();
-			                if (res.color && res.color !== 'REVISAR') document.getElementById('in-color').value = res.color.toUpperCase();
+			                if (res.plate && !res.plate.toUpperCase().includes('REVISAR')) document.getElementById('in-plate').value = res.plate.toUpperCase();
+			                if (res.brand && !res.brand.toUpperCase().includes('REVISAR')) document.getElementById('in-brand').value = res.brand.toUpperCase();
+			                if (res.model && !res.model.toUpperCase().includes('REVISAR')) document.getElementById('in-model').value = res.model.toUpperCase();
+			                if (res.color && !res.color.toUpperCase().includes('REVISAR')) document.getElementById('in-color').value = res.color.toUpperCase();
 			                
-			                if (res.comments && res.comments !== 'REVISAR') {
+			                if (res.comments && !res.comments.toUpperCase().includes('REVISAR')) {
 			                    const notesEl = document.getElementById('in-notes');
 			                    if (notesEl.value) notesEl.value += '\\n';
 			                    notesEl.value += \`[IA]: \${res.comments}\`;
@@ -4527,10 +4891,8 @@ describe("Hello World worker", () => {
 			            </div>
 			            
 			            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-			                    ← VOLVER AL PORTAL
-			                </button>
-			                <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                \${getVolverBtn('MENÚ VALET', 'showTab(\\'home\\')')}
 			            </div>
 			            <div class="chat-access-btn" style="margin-top:20px" onclick="showGlobalChat()">💬 ACCEDER AL CENTRO DE MENSAJES</div>
 			            <div class="footer-info">COPYRIGHT EYE STAFF 2026 - v1.1</div>
@@ -4635,7 +4997,7 @@ describe("Hello World worker", () => {
 			            <div id="detail-photos" class="photo-grid" style="margin-bottom:20px">Cargando fotos...</div>
 			            
 			            <div style="display:flex; gap:10px; flex-wrap: wrap;">
-			                <button id="btn-do-checkout" class="btn" style="flex:2; min-height:50px; font-size:0.8rem; padding: 5px 15px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; line-height: 1.2; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); opacity: 0.4;" onclick="doCheckout(\${v.id}, '\${v.owner_phone || ''}', '\${v.plate}')" disabled>ENTREGAR VEHÍCULO Y NOTIFICAR</button>
+			                <button id="btn-do-checkout" class="btn" style="flex:2; min-height:50px; font-size:0.8rem; padding: 5px 15px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; line-height: 1.2; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); opacity: 0.4;" onclick="doCheckout(\${v.id}, '\${v.owner_phone || ''}', '\${v.plate}', '\${v.owner_name || ''}', '\${v.brand || ''}')" disabled>ENTREGAR VEHÍCULO Y NOTIFICAR</button>
 			                <button class="btn btn-secondary" style="flex:1; min-height:50px; font-size:0.9rem; display: inline-flex; align-items: center; justify-content: center; text-align: center;" onclick="closeModal()">CERRAR</button>
 			            </div>
 			        \`;
@@ -4763,20 +5125,22 @@ describe("Hello World worker", () => {
 			            }
 			        });
 
-			        // 3. Autocompletar si la placa está completa (6+ caracteres) o coincide exactamente
-			        if (val.length >= 6) {
-			            apiFetch('/api/vehicles/by-plate/' + encodeURIComponent(val)).then(data => {
-			                if (data && !data.error) {
-			                    if (data.brand) document.getElementById('in-brand').value = data.brand;
-			                    if (data.model) document.getElementById('in-model').value = data.model;
-			                    if (data.color) document.getElementById('in-color').value = data.color;
-			                    if (data.owner_name) document.getElementById('in-owner').value = data.owner_name;
-			                    if (data.owner_phone) document.getElementById('in-phone').value = data.owner_phone;
-			                    if (data.owner_email) document.getElementById('in-email').value = data.owner_email;
-			                    toast('✨ DATOS RECUPERADOS POR PLACA', 'success');
-			                }
-			            });
-			        }
+			    }
+
+			    async function checkPlateComplete(val) {
+			        if (!val || val.trim().length < 3) return;
+			        apiFetch('/api/vehicles/by-plate/' + encodeURIComponent(val.trim())).then(data => {
+			            if (data && !data.error) {
+			                let updated = false;
+			                if (data.brand) { document.getElementById('in-brand').value = data.brand; updated = true; }
+			                if (data.model) { document.getElementById('in-model').value = data.model; updated = true; }
+			                if (data.color) { document.getElementById('in-color').value = data.color; updated = true; }
+			                if (data.owner_name) { document.getElementById('in-owner').value = data.owner_name; updated = true; }
+			                if (data.owner_phone) { document.getElementById('in-phone').value = data.owner_phone; updated = true; }
+			                if (data.owner_email) { document.getElementById('in-email').value = data.owner_email; updated = true; }
+			                if (updated) toast('✨ DATOS AUTOCOMPLETADOS', 'success');
+			            }
+			        });
 			    }
 
 			    async function handleOwnerInput(val) {
@@ -4825,7 +5189,7 @@ describe("Hello World worker", () => {
 			        }
 			    }
 
-			    async function doCheckout(id, phone, plate) {
+			    async function doCheckout(id, phone, plate, ownerName, brand) {
 			        if (!confirm('¿CONFIRMAR ENTREGA DEL VEHÍCULO?')) return;
 			        
 			        showLoading('REGISTRANDO ENTREGA...');
@@ -4838,6 +5202,21 @@ describe("Hello World worker", () => {
 			            hideLoading();
 			            toast('✅ Vehículo entregado', 'success');
 			            closeModal();
+
+			            // WhatsApp Integration (Fase 1)
+			            if (phone) {
+			                try {
+			                    const waRes = await apiFetch('/api/valet/notificar', {
+			                        method: 'POST',
+			                        body: JSON.stringify({ nombre: ownerName || '', vehiculo: brand || '', placa: plate, telefono: phone })
+			                    });
+			                    if (waRes && waRes.url) {
+			                        window.open(waRes.url, '_blank');
+			                    }
+			                } catch(e) {
+			                    console.error('Error enviando WA:', e);
+			                }
+			            }
 
 			            const sid = window.activeSession ? window.activeSession.id : null;
 			            let inCustodyCount = 0;
@@ -4854,6 +5233,31 @@ describe("Hello World worker", () => {
 			                showTab('resumen');
 			            }
 			        } else {
+			            hideLoading();
+			        }
+			    }
+
+			    async function enviarAlertaWA() {
+			        const phone = prompt('Ingrese el teléfono del supervisor o grupo (ej: 04121234567):', '04121234567');
+			        if (!phone) return;
+			        
+			        const msg = prompt('Ingrese el mensaje de alerta:', 'Alerta operativa en Valet Parking');
+			        if (!msg) return;
+
+			        showLoading('GENERANDO ALERTA WA...');
+			        try {
+			            const waRes = await apiFetch('/api/staff/alerta', {
+			                method: 'POST',
+			                body: JSON.stringify({ mensaje: msg, telefono: phone })
+			            });
+			            if (waRes && waRes.url) {
+			                window.open(waRes.url, '_blank');
+			                toast('Alerta generada', 'success');
+			            }
+			        } catch(e) {
+			            console.error('Error generando alerta WA:', e);
+			            toast('Error generando alerta', 'error');
+			        } finally {
 			            hideLoading();
 			        }
 			    }
@@ -4880,9 +5284,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="text-align:center; margin-top: 40px; margin-bottom: 60px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
-			                    </button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			            </div>
 			        \`;
@@ -4960,10 +5362,8 @@ describe("Hello World worker", () => {
 			            </div>
 			            
 			            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-			                    ← VOLVER AL PORTAL
-			                </button>
-			                <div class="back-nav" onclick="showTab('home')" style="margin:0; width: fit-content; background:transparent; border:none;">← IR AL MENÚ VALET</div>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                \${getVolverBtn('MENÚ VALET', 'showTab(\\'home\\')')}
 			            </div>
 			            <div class="footer-info" style="margin-top:40px; text-align:center;">COPYRIGHT EYE STAFF 2026</div>
 			        \`;
@@ -5213,7 +5613,7 @@ describe("Hello World worker", () => {
 			                    </div>
 
 			                    <button class="btn btn-accent" style="width:100%; height:60px; font-size:1.2rem; margin-bottom:10px" onclick="window.open('\${ticketUrl}', '_blank')">VER TICKET DIGITAL</button>
-			                    <button class="btn btn-secondary" style="width:100%" onclick="closeModal(); showTab('home');">VOLVER AL MENU</button>
+			                    \${getVolverBtn('MENÚ VALET', 'closeModal(); showTab(\\'home\\');')}
 			                    <div id="redirect-timer" style="margin-top:15px; font-size:0.8rem; color:var(--accent); font-weight:700;">VOLVIENDO AL MENÚ EN 15 SEGUNDOS...</div>
 			                </div>
 			            \`;
@@ -5256,6 +5656,10 @@ describe("Hello World worker", () => {
 			    }
 
 			    // --- UTILS ---
+			    function getVolverBtn(text, action) {
+			        return \`<button class="btn btn-volver-ux" onclick="\${action}">← \${text}</button>\`;
+			    }
+
 			    function toast(msg, type = 'info') {
 			        const t = document.createElement('div');
 			        t.className = 'toast';
@@ -5265,33 +5669,7 @@ describe("Hello World worker", () => {
 			        setTimeout(() => t.remove(), 3000);
 			    }
 
-			    async function showGlobalChat() {
-			        showLoading('CARGANDO CENTRO DE MENSAJES...');
-			        const res = await apiFetch('/api/vehicles/active');
-			        hideLoading();
-			        if (!res) return;
-
-			        const vehicles = res.vehicles.filter(v => v.status !== 'retrieved');
-			        const modalBody = document.getElementById('modal-body');
-			        modalBody.innerHTML = \`
-			            <h2 style="margin-top:0">CENTRO DE MENSAJES</h2>
-			            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:20px;">SELECCIONE UN VEHÍCULO PARA CHATEAR CON EL CLIENTE</p>
-			            <div class="grid" style="grid-template-columns: 1fr; gap:10px; max-height:60vh; overflow-y:auto;">
-			                \${vehicles.map(v => \`
-			                    <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:15px; border:1px solid var(--border);" onclick="closeModal(); viewVehicleDetail(\${v.id})">
-			                        <div>
-			                            <div style="font-weight:900; font-size:1.1rem; color:var(--accent)">\${v.plate}</div>
-			                            <div style="font-size:0.75rem; color:var(--muted)">\${v.owner_name}</div>
-			                        </div>
-			                        <div style="color:var(--danger)">CHATEAR →</div>
-			                    </div>
-			                \`).join('')}
-			                \${vehicles.length === 0 ? '<p style="text-align:center; color:var(--muted)">NO HAY VEHÍCULOS ACTIVOS</p>' : ''}
-			            </div>
-			            <button class="btn btn-secondary" style="width:100%; margin-top:20px" onclick="closeModal()">CERRAR</button>
-			        \`;
-			        openModal();
-			    }
+			    async function showGlobalChat() { toast("Centro de mensajes en mantenimiento", "info"); }
 			    async function loadSettings() {
 			        const data = await apiFetch('/api/settings');
 			        if (data) settings = { ...settings, ...data };
@@ -5325,8 +5703,8 @@ describe("Hello World worker", () => {
 			            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
 			                <h1 class="view-title">🎓 CAPTACIÓN Y FORMACIÓN</h1>
 			                <div style="display:flex; gap:10px;">
-			                    <button class="btn btn-sm" onclick="window.open('/join', '_blank')" style="background:#22c55e;">🌐 VER FORMULARIO PÚBLICO</button>
-			                    <button class="btn btn-sm btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="font-size:0.6rem; padding:8px 15px; border-radius:8px;">← VOLVER AL MENÚ ADMIN</button>
+			                    <button class="btn btn-sm" onclick="window.open('/join', '_blank')" style="background:#22c55e;">🌐 FORMULARIO PÚBLICO</button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 			            </div>
 
@@ -5436,7 +5814,7 @@ describe("Hello World worker", () => {
 			            el.innerHTML = \`
 			                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 			                    <h1 class="view-title">🏎️ BBDD DE VEHÍCULOS <small style="font-size:0.7rem; color:var(--muted)" id="veh-count">\${vehicles.length} REGISTROS</small></h1>
-			                    <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 
 			                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
@@ -5452,9 +5830,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-			                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL MENÚ ADMIN
-			                    </button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 			            \`;
 			        } catch (e) {
@@ -5862,7 +6238,7 @@ describe("Hello World worker", () => {
 			                <!-- Body -->
 			                <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
 			                    <div style="background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.2); padding:12px; border-radius:12px; font-size:0.75rem; color:#fff; line-height:1.4;">
-			                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>eyestaff.ncarrillo@gmail.com</b>
+			                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>ncarrillok@gmail.com</b>
 			                    </div>
 
 			                    <div style="display:flex; flex-direction:column; gap:6px;">
@@ -5965,7 +6341,7 @@ describe("Hello World worker", () => {
 			            let html = \`
 			                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 			                    <h1 class="view-title">📊 BBDD DE EVENTOS <small style="font-size:0.7rem; color:var(--brand-red)">\${reports.length} REPORTES</small></h1>
-			                    <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 
 			                <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:10px;">
@@ -6054,7 +6430,7 @@ describe("Hello World worker", () => {
 			            el.innerHTML = \`
 			                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 			                    <h1 class="view-title">📑 BBDD DE CLIENTES <small style="font-size:0.7rem; color:var(--muted)" id="cli-count">\${clients.length} REGISTROS</small></h1>
-			                    <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 
 			                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
@@ -6070,9 +6446,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
-			                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL MENÚ ADMIN
-			                    </button>
+			                    \${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\\'current-view\\'), \\'menu\\')')}
 			                </div>
 			            \`;
 			        } catch (e) {
@@ -6102,6 +6476,7 @@ describe("Hello World worker", () => {
 			                    <tr style="background:rgba(255,255,255,0.03); color:var(--muted); border-bottom:1px solid var(--border);">
 			                        <th style="padding:15px;">NOMBRE DEL CLIENTE</th>
 			                        <th style="padding:15px;">CONTACTO</th>
+			                        <th style="padding:15px;">TIPO DE EVENTO</th>
 			                        <th style="padding:15px; text-align:center;">VISITAS</th>
 			                        <th style="padding:15px;">ESTADO</th>
 			                        <th style="padding:15px;"></th>
@@ -6112,6 +6487,11 @@ describe("Hello World worker", () => {
 			                        <tr style="border-bottom:1px solid var(--border); transition:background 0.2s;">
 			                            <td style="padding:15px; font-weight:900; color:#fff;">\${(c.owner_name || 'SIN NOMBRE').toUpperCase()}</td>
 			                            <td style="padding:15px; font-family:var(--font-mono); font-size:0.85rem;">\${c.owner_phone || '—'}</td>
+			                            <td style="padding:15px;">
+			                                <span style="background:rgba(168, 85, 247, 0.2); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:bold;">
+			                                    \${c.event_types || 'VALET PARKING'}
+			                                </span>
+			                            </td>
 			                            <td style="padding:15px; text-align:center;">
 			                                <span style="background:var(--accent2); color:white; padding:4px 10px; border-radius:20px; font-weight:800; font-size:0.8rem;">
 			                                    \${c.total_visits}
@@ -6164,7 +6544,7 @@ describe("Hello World worker", () => {
 
 
 			    window.solicitarPruebaReporte = async function() {
-			        const type = confirm("¿Desea probar el REPORTE DE CUMPLEAÑEROS (Aceptar) o la NOTIFICACIÓN DE CONVOCATORIA (Cancelar)?\\n\\nAmbas pruebas se enviarán al correo corporativo: eyestaff.ncarrillo@gmail.com") ? 'birthday' : 'convocation';
+			        const type = confirm("¿Desea probar el REPORTE DE CUMPLEAÑEROS (Aceptar) o la NOTIFICACIÓN DE CONVOCATORIA (Cancelar)?\\n\\nAmbas pruebas se enviarán al correo corporativo: ncarrillok@gmail.com") ? 'birthday' : 'convocation';
 			        
 			        showLoading('ENVIANDO PRUEBA...');
 			        try {
@@ -6174,7 +6554,7 @@ describe("Hello World worker", () => {
 			            });
 			            if (res && res.success) {
 			                toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-			                alert(\`📧 PRUEBA ENVIADA CON ÉXITO\\n\\nEl correo de prueba ha sido despachado correctamente a eyestaff.ncarrillo@gmail.com. Por favor, revise su bandeja de entrada (y la carpeta de Spam si no lo visualiza).\`);
+			                alert(\`📧 PRUEBA ENVIADA CON ÉXITO\\n\\nEl correo de prueba ha sido despachado correctamente a ncarrillok@gmail.com. Por favor, revise su bandeja de entrada (y la carpeta de Spam si no lo visualiza).\`);
 			            } else {
 			                throw new Error(res.error || 'Error desconocido');
 			            }
@@ -6192,8 +6572,9 @@ describe("Hello World worker", () => {
 			        else if (type === 'birthday') title = 'REPORTE MENSUAL DE CUMPLEAÑEROS';
 			        else if (type === 'pdf') title = 'DOSSIER DIGITAL EN PDF';
 			        else if (type === 'xlsx') title = 'BASE DE DATOS EN EXCEL (XLSX)';
+			        else if (type === 'permissions-matrix') title = 'MATRIZ DE PERMISOS (EXCEL)';
 			        
-			        if (!confirm(\`¿Desea solicitar una prueba de: "\${title}"?\\n\\nEl reporte de simulación se enviará a: eyestaff.ncarrillo@gmail.com\`)) return;
+			        if (!confirm(\`¿Desea solicitar una prueba de: "\${title}"?\\n\\nEl reporte de simulación se enviará a: ncarrillok@gmail.com\`)) return;
 			        
 			        showLoading('ENVIANDO PRUEBA...');
 			        try {
@@ -6203,7 +6584,7 @@ describe("Hello World worker", () => {
 			            });
 			            if (res && res.success) {
 			                toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-			                alert(\`📧 PRUEBA DESPACHADA\\n\\nEl reporte de prueba para "\${title}" ha sido enviado con éxito a eyestaff.ncarrillo@gmail.com.\\n\\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).\`);
+			                alert(\`📧 PRUEBA DESPACHADA\\n\\nEl reporte de prueba para "\${title}" ha sido enviado con éxito a ncarrillok@gmail.com.\\n\\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).\`);
 			            } else {
 			                throw new Error(res.error || 'Error de servidor');
 			            }
@@ -6215,13 +6596,79 @@ describe("Hello World worker", () => {
 			        }
 			    };
 
+			    window.sendCredentialsEmail = async function() {
+			        const sel = document.getElementById('credentials-user-select');
+			        if (!sel || !sel.value) {
+			            toast('⚠️ Selecciona un empleado', 'error');
+			            return;
+			        }
+			        const userId = sel.value;
+			        const userName = sel.options[sel.selectedIndex].text.split(' (')[0];
+			        if (!confirm(\`¿Enviar credenciales de acceso a "\${userName}"?\`)) return;
+			        showLoading('ENVIANDO CREDENCIALES...');
+			        try {
+			            const res = await apiFetch('/api/reports/send-credentials', {
+			                method: 'POST',
+			                body: JSON.stringify({ user_id: userId })
+			            });
+			            if (res && res.success) {
+			                toast('✅ CREDENCIALES ENVIADAS CON ÉXITO', 'success');
+			            } else {
+			                throw new Error(res.error || 'Error de servidor');
+			            }
+			        } catch(e) {
+			            toast('❌ ERROR: ' + e.message, 'error');
+			        } finally {
+			            hideLoading();
+			        }
+			    };
+
+			    window.downloadPermissionsMatrixExcel = async function() {
+			        showLoading('GENERANDO EXCEL...');
+			        try {
+			            const res = await apiFetch('/api/admin/user-permissions');
+			            const list = res.permissions || [];
+			            
+			            let excelData = [
+			              ['Empleado', 'Valet Parking Ve', 'Valet Parking Mod', 'Control Accesos Ve', 'Control Accesos Mod', 'Alquiler Equipos Ve', 'Alquiler Equipos Mod', 'Eventos y Listas Ve', 'Eventos y Listas Mod', 'Admin General Ve', 'Admin General Mod', 'VIP Eye Staff Ve', 'VIP Eye Staff Mod', 'Seguridad (Pines) Ve', 'Seguridad (Pines) Mod']
+			            ];
+
+			            list.forEach(p => {
+			              const toMark = (v) => v === 1 ? '✅' : '❌';
+			              excelData.push([
+			                p.name.toUpperCase(),
+			                toMark(p.valet_ve), toMark(p.valet_mod),
+			                toMark(p.accesos_ve), toMark(p.accesos_mod),
+			                toMark(p.alquiler_ve), toMark(p.alquiler_mod),
+			                toMark(p.eventos_ve), toMark(p.eventos_mod),
+			                toMark(p.admin_ve), toMark(p.admin_mod),
+			                toMark(p.vip_ve), toMark(p.vip_mod),
+			                toMark(p.seg_ve), toMark(p.seg_mod)
+			              ]);
+			            });
+
+			            const ws = XLSX.utils.aoa_to_sheet(excelData);
+			            const colWidths = excelData.map(() => ({ wch: 15 }));
+			            colWidths[0].wch = 30; // Nombre más ancho
+			            ws['!cols'] = colWidths;
+			            const wb = XLSX.utils.book_new();
+			            XLSX.utils.book_append_sheet(wb, ws, "Permisos");
+			            XLSX.writeFile(wb, \`Matriz_Permisos_\${new Date().toISOString().slice(0, 10)}.xlsx\`);
+			            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
+			        } catch(e) {
+			            toast('❌ ERROR AL GENERAR EXCEL', 'error');
+			            console.error(e);
+			        } finally {
+			            hideLoading();
+			        }
+			    };
+
 			    async function renderInformesYReportes(el) {
 			        setTimeout(() => window.scrollTo(0, 0), 100);
 			        
 			        el.innerHTML = \`
-			            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+			            <div class="view-header" style="margin-bottom:20px;">
 			                <h1 class="view-title">📈 INFORMES Y REPORTES <small style="font-size:0.7rem; color:var(--brand-red)">MAPA DE AUTOMATIZACIÓN</small></h1>
-			                <button class="btn btn-secondary btn-sm" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="padding:10px 20px; border-radius:10px;">← VOLVER</button>
 			            </div>
 
 			            <!-- Introducción explicativa -->
@@ -6273,7 +6720,7 @@ describe("Hello World worker", () => {
 			                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
 			                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
 			                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML)</b></span>
-			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
 			                        </div>
 			                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('convocation')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(245, 158, 11, 0.12); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); cursor:pointer; text-transform:uppercase;">
 			                            ✉️ PROBAR CONVOCATORIA
@@ -6296,7 +6743,7 @@ describe("Hello World worker", () => {
 			                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
 			                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
 			                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF adjunto</b></span>
-			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
 			                        </div>
 			                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('birthday')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(14, 165, 233, 0.12); color:#0ea5e9; border:1px solid rgba(14, 165, 233, 0.3); cursor:pointer; text-transform:uppercase;">
 			                            ✉️ PROBAR CUMPLEAÑOS
@@ -6408,16 +6855,103 @@ describe("Hello World worker", () => {
 			                        </button>
 			                    </div>
 			                </div>
+			                <!-- 8. Envío de Credenciales de Acceso -->
+			                <div class="card" style="border-top:4px solid #eab308; background:rgba(234,179,8,0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+			                    <div>
+			                        <div style="display:flex; justify-content:space-between; align-items:start;">
+			                            <span style="font-size:1.5rem;">🔑</span>
+			                            <span style="font-size:0.6rem; font-weight:900; background:rgba(234,179,8,0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ENVÍO MANUAL</span>
+			                        </div>
+			                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Credenciales de Acceso</h3>
+			                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+			                            Envía las instrucciones de acceso y credenciales (usuario + contraseña) a cualquier empleado registrado, directamente a su correo electrónico registrado en el sistema.
+			                        </p>
+			                    </div>
+			                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+			                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+			                            <span style="color:var(--muted); font-weight:700;">Formato: <b style="color:white;">Email HTML</b></span>
+			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email del empleado</b></span>
+			                        </div>
+			                        <select id="credentials-user-select" style="width:100%; background:var(--surface); border:1px solid var(--border); color:#fff; border-radius:10px; padding:10px; font-size:0.8rem; font-weight:700; outline:none;">
+			                            <option value="">Seleccionar empleado...</option>
+			                        </select>
+			                        <button class="btn btn-sm" onclick="sendCredentialsEmail()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
+			                            📧 ENVIAR CREDENCIALES POR EMAIL
+			                        </button>
+			                    </div>
+			                </div>
+
+			                <!-- 9. Cierre de Ciclo de Pago -->
+			                <div class="card" style="border-top:4px solid #3b82f6; background:rgba(59, 130, 246, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+			                    <div>
+			                        <div style="display:flex; justify-content:space-between; align-items:start;">
+			                            <span style="font-size:1.5rem;">🔒</span>
+			                            <span style="font-size:0.6rem; font-weight:900; background:rgba(59,130,246,0.15); color:#3b82f6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DEL CFO</span>
+			                        </div>
+			                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Cierre de Ciclo de Pago</h3>
+			                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+			                            Consolidado de eventos aprobados que se marcan como PAGADOS por el CFO. Limpia el listado activo de aprobados y archiva el acumulado en el historial de nóminas.
+			                        </p>
+			                    </div>
+			                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+			                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+			                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML) / Histórico</b></span>
+			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
+			                        </div>
+			                    </div>
+			                </div>
+
+			                <!-- 10. Matriz de Permisos -->
+			                <div class="card" style="border-top:4px solid #6366f1; background:rgba(99, 102, 241, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+			                    <div>
+			                        <div style="display:flex; justify-content:space-between; align-items:start;">
+			                            <span style="font-size:1.5rem;">✅</span>
+			                            <span style="font-size:0.6rem; font-weight:900; background:rgba(99,102,241,0.15); color:#6366f1; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+			                        </div>
+			                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Matriz de Permisos</h3>
+			                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+			                            Consolidado en Excel y visualización en HTML que muestra la matriz de permisos de visualización y modificación por cada módulo para todos los empleados.
+			                        </p>
+			                    </div>
+			                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+			                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+			                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+			                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+			                        </div>
+			                        <button class="btn btn-sm" onclick="downloadPermissionsMatrixExcel()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
+			                            📊 DESCARGAR MATRIZ EXCEL
+			                        </button>
+			                        <div style="text-align:center; margin-top: 4px;">
+			                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="color:#6366f1; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+			                                ✉️ Enviar por correo electrónico
+			                            </a>
+			                        </div>
+			                    </div>
+			                </div>
 
 			            </div>
 
 			            <!-- Volver footer -->
 			            <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
-			                <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); cursor:pointer;">
-			                    ← VOLVER AL MENÚ ADMIN
-			                </button>
+			                \${getVolverBtn('VOLVER A VIP EYE', 'renderVipEyeStaff(document.getElementById(\\'current-view\\'))')}
 			            </div>
 			        \`;
+
+			        // Cargar lista de empleados con email
+			        try {
+			            const res = await apiFetch('/api/staff');
+			            const users = (res.staff || []).filter(u => u.email && u.is_active !== 0);
+			            const sel = document.getElementById('credentials-user-select');
+			            if (sel) {
+			                users.sort((a, b) => a.name.localeCompare(b.name));
+			                users.forEach(u => {
+			                    const opt = document.createElement('option');
+			                    opt.value = u.id;
+			                    opt.textContent = \`\${u.name} (\${u.email})\`;
+			                    sel.appendChild(opt);
+			                });
+			            }
+			        } catch(e) { console.error('Error cargando empleados:', e); }
 			    }
 
 
@@ -6426,12 +6960,7 @@ describe("Hello World worker", () => {
 			        setTimeout(() => window.scrollTo(0, 0), 100);
 
 			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
-			        const hasCfoAccess = allowedCfoNames.some(name => {
-			            const normalizedUser = (user.name || '').toUpperCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-			            const normalizedAllowed = name.toUpperCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-			            return normalizedUser.includes(normalizedAllowed);
-			        });
+			        const hasCfoAccess = hasPermission('admin_mod');
 
 			        if (tab === 'menu') {
 			            el.innerHTML = \`
@@ -6443,7 +6972,7 @@ describe("Hello World worker", () => {
 
 			                <div class="menu-grid admin-grid-custom" style="margin-top:20px; gap:12px;">
 			                    <!-- GESTIÓN DE PERSONAL -->
-			                    <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'personal')" style="border-top: 4px solid var(--accent2); background: rgba(67, 97, 238, 0.05);">
+			                    <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'personal')" style="border-top: 4px solid var(--accent2);">
 			                        <i>👥</i>
 			                        <div class="menu-item-content">
 			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GESTIÓN DE PERSONAL</span>
@@ -6451,28 +6980,19 @@ describe("Hello World worker", () => {
 			                        </div>
 			                    </div>
 
-			                    <!-- NÓMINA Y PAGOS -->
-			                    \${hasCfoAccess ? \`
-			                    <div class="menu-item" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); background: rgba(16, 185, 129, 0.05);">
-			                        <i>💰</i>
+			                    <!-- CAPTACIÓN DE PERSONAL Y FORMACIÓN -->
+			                    <div class="menu-item admin-card-bg" onclick="renderCaptacion(document.getElementById('current-view'))" style="border-top: 4px solid #0ea5e9;">
+			                        <i>🎓</i>
 			                        <div class="menu-item-content">
-			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
-			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REVISIÓN Y AUTORIZACIÓN</span>
+			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CAPTACIÓN Y FORMACIÓN</span>
+			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">RECLUTAMIENTO Y CAPACITACIÓN</span>
 			                        </div>
 			                    </div>
-			                    \` : ''}
 
-			                    <!-- INFORMES Y REPORTES -->
-			                    <div class="menu-item" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
-			                        <i>📈</i>
-			                        <div class="menu-item-content">
-			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
-			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REPORTES GENERALES Y ESTADÍSTICAS</span>
-			                        </div>
-			                    </div>
+
 
 			                    <!-- BBDD DE EVENTOS -->
-			                    <div class="menu-item" onclick="renderEventReports(document.getElementById('current-view'))" style="border-top: 4px solid var(--brand-red); background: rgba(239, 68, 68, 0.05);">
+			                    <div class="menu-item admin-card-bg" onclick="renderEventReports(document.getElementById('current-view'))" style="border-top: 4px solid var(--brand-red);">
 			                        <i>📊</i>
 			                        <div class="menu-item-content">
 			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE EVENTOS</span>
@@ -6481,7 +7001,7 @@ describe("Hello World worker", () => {
 			                    </div>
 
 			                    <!-- BBDD DE CLIENTES -->
-			                    <div class="menu-item" onclick="renderClientes(document.getElementById('current-view'))" style="border-top: 4px solid #10b981; background: rgba(16, 185, 129, 0.05);">
+			                    <div class="menu-item admin-card-bg" onclick="renderClientes(document.getElementById('current-view'))" style="border-top: 4px solid #10b981;">
 			                        <i>📑</i>
 			                        <div class="menu-item-content">
 			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE CLIENTES</span>
@@ -6490,7 +7010,7 @@ describe("Hello World worker", () => {
 			                    </div>
 
 			                    <!-- BBDD DE VEHÍCULOS -->
-			                    <div class="menu-item" onclick="renderVehiculos(document.getElementById('current-view'))" style="border-top: 4px solid var(--warning); background: rgba(245, 158, 11, 0.05);">
+			                    <div class="menu-item admin-card-bg" onclick="renderVehiculos(document.getElementById('current-view'))" style="border-top: 4px solid var(--warning);">
 			                        <i>🚗</i>
 			                        <div class="menu-item-content">
 			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE VEHÍCULOS</span>
@@ -6498,57 +7018,20 @@ describe("Hello World worker", () => {
 			                        </div>
 			                    </div>
 
-			                    <!-- CAPTACIÓN DE PERSONAL Y FORMACIÓN -->
-			                    <div class="menu-item" onclick="renderCaptacion(document.getElementById('current-view'))" style="border-top: 4px solid #0ea5e9; background: rgba(14, 165, 233, 0.05);">
-			                        <i>🎓</i>
-			                        <div class="menu-item-content">
-			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CAPTACIÓN Y FORMACIÓN</span>
-			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">RECLUTAMIENTO Y CAPACITACIÓN</span>
-			                        </div>
-			                    </div>
+
 
 			                    <!-- GEOLOCALIZACIÓN -->
-			                    <div class="menu-item" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+			                    <div class="menu-item admin-card-bg" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7;">
 			                        <i>📍</i>
 			                        <div class="menu-item-content">
 			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GEOLOCALIZACIÓN</span>
 			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">MONITOREO REAL-TIME</span>
 			                        </div>
 			                    </div>
-
-			                    <!-- IMAGEN & RRSS -->
-			                    <div class="menu-item" onclick="toast('📸 IMAGEN & RRSS estará disponible próximamente', 'info')" style="border-top: 4px solid #64748b; background: rgba(100, 116, 139, 0.03); opacity: 0.6; cursor: not-allowed;">
-			                        <i style="filter: grayscale(100%);">📸</i>
-			                        <div class="menu-item-content">
-			                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900; color: #94a3b8;">IMAGEN & RRSS</span>
-			                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; color: #64748b; font-weight:bold; letter-spacing:1px;">PRÓXIMAMENTE</span>
-			                        </div>
-			                    </div>
-
-			                    <!-- AUDITORÍA Y SEGURIDAD (Solo Superadmins) -->
-			                    \${(() => {
-			                        try {
-			                            const user = JSON.parse(localStorage.getItem('user'));
-			                            if (user && user.is_superadmin) {
-			                                return \`
-			                                    <div class="menu-item" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
-			                                        <i>🛡️</i>
-			                                        <div class="menu-item-content">
-			                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">AUDITORÍA</span>
-			                                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REGISTRO DE ACCESOS Y ACCIONES</span>
-			                                        </div>
-			                                    </div>
-			                                \`;
-			                            }
-			                        } catch(e) {}
-			                        return '';
-			                    })()}
 			                </div>
 
 			                <div style="display: flex; justify-content: center; margin-top: 40px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 12px 40px; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
-			                    </button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			                <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
 			            \`;
@@ -6561,17 +7044,14 @@ describe("Hello World worker", () => {
 			        }
 
 			        el.innerHTML = \`
-			            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
+			            <div class="view-header" style="margin-bottom:20px;">
 			                <h1 class="view-title">\${tab === 'personal' ? '👥 GESTIÓN DE PERSONAL' : '💰 NÓMINA Y PAGOS'}</h1>
-			                <button class="btn btn-sm btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'menu')" style="font-size:0.6rem; padding:8px 15px; border-radius:8px;">← VOLVER AL MENÚ ADMIN</button>
 			            </div>
 
 			            <div id="admin-content" style="margin-top:20px;"></div>
 			            
 			            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: fit-content;">
-			                    ← VOLVER AL PORTAL
-			                </button>
+			                \${getVolverBtn('VOLVER A VIP EYE', 'renderVipEyeStaff(document.getElementById(\\'current-view\\'))')}
 			            </div>
 			            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
 			        \`;
@@ -6855,26 +7335,90 @@ describe("Hello World worker", () => {
 			        }
 			    }
 
+			    window.toggleUserPermission = async function(userId, field, checked) {
+			        try {
+			            const res = await apiFetch('/api/admin/user-permissions', {
+			                method: 'POST',
+			                body: JSON.stringify({ user_id: userId, field: field, value: checked ? 1 : 0 })
+			            });
+			            if (res && res.success) {
+			                toast('PERMISO ACTUALIZADO', 'success');
+			                if (window.allPermissionsMatrix) {
+			                    const found = window.allPermissionsMatrix.find(p => p.user_id === userId);
+			                    if (found) found[field] = checked ? 1 : 0;
+			                }
+			                const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+			                if (currentUser.id === userId) {
+			                    const myPerms = await apiFetch('/api/my-permissions');
+			                    if (myPerms && myPerms.permissions) {
+			                        currentUser.permissions = myPerms.permissions;
+			                        localStorage.setItem('user', JSON.stringify(currentUser));
+			                    }
+			                }
+			            } else {
+			                toast('Error al actualizar permiso', 'error');
+			            }
+			        } catch (e) {
+			            toast('Error de conexión', 'error');
+			            console.error(e);
+			        }
+			    };
+
 			    async function renderAuditLogs(el) {
 			        el.innerHTML = \`
 			            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
-			                <div class="back-nav" onclick="renderAdmin(document.getElementById('current-view'))" style="margin:0; width: fit-content; background:var(--surface2); border:1px solid var(--border); color:#fff;">← VOLVER A ADMIN</div>
+			                \${getVolverBtn('VOLVER A VIP EYE', 'renderVipEyeStaff(document.getElementById(\\'current-view\\'))')}
 			            </div>
 			            <div class="view-header"><h1 class="view-title">🛡️ AUDITORÍA DE SEGURIDAD</h1></div>
 			            
-			            <!-- MONITOR DE ACTIVIDAD -->
-			            <div id="activity-monitor-container" style="margin-bottom:30px; background:var(--surface); border-radius:24px; padding:25px; border:1px solid var(--border); box-shadow:0 10px 30px rgba(0,0,0,0.2);">
-			                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-			                    <h3 style="margin:0; font-size:1rem; font-weight:900; letter-spacing:1px; display:flex; align-items:center; gap:10px;">
-			                        <span class="status-pulse"></span> MONITOR DE ACTIVIDAD
-			                    </h3>
-			                    <div id="active-count-badge" style="background:var(--accent); color:white; padding:4px 12px; border-radius:100px; font-size:0.7rem; font-weight:900;">0 CONECTADOS</div>
+			            <!-- CONFIGURACIÓN DE PERMISOS POR EMPLEADO -->
+			            <div class="card" style="margin-bottom:30px; padding:20px; background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+			                <h3 style="margin-top:0; color:white; font-size:1.1rem; font-weight:900; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+			                    🔐 CONFIGURACIÓN DE PERMISOS POR EMPLEADO
+			                </h3>
+			                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px;">
+			                    Habilita o deshabilita los permisos de visualización (<b>Ve</b>) y modificación (<b>Mod</b>) para cada módulo en tiempo real.
+			                </p>
+			                
+			                <!-- BÚSQUEDA -->
+			                <div style="margin-bottom:15px; position:relative;">
+			                    <input type="text" id="search-permissions-input" onkeyup="renderPermissionsMatrixRows()" placeholder="BUSCAR EMPLEADO..." style="width:100%; padding:12px; border-radius:10px; background:var(--surface2); color:white; border:1px solid var(--border); font-size:0.85rem; box-sizing: border-box;">
+			                    <span style="position:absolute; right:15px; top:12px; color:var(--muted);">🔍</span>
 			                </div>
-			                <div id="online-users-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
-			                    <p style="color:var(--muted); font-size:0.8rem;">Cargando conexiones...</p>
+
+			                <div style="overflow-x:auto; border-radius:12px; border:1px solid var(--border); max-height: 450px; overflow-y: auto;">
+			                    <table style="width:100%; border-collapse: collapse; font-size:0.75rem; text-align:center; min-width:850px;">
+			                        <thead>
+			                            <tr style="background:rgba(255,255,255,0.03); color:white; font-weight:bold; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10;">
+			                                <th rowspan="2" style="padding:12px; text-align:left; border-right: 1px solid var(--border); min-width:180px; background: #161b2c;">Empleado</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Valet Parking</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Control Accesos</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Alquiler Equipos</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Eventos y Listas</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Admin General</th>
+			                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">VIP Eye Staff</th>
+			                                <th colspan="2" style="padding:8px; background: #161b2c;">Seguridad (Pines)</th>
+			                            </tr>
+			                            <tr style="background:rgba(255,255,255,0.02); color:var(--muted); font-size:0.7rem; border-bottom: 1px solid var(--border); position: sticky; top: 38px; z-index: 10;">
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+			                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="background: #161b2c;">Mod</th>
+			                            </tr>
+			                        </thead>
+			                        <tbody id="permissions-matrix-tbody">
+			                            <tr><td colspan="15" style="padding:30px; color:var(--muted);">Cargando matriz de permisos...</td></tr>
+			                        </tbody>
+			                    </table>
+			                </div>
+			                <div id="toggle-matrix-btn" onclick="togglePermissionsMatrixCollapse()" style="padding:15px 20px; cursor:pointer; font-weight:900; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.9rem; letter-spacing:1px; border-top:1px solid rgba(255,255,255,0.05); margin-top:15px;">
+			                    <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">MOSTRAR TODOS LOS EMPLEADOS ▼</span>
 			                </div>
 			            </div>
-
+			            
 			            <!-- HISTORIAL DE ACTIVIDAD (COLAPSABLE - MÁX 25) -->
 			            <details style="margin-bottom:30px; background:var(--surface); border-radius:18px; border:1px solid var(--border); padding:5px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
 			                <summary style="padding:15px 20px; cursor:pointer; font-weight:900; color:var(--accent); display:flex; align-items:center; gap:10px; font-size:0.9rem; letter-spacing:1px;">
@@ -6887,7 +7431,88 @@ describe("Hello World worker", () => {
 			            </details>
 			        \`;
 
-			        renderActivityMonitor();
+			        // Cargar matriz de permisos de forma asíncrona (colapsada por defecto con Demo como muestra)
+			        window.permissionsMatrixCollapsed = true;
+			        window.allPermissionsMatrix = null;
+
+			        window.togglePermissionsMatrixCollapse = function() {
+			            window.permissionsMatrixCollapsed = !window.permissionsMatrixCollapsed;
+			            const btn = document.getElementById('toggle-matrix-btn');
+			            if (btn) {
+			                btn.innerHTML = window.permissionsMatrixCollapsed 
+			                    ? '<span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">MOSTRAR TODOS LOS EMPLEADOS ▼</span>'
+			                    : '<span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">CONTRAER MATRIZ DE PERMISOS ▲</span>';
+			            }
+			            renderPermissionsMatrixRows();
+			        };
+
+			        function renderPermissionsMatrixRows() {
+			            const tbody = document.getElementById('permissions-matrix-tbody');
+			            if (!tbody || !window.allPermissionsMatrix) return;
+			            
+			            let list = window.allPermissionsMatrix;
+			            const searchInput = document.getElementById('search-permissions-input');
+			            const searchTerm = searchInput ? searchInput.value.trim().toUpperCase() : '';
+
+			            if (searchTerm) {
+			                list = list.filter(u => u.name.toUpperCase().includes(searchTerm));
+			            } else if (window.permissionsMatrixCollapsed) {
+			                list = list.filter(u => u.user_id === 999 || u.name.toUpperCase().includes('INVITADO') || u.name.toUpperCase().includes('DEMO'));
+			                if (list.length === 0 && window.allPermissionsMatrix.length > 0) {
+			                    list = [window.allPermissionsMatrix[0]];
+			                }
+			            }
+			            
+			            if (list.length === 0) {
+			                tbody.innerHTML = '<tr><td colspan="15" style="padding:20px; color:var(--muted);">No hay empleados activos</td></tr>';
+			                return;
+			            }
+			            
+			            tbody.innerHTML = list.map(u => {
+			                const chk = (field, checked) => \`
+			                    <input type="checkbox" 
+			                        style="width:18px; height:18px; accent-color:var(--success); cursor:pointer;" 
+			                        \${checked === 1 ? 'checked' : ''} 
+			                        onchange="toggleUserPermission(\${u.user_id}, '\${field}', this.checked)">
+			                \`;
+			                return \`
+			                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+			                        <td style="padding:10px 12px; text-align:left; font-weight:700; border-right:1px solid var(--border); color:white;">
+			                            \${u.name.toUpperCase()}
+			                        </td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('valet_ve', u.valet_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('valet_mod', u.valet_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('accesos_ve', u.accesos_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('accesos_mod', u.accesos_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('alquiler_ve', u.alquiler_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('alquiler_mod', u.alquiler_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('eventos_ve', u.eventos_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('eventos_mod', u.eventos_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('admin_ve', u.admin_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('admin_mod', u.admin_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('vip_ve', u.vip_ve)}</td>
+			                        <td style="padding:8px; border-right:1px solid var(--border);">\${chk('vip_mod', u.vip_mod)}</td>
+			                        <td style="padding:8px; border-right:1px dashed var(--border);">\${chk('seg_ve', u.seg_ve)}</td>
+			                        <td style="padding:8px;">\${chk('seg_mod', u.seg_mod)}</td>
+			                    </tr>
+			                \`;
+			            }).join('');
+			        }
+
+			        apiFetch('/api/admin/user-permissions').then(res => {
+			            if (res && res.permissions) {
+			                window.allPermissionsMatrix = res.permissions;
+			                renderPermissionsMatrixRows();
+			            } else {
+			                const tbody = document.getElementById('permissions-matrix-tbody');
+			                if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="padding:20px; color:var(--danger);">Error al cargar permisos</td></tr>';
+			            }
+			        }).catch(e => {
+			            console.error('Permissions Matrix error:', e);
+			            const tbody = document.getElementById('permissions-matrix-tbody');
+			            if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="padding:20px; color:var(--danger);">Error de conexión</td></tr>';
+			        });
+
 			        
 			        const res = await apiFetch('/api/admin/audit-logs');
 			        if (res && res.logs) {
@@ -6898,6 +7523,26 @@ describe("Hello World worker", () => {
 			            }
 
 			            // Limitamos a los 25 más recientes
+			            res.logs.forEach(l => {
+			                let extracted = l.user_name;
+			                if (!extracted && l.details) {
+			                    let upperDetails = l.details.toUpperCase();
+			                    if (upperDetails.includes('BYPASS MAESTRO:')) {
+			                        extracted = upperDetails.split('BYPASS MAESTRO:')[1].trim();
+			                    } else if (upperDetails.includes('BYPASS INVITADO:')) {
+			                        extracted = upperDetails.split('BYPASS INVITADO:')[1].trim();
+			                    }
+			                }
+			                l.displayUser = extracted;
+			            });
+
+			            res.logs.forEach((l, i) => {
+			                if (!l.displayUser) {
+			                    let match = res.logs.slice(i + 1).find(other => other.device === l.device && other.displayUser);
+			                    l.displayUser = match ? match.displayUser : 'NELSON CARRILLO';
+			                }
+			            });
+
 			            const recentLogs = res.logs.slice(0, 25);
 			            
 			            container.innerHTML = \`
@@ -6905,33 +7550,38 @@ describe("Hello World worker", () => {
 			                    <thead>
 			                        <tr style="color:var(--muted); border-bottom:1px solid var(--border);">
 			                            <th style="padding:12px;">LOGIN</th>
-			                            <th style="padding:12px;">DESCONEXIÓN</th>
 			                            <th style="padding:12px;">USUARIO</th>
 			                            <th style="padding:12px;">DISPOSITIVO</th>
 			                            <th style="padding:12px;">ACCIÓN</th>
-			                            <th style="padding:12px;">DETALLES</th>
 			                        </tr>
 			                    </thead>
 			                    <tbody>
 			                        \${recentLogs.map(l => {
 			                            const d = new Date(l.timestamp);
-			                            const dOut = l.logout_at ? new Date(l.logout_at) : null;
 			                            const isRecurrent = l.device_usage_count > 3;
+			                            
+			                            let actionBg = 'rgba(255,255,255,0.05)';
+			                            let actionColor = 'inherit';
+			                            let actionUpper = (l.action || '').toUpperCase();
+			                            if (actionUpper === 'LOGIN') {
+			                                actionBg = 'rgba(34,197,94,0.15)';
+			                                actionColor = 'var(--success)';
+			                            } else if (actionUpper === 'LOGOUT') {
+			                                actionBg = 'rgba(239,68,68,0.15)';
+			                                actionColor = 'var(--danger)';
+			                            }
+			                            
 			                            return \`
 			                                <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
 			                                    <td style="padding:12px; white-space:nowrap; font-family:var(--font-mono); color:var(--accent);">\${formatDateExplicit(d)} \${formatTime24h(d)}</td>
-			                                    <td style="padding:12px; white-space:nowrap; font-family:var(--font-mono); color:\${dOut ? 'var(--muted)' : 'var(--success)'};">
-			                                        \${dOut ? formatTime24h(dOut) : '<span style="font-size:0.6rem; background:rgba(34,197,94,0.1); padding:2px 5px; border-radius:4px;">ACTIVO</span>'}
-			                                    </td>
-			                                    <td style="padding:12px; font-weight:800;">\${(l.user_name || 'S/U').toUpperCase()}</td>
+			                                    <td style="padding:12px; font-weight:800;">\${(l.displayUser).toUpperCase()}</td>
 			                                    <td style="padding:12px;">
 			                                        <div style="font-size:0.6rem; color:var(--muted); display:flex; align-items:center; gap:5px;">
 			                                            \${isRecurrent ? '<span title="Dispositivo Recurrente" style="color:var(--accent);">⭐</span>' : '<span title="Nuevo Dispositivo" style="color:var(--warning);">🆕</span>'}
 			                                            \${l.device.substring(0, 30)}...
 			                                        </div>
 			                                    </td>
-			                                    <td style="padding:12px;"><span style="background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:4px; font-weight:900; font-size:0.6rem;">\${l.action}</span></td>
-			                                    <td style="padding:12px; color:var(--muted);">\${l.details || '—'}</td>
+			                                    <td style="padding:12px;"><span style="background:\${actionBg}; color:\${actionColor}; padding:3px 8px; border-radius:4px; font-weight:900; font-size:0.6rem;">\${l.action}</span></td>
 			                                </tr>
 			                            \`;
 			                        }).join('')}
@@ -7810,6 +8460,26 @@ describe("Hello World worker", () => {
 			        }
 			    }
 			    async function downloadRRHHTemplate() {
+			        const pin = prompt(\`🔑 AUTORIZACIÓN DE SEGURIDAD\\n\\nPara descargar la plantilla de RRHH (Base de Datos del Personal), ingrese su clave personal de seguridad:\`);
+			        if (pin === null) return;
+			        if (!pin.trim()) return toast('❌ DEBE INGRESAR SU CLAVE', 'error');
+
+			        showLoading('VERIFICANDO CLAVE...');
+			        try {
+			            const verifyRes = await apiFetch('/api/admin/verify-pin-and-query', {
+			                method: 'POST',
+			                body: JSON.stringify({ admin_pin: pin.trim() })
+			            });
+			            if (!verifyRes || !verifyRes.success) {
+			                hideLoading();
+			                return; // Error shown by apiFetch
+			            }
+			        } catch (e) {
+			            hideLoading();
+			            return toast('ERROR AL VERIFICAR CLAVE', 'error');
+			        }
+
+			        showLoading('GENERANDO PLANTILLA...');
 			        const res = await apiFetch('/api/staff');
 			        if (res && res.staff) {
 			            // 1. Ordenar datos por EYE ID (Prioridad) y luego alfabéticamente
@@ -7906,10 +8576,8 @@ describe("Hello World worker", () => {
 
 			        view.innerHTML = \`
 			            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
-			                <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                    ← VOLVER AL PORTAL
-			                </button>
-			                <div class="back-nav" onclick="showTab('admin')" style="margin:0; width: fit-content; background:transparent; border:none;">← VOLVER ATRÁS</div>
+			                \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
+			                \${getVolverBtn('ADMINISTRACIÓN', 'showTab(\\'admin\\')')}
 			            </div>
 			            <div class="view-header">
 			                <h1 class="view-title">🔐 GESTIÓN DE PERMISOS</h1>
@@ -7970,36 +8638,289 @@ describe("Hello World worker", () => {
 			        }
 			    }
 
-			    function renderAccessControl(el) {
+			    async function renderAlquiler(el) {
 			        if (!el) return;
 			        el.innerHTML = \`
-			            <div id="access-control-view">
+			            <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
+			                \${getVolverBtn('VOLVER AL PORTAL', 'renderPortal(document.getElementById(\\'current-view\\'))')}
+			            </div>
+			            <div id="alquiler-view">
 			                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
-			                    <h1 class="view-title" style="color:#a855f7;">🆔 CONTROL DE ACCESOS DIGITAL 🚧</h1>
+			                    <h1 class="view-title" style="color:var(--warning);">🏗️ ALQUILER DE EQUIPOS</h1>
+			                </div>
+			                <div id="alquiler-loading" style="text-align:center; color:var(--muted); padding:20px; font-weight:800; letter-spacing:2px;">CARGANDO LOGÍSTICA DE EQUIPOS...</div>
+			                <div id="alquiler-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:15px;"></div>
+			            </div>
+			            <div style="display: flex; justify-content: center; margin-top: 40px; margin-bottom: 60px;">
+			                \${getVolverBtn('VOLVER AL PORTAL', 'renderPortal(document.getElementById(\\'current-view\\'))')}
+			            </div>
+			        \`;
+			        
+			        try {
+			            const res = await apiFetch('/api/rentals');
+			            document.getElementById('alquiler-loading').style.display = 'none';
+			            if (res && res.success && res.rentals && res.rentals.length > 0) {
+			                const list = document.getElementById('alquiler-list');
+			                list.innerHTML = res.rentals.map(r => {
+			                    const statusColors = {
+			                        'planning': 'var(--muted)',
+			                        'delivering': 'var(--warning)',
+			                        'delivered': '#3b82f6',
+			                        'retrieving': '#a855f7',
+			                        'completed': 'var(--success)'
+			                    };
+			                    const statusLabels = {
+			                        'planning': 'PLANIFICACIÓN',
+			                        'delivering': 'EN TRÁNSITO (ENTREGA)',
+			                        'delivered': 'ENTREGADO EN SITIO',
+			                        'retrieving': 'EN TRÁNSITO (RETIRO)',
+			                        'completed': 'COMPLETADO'
+			                    };
+			                    const color = statusColors[r.status] || 'var(--muted)';
+			                    const label = statusLabels[r.status] || r.status.toUpperCase();
+			                    
+			                    let form = {};
+			                    try { if(r.form_data) form = JSON.parse(r.form_data); } catch(e){}
+			                    
+			                    return \`
+			                        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:15px; position:relative; overflow:hidden;">
+			                            <div style="position:absolute; left:0; top:0; bottom:0; width:4px; background:\${color};"></div>
+			                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; padding-left:10px;">
+			                                <div>
+			                                    <div style="font-weight:900; font-size:1.1rem; color:#fff;">\${(r.evento || 'S/N').toUpperCase()}</div>
+			                                    <div style="color:var(--muted); font-size:0.8rem; font-weight:700;">\${(r.empresa || 'PARTICULAR').toUpperCase()} | \${form.atencion || 'N/A'}</div>
+			                                    <div style="color:var(--accent); font-size:0.75rem; font-weight:900; margin-top:4px;">PRESUPUESTO #\${r.budget_id}</div>
+			                                </div>
+			                                <div style="text-align:right;">
+			                                    <div style="background:rgba(255,255,255,0.05); border:1px solid \${color}; color:\${color}; padding:4px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; margin-bottom:5px; text-align:center;">\${label}</div>
+			                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">\${r.fecha} \${form.inicio ? '- ' + form.inicio : ''}</div>
+			                                </div>
+			                            </div>
+			                            
+			                            <div style="font-size:0.8rem; color:#fff; margin-bottom:15px; padding-left:10px;">
+			                                <div style="margin-bottom:5px;"><b>📍 DIRECCIÓN:</b> \${form.direccion || 'N/A'}</div>
+			                                <div><b>🏢 LUGAR:</b> \${form.lugar || 'N/A'} \${form.ciudad ? '- ' + form.ciudad : ''}</div>
+			                            </div>
+			                            
+			                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:10px;">
+			                                <select onchange="updateAlquilerStatus('\${r.budget_id}', this.value)" style="width:100%; padding:8px; border-radius:8px; background:var(--background); color:#fff; border:1px solid var(--border); font-weight:bold; font-size:0.7rem; outline:none;">
+			                                    <option value="planning" \${r.status==='planning'?'selected':''}>PLANIFICACIÓN</option>
+			                                    <option value="delivering" \${r.status==='delivering'?'selected':''}>INICIAR ENTREGA</option>
+			                                    <option value="delivered" \${r.status==='delivered'?'selected':''}>MARCAR ENTREGADO</option>
+			                                    <option value="retrieving" \${r.status==='retrieving'?'selected':''}>INICIAR RETIRO</option>
+			                                    <option value="completed" \${r.status==='completed'?'selected':''}>COMPLETADO</option>
+			                                </select>
+			                                <button onclick="toast('Funcionalidad de soportes en desarrollo', 'info')" style="width:100%; padding:8px; border-radius:8px; background:var(--accent); color:#000; border:none; font-weight:900; font-size:0.75rem; cursor:pointer;">
+			                                    📸 SOPORTES
+			                                </button>
+			                            </div>
+			                        </div>
+			                    \`;
+			                }).join('');
+			            } else {
+			                document.getElementById('alquiler-list').innerHTML = '<div style="text-align:center; color:var(--muted); padding:20px; grid-column:1/-1;">No hay alquileres activos en este momento.</div>';
+			            }
+			        } catch (e) {
+			            document.getElementById('alquiler-loading').innerText = 'Error al cargar logística de alquileres';
+			        }
+			    }
+			    
+			    window.updateAlquilerStatus = async function(budgetId, newStatus) {
+			        const res = await apiFetch('/api/rentals/' + budgetId + '/status', {
+			            method: 'POST',
+			            body: JSON.stringify({ status: newStatus, notes: '' })
+			        });
+			        if(res && res.success) {
+			            toast('Estado actualizado a ' + newStatus, 'success');
+			            renderAlquiler(document.getElementById('current-view'));
+			        } else {
+			            toast('Error al actualizar estado', 'error');
+			        }
+			    }
+
+			    function renderAccessControl(el) {
+			        if (!el) return;
+			        
+			        const activeSessions = (window.allSessions || []).filter(s => s.status === 'active' && s.type && s.type.toUpperCase().includes('ACCESOS'));
+			        let session = null;
+			        if (window.currentAccesosSessionId) {
+			            session = activeSessions.find(s => s.id === window.currentAccesosSessionId);
+			        }
+			        if (!session && activeSessions.length > 0) {
+			            session = activeSessions[0];
+			            window.currentAccesosSessionId = session.id;
+			        }
+
+			        if (!session) {
+			            renderAccessControlPresentation(el);
+			            return;
+			        }
+
+			        el.innerHTML = '<div style="padding: 40px; text-align:center; color:var(--muted);">Cargando módulo de operación...</div>';
+
+			        apiFetch(\`/api/accesos/\${session.id}/guests\`).then(res => {
+			            let guests = [];
+			            if (res && res.success) guests = res.data;
+			            window._currentAccessGuests = guests;
+			            renderAccessControlDashboard(el, session, guests);
+			        });
+			    }
+
+			    function renderAccessControlDashboard(el, session, guests) {
+			        const total = guests.length;
+			        const checkedIn = guests.filter(g => g.status === 'CHECKED_IN').length;
+			        const showUpRate = total > 0 ? Math.round((checkedIn / total) * 100) : 0;
+			        
+			        el.innerHTML = \`
+			            <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
+			                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 30px;">
+			                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS: \${session.name.toUpperCase()} 🚧</h1>
 			                </div>
 
-			                <div class="stat-card" style="border-top: 4px solid #a855f7; margin-bottom: 30px; background: rgba(168, 85, 247, 0.02);">
-			                    <p style="color:var(--muted); font-size:1rem; text-align:center; line-height:1.6; max-width:800px; margin:0 auto;">
-			                        Nuestro sistema de control de acceso integral equilibra la <b>seguridad técnica</b>, la <b>fluidez del ingreso</b> y la <b>recolección de datos estratégica</b> para transformar el flujo de personas en métricas accionables.
+			                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom:40px;">
+			                    <!-- DASHBOARD -->
+			                    <div class="stat-card" style="padding: 25px;">
+			                        <div class="stat-label" style="color:#22c55e; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">DASHBOARD EN TIEMPO REAL</div>
+			                        <div style="display:flex; flex-direction:column; gap:20px;">
+			                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+			                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+			                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Show-up Rate</div>
+			                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">\${showUpRate}%</div>
+			                                </div>
+			                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+			                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aforo Actual</div>
+			                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">\${checkedIn} / \${total}</div>
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </div>
+
+			                    <!-- OPERACION DE ESCANEO -->
+			                    <div class="stat-card" style="padding: 25px; border-left:4px solid #a855f7;">
+			                        <div class="stat-label" style="color:#a855f7; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">ESCANEO Y VALIDACIÓN (QR)</div>
+			                        <div style="display:flex; flex-direction:column; gap:15px;">
+			                            <input type="text" id="ac-scanner-input" class="input" placeholder="Escanea o escribe el código QR aquí..." style="font-size:1.2rem; padding:15px; text-align:center; background:rgba(0,0,0,0.2); border:1px solid rgba(168,85,247,0.5); color:#fff;" autofocus onkeypress="if(event.key === 'Enter') handleAccessScan(this.value)">
+			                            <button class="btn" style="background:var(--accent); color:white; font-weight:bold; padding:15px; border-radius:8px;" onclick="handleAccessScan(document.getElementById('ac-scanner-input').value)">✅ VALIDAR INGRESO</button>
+			                        </div>
+			                        <p style="color:var(--muted); font-size:0.7rem; text-align:center; margin-top:15px;">Usa una pistola de escáner configurada con "Enter" automático o digita el ID manual.</p>
+			                    </div>
+			                </div>
+
+			                <!-- LISTADO DE INVITADOS -->
+			                <div class="stat-card" style="margin-bottom:40px; padding: 25px;">
+			                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+			                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px;">LISTADO DE INVITADOS</div>
+			                        <button class="btn btn-sm" style="background:#a855f7; color:#fff;" onclick="openAddGuestModal()">➕ AGREGAR INVITADO</button>
+			                    </div>
+			                    <div style="overflow-x:auto;">
+			                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left; text-transform:uppercase;">
+			                            <thead>
+			                                <tr style="border-bottom:2px solid var(--border);">
+			                                    <th style="padding:15px 10px; font-weight:900;">NOMBRE</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">TIPO</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">CÓDIGO QR</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">ESTATUS</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">ACCIÓN</th>
+			                                </tr>
+			                            </thead>
+			                            <tbody>
+			                                \${guests.map(g => \`
+			                                    <tr style="border-bottom:1px solid var(--border);">
+			                                        <td style="padding:15px 10px; font-weight:900; color:#fff;">\${g.name}</td>
+			                                        <td style="padding:15px 10px; color:var(--muted);">\${g.guest_type}</td>
+			                                        <td style="padding:15px 10px; color:var(--muted); font-family:monospace;">\${g.qr_code_id}</td>
+			                                        <td style="padding:15px 10px; font-weight:bold; color:\${g.status === 'CHECKED_IN' ? '#22c55e' : '#eab308'};">\${g.status}</td>
+			                                        <td style="padding:15px 10px;">
+			                                            \${g.status !== 'CHECKED_IN' ? \`<button class="btn btn-sm" style="background:#22c55e; color:#fff;" onclick="handleAccessScan('\${g.qr_code_id}')">CHECK-IN</button>\` : \`<span style="color:var(--muted); font-size:0.7rem;">\${new Date(g.checked_in_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>\`}
+			                                            <button class="btn btn-sm" style="background:#ef4444; color:#fff; margin-left:5px; padding: 4px 8px;" onclick="handleDeleteGuest(\${g.id})">❌</button>
+			                                        </td>
+			                                    </tr>
+			                                \`).join('')}
+			                                \${guests.length === 0 ? '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">No hay invitados registrados. Usa el botón superior para agregar.</td></tr>' : ''}
+			                            </tbody>
+			                        </table>
+			                    </div>
+			                </div>
+
+			                <div style="text-align:center; margin-bottom:40px;">
+			                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+			                        ⬅ VOLVER AL PORTAL
+			                    </button>
+			                </div>
+			            </div>
+			        \`;
+			    }
+
+			    window.handleAccessScan = async function(qrOrId) {
+			        if (!qrOrId) return;
+			        const res = await apiFetch('/api/accesos/checkin/' + qrOrId, { method: 'PUT' });
+			        if (res && res.success) {
+			            toast('Invitado validado correctamente: ' + res.guest.name, 'success');
+			            renderAccessControl(document.getElementById('current-view'));
+			        } else {
+			            toast(res?.error || 'Error al validar código', 'error');
+			            document.getElementById('ac-scanner-input').value = '';
+			            document.getElementById('ac-scanner-input').focus();
+			        }
+			    };
+
+			    window.openAddGuestModal = function() {
+			        const name = prompt('Nombre del Invitado:');
+			        if (!name) return;
+			        const type = prompt('Tipo (INVITADO, VIP, STAFF, PROVEEDOR):', 'INVITADO') || 'INVITADO';
+			        
+			        apiFetch('/api/accesos/' + window.currentAccesosSessionId + '/guests', {
+			            method: 'POST',
+			            body: JSON.stringify({ name, guest_type: type.toUpperCase() })
+			        }).then(res => {
+			            if (res && res.success) {
+			                toast('Invitado agregado con éxito', 'success');
+			                renderAccessControl(document.getElementById('current-view'));
+			            } else {
+			                toast('Error al agregar el invitado', 'error');
+			            }
+			        });
+			    };
+
+			    window.handleDeleteGuest = async function(id) {
+			        if(!confirm('¿Seguro que deseas eliminar a este invitado?')) return;
+			        const res = await apiFetch('/api/accesos/guests/' + id, { method: 'DELETE' });
+			        if (res && res.success) {
+			            toast('Invitado eliminado', 'success');
+			            renderAccessControl(document.getElementById('current-view'));
+			        }
+			    };
+
+			    function renderAccessControlPresentation(el) {
+			        if (!el) return;
+			        el.innerHTML = \`
+			            <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
+			                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 30px;">
+			                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS DIGITAL 🚧</h1>
+			                </div>
+
+			                <div style="border: 1px solid rgba(168, 85, 247, 0.3); border-top: 3px solid #a855f7; border-radius: 12px; margin-bottom: 40px; background: rgba(168, 85, 247, 0.03); padding: 25px; box-shadow: 0 -10px 20px rgba(168,85,247,0.1);">
+			                    <p style="color:var(--muted); font-size:0.95rem; text-align:center; line-height:1.6; max-width:850px; margin:0 auto; text-transform:uppercase;">
+			                        Nuestro sistema de control de acceso integral equilibra la <b style="color:var(--text);">seguridad técnica</b>, la <b style="color:var(--text);">fluidez del ingreso</b> y la <b style="color:var(--text);">recolección de datos estratégica</b> para transformar el flujo de personas en métricas accionables.
 			                    </p>
 			                </div>
 
-			                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom:40px;">
+			                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom:40px;">
 			                    <!-- ARQUITECTURA -->
-			                    <div class="stat-card">
-			                        <div class="stat-label" style="color:#a855f7">ARQUITECTURA DE ACCESO</div>
-			                        <div style="margin-top:15px; display:flex; flex-direction:column; gap:15px;">
-			                            <div style="background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border);">
-			                                <h3 style="margin-top:0; color:#fff; font-size:0.9rem;">👥 PARA INVITADOS / VIP</h3>
-			                                <ul style="margin:8px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.4;">
+			                    <div class="stat-card" style="padding: 25px;">
+			                        <div class="stat-label" style="color:#a855f7; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">ARQUITECTURA DE ACCESO</div>
+			                        <div style="display:flex; flex-direction:column; gap:20px;">
+			                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+			                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👥 PARA INVITADOS / VIP</h3>
+			                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
 			                                    <li>QR Dinámico vía WhatsApp/Email</li>
 			                                    <li>Check-in rápido vía Tablets</li>
 			                                    <li>Brazaletes con NFC/RFID o Térmicos</li>
 			                                </ul>
 			                            </div>
-			                            <div style="background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border);">
-			                                <h3 style="margin-top:0; color:#fff; font-size:0.9rem;">👷 PARA STAFF / PROVEEDORES</h3>
-			                                <ul style="margin:8px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.4;">
+			                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+			                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👷 PARA STAFF / PROVEEDORES</h3>
+			                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
 			                                    <li>Acreditación Digital con Docs Legales</li>
 			                                    <li>Control de Horarios y Montajes</li>
 			                                    <li>Diferenciación de Zonas Restringidas</li>
@@ -8008,23 +8929,23 @@ describe("Hello World worker", () => {
 			                        </div>
 			                    </div>
 
-			                    <!-- MÉTRICAS -->
-			                    <div class="stat-card">
-			                        <div class="stat-label" style="color:#22c55e">DASHBOARD EN TIEMPO REAL</div>
-			                        <div style="margin-top:15px; display:flex; flex-direction:column; gap:15px;">
-			                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-			                                <div style="background:rgba(34, 197, 94, 0.1); padding:15px; border-radius:12px; text-align:center;">
-			                                    <div style="font-size:0.6rem; color:#22c55e; font-weight:800; text-transform:uppercase;">Show-up Rate</div>
-			                                    <div style="font-size:1.5rem; font-weight:900; color:#fff;">--%</div>
+			                    <!-- DASHBOARD -->
+			                    <div class="stat-card" style="padding: 25px;">
+			                        <div class="stat-label" style="color:#22c55e; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">DASHBOARD EN TIEMPO REAL</div>
+			                        <div style="display:flex; flex-direction:column; gap:20px;">
+			                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+			                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+			                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Show-up Rate</div>
+			                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--%</div>
 			                                </div>
-			                                <div style="background:rgba(34, 197, 94, 0.1); padding:15px; border-radius:12px; text-align:center;">
-			                                    <div style="font-size:0.6rem; color:#22c55e; font-weight:800; text-transform:uppercase;">Aforo Actual</div>
-			                                    <div style="font-size:1.5rem; font-weight:900; color:#fff;">--/--</div>
+			                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+			                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aforo Actual</div>
+			                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--/--</div>
 			                                </div>
 			                            </div>
-			                            <div style="background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border);">
-			                                <h3 style="margin-top:0; color:#fff; font-size:0.9rem;">📊 KPIs ESTRATÉGICOS</h3>
-			                                <ul style="margin:8px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.4;">
+			                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+			                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">📊 KPIs ESTRATÉGICOS</h3>
+			                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
 			                                    <li>Curva de Afluencia Horaria</li>
 			                                    <li>Índice de Recurrencia (Loyalty)</li>
 			                                    <li>Tiempo de Permanencia Promedio</li>
@@ -8035,56 +8956,56 @@ describe("Hello World worker", () => {
 			                    </div>
 			                </div>
 
-			                <div class="stat-card" style="margin-bottom:40px;">
-			                    <div class="stat-label">FLUJO OPERATIVO "LLAVE EN MANO"</div>
-			                    <div style="overflow-x:auto; margin-top:15px;">
-			                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left;">
+			                <div class="stat-card" style="margin-bottom:40px; padding: 25px;">
+			                    <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">FLUJO OPERATIVO "LLAVE EN MANO"</div>
+			                    <div style="overflow-x:auto;">
+			                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left; text-transform:uppercase;">
 			                            <thead>
 			                                <tr style="border-bottom:2px solid var(--border);">
-			                                    <th style="padding:10px;">ETAPA</th>
-			                                    <th style="padding:10px;">ACCIÓN DIGITAL</th>
-			                                    <th style="padding:10px;">ELEMENTO FÍSICO</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">ETAPA</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">ACCIÓN DIGITAL</th>
+			                                    <th style="padding:15px 10px; font-weight:900;">ELEMENTO FÍSICO</th>
 			                                </tr>
 			                            </thead>
 			                            <tbody>
 			                                <tr style="border-bottom:1px solid var(--border);">
-			                                    <td style="padding:10px; font-weight:700;">PRE-EVENTO</td>
-			                                    <td style="padding:10px; color:var(--muted);">Registro landing y base de datos</td>
-			                                    <td style="padding:10px; color:#a855f7;">Envío de QR digital</td>
+			                                    <td style="padding:15px 10px; font-weight:900;">PRE-EVENTO</td>
+			                                    <td style="padding:15px 10px; color:var(--muted);">Registro landing y base de datos</td>
+			                                    <td style="padding:15px 10px; color:#a855f7;">Envío de QR digital</td>
 			                                </tr>
 			                                <tr style="border-bottom:1px solid var(--border);">
-			                                    <td style="padding:10px; font-weight:700;">INGRESO</td>
-			                                    <td style="padding:10px; color:var(--muted);">Escaneo y validación ID</td>
-			                                    <td style="padding:10px; color:#a855f7;">Colocación brazalete</td>
+			                                    <td style="padding:15px 10px; font-weight:900;">INGRESO</td>
+			                                    <td style="padding:15px 10px; color:var(--muted);">Escaneo y validación ID</td>
+			                                    <td style="padding:15px 10px; color:#a855f7;">Colocación brazalete</td>
 			                                </tr>
 			                                <tr style="border-bottom:1px solid var(--border);">
-			                                    <td style="padding:10px; font-weight:700;">DURANTE</td>
-			                                    <td style="padding:10px; color:var(--muted);">Monitoreo zonas de calor/VIP</td>
-			                                    <td style="padding:10px; color:#a855f7;">Uso para consumos (NFC)</td>
+			                                    <td style="padding:15px 10px; font-weight:900;">DURANTE</td>
+			                                    <td style="padding:15px 10px; color:var(--muted);">Monitoreo zonas de calor/VIP</td>
+			                                    <td style="padding:15px 10px; color:#a855f7;">Uso para consumos (NFC)</td>
 			                                </tr>
-			                                <tr style="border-bottom:1px solid var(--border);">
-			                                    <td style="padding:10px; font-weight:700;">POST-EVENTO</td>
-			                                    <td style="padding:10px; color:var(--muted);">Cierre asistencia y encuestas</td>
-			                                    <td style="padding:10px; color:#a855f7;">Dashboard final KPIs</td>
+			                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+			                                    <td style="padding:15px 10px; font-weight:900;">POST-EVENTO</td>
+			                                    <td style="padding:15px 10px; color:var(--muted);">Cierre asistencia y encuestas</td>
+			                                    <td style="padding:15px 10px; color:#a855f7;">Dashboard final KPIs</td>
 			                                </tr>
 			                            </tbody>
 			                        </table>
 			                    </div>
 			                </div>
 
-			                <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:60px;">
-			                    <div class="stat-card" style="border-left:4px solid var(--accent);">
-			                        <div class="stat-label">HARDWARE Y LOGÍSTICA</div>
-			                        <ul style="margin:10px 0 0 0; padding-left:20px; font-size:0.8rem; color:var(--muted); line-height:1.6;">
-			                            <li><b>Handhelds Industriales</b> de alto rendimiento</li>
-			                            <li><b>Infraestructura Física:</b> Unifilas y tótems</li>
-			                            <li><b>Conectividad:</b> Wi-Fi Móvil o Starlink</li>
-			                            <li><b>Modo Offline:</b> Escaneo sin internet</li>
+			                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:25px; margin-bottom:60px;">
+			                    <div class="stat-card" style="border-left:4px solid var(--accent); padding: 25px;">
+			                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">HARDWARE Y LOGÍSTICA</div>
+			                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+			                            <li><b style="color:var(--text);">Handhelds Industriales</b> de alto rendimiento</li>
+			                            <li><b style="color:var(--text);">Infraestructura Física:</b> Unifilas y tótems</li>
+			                            <li><b style="color:var(--text);">Conectividad:</b> Wi-Fi Móvil o Starlink</li>
+			                            <li><b style="color:var(--text);">Modo Offline:</b> Escaneo sin internet</li>
 			                        </ul>
 			                    </div>
-			                    <div class="stat-card" style="border-left:4px solid var(--warning);">
-			                        <div class="stat-label">PERFILES DE STAFF</div>
-			                        <ul style="margin:10px 0 0 0; padding-left:20px; font-size:0.8rem; color:var(--muted); line-height:1.6;">
+			                    <div class="stat-card" style="border-left:4px solid var(--warning); padding: 25px;">
+			                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">PERFILES DE STAFF</div>
+			                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
 			                            <li>Hostess / Recepción VIP Bilingüe</li>
 			                            <li>Validadores de Alto Volumen (Scanners)</li>
 			                            <li>Gestores de Acreditación Staff</li>
@@ -8094,8 +9015,8 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="text-align:center; margin-bottom:40px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
+			                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+			                        ⬅ VOLVER AL PORTAL
 			                    </button>
 			                </div>
 			            </div>
@@ -8187,9 +9108,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="text-align:center; margin-bottom:40px;">
-			                    <button class="btn btn-secondary" onclick="exitToPortal()" style="border-radius: 30px; padding: 10px 30px; font-size: 0.9rem; font-weight: 800; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
-			                        ← VOLVER AL PORTAL
-			                    </button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                </div>
 			            </div>
 			        \`;
@@ -8207,36 +9126,59 @@ describe("Hello World worker", () => {
 			        const pendingEvents = pendingRes?.events || [];
 
 			        const groupedPending = {};
+			        const eventsByMonth = { '01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0 };
+			        const monthNames = { '01':'Ene', '02':'Feb', '03':'Mar', '04':'Abr', '05':'May', '06':'Jun', '07':'Jul', '08':'Ago', '09':'Sep', '10':'Oct', '11':'Nov', '12':'Dic' };
+			        
 			        pendingEvents.forEach(e => {
 			            if (!groupedPending[e.staff_name]) {
 			                groupedPending[e.staff_name] = [];
 			            }
 			            groupedPending[e.staff_name].push(e);
+			            
+			            if (e.ended_at) {
+			                const parts = e.ended_at.split(/[- ]/);
+			                if (parts.length > 1) {
+			                    const month = parts[1];
+			                    if (eventsByMonth[month] !== undefined) eventsByMonth[month]++;
+			                }
+			            }
 			        });
+			        
+			        const totalPending = pendingEvents.length;
+			        const totalEmployees = Object.keys(groupedPending).length;
+			        const avgPending = totalEmployees > 0 ? (totalPending / totalEmployees).toFixed(1) : 0;
+			        
+			        // Calcular máximo para la gráfica
+			        const maxEventsMonth = Math.max(...Object.values(eventsByMonth), 1);
+			        
 
-			        // Consolidado por empleado y Total General
+			        // Consolidado por empleado - SOLO APROBADOS (pendiente de cobro)
 			        let totalGeneral = 0;
 			        const consolidated = {};
-			        res.submissions.forEach(s => {
+			        res.submissions.filter(s => s.status === 'approved').forEach(s => {
 			            if (!consolidated[s.staff_name]) {
-			                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.bank_name || 'N/A', account: s.bank_account || 'N/A' };
+			                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.bank_name || 'N/A', account: s.bank_account || 'N/A', items: [], user_id: s.user_id };
 			            }
 			            const amt = s.amount || 0;
 			            consolidated[s.staff_name].total += amt;
 			            consolidated[s.staff_name].events += 1;
+			            consolidated[s.staff_name].items.push(s);
 			            totalGeneral += amt;
 			        });
+
+			        // Solo pendientes para el Detalle
+			        const pendingSubmissions = res.submissions.filter(s => s.status === 'pending');
 
 			        el.innerHTML = \`
 			            <div class="stat-card" style="margin-bottom:30px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:none; color:white; border-radius:20px; padding:30px;">
 			                <div style="display:flex; justify-content:space-between; align-items:center;">
 			                    <div>
-			                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800; letter-spacing:1px; text-transform:uppercase;">MONTO TOTAL POR PAGAR</div>
+			                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800; letter-spacing:1px; text-transform:uppercase;">MONTO APROBADO POR PAGAR</div>
 			                        <div style="font-size:3rem; font-weight:900; margin-top:5px; color:var(--success);">$\${totalGeneral.toLocaleString()}</div>
 			                    </div>
 			                    <div style="text-align:right;">
-			                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800;">FORMATOS EN COLA</div>
-			                        <div style="font-size:2rem; font-weight:800;">\${res.submissions.length}</div>
+			                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800;">PENDIENTES EN COLA</div>
+			                        <div style="font-size:2rem; font-weight:800;">\${pendingSubmissions.length}</div>
 			                    </div>
 			                </div>
 			                <button class="btn" style="margin-top:20px; background:var(--accent); font-weight:800;" onclick="window.print()">🖨️ GENERAR REPORTE PARA DIRECCIÓN</button>
@@ -8247,36 +9189,64 @@ describe("Hello World worker", () => {
 			                    <span>📊 RESUMEN POR EMPLEADO</span>
 			                    <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(CONSOLIDADO DE TODOS LOS EVENTOS)</small>
 			                </h3>
-			                <div style="overflow-x:auto; margin-top:15px;">
-			                    <table class="table" style="font-size:0.8rem; width:100%;">
-			                        <thead>
-			                            <tr style="background:rgba(255,255,255,0.05);">
-			                                <th style="padding:15px;">EMPLEADO</th>
-			                                <th>EVENTOS</th>
-			                                <th>BANCO / CUENTA</th>
-			                                <th style="text-align:right;">TOTAL ACUMULADO</th>
-			                            </tr>
-			                        </thead>
-			                        <tbody>
-			                            \${Object.entries(consolidated).map(([name, data]) => \`
-			                                <tr style="border-bottom:1px solid var(--border);">
-			                                    <td style="padding:15px; font-weight:800; color:#fff;">\${name}</td>
-			                                    <td><span style="background:var(--surface2); padding:2px 8px; border-radius:10px;">\${data.events}</span></td>
-			                                    <td style="font-size:0.7rem;">
-			                                        <b>\${data.bank}</b><br>
-			                                        <span style="font-family:var(--font-mono); opacity:0.7;">\${data.account}</span>
-			                                    </td>
-			                                    <td style="color:var(--success); font-weight:900; text-align:right; font-size:1rem;">$\${data.total.toLocaleString()}</td>
-			                                </tr>
-			                            \`).join('')}
-			                        </tbody>
-			                    </table>
+			                <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+			                    \${Object.keys(consolidated).length === 0 ? \`
+			                        <div style="text-align:center; padding:30px; color:var(--muted); font-size:0.85rem; font-style:italic;">✅ No hay montos aprobados pendientes de cobro.</div>
+			                    \` : Object.entries(consolidated).map(([name, data], idx) => {
+			                        const detailId = \`emp-detail-\${idx}\`;
+			                        return \`
+			                        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+			                            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; cursor:pointer;" onclick="const c=document.getElementById('\${detailId}'); c.style.display=c.style.display==='none'?'block':'none'; const i=document.getElementById('icon-\${detailId}'); i.innerText=c.style.display==='none'?'\\u25b6':'\\u25bc';">
+			                                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+			                                    <span style="font-weight:900; color:#fff; font-size:0.9rem;">\\uD83D\\uDC64 \${name}</span>
+			                                    <span style="background:var(--surface); padding:2px 8px; border-radius:10px; font-size:0.65rem; font-weight:800;">\${data.events} EVENTO\${data.events !== 1 ? 'S' : ''} APROBADO\${data.events !== 1 ? 'S' : ''}</span>
+			                                </div>
+			                                <div style="display:flex; align-items:center; gap:10px;">
+			                                    <span style="color:var(--success); font-weight:900; font-size:1.1rem;">$\${data.total.toLocaleString()}</span>
+			                                    <button class="btn btn-sm" onclick="event.stopPropagation(); closeCycleCFO(\${data.user_id}, '\${name}')" style="background:rgba(34,197,94,0.15); border:1px solid var(--brand-green); color:var(--brand-green); font-size:0.6rem; font-weight:800; padding:5px 10px; border-radius:8px;">💰 CERRAR CICLO</button>
+			                                    <span id="icon-\${detailId}" style="color:var(--muted); font-size:0.8rem;">\\u25bc</span>
+			                                </div>
+			                            </div>
+			                            <div id="\${detailId}" style="display:none; border-top:1px solid rgba(255,255,255,0.04); padding:15px;">
+			                                <div style="font-size:0.65rem; color:var(--muted); font-weight:800; margin-bottom:10px;">BANCO: <span style="color:#fff;">\${data.bank}</span> &nbsp;|&nbsp; CUENTA: <span style="font-family:monospace; color:#fff;">\${data.account}</span></div>
+			                                <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+			                                    <thead>
+			                                        <tr style="background:rgba(255,255,255,0.03); text-align:left;">
+			                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">FECHA</th>
+			                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">EVENTO</th>
+			                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">ROL</th>
+			                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800; text-align:right;">MONTO</th>
+			                                        </tr>
+			                                    </thead>
+			                                    <tbody>
+			                                        \${data.items.map(s => \`
+			                                            <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+			                                                <td style="padding:8px 10px; opacity:0.7;">\${new Date(s.created_at).toLocaleDateString()}</td>
+			                                                <td style="padding:8px 10px; font-weight:700; color:#fff;">\${s.event_name || 'N/A'}</td>
+			                                                <td style="padding:8px 10px; font-size:0.65rem;">\${s.user_id == s.supervisor_id ? '<span style="color:var(--warning); font-weight:800;">\\u2B50 SUPERVISOR</span>' : 'VALET'}</td>
+			                                                <td style="padding:8px 10px; color:var(--success); font-weight:900; text-align:right;">$\${(s.amount||0).toLocaleString()}</td>
+			                                            </tr>
+			                                        \`).join('')}
+			                                    </tbody>
+			                                    <tfoot>
+			                                        <tr style="background:rgba(34,197,94,0.05);">
+			                                            <td colspan="3" style="padding:10px; font-weight:900; font-size:0.8rem;">TOTAL A PAGAR — \${name.toUpperCase()}</td>
+			                                            <td style="padding:10px; color:var(--success); font-weight:900; font-size:1rem; text-align:right;">$\${data.total.toLocaleString()}</td>
+			                                        </tr>
+			                                    </tfoot>
+			                                </table>
+			                            </div>
+			                        </div>\`;
+			                    }).join('')}
 			                </div>
 			            </div>
 
+			                </div> <!-- Cierra pending-events-content -->
+			            </div>
+
 			            <div class="stat-card" style="border-top:4px solid var(--warning); background:rgba(255,255,255,0.02);">
-			                <h3 style="margin-top:0; font-size:1.1rem; color:#fff;">📝 DETALLE INDIVIDUAL DE REPORTES</h3>
-			                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">Asigne el monto correspondiente a cada evento y pulse "GUARDAR" para procesar.</p>
+			                <h3 style="margin-top:0; font-size:1.1rem; color:#fff;">📝 DETALLE INDIVIDUAL DE REPORTES — EN REVISIÓN</h3>
+			                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">Reportes enviados por el personal que están <b>PENDIENTES</b> de aprobación. Asigne monto y cambie estado a APROBADO para que pasen al Resumen por Empleado.</p>
 			                <div style="overflow-x:auto;">
 			                    <table class="table" style="font-size:0.75rem; width:100%;">
 			                        <thead>
@@ -8290,7 +9260,7 @@ describe("Hello World worker", () => {
 			                            </tr>
 			                        </thead>
 			                        <tbody>
-			                            \${res.submissions.map(s => \`
+			                            \${pendingSubmissions.length === 0 ? \`<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted); font-style:italic;">✅ No hay reportes pendientes de revisión.</td></tr>\` : pendingSubmissions.map(s => \`
 			                                <tr style="border-bottom:1px solid var(--border);">
 			                                    <td style="padding:15px; opacity:0.7;">\${new Date(s.created_at).toLocaleDateString()}</td>
 			                                    <td style="font-weight:700; color:#fff;">\${s.staff_name}</td>
@@ -8305,10 +9275,9 @@ describe("Hello World worker", () => {
 			                                            style="width:90px; background:var(--surface2); border:1px solid var(--border); padding:8px; border-radius:8px; color:var(--success); font-weight:800; font-size:0.9rem;">
 			                                    </td>
 			                                    <td>
-			                                        <select id="status-\${s.id}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.7rem; padding:8px; border-radius:8px; width:110px;">
+			                                        <select id="status-\${s.id}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.7rem; padding:8px; border-radius:8px; width:120px;">
 			                                            <option value="pending" \${s.status === 'pending' ? 'selected' : ''}>⏳ PENDIENTE</option>
 			                                            <option value="approved" \${s.status === 'approved' ? 'selected' : ''}>✅ APROBADO</option>
-			                                            <option value="paid" \${s.status === 'paid' ? 'selected' : ''}>💰 PAGADO</option>
 			                                        </select>
 			                                    </td>
 			                                    <td>
@@ -8322,14 +9291,50 @@ describe("Hello World worker", () => {
 			            </div>
 
 			            <div class="stat-card" style="border-top:4px solid var(--accent); background:rgba(255,255,255,0.02); margin-top:30px;">
-			                <h3 style="margin-top:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
-			                    <span>📂 EVENTOS PENDIENTES POR RELACIONAR</span>
-			                    <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(POR EMPLEADO - BASE DE DATOS)</small>
-			                </h3>
-			                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">
-			                    Eventos completados con actividad registrada que aún no han sido relacionados en un reporte de cobro por el empleado. Haz clic sobre cada empleado para desplegar sus eventos pendientes.
-			                </p>
+			                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('pending-events-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('pending-events-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+			                    <h3 style="margin:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
+			                        <span>📂 EVENTOS PENDIENTES POR RELACIONAR</span>
+			                        <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(POR EMPLEADO - BASE DE DATOS)</small>
+			                    </h3>
+			                    <span id="pending-events-icon" style="color:var(--accent); font-size:0.8rem;">▼</span>
+			                </div>
 			                
+			                <!-- INDICADORES Y GRÁFICA (siempre visibles) -->
+			                <div style="margin-top:15px;">
+			                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-bottom:20px;">
+			                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+			                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL EVENTOS PENDIENTES</div>
+			                            <div style="font-size:1.8rem; font-weight:900; color:var(--warning); margin-top:5px;">\${totalPending}</div>
+			                        </div>
+			                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+			                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">EMPLEADOS AFECTADOS</div>
+			                            <div style="font-size:1.8rem; font-weight:900; color:var(--accent); margin-top:5px;">\${totalEmployees}</div>
+			                        </div>
+			                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+			                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">PROMEDIO POR EMPLEADO</div>
+			                            <div style="font-size:1.8rem; font-weight:900; color:var(--brand-green); margin-top:5px;">\${avgPending}</div>
+			                        </div>
+			                    </div>
+
+			                    <div style="margin-bottom:15px; padding:15px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+			                        <div style="font-size:0.7rem; color:var(--accent); font-weight:900; letter-spacing:1px; margin-bottom:15px; text-align:center;">ANTIGÜEDAD DE EVENTOS (POR MES)</div>
+			                        <div style="display:flex; justify-content:space-between; align-items:flex-end; height:100px; gap:5px; padding:0 10px;">
+			                            \${Object.entries(eventsByMonth).map(([month, count]) => {
+			                                const height = (count / maxEventsMonth) * 100;
+			                                const isZero = count === 0;
+			                                return \`
+			                                    <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:5px;" title="\${monthNames[month]}: \${count} eventos">
+			                                        <div style="font-size:0.55rem; color:var(--text); font-weight:bold; opacity:\${isZero ? 0.3 : 1};">\${count}</div>
+			                                        <div style="width:100%; max-width:25px; height:\${isZero ? 2 : height}px; background:\${isZero ? 'rgba(255,255,255,0.1)' : 'var(--accent)'}; border-radius:4px 4px 0 0; transition:height 0.5s;"></div>
+			                                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800;">\${monthNames[month]}</div>
+			                                    </div>
+			                                \`;
+			                            }).join('')}
+			                        </div>
+			                    </div>
+			                </div>
+			                
+			                <div id="pending-events-content" style="display:none; margin-top:10px;">
 			                <div style="display:flex; flex-direction:column; gap:10px;">
 			                    \${Object.keys(groupedPending).length === 0 ? \`
 			                        <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.75rem; font-style:italic;">
@@ -8417,6 +9422,20 @@ describe("Hello World worker", () => {
 			        }
 			    }
 
+			    window.closeCycleCFO = async function(userId, staffName) {
+			        if (!confirm(\`¿Cerrar ciclo de pago para \${staffName}?\\n\\nTodos sus eventos APROBADOS pasarán a PAGADO y desaparecerán del Resumen. El empleado deberá relacionar nuevos eventos para volver a aparecer.\`)) return;
+			        showLoading('CERRANDO CICLO DE PAGO...');
+			        const res = await apiFetch('/api/admin/payroll/close-cycle', {
+			            method: 'POST',
+			            body: JSON.stringify({ user_id: userId })
+			        });
+			        hideLoading();
+			        if (res && res.success) {
+			            toast(\`💰 CICLO CERRADO: \${res.closed} registro(s) marcados como PAGADO para \${staffName}\`, 'success');
+			            renderAdmin(document.getElementById('current-view'), 'formatos');
+			        }
+			    };
+
 			    window.editEventFromCalendar = function(id) {
 			        const s = (window.allSessions || []).find(x => x.id == id);
 			        if (!s) return;
@@ -8443,6 +9462,7 @@ describe("Hello World worker", () => {
 			        document.getElementById('lista-correlativo').value = s.correlativo || '';
 			        document.getElementById('lista-direccion').value = s.address || '';
 			        document.getElementById('lista-contacto').value = s.contact_name || '';
+			        if(document.getElementById('lista-presupuesto')) document.getElementById('lista-presupuesto').value = s.budget_id || '';
 			        document.getElementById('lista-telefono').value = s.phone || '';
 			        document.getElementById('lista-observaciones').value = s.observations || '';
 			        
@@ -8502,6 +9522,15 @@ describe("Hello World worker", () => {
 			    }
 
 			    window.DEFAULT_MAP_ADDRESS = 'F4PG+F97, Calle Garcilazo, Caracas 1080, Miranda, Venezuela';
+			    
+			    window.updatePresupuestoMap = function() {
+			        const val = document.getElementById('pres-direccion').value;
+			        const addr = val.trim() || window.DEFAULT_MAP_ADDRESS;
+			        const iframe = document.getElementById('pres-map-iframe');
+			        if (iframe) {
+			            iframe.src = \`https://www.google.com/maps?q=\${encodeURIComponent(addr)}&output=embed\`;
+			        }
+			    };
 			    
 			    window.handleAddressChange = function(val) {
 			        const addr = val.trim() || window.DEFAULT_MAP_ADDRESS;
@@ -8598,24 +9627,7 @@ describe("Hello World worker", () => {
 			        const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
 			        const otherSelection = type === 'supervisor' ? window.staffSelection.employees : window.staffSelection.supervisors;
 
-			        // Actualizar visual de la sección según supervisores
-			        if (type === 'employee') {
-			            const employeeSection = document.getElementById('employee-selection-section');
-			            if (employeeSection) {
-			                const supervisors = window.staffSelection.supervisors;
-			                if (supervisors.length > 0) {
-			                    employeeSection.style.opacity = '1';
-			                    employeeSection.style.pointerEvents = 'auto';
-			                    const warning = employeeSection.querySelector('div');
-			                    if (warning) warning.style.display = 'none';
-			                } else {
-			                    employeeSection.style.opacity = '0.3';
-			                    employeeSection.style.pointerEvents = 'none';
-			                    const warning = employeeSection.querySelector('div');
-			                    if (warning) warning.style.display = 'block';
-			                }
-			            }
-			        }
+			        // Ya no actualizamos la visual para bloquear la sección de empleados
 			        
 			        const targetDate = document.getElementById('lista-fecha')?.value;
 
@@ -8987,7 +9999,7 @@ describe("Hello World worker", () => {
 			        el.innerHTML = \`
 			            <div id="marketing-view" style="width:90%; margin:0 auto; padding-top:20px; padding-bottom:10vh;">
 			                <div class="view-header" style="text-align:center; margin-bottom:30px;">
-			                    <h1 class="view-title" style="font-size:2rem; letter-spacing:-1px; color:var(--brand-white);">📊 ESTRATEGIA <span style="color:var(--accent);">IMAGEN & RRSS</span></h1>
+			                    <h1 class="view-title" style="font-size:2rem; letter-spacing:-1px; color:var(--brand-white);">📊 ESTRATEGIA <span style="color:var(--accent);">PUBLICIDAD</span></h1>
 			                    <p style="color:var(--muted); font-size:0.8rem; margin-top:5px;">PLAN DE TRABAJO Y DASHBOARD GERENCIAL</p>
 			                </div>
 
@@ -9019,7 +10031,7 @@ describe("Hello World worker", () => {
 			                </div>
 
 			                <div style="text-align:center;">
-			                    <button class="btn btn-secondary" onclick="renderAdmin(document.getElementById('current-view'), 'hr')" style="padding:12px 30px; font-size:0.8rem; font-weight:800;">← VOLVER A ADMINISTRACIÓN</button>
+			                    \${getVolverBtn('VOLVER A VIP EYE', 'renderVipEyeStaff(document.getElementById(\\'current-view\\'))')}
 			                </div>
 			            </div>
 			        \`;
@@ -9034,7 +10046,7 @@ describe("Hello World worker", () => {
 			            
 			            view.innerHTML = \`
 			                <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-			                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">← VOLVER AL PORTAL</button>
+			                    \${getVolverBtn('VOLVER AL PORTAL', 'exitToPortal()')}
 			                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; background:rgba(255,255,255,0.03); padding:8px 15px; border-radius:10px; border:1px solid var(--border);">
 			                        📡 SEÑAL ACTIVA • MODO REAL-TIME
 			                    </div>
@@ -9743,645 +10755,7 @@ describe("Hello World worker", () => {
 			    };
 
 			    // ==========================================
-			    // MENSAJERÍA INTERNA REAL-TIME (CHAT)
-			    // ==========================================
-			    window.chatInterval = null;
-			    window.currentChatType = 'global'; // 'global', 'event', 'private'
-			    window.currentChatSessionId = null;
-			    window.currentChatRecipientId = null;
-
-			    async function renderChat(el) {
-			        showLoading();
-			        
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const userId = user.id;
-			        
-			        if (!userId) {
-			            toast('❌ SESIÓN INVALÍDA', 'error');
-			            return;
-			        }
-
-			        if (window.chatInterval) {
-			            clearInterval(window.chatInterval);
-			        }
-
-			        // Initialize session parameters if not present
-			        if (window.currentChatType === undefined) {
-			            window.currentChatType = 'global';
-			        }
-			        if (window.currentChatSessionId === undefined) {
-			            window.currentChatSessionId = null;
-			        }
-			        if (window.currentChatRecipientId === undefined) {
-			            window.currentChatRecipientId = null;
-			        }
-			        if (window.chatFirstRender === undefined) {
-			            window.chatFirstRender = true;
-			        }
-			        if (window.chatCategoryFilter === undefined) {
-			            window.chatCategoryFilter = 'all';
-			        }
-			        if (window.activePrivateChats === undefined) {
-			            window.activePrivateChats = [];
-			        }
-			        if (window.currentChatType === 'private' && window.currentChatRecipientId && !window.activePrivateChats.includes(window.currentChatRecipientId)) {
-			            window.activePrivateChats.push(window.currentChatRecipientId);
-			        }
-
-			        // Load active events and conversations
-			        let changed = false;
-			        const p1 = apiFetch('/api/chat/users?userId=' + userId).then(res => {
-			            if (res && res.users) {
-			                const oldLen = (window.activeConversations || []).length;
-			                window.activeConversations = res.users;
-			                if (oldLen !== window.activeConversations.length) {
-			                    changed = true;
-			                }
-			            }
-			        }).catch(e => console.error("Directory error:", e));
-
-			        const p2 = apiFetch('/api/sessions/active').then(res => {
-			            if (res && res.sessions) {
-			                const oldLen = (window.activeSessions || []).length;
-			                window.activeSessions = res.sessions;
-			                if (oldLen !== window.activeSessions.length) {
-			                    changed = true;
-			                }
-			            }
-			        }).catch(e => console.error("Sessions error:", e));
-
-			        await Promise.all([p1, p2]).then(() => {
-			            hideLoading();
-			            if (changed || window.chatFirstRender) {
-			                window.chatFirstRender = false;
-			                updateChatSidebarHTML(userId);
-			            }
-			        }).catch(e => {
-			            console.error("Error loading chat directory:", e);
-			            hideLoading();
-			        });
-			        
-			        // Cargar sesiones activas y personal
-			        const sessions = window.activeSessions || [];
-			        const staff = window.activeConversations || [];
-			        
-			        if (window.mobileShowChat === undefined) {
-			            window.mobileShowChat = false;
-			        }
-
-			        el.innerHTML = \`
-			            <style>
-			                @media (max-width: 767px) {
-			                    #chat-view {
-			                        height: calc(100vh - 100px) !important;
-			                        padding-bottom: 20px !important;
-			                    }
-			                    .chat-main-container {
-			                        width: 100% !important;
-			                        height: 100% !important;
-			                    }
-			                    .chat-sidebar {
-			                        width: 100% !important;
-			                        height: 220px !important;
-			                    }
-			                    .chat-log-area {
-			                        width: 100% !important;
-			                        flex: 1 !important;
-			                    }
-			                }
-
-			                .pill-filter {
-			                    background: rgba(255,255,255,0.06);
-			                    border: 1px solid var(--border);
-			                    border-radius: 20px;
-			                    color: var(--muted);
-			                    padding: 6px 14px;
-			                    font-size: 0.75rem;
-			                    font-weight: 800;
-			                    cursor: pointer;
-			                    transition: all 0.2s;
-			                }
-			                .pill-filter:hover {
-			                    background: rgba(255,255,255,0.1);
-			                    color: #fff;
-			                }
-			                .pill-filter.active {
-			                    background: #128c7e !important;
-			                    border-color: #128c7e !important;
-			                    color: #fff !important;
-			                }
-
-			                .chat-item {
-			                    transition: background 0.2s;
-			                }
-			                .chat-item:hover {
-			                    background: rgba(255,255,255,0.04) !important;
-			                }
-			                .chat-item.selected {
-			                    background: rgba(18, 140, 126, 0.15) !important;
-			                    border-color: rgba(18, 140, 126, 0.3) !important;
-			                }
-			            </style>
-			            
-			            <div id="chat-view" style="width:95%; max-width:1200px; margin:0 auto; padding-top:10px; padding-bottom: 5vh; display:flex; flex-direction:column; height:82vh;">
-			                <!-- Header -->
-			                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-shrink:0;">
-			                    <div>
-			                        <h1 class="view-title" style="font-size:1.6rem; color:white; font-weight:900;">💬 MENSAJERÍA INTERNA</h1>
-			                        <span style="font-size:0.6rem; color:var(--success); font-weight:800; text-transform:uppercase; letter-spacing:1px;">🟢 RED PRIVADA EYE STAFF</span>
-			                    </div>
-			                    <button class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="border-radius:10px; padding:8px 15px; font-weight:800; background:rgba(255,255,255,0.05); border:1px solid var(--border);">🏠 PORTAL</button>
-			                </div>
-			                
-			                <!-- Main Chat Split Layout -->
-			                <div id="chat-container" class="chat-main-container" style="display:flex; flex-direction:column; gap:15px; flex:1; min-height:0; width:100%;">
-			                    <!-- Sidebar (Canales y Contactos) -->
-			                    <div class="chat-sidebar" style="height:240px; width:100%; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:24px; display:flex; flex-direction:column; padding:15px; min-height:0; flex-shrink:0; backdrop-filter:blur(10px); box-sizing:border-box; position:relative;">
-			                        <!-- WhatsApp-like Top Header in Sidebar -->
-			                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-			                            <h3 style="font-size:1.1rem; color:white; margin:0; font-weight:900; letter-spacing:0.5px;">Chats</h3>
-			                        </div>
-			                        
-			                        <!-- Search & Autocomplete Bar -->
-			                        <div style="margin-bottom:12px; position:relative; z-index:10000;">
-			                            <input type="text" id="new-chat-autocomplete" placeholder="🔍 Buscar empleado o grupo para iniciar..." oninput="handleNewChatAutocomplete()" style="width:100%; height:38px; background:var(--surface2); border:1px solid var(--border); border-radius:20px; color:white; padding:0 15px 0 35px; font-size:0.8rem; box-sizing:border-box; outline:none;" autocomplete="off">
-			                            <span style="position:absolute; left:12px; top:10px; font-size:0.8rem; color:var(--muted);">🔍</span>
-			                            <div id="new-chat-suggestions" style="display:none; position:absolute; top:42px; left:0; right:0; background:#0b1329; border:1px solid var(--border); border-radius:12px; max-height:160px; overflow-y:auto; z-index:10000; box-shadow:0 10px 25px rgba(0,0,0,0.5);"></div>
-			                        </div>
-			                        
-			                        <!-- List Container -->
-			                        <div class="chat-sidebar-list" style="display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto; padding-right:2px;">
-			                            <!-- Will be rendered by updateChatSidebarHTML -->
-			                        </div>
-			                    </div>
-			                    
-			                    <!-- Chat Log Area -->
-			                    <div class="chat-log-area" style="flex:1; width:100%; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:24px; display:flex; flex-direction:column; min-height:0; overflow:hidden; backdrop-filter:blur(10px); box-sizing:border-box;">
-			                        <!-- Chat Header -->
-			                        <div style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:rgba(255,255,255,0.01);">
-			                            <div style="display:flex; align-items:center; gap:12px;">
-			                                <button class="btn btn-secondary btn-sm mobile-back-btn" onclick="goBackToChatList()" style="display:none; margin-right:12px; font-weight:800; padding:6px 12px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border); font-size:0.75rem;">← VOLVER</button>
-			                                <div style="display:flex; align-items:center; gap:10px;">
-			                                    <div id="chat-header-avatar" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, #128c7e 0%, #075e54 100%); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:900; color:white; flex-shrink:0;">
-			                                        💬
-			                                    </div>
-			                                    <div>
-			                                        <h2 id="chat-header-title" style="margin:0; font-size:1.05rem; color:white; font-weight:900;">...</h2>
-			                                        <span id="chat-header-subtitle" style="font-size:0.6rem; color:var(--muted); font-weight:800; text-transform:uppercase;">...</span>
-			                                    </div>
-			                                </div>
-			                            </div>
-			                            <button class="btn btn-sm" onclick="fetchChatMessages()" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); font-size:0.7rem; font-weight:800; padding:6px 12px; border-radius:8px; display:flex; align-items:center; gap:4px;">🔄 Refrescar</button>
-			                        </div>
-			                        
-			                        <!-- Messages Container with WhatsApp-style subtle dark grid pattern background -->
-			                        <div id="chat-messages-container" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; min-height:0; background-color:#0b141a; background-image:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size:20px 20px;">
-			                            <div style="margin:auto; font-size:0.75rem; color:var(--muted); font-style:italic;">Cargando mensajes...</div>
-			                        </div>
-			                        
-			                        <!-- Input Bar styled like WhatsApp rounded entry -->
-			                        <form id="chat-input-form" onsubmit="sendChatMessage(event)" style="padding:15px; border-top:1px solid var(--border); display:flex; gap:12px; align-items:center; flex-shrink:0; background:#101d25;">
-			                            <div style="flex:1; display:flex; align-items:center; background:#2a3942; border-radius:24px; padding:0 15px; height:45px; border:1px solid rgba(255,255,255,0.05);">
-			                                <span style="font-size:1.1rem; color:var(--muted); margin-right:10px; cursor:pointer;">😊</span>
-			                                <input type="text" id="chat-message-input" placeholder="Escribe un mensaje aquí..." style="flex:1; height:100%; background:transparent; border:none; color:white; font-size:0.85rem; outline:none;" required autocomplete="off">
-			                            </div>
-			                            <button type="submit" style="width:45px; height:45px; border-radius:50%; background:#128c7e; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:white; font-size:1.1rem; transition:0.2s;" onmouseover="this.style.background='#075e54'" onmouseout="this.style.background='#128c7e'">
-			                                ✈️
-			                            </button>
-			                        </form>
-			                    </div>
-			                </div>
-			            </div>
-			        \`;
-			        
-			        updateChatHeader();
-			        updateChatSidebarHTML(userId);
-			        await fetchChatMessages();
-			        
-			        window.chatInterval = setInterval(fetchChatMessages, 3000);
-			    }
-
-			    window.goBackToChatList = function() {
-			        window.mobileShowChat = false;
-			        const container = document.getElementById('chat-container');
-			        if (container) {
-			            container.classList.remove('mobile-show-chat');
-			        }
-			    };
-
-			    window.switchChatRoom = function(type, sessionId = null, recipientId = null) {
-			        window.currentChatType = type;
-			        window.currentChatSessionId = sessionId;
-			        window.currentChatRecipientId = recipientId;
-			        window.mobileShowChat = true;
-			        
-			        const container = document.getElementById('chat-container');
-			        if (container) {
-			            container.classList.add('mobile-show-chat');
-			        }
-			        
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        updateChatHeader();
-			        updateChatSidebarHTML(user.id);
-			        
-			        const msgContainer = document.getElementById('chat-messages-container');
-			        if (msgContainer) {
-			            msgContainer.innerHTML = '<div style="margin:auto; font-size:0.75rem; color:var(--muted); font-style:italic;">Cargando mensajes...</div>';
-			        }
-			        
-			        fetchChatMessages();
-			    };
-
-			    window.setChatCategory = function(cat) {
-			        window.chatCategoryFilter = cat;
-			        document.querySelectorAll('.pill-filter').forEach(btn => {
-			            btn.classList.remove('active');
-			        });
-			        const activeBtn = Array.from(document.querySelectorAll('.pill-filter')).find(btn => 
-			            btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(\`'\${cat}'\`)
-			        );
-			        if (activeBtn) activeBtn.classList.add('active');
-			        
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        updateChatSidebarHTML(user.id);
-			    };
-
-			    window.filterChatSidebar = function() {
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        updateChatSidebarHTML(user.id);
-			    };
-
-			    function getAvatarColor(name) {
-			        const colors = [
-			            'linear-gradient(135deg, #128c7e 0%, #075e54 100%)',
-			            'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-			            'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-			            'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
-			            'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
-			            'linear-gradient(135deg, #10b981 0%, #047857 100%)',
-			            'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)'
-			        ];
-			        let hash = 0;
-			        for (let i = 0; i < name.length; i++) {
-			            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-			        }
-			        const index = Math.abs(hash) % colors.length;
-			        return colors[index];
-			    }
-
-			    function getInitials(name) {
-			        if (!name) return '??';
-			        const parts = name.trim().split(/\\s+/);
-			        if (parts.length >= 2) {
-			            return (parts[0][0] + parts[1][0]).toUpperCase();
-			        }
-			        return parts[0].substring(0, 2).toUpperCase();
-			    }
-
-			    window.updateChatSidebarHTML = function(userId) {
-			        const listEl = document.querySelector('.chat-sidebar-list');
-			        if (!listEl) return;
-			        
-			        const sessions = window.activeSessions || [];
-			        const staff = window.activeConversations || [];
-			        const autocompleteInput = document.getElementById('new-chat-autocomplete');
-			        const query = autocompleteInput ? autocompleteInput.value.trim().toLowerCase() : '';
-			        
-			        let html = '';
-			        
-			        // 1. Canal Global
-			        const globalSelected = window.currentChatType === 'global';
-			        const matchGlobal = !query || 'chat general global'.includes(query);
-			        
-			        if (matchGlobal) {
-			            html += \`
-			                <div class="chat-item \${globalSelected ? 'selected' : ''}" onclick="switchChatRoom('global')" style="display:flex; align-items:center; gap:12px; padding:12px 15px; border-radius:14px; cursor:pointer; margin-bottom:4px; border:1px solid \${globalSelected ? 'rgba(18, 140, 126, 0.3)' : 'transparent'}; background:\${globalSelected ? 'rgba(18, 140, 126, 0.1)' : 'transparent'};">
-			                    <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, #128c7e 0%, #075e54 100%); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
-			                        🌐
-			                    </div>
-			                    <div style="text-align:left; flex:1; min-width:0;">
-			                        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-			                            <div style="font-size:0.85rem; font-weight:900; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">CHAT GENERAL</div>
-			                            <span style="font-size:0.6rem; color:var(--muted); font-weight:800;">GLOBAL</span>
-			                        </div>
-			                        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px;">Toda la comunidad Valet Eye</div>
-			                    </div>
-			                </div>
-			            \`;
-			        }
-			        
-			        // 2. Canales de Evento
-			        const filteredSessions = sessions.filter(s => !query || s.name.toLowerCase().includes(query) || (s.type || '').toLowerCase().includes(query));
-			        filteredSessions.forEach(s => {
-			            const isSelected = window.currentChatType === 'event' && window.currentChatSessionId == s.id;
-			            const initials = getInitials(s.name);
-			            const bg = getAvatarColor(s.name);
-			            html += \`
-			                <div class="chat-item \${isSelected ? 'selected' : ''}" onclick="switchChatRoom('event', \${s.id})" style="display:flex; align-items:center; gap:12px; padding:12px 15px; border-radius:14px; cursor:pointer; margin-bottom:4px; border:1px solid \${isSelected ? 'rgba(18, 140, 126, 0.3)':'transparent'}; background:\${isSelected ? 'rgba(18, 140, 126, 0.1)':'transparent'};">
-			                    <div style="width:40px; height:40px; border-radius:50%; background:\${bg}; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:900; color:white; flex-shrink:0;">
-			                        \${initials}
-			                    </div>
-			                    <div style="text-align:left; flex:1; min-width:0;">
-			                        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-			                            <div style="font-size:0.85rem; font-weight:900; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">\${s.name.toUpperCase()}</div>
-			                            <span style="font-size:0.55rem; color:var(--accent); font-weight:900; border:1px solid var(--accent); padding:1px 5px; border-radius:10px; text-transform:uppercase; flex-shrink:0;">\${(s.type || 'Valet').toUpperCase()}</span>
-			                        </div>
-			                        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px;">Chat de servicio activo</div>
-			                    </div>
-			                </div>
-			            \`;
-			        });
-			        
-			        // 3. Chats Privados (DMs) - Solo mostrar los activos en window.activePrivateChats
-			        if (window.activePrivateChats === undefined) {
-			            window.activePrivateChats = [];
-			        }
-			        if (window.currentChatType === 'private' && window.currentChatRecipientId && !window.activePrivateChats.includes(window.currentChatRecipientId)) {
-			            window.activePrivateChats.push(window.currentChatRecipientId);
-			        }
-			        
-			        const activeDMs = window.activePrivateChats || [];
-			        const filteredStaff = staff.filter(u => u.id != userId && activeDMs.includes(u.id) && (!query || u.name.toLowerCase().includes(query)));
-			        
-			        filteredStaff.forEach(u => {
-			            const isSelected = window.currentChatType === 'private' && window.currentChatRecipientId == u.id;
-			            const initials = getInitials(u.name);
-			            const bg = getAvatarColor(u.name);
-			            
-			            html += \`
-			                <div class="chat-item \${isSelected ? 'selected' : ''}" onclick="switchChatRoom('private', null, \${u.id})" style="display:flex; align-items:center; gap:12px; padding:12px 15px; border-radius:14px; cursor:pointer; margin-bottom:4px; border:1px solid \${isSelected ? 'rgba(18, 140, 126, 0.3)' : 'transparent'}; background:\${isSelected ? 'rgba(18, 140, 126, 0.1)' : 'transparent'};">
-			                    <div style="width:40px; height:40px; border-radius:50%; background:\${bg}; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:900; color:white; flex-shrink:0; position:relative;">
-			                        \${initials}
-			                        <span style="position:absolute; bottom:0; right:0; width:10px; height:10px; border-radius:50%; background:#22c55e; border:2px solid #0b1329;"></span>
-			                    </div>
-			                    <div style="text-align:left; flex:1; min-width:0;">
-			                        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-			                            <div style="font-size:0.85rem; font-weight:900; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">\${u.name.toUpperCase()}</div>
-			                        </div>
-			                    </div>
-			                </div>
-			            \`;
-			        });
-			        
-			        listEl.innerHTML = html || \`<div style="font-size:0.65rem; color:var(--muted); font-style:italic; padding:20px; text-align:center;">No hay conversaciones en esta pestaña</div>\`;
-			    };
-
-			    window.handleNewChatAutocomplete = function() {
-			        const input = document.getElementById('new-chat-autocomplete');
-			        const suggestionsEl = document.getElementById('new-chat-suggestions');
-			        if (!input || !suggestionsEl) return;
-			        
-			        const q = input.value.trim().toLowerCase();
-			        if (!q) {
-			            suggestionsEl.style.display = 'none';
-			            suggestionsEl.innerHTML = '';
-			            const user = JSON.parse(localStorage.getItem('user') || '{}');
-			            updateChatSidebarHTML(user.id);
-			            return;
-			        }
-			        
-			        const sessions = window.activeSessions || [];
-			        const staff = window.activeConversations || [];
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const currentUserId = user.id;
-			        
-			        const matchedGroups = sessions.filter(s => s.name.toLowerCase().includes(q) || (s.type || '').toLowerCase().includes(q));
-			        const matchedStaff = staff.filter(u => u.id != currentUserId && u.name.toLowerCase().includes(q));
-			        
-			        if (matchedGroups.length === 0 && matchedStaff.length === 0) {
-			            suggestionsEl.innerHTML = \`<div style="padding:10px 15px; font-size:0.75rem; color:var(--muted); font-style:italic; text-align:center;">No se encontraron coincidencias</div>\`;
-			            suggestionsEl.style.display = 'block';
-			            return;
-			        }
-			        
-			        let html = '';
-			        
-			        matchedGroups.forEach(s => {
-			            const initials = getInitials(s.name);
-			            const bg = getAvatarColor(s.name);
-			            html += \`
-			                <div onclick="selectAutocompleteItem('event', \${s.id})" style="display:flex; align-items:center; gap:10px; padding:10px 15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
-			                    <div style="width:30px; height:30px; border-radius:50%; background:\${bg}; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; color:white; flex-shrink:0;">
-			                        \${initials}
-			                    </div>
-			                    <div style="flex:1; min-width:0; text-align:left;">
-			                        <div style="font-size:0.75rem; font-weight:900; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">\${s.name.toUpperCase()}</div>
-			                        <span style="font-size:0.55rem; color:var(--accent); font-weight:900; text-transform:uppercase;">GRUPO / EVENTO</span>
-			                    </div>
-			                </div>
-			            \`;
-			        });
-			        
-			        matchedStaff.forEach(u => {
-			            const initials = getInitials(u.name);
-			            const bg = getAvatarColor(u.name);
-			            html += \`
-			                <div onclick="selectAutocompleteItem('private', \${u.id})" style="display:flex; align-items:center; gap:10px; padding:10px 15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
-			                    <div style="width:30px; height:30px; border-radius:50%; background:\${bg}; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; color:white; flex-shrink:0;">
-			                        \${initials}
-			                    </div>
-			                    <div style="flex:1; min-width:0; text-align:left;">
-			                        <div style="font-size:0.75rem; font-weight:900; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">\${u.name.toUpperCase()}</div>
-			                        <span style="font-size:0.55rem; color:var(--success); font-weight:900; text-transform:uppercase;">EMPLEADO</span>
-			                    </div>
-			                </div>
-			            \`;
-			        });
-			        
-			        suggestionsEl.innerHTML = html;
-			        suggestionsEl.style.display = 'block';
-			        
-			        updateChatSidebarHTML(user.id);
-			    };
-
-			    window.selectAutocompleteItem = function(type, id) {
-			        const input = document.getElementById('new-chat-autocomplete');
-			        const suggestionsEl = document.getElementById('new-chat-suggestions');
-			        if (input) input.value = '';
-			        if (suggestionsEl) {
-			            suggestionsEl.style.display = 'none';
-			            suggestionsEl.innerHTML = '';
-			        }
-			        
-			        if (type === 'event') {
-			            switchChatRoom('event', id);
-			        } else if (type === 'private') {
-			            if (!window.activePrivateChats) {
-			                window.activePrivateChats = [];
-			            }
-			            if (!window.activePrivateChats.includes(id)) {
-			                window.activePrivateChats.push(id);
-			            }
-			            switchChatRoom('private', null, id);
-			        }
-			    };
-
-			    window.updateChatHeader = function() {
-			        const titleEl = document.getElementById('chat-header-title');
-			        const subtitleEl = document.getElementById('chat-header-subtitle');
-			        const avatarEl = document.getElementById('chat-header-avatar');
-			        if (!titleEl) return;
-			        
-			        if (window.currentChatType === 'global') {
-			            titleEl.textContent = 'CHAT GENERAL';
-			            if (subtitleEl) subtitleEl.textContent = 'TODA LA COMUNIDAD VALET EYE';
-			            if (avatarEl) {
-			                avatarEl.textContent = '🌐';
-			                avatarEl.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
-			            }
-			        } else if (window.currentChatType === 'event') {
-			            const sessions = window.activeSessions || [];
-			            const sess = sessions.find(s => s.id == window.currentChatSessionId);
-			            if (sess) {
-			                titleEl.textContent = sess.name.toUpperCase();
-			                if (subtitleEl) subtitleEl.textContent = \`GRUPO EVENTO: \${(sess.type || 'Valet').toUpperCase()}\`;
-			                if (avatarEl) {
-			                    avatarEl.textContent = getInitials(sess.name);
-			                    avatarEl.style.background = getAvatarColor(sess.name);
-			                }
-			            } else {
-			                titleEl.textContent = 'GRUPO DE EVENTO';
-			                if (subtitleEl) subtitleEl.textContent = 'EVENTO DESCONOCIDO';
-			                if (avatarEl) {
-			                    avatarEl.textContent = '📅';
-			                    avatarEl.style.background = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)';
-			                }
-			            }
-			        } else if (window.currentChatType === 'private') {
-			            const staff = window.activeConversations || [];
-			            const u = staff.find(x => x.id == window.currentChatRecipientId);
-			            if (u) {
-			                titleEl.textContent = u.name.toUpperCase();
-			                if (subtitleEl) subtitleEl.textContent = \`PRIVADO - \${(u.role || 'Staff').toUpperCase()}\`;
-			                if (avatarEl) {
-			                    avatarEl.textContent = getInitials(u.name);
-			                    avatarEl.style.background = getAvatarColor(u.name);
-			                }
-			            } else {
-			                titleEl.textContent = 'MENSAJE DIRECTO';
-			                if (subtitleEl) subtitleEl.textContent = 'CONTACTO';
-			                if (avatarEl) {
-			                    avatarEl.textContent = '👤';
-			                    avatarEl.style.background = 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)';
-			                }
-			            }
-			        }
-			    };
-
-			    window.fetchChatMessages = async function() {
-			        const container = document.getElementById('chat-messages-container');
-			        if (!container) return;
-			        
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const userId = user.id;
-			        if (!userId) return;
-			        
-			        let url = \`/api/chat/messages?sender_id=\${userId}\`;
-			        if (window.currentChatType === 'event') {
-			            url += \`&session_id=\${window.currentChatSessionId}\`;
-			        } else if (window.currentChatType === 'private') {
-			            url += \`&recipient_id=\${window.currentChatRecipientId}\`;
-			        } else {
-			            // global
-			            url += \`&global=true\`;
-			        }
-			        
-			        try {
-			            const res = await apiFetch(url);
-			            const messages = res.messages || [];
-			            
-			            if (messages.length === 0) {
-			                container.innerHTML = \`<div style="margin:auto; font-size:0.75rem; color:var(--muted); font-style:italic;">No hay mensajes en esta sala. ¡Sé el primero en escribir!</div>\`;
-			                return;
-			            }
-			            
-			            let html = '';
-			            messages.forEach(msg => {
-			                const isMe = msg.sender_id == userId;
-			                const date = new Date(msg.created_at || Date.now());
-			                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-			                
-			                const bubbleBg = isMe ? 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)' : '#202c33';
-			                const bubbleAlign = isMe ? 'flex-end' : 'flex-start';
-			                const textColor = '#fff';
-			                const borderRad = isMe ? '16px 16px 0px 16px' : '16px 16px 16px 0px';
-			                
-			                // Show sender initials/name if not me in Global/Event
-			                const showSenderName = !isMe && (window.currentChatType === 'global' || window.currentChatType === 'event');
-			                const senderNameHtml = showSenderName ? \`<div style="font-size:0.65rem; color:var(--accent); font-weight:900; margin-bottom:3px; text-transform:uppercase;">\${(msg.sender_name || 'Staff').toUpperCase()}</div>\` : '';
-			                
-			                // Beautiful double-checkmark status for sent messages
-			                const checkmarks = isMe ? \`<span style="color:#34b7f1; font-size:0.7rem; font-weight:bold; margin-left:5px;">✓✓</span>\` : '';
-			                
-			                html += \`
-			                    <div style="display:flex; flex-direction:column; align-items:\${bubbleAlign}; width:100%;">
-			                        <div style="max-width:70%; background:\${bubbleBg}; border-radius:\${borderRad}; padding:10px 14px; position:relative; box-shadow:0 2px 5px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.03);">
-			                            \${senderNameHtml}
-			                            <div style="font-size:0.8rem; color:\${textColor}; word-break:break-word; line-height:1.4;">\${msg.message}</div>
-			                            <div style="display:flex; align-items:center; justify-content:flex-end; font-size:0.55rem; color:rgba(255,255,255,0.45); font-weight:800; margin-top:4px; text-align:right;">
-			                                <span>\${timeStr}</span>
-			                                \${checkmarks}
-			                            </div>
-			                        </div>
-			                    </div>
-			                \`;
-			            });
-			            
-			            const wasScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 100;
-			            container.innerHTML = html;
-			            
-			            if (wasScrolledToBottom || window.chatFirstRender) {
-			                container.scrollTop = container.scrollHeight;
-			            }
-			        } catch (e) {
-			            console.error("Fetch messages error:", e);
-			        }
-			    };
-
-			    window.sendChatMessage = async function(event) {
-			        if (event) event.preventDefault();
-			        
-			        const input = document.getElementById('chat-message-input');
-			        if (!input) return;
-			        
-			        const messageText = input.value.trim();
-			        if (!messageText) return;
-			        
-			        const user = JSON.parse(localStorage.getItem('user') || '{}');
-			        const userId = user.id;
-			        
-			        const payload = {
-			            sender_id: userId,
-			            message: messageText
-			        };
-			        
-			        if (window.currentChatType === 'event') {
-			            payload.session_id = window.currentChatSessionId;
-			        } else if (window.currentChatType === 'private') {
-			            payload.recipient_id = window.currentChatRecipientId;
-			        }
-			        
-			        input.value = '';
-			        
-			        try {
-			            await apiFetch('/api/chat/messages', {
-			                method: 'POST',
-			                body: JSON.stringify(payload)
-			            });
-			            
-			            await fetchChatMessages();
-			            
-			            const container = document.getElementById('chat-messages-container');
-			            if (container) {
-			                setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
-			            }
-			        } catch (e) {
-			            toast('❌ ERROR AL ENVIAR', 'error');
-			            console.error('Send error:', e);
-			        }
-			    };
-
-			    window.renderChat = renderChat;
+			    // MENSAJERÍA DESACTIVADA POR REFACTORIZACIÓN
 			    window.previewEditCarnet = function(input) {
 			        if (input.files && input.files[0]) {
 			            const reader = new FileReader();
@@ -10736,6 +11110,950 @@ describe("Hello World worker", () => {
 			            </div>
 			        </div>
 			    </div>
+			<!-- LIBRERÍAS Y MÓDULO DE PRESUPUESTOS -->
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+			<script>
+			const PRESUPUESTO_CATALOGO = [
+			    { desc: "Personal de Guardia Nocturna", precio: 2000 },
+			    { desc: "Coordinador de Area", precio: 4500 },
+			    { desc: "Personal de Logística, Prevención y Control", precio: 2300 },
+			    { desc: "Supervisor", precio: 5500 },
+			    { desc: "Servicio de Alquiler de Radios de Comunicación UHF", precio: 1200 },
+			    { desc: "Desayunos", precio: 550 },
+			    { desc: "Almuerzos", precio: 600 },
+			    { desc: "Cenas", precio: 600 },
+			    { desc: "Viáticos para Comida e Hidratación", precio: 0 },
+			    { desc: "Personal de Protocolo y Logística", precio: 0 },
+			    { desc: "Personal de Montaje y Desmontaje", precio: 0 },
+			    { desc: "Custodia de Artistas y Personalidades", precio: 0 },
+			    { desc: "Personal de Vallet Parking", precio: 0 },
+			    { desc: "Equipos de Vialidad", precio: 0 },
+			    { desc: "Postes Separadores de Colas", precio: 0 },
+			    { desc: "Toldos", precio: 0 },
+			    { desc: "Baños Portátiles", precio: 0 },
+			    { desc: "Alquiler de Extintores", precio: 0 },
+			    { desc: "Sistema de Monitoreo Móvil hasta 8 cámaras", precio: 0 }
+			];
+
+			let itemsPresupuesto = [];
+
+			function renderPresupuestos(el) {
+			    itemsPresupuesto = []; // reset
+			    el.innerHTML = \`
+			        <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+			            \${getVolverBtn('VOLVER VIP EYE', 'renderVipEyeStaff(document.getElementById(\\'current-view\\'))')}
+			        </div>
+			        
+			        <div style="display:flex; justify-content:center; margin-bottom:20px;">
+			            <div style="display:flex; background:rgba(0,0,0,0.2); border-radius:12px; padding:5px;">
+			                <button id="btn-tab-generador" onclick="switchPresupuestoTab('generador')" style="padding:10px 20px; font-weight:bold; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer; font-size:1rem; transition:0.3s;">PRESUPUESTO</button>
+			                <button id="btn-tab-historial" onclick="switchPresupuestoTab('historial')" style="padding:10px 20px; font-weight:bold; border-radius:8px; border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:1rem; transition:0.3s;">HISTORIAL <span id="historial-tab-count" style="background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:0.7rem; vertical-align:middle; margin-left:5px;">0</span></button>
+			            </div>
+			        </div>
+			        
+			        <div id="tab-generador-content" style="display:block;">
+			        <div class="card" style="max-width:900px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:24px;">
+			            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+			                <h3 id="generador-title" style="color:#a855f7; margin:0; font-weight:900;">NUEVO PRESUPUESTO</h3>
+			            </div>
+			            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+			                <div class="field" style="grid-column: 1 / -1; margin-bottom:5px;">
+			                    <label>EMPRESA EMISORA (LOGOTIPO)</label>
+			                    <select id="pres-empresa-emisora" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;">
+			                        <option value="EYE STAFF">EYE STAFF</option>
+			                        <option value="RENTAEQUIPOS">RENTAEQUIPOS</option>
+			                    </select>
+			                </div>
+			                <div class="field"><label>NOMBRE DE CLIENTE</label><input type="text" id="pres-atencion" placeholder="Ej. RAQUEL DAHER"></div>
+			                <div class="field"><label>EMPRESA</label><input type="text" id="pres-empresa" placeholder="Ej. EMPORIO GROUP" list="lista-empresas" onchange="autoFillEmpresa()" onblur="autoFillEmpresa()">
+			                    <datalist id="lista-empresas"></datalist>
+			                </div>
+			                <div class="field"><label>TELÉFONOS</label><input type="text" id="pres-telefonos" placeholder="Teléfonos"></div>
+			                <div class="field"><label>E-MAIL</label><input type="email" id="pres-email" placeholder="Correo"></div>
+			                
+			                <div class="field" style="grid-column: 1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+			                    <div><label>NOMBRE DEL EVENTO</label><input type="text" id="pres-evento" placeholder="Ej. MIS DULCE 15"></div>
+			                    <div><label>TIPO DE EVENTO</label>
+			                        <select id="pres-tipo-evento" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;">
+			                            <option value="VALET PARKING">VALET PARKING</option>
+			                            <option value="CONTROL DE ACCESOS">CONTROL DE ACCESOS</option>
+			                            <option value="ALQUILER DE EQUIPOS">ALQUILER DE EQUIPOS</option>
+			                            <option value="TRASLADOS">TRASLADOS</option>
+			                            <option value="GUARDIA DIURNA/NOCTURNA">GUARDIA DIURNA/NOCTURNA</option>
+			                            <option value="CUSTODIA">CUSTODIA</option>
+			                        </select>
+			                    </div>
+			                    <div><label>Nº DE PERSONAS</label><input type="text" id="pres-personas" placeholder="Aforo"></div>
+			                </div>
+
+			                <div class="field" style="grid-column: 1 / -1;">
+			                    <label>DIRECCIÓN DEL EVENTO</label>
+			                    <div style="display:flex; gap:10px; align-items:center;">
+			                        <input type="text" id="pres-direccion" placeholder="Ej. Quinta La Esmeralda, Campo Alegre" style="flex:1;" oninput="updatePresupuestoMap()">
+			                    </div>
+			                    <div style="margin-top:10px; height:200px; border-radius:12px; overflow:hidden; border:1px solid var(--border);">
+			                        <iframe id="pres-map-iframe" width="100%" height="100%" frameborder="0" style="border:0; filter: grayscale(0.5) contrast(1.2) opacity(0.8);" src="https://www.google.com/maps?q=Caracas&output=embed" allowfullscreen></iframe>
+			                    </div>
+			                </div>
+
+			                <div class="field"><label>LUGAR DEL EVENTO</label><input type="text" id="pres-lugar" placeholder="Ej. CCCT"></div>
+			                <div class="field"><label>CIUDAD</label><input type="text" id="pres-ciudad" placeholder="Ej. CARACAS"></div>
+
+			                <div class="field" style="grid-column: 1 / -1;">
+			                    <div style="display:flex; gap:10px; align-items:center;">
+			                        <div style="flex:1"><label>FECHA DEL EVENTO</label><input type="date" id="pres-fecha" onchange="syncFechaFinYCalc()" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px;"></div>
+			                        <div style="flex:1"><label>HORA DE INICIO</label><input type="text" id="pres-inicio" placeholder="HH:MM" maxlength="5" oninput="if(this.value.length === 2 && !this.value.includes(':')) this.value += ':'" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px; text-align:center;"></div>
+			                    </div>
+			                </div>
+			                
+			                <div class="field" style="grid-column: 1 / -1;">
+			                    <div style="display:flex; gap:10px; align-items:center;">
+			                        <div style="flex:1"><label>FECHA TENTATIVA CULMINACIÓN</label><input type="date" id="pres-fecha-fin" onchange="calcPresupuestoDias()" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px;"></div>
+			                        <div style="flex:1"><label>HORA CULMINACIÓN</label><input type="text" id="pres-fin-hora" placeholder="HH:MM" maxlength="5" oninput="if(this.value.length === 2 && !this.value.includes(':')) this.value += ':'" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px; text-align:center;"></div>
+			                    </div>
+			                </div>
+
+			                <div class="field"><label>CANTIDAD DE DÍAS (AUTOCALCULADO)</label><input type="number" id="pres-dias" value="1" readonly style="background:rgba(255,255,255,0.05); cursor:not-allowed;"></div>
+			                <div class="field"><label>% IVA</label><input type="number" id="pres-iva" value="12" onchange="calcularTotales()"></div>
+			            </div>
+
+			            <h3 style="color:#a855f7; margin-bottom:15px; font-weight:900; margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
+			                LÍNEAS DE SERVICIO
+			                <button type="button" class="btn" onclick="addPresupuestoItem()" style="font-size:0.8rem; padding:8px 15px; background:var(--success); color:white;">+ AGREGAR SERVICIO</button>
+			            </h3>
+			            
+			            <div style="overflow-x:auto;">
+			                <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:left; color:#fff;">
+			                    <thead>
+			                        <tr style="border-bottom:2px solid var(--border); color:var(--muted);">
+			                            <th style="padding:10px;">CANT.</th>
+			                            <th style="padding:10px; width:40%;">DESCRIPCIÓN</th>
+			                            <th style="padding:10px;">PRECIO U.</th>
+			                            <th style="padding:10px;">DÍAS</th>
+			                            <th style="padding:10px;">TOTAL</th>
+			                            <th style="padding:10px;"></th>
+			                        </tr>
+			                    </thead>
+			                    <tbody id="pres-items-body">
+			                    </tbody>
+			                    <tfoot>
+			                        <tr style="border-top:2px solid var(--border); font-weight:900;">
+			                            <td colspan="4" style="text-align:right; padding:15px 10px;">SUBTOTAL:</td>
+			                            <td id="pres-subtotal" style="padding:15px 10px;">0.00</td>
+			                            <td></td>
+			                        </tr>
+			                        <tr style="font-weight:900;">
+			                            <td colspan="4" style="text-align:right; padding:5px 10px;">IVA:</td>
+			                            <td id="pres-total-iva" style="padding:5px 10px;">0.00</td>
+			                            <td></td>
+			                        </tr>
+			                        <tr style="font-weight:900; font-size:1.1rem; color:var(--success);">
+			                            <td colspan="4" style="text-align:right; padding:15px 10px;">TOTAL A PAGAR:</td>
+			                            <td id="pres-gran-total" style="padding:15px 10px;">0.00</td>
+			                            <td></td>
+			                        </tr>
+			                    </tfoot>
+			                </table>
+			            </div>
+
+			            <div style="margin-top:30px;">
+			                <div style="display:flex; gap:10px; margin-bottom:10px;">
+			                    <button id="btn-eliminar-presupuesto" class="btn" onclick="eliminarPresupuestoActual()" style="display:none; width:60px; height:60px; font-size:1.5rem; background:var(--danger, #ef4444); color:white; border-radius:12px; border:none; cursor:pointer;" title="Eliminar Presupuesto">🗑️</button>
+			                    <button class="btn" onclick="accionPresupuesto('guardar')" style="flex:1; height:60px; font-size:1.2rem; font-weight:900; background:var(--surface2); border:1px solid var(--accent); color:white; border-radius:12px;">💾 GUARDAR PRESUPUESTO</button>
+			                    <button id="btn-iniciar-presupuesto" class="btn" onclick="if(window.currentEditingPresupuestoId) window.location.href='/?view=listas&action=create_session_from_budget&budget_id='+window.currentEditingPresupuestoId" style="display:none; flex:1; height:60px; font-size:1.2rem; font-weight:900; background:#22c55e; border:none; color:white; border-radius:12px; box-shadow:0 0 15px rgba(34,197,94,0.4);">▶ INICIAR EVENTO</button>
+			                </div>
+			                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+			                    <button class="btn" onclick="accionPresupuesto('pdf')" style="flex:1; height:45px; font-size:0.9rem; font-weight:900; background:#a855f7; color:white;">📄 GENERAR PDF</button>
+			                    <button class="btn" onclick="accionPresupuesto('email')" style="flex:1; height:45px; font-size:0.9rem; font-weight:900; background:#3b82f6; color:white;">📧 ENVIAR EMAIL</button>
+			                </div>
+			            </div>
+			            </div>
+			        </div>
+			        </div>
+
+			        <div id="tab-historial-content" style="display:none;">
+			        <div class="card" style="max-width:900px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:20px 30px; border-radius:24px;">
+			            <div style="display:flex; justify-content:space-between; align-items:center;">
+			                <h3 style="color:#a855f7; margin:0; font-weight:900;">HISTORIAL DE PRESUPUESTOS <span id="historial-count" style="background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:0.8rem; vertical-align:middle; margin-left:10px;">0</span></h3>
+			            </div>
+			            
+			            <div id="historial-container" style="display:block; margin-top:20px;">
+			                <input type="text" id="historial-search" oninput="renderHistorialPresupuestos()" placeholder="Buscar por fecha, cliente, evento o número correlativo..." style="width:100%; padding:12px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; margin-bottom:15px;">
+			                <div id="historial-list" style="max-height:350px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+			                </div>
+			            </div>
+			        </div>
+			    \`;
+			    
+			    setTimeout(() => {
+			        if(window.loadEmpresasToDatalist) window.loadEmpresasToDatalist();
+			        if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			    }, 100);
+
+			    window.currentEditingPresupuestoId = null;
+			    window.currentEditingPresupuestoTimestamp = null;
+
+			    // Auto-add an empty row
+			    addPresupuestoItem();
+			}
+
+			window.switchPresupuestoTab = function(tab) {
+			    const btnGen = document.getElementById('btn-tab-generador');
+			    const btnHist = document.getElementById('btn-tab-historial');
+			    const contentGen = document.getElementById('tab-generador-content');
+			    const contentHist = document.getElementById('tab-historial-content');
+			    
+			    if (tab === 'generador') {
+			        btnGen.style.background = 'var(--accent)';
+			        btnGen.style.color = 'white';
+			        btnHist.style.background = 'transparent';
+			        btnHist.style.color = 'var(--muted)';
+			        contentGen.style.display = 'block';
+			        contentHist.style.display = 'none';
+			    } else {
+			        btnHist.style.background = 'var(--accent)';
+			        btnHist.style.color = 'white';
+			        btnGen.style.background = 'transparent';
+			        btnGen.style.color = 'var(--muted)';
+			        contentHist.style.display = 'block';
+			        contentGen.style.display = 'none';
+			        if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			    }
+			}
+
+			window._globalBudgets = [];
+
+			window.renderHistorialPresupuestos = async function() {
+			    const listEl = document.getElementById('historial-list');
+			    const countEl = document.getElementById('historial-count');
+			    const tabCountEl = document.getElementById('historial-tab-count');
+			    const searchVal = (document.getElementById('historial-search') ? document.getElementById('historial-search').value.toLowerCase() : '');
+			    
+			    if(!listEl || !countEl) return;
+			    
+			    try {
+			        const res = await apiFetch('/api/presupuestos');
+			        if (!res.success) throw new Error(res.error || 'Error fetching');
+			        
+			        let data = res.budgets || [];
+			        data = data.map(d => ({
+			            ...d,
+			            form: typeof d.form_data === 'string' ? JSON.parse(d.form_data) : d.form_data,
+			            items: typeof d.items_data === 'string' ? JSON.parse(d.items_data) : d.items_data
+			        }));
+			        
+			        window._globalBudgets = data;
+			        countEl.textContent = data.length;
+			        if(tabCountEl) tabCountEl.textContent = data.length;
+			    
+			    if(searchVal) {
+			        data = data.filter(d => 
+			            (d.id && d.id.toLowerCase().includes(searchVal)) || 
+			            (d.empresa && d.empresa.toLowerCase().includes(searchVal)) ||
+			            (d.evento && d.evento.toLowerCase().includes(searchVal)) ||
+			            (d.fecha && d.fecha.toLowerCase().includes(searchVal))
+			        );
+			    }
+			    
+			    // Sort all budgets by correlativo desc (de mayor a menor)
+			    data.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+			    
+			    let html = '';
+			    if (data.length > 0) {
+			        html += \`<div style="border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.1); margin-bottom:20px; margin-top:15px;">
+			            <div style="display:grid; grid-template-columns: 60px minmax(110px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) 90px 90px 145px; gap:8px; background:var(--surface2); padding:12px 15px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.7rem; letter-spacing:0.5px;">
+			                <div>ID</div>
+			                <div>CONTACTO</div>
+			                <div>EMPRESA</div>
+			                <div>TIPO DE EVENTO</div>
+			                <div>EVENTO</div>
+			                <div>FECHA</div>
+			                <div>TOTAL</div>
+			                <div>ESTATUS</div>
+			            </div>\`;
+			        
+			        html += data.map((d, index) => {
+			            const status = d.estatus || 'GENERADO';
+			            const isLast = index === data.length - 1;
+			            const tipo = (d.form && d.form.tipoEvento) ? d.form.tipoEvento : 'VALET PARKING';
+			            
+			            let displayFecha = d.fecha;
+			            if (!displayFecha || displayFecha === 'N/A') {
+			                displayFecha = (d.form && d.form.fecha) ? d.form.fecha : 'N/A';
+			            }
+			            
+			            return \`
+			                <div style="display:grid; grid-template-columns: 60px minmax(110px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) minmax(110px, 1fr) 90px 90px 145px; gap:8px; padding:12px 15px; border-bottom:\${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.75rem;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+			                    <div style="cursor:pointer;" onclick="cargarPresupuestoDesdeHistorial('\${d.id}', \${d.timestamp})">
+			                        <span style="font-weight:900; color:var(--brand-white); border-bottom:1px dashed var(--accent);">#\${d.id}</span>
+			                    </div>
+			                    <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="\${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}">\${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}</div>
+			                    <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="\${d.empresa}">\${d.empresa}</div>
+			                    <div style="color:var(--warning); font-size:0.65rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="\${tipo}">\${tipo}</div>
+			                    <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="\${d.evento}">\${d.evento}</div>
+			                    <div style="color:var(--muted); font-weight:700; white-space:nowrap;">\${displayFecha}</div>
+			                    <div style="font-weight:900; color:var(--success); white-space:nowrap;">\${d.monto}</div>
+			                    <div>
+			                        <select class="table-control" onclick="event.stopPropagation()" onchange="cambiarEstatusPresupuesto(event, '\${d.id}', \${d.timestamp})" style="font-weight:700; color:\${status === 'APROBADO' ? 'var(--success)' : 'var(--muted)'}; font-size:0.65rem; padding:6px 4px; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid \${status === 'APROBADO' ? 'var(--success)' : 'var(--border)'}; width:100%; outline:none; cursor:pointer;">
+			                            <option value="GENERADO" \${status==='GENERADO'?'selected':''} style="color:var(--muted)">GENERADO</option>
+			                            <option value="ENVIADO" \${status==='ENVIADO'?'selected':''} style="color:var(--muted)">ENVIADO</option>
+			                            <option value="MODIFICADO Y ENVIADO" \${status==='MODIFICADO Y ENVIADO'?'selected':''} style="color:var(--muted)">MOD Y ENVIADO</option>
+			                            <option value="APROBADO" \${status==='APROBADO'?'selected':''} style="color:var(--success)">APROBADO</option>
+			                            <option value="NO APROBADO" \${status==='NO APROBADO'?'selected':''} style="color:var(--danger)">NO APROBADO</option>
+			                        </select>
+			                    </div>
+			                </div>
+			            \`;
+			        }).join('');
+			        html += \`</div>\`;
+			    }
+			    listEl.innerHTML = html;
+			    if(data.length === 0) listEl.innerHTML = '<div style="color:var(--muted); text-align:center;">No se encontraron presupuestos.</div>';
+			    
+			    } catch(e) {
+			        console.error('Error fetching budgets:', e);
+			        listEl.innerHTML = '<div style="color:var(--danger); text-align:center;">Error cargando historial de presupuestos.</div>';
+			    }
+			}
+
+			window.cambiarEstatusPresupuesto = async function(e, id, timestamp) {
+			    e.stopPropagation();
+			    const d = window._globalBudgets.find(x => x.id === id);
+			    if(d) {
+			        // Prevent accidental changes from APROBADO
+			        if (d.estatus === 'APROBADO') {
+			            const user = JSON.parse(localStorage.getItem('user') || '{}');
+			            const pin = prompt('SEGURIDAD: Para cambiar un presupuesto APROBADO, introduzca su contraseña/PIN de empleado:');
+			            if (!pin || pin.trim().toLowerCase() !== (user.pin_hash || '').toLowerCase()) {
+			                toast('Contraseña incorrecta o cancelada', 'error');
+			                e.target.value = d.estatus; // Revert selection
+			                return;
+			            }
+			        }
+			        
+			        d.estatus = e.target.value;
+			        
+			        // Actualizar el color del select visualmente de inmediato
+			        if (d.estatus === 'APROBADO') {
+			            e.target.style.color = 'var(--success)';
+			            e.target.style.borderColor = 'var(--success)';
+			        } else {
+			            e.target.style.color = 'var(--muted)';
+			            e.target.style.borderColor = 'var(--border)';
+			        }
+
+			        const res = await apiFetch('/api/presupuestos/' + id, {
+			            method: 'PUT',
+			            body: JSON.stringify(d)
+			        });
+			        if(res.success) {
+			            toast('Estatus actualizado a ' + d.estatus, 'success');
+			            if (d.estatus === 'APROBADO') {
+			                showLoading('NOTIFICANDO A RRHH...');
+			                try {
+			                    await apiFetch('/api/presupuestos/notify-hr', {
+			                        method: 'POST',
+			                        body: JSON.stringify(d)
+			                    });
+			                    toast('Notificación enviada a RRHH', 'success');
+			                } catch(e) {
+			                    console.error(e);
+			                    toast('Error al notificar a RRHH', 'error');
+			                } finally {
+			                    hideLoading();
+			                }
+			            }
+			        } else {
+			            toast('Error al actualizar estatus: ' + res.error, 'error');
+			            if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			        }
+			    }
+			}
+
+			window.eliminarPresupuestoHistorial = async function(e, id, timestamp) {
+			    e.stopPropagation();
+			    if(confirm('¿Está seguro de eliminar este presupuesto de la base de datos central?')) {
+			        const res = await apiFetch('/api/presupuestos/' + id, { method: 'DELETE' });
+			        if(res.success) {
+			            if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			            toast('Presupuesto eliminado exitosamente', 'success');
+			            
+			            if (window.currentEditingPresupuestoId === id) {
+			                nuevoPresupuesto();
+			            }
+			        } else {
+			            toast('Error al eliminar presupuesto: ' + res.error, 'error');
+			        }
+			    }
+			}
+
+			window.eliminarPresupuestoActual = async function() {
+			    if (!window.currentEditingPresupuestoId) return;
+			    if(confirm('¿Está seguro de eliminar este presupuesto de la base de datos central?')) {
+			        const res = await apiFetch('/api/presupuestos/' + window.currentEditingPresupuestoId, { method: 'DELETE' });
+			        if(res.success) {
+			            if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			            toast('Presupuesto eliminado exitosamente', 'success');
+			            nuevoPresupuesto();
+			            switchPresupuestoTab('historial');
+			        } else {
+			            toast('Error al eliminar presupuesto: ' + res.error, 'error');
+			        }
+			    }
+			}
+
+			window.cargarPresupuestoDesdeHistorial = function(id, timestamp) {
+			    const data = window._globalBudgets || [];
+			    const d = data.find(x => x.id === id);
+			    if(!d) return toast('Error al cargar presupuesto', 'error');
+
+			    const f = d.form || {};
+			    
+			    document.getElementById('pres-empresa-emisora').value = f.empresaEmisora || 'EYE STAFF';
+			    document.getElementById('pres-empresa').value = f.emp || d.empresa || '';
+			    document.getElementById('pres-atencion').value = f.atencion || '';
+			    document.getElementById('pres-telefonos').value = f.telefonos || '';
+			    document.getElementById('pres-email').value = f.email || '';
+			    document.getElementById('pres-tipo-evento').value = f.tipoEvento || 'PRESUPUESTO';
+			    document.getElementById('pres-evento').value = f.evento || d.evento || '';
+			    document.getElementById('pres-personas').value = f.personas || '';
+			    document.getElementById('pres-direccion').value = f.direccion || '';
+			    document.getElementById('pres-lugar').value = f.lugar || '';
+			    document.getElementById('pres-ciudad').value = f.ciudad || '';
+			    
+			    // Si la versión antigua tenía convocatoria, ignorarla o mostrarla en consola
+			    
+			    document.getElementById('pres-inicio').value = f.inicio || '';
+			    document.getElementById('pres-fecha').value = f.fecha || d.fecha || '';
+			    document.getElementById('pres-fecha-fin').value = f.fecha_fin || '';
+			    document.getElementById('pres-fin-hora').value = f.fin_hora || '';
+			    
+			    // Cargar items
+			    itemsPresupuesto = d.items || [];
+			    renderPresupuestoItems();
+			    
+			    window.currentEditingPresupuestoId = d.id;
+			    window.currentEditingPresupuestoTimestamp = d.timestamp;
+			    document.getElementById('generador-title').innerHTML = \`MODIFICANDO PRESUPUESTO #\${d.id}\`;
+			    if (document.getElementById('btn-eliminar-presupuesto')) document.getElementById('btn-eliminar-presupuesto').style.display = 'block';
+			    
+			    // Si está aprobado y no es sesión, mostrar botón INICIAR EVENTO
+			    const isApproved = d.estatus === 'APROBADO';
+			    const isAlreadySession = (window.allSessions || []).some(sess => sess.budget_id == d.id);
+			    if (document.getElementById('btn-iniciar-presupuesto')) {
+			        document.getElementById('btn-iniciar-presupuesto').style.display = (isApproved && !isAlreadySession) ? 'block' : 'none';
+			    }
+			    
+			    // Cambiar a la pestaña de generador para ver el presupuesto
+			    switchPresupuestoTab('generador');
+			    
+			    // Auto-scroll hacia arriba
+			    document.getElementById('current-view').scrollIntoView({ behavior: 'smooth' });
+			    toast('Presupuesto cargado exitosamente', 'success');
+			}
+
+			window.nuevoPresupuesto = function() {
+			    window.currentEditingPresupuestoId = null;
+			    window.currentEditingPresupuestoTimestamp = null;
+			    document.getElementById('generador-title').innerHTML = 'NUEVO PRESUPUESTO';
+			    if (document.getElementById('btn-eliminar-presupuesto')) document.getElementById('btn-eliminar-presupuesto').style.display = 'none';
+			    if (document.getElementById('btn-iniciar-presupuesto')) document.getElementById('btn-iniciar-presupuesto').style.display = 'none';
+			    
+			    const fields = ['pres-empresa', 'pres-atencion', 'pres-telefonos', 'pres-email', 'pres-evento', 'pres-personas', 'pres-direccion', 'pres-lugar', 'pres-ciudad', 'pres-fecha', 'pres-inicio', 'pres-fecha-fin', 'pres-fin-hora'];
+			    fields.forEach(id => {
+			        if(document.getElementById(id)) document.getElementById(id).value = '';
+			    });
+			    
+			    itemsPresupuesto = [];
+			    renderPresupuestoItems();
+			    addPresupuestoItem();
+			    toast('Formulario limpiado para nuevo presupuesto', 'info');
+			}
+
+			window.loadEmpresasToDatalist = function() {
+			    const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
+			    const dl = document.getElementById('lista-empresas');
+			    if(dl) {
+			        dl.innerHTML = Object.keys(data).map(k => \`<option value="\${k}">\`).join('');
+			    }
+			}
+			window.autoFillEmpresa = function() {
+			    const val = document.getElementById('pres-empresa').value.trim().toUpperCase();
+			    const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
+			    if (data[val]) {
+			        document.getElementById('pres-atencion').value = data[val].atencion || '';
+			        document.getElementById('pres-telefonos').value = data[val].telefonos || '';
+			        document.getElementById('pres-email').value = data[val].email || '';
+			    }
+			}
+			window.saveEmpresaData = function() {
+			    const val = document.getElementById('pres-empresa').value.trim().toUpperCase();
+			    if(val) {
+			        const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
+			        data[val] = {
+			            atencion: document.getElementById('pres-atencion').value,
+			            telefonos: document.getElementById('pres-telefonos').value,
+			            email: document.getElementById('pres-email').value
+			        };
+			        localStorage.setItem('saved_empresas', JSON.stringify(data));
+			    }
+			}
+			window.calcPresupuestoDias = function() {
+			    const f1 = document.getElementById('pres-fecha').value;
+			    const f2 = document.getElementById('pres-fecha-fin').value;
+			    if (f1 && f2) {
+			        const d1 = new Date(f1);
+			        const d2 = new Date(f2);
+			        let diffTime = d2.getTime() - d1.getTime();
+			        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive days
+			        if (diffDays <= 0) diffDays = 1;
+			        document.getElementById('pres-dias').value = diffDays;
+			        
+			        itemsPresupuesto.forEach(item => {
+			            item.dias = diffDays;
+			            item.total = Number(item.cant) * Number(item.precio) * Number(item.dias);
+			        });
+			        renderPresupuestoItems();
+			    }
+			}
+
+			function addPresupuestoItem() {
+			    const id = Date.now().toString() + Math.floor(Math.random()*1000);
+			    itemsPresupuesto.push({
+			        id, cant: 1, desc: '', precio: 0, dias: document.getElementById('pres-dias').value || 1, total: 0
+			    });
+			    renderPresupuestoItems();
+			}
+
+			function removePresupuestoItem(id) {
+			    itemsPresupuesto = itemsPresupuesto.filter(i => i.id !== id);
+			    renderPresupuestoItems();
+			}
+
+			function updatePresupuestoItem(id, field, value) {
+			    const item = itemsPresupuesto.find(i => i.id === id);
+			    if (!item) return;
+			    
+			    if (field === 'desc_select') {
+			        const cat = PRESUPUESTO_CATALOGO.find(c => c.desc === value);
+			        item.desc = value;
+			        if (cat && cat.precio > 0) item.precio = cat.precio;
+			    } else {
+			        item[field] = value;
+			    }
+			    
+			    item.total = Number(item.cant) * Number(item.precio) * Number(item.dias);
+			    renderPresupuestoItems();
+			}
+
+			function renderPresupuestoItems() {
+			    const tbody = document.getElementById('pres-items-body');
+			    if (!tbody) return;
+			    
+			    let optionsHtml = '<option value="">-- Catálogo / Escribir Manual --</option>';
+			    PRESUPUESTO_CATALOGO.forEach(c => {
+			        optionsHtml += \`<option value="\${c.desc}">\${c.desc} \${c.precio > 0 ? '($'+c.precio+')' : ''}</option>\`;
+			    });
+
+			    tbody.innerHTML = itemsPresupuesto.map(item => \`
+			        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+			            <td style="padding:10px;"><input type="number" value="\${item.cant}" onchange="updatePresupuestoItem('\${item.id}', 'cant', this.value)" style="width:60px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
+			            <td style="padding:10px; display:flex; flex-direction:column; gap:5px;">
+			                <select onchange="updatePresupuestoItem('\${item.id}', 'desc_select', this.value)" style="padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;">
+			                    \${optionsHtml.replace(\`value="\${item.desc}"\`, \`value="\${item.desc}" selected\`)}
+			                </select>
+			                <input type="text" value="\${item.desc}" placeholder="Escribir descripción manual..." onchange="updatePresupuestoItem('\${item.id}', 'desc', this.value)" style="padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;">
+			            </td>
+			            <td style="padding:10px;"><input type="number" value="\${item.precio}" onchange="updatePresupuestoItem('\${item.id}', 'precio', this.value)" style="width:80px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
+			            <td style="padding:10px;"><input type="number" value="\${item.dias}" onchange="updatePresupuestoItem('\${item.id}', 'dias', this.value)" style="width:60px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
+			            <td style="padding:10px; font-weight:900;">\${item.total.toFixed(2)}</td>
+			            <td style="padding:10px;">
+			                <button class="btn" onclick="removePresupuestoItem('\${item.id}')" style="background:var(--danger); color:white; padding:5px 10px; border-radius:6px;">X</button>
+			            </td>
+			        </tr>
+			    \`).join('');
+
+			    calcularTotales();
+			}
+
+			function calcularTotales() {
+			    const ivaPerc = Number(document.getElementById('pres-iva').value || 12);
+			    let subtotal = 0;
+			    itemsPresupuesto.forEach(i => subtotal += Number(i.total));
+			    const iva = subtotal * (ivaPerc / 100);
+			    const total = subtotal + iva;
+
+			    document.getElementById('pres-subtotal').textContent = subtotal.toFixed(2);
+			    document.getElementById('pres-total-iva').textContent = iva.toFixed(2);
+			    document.getElementById('pres-gran-total').textContent = total.toFixed(2);
+			}
+
+			async function guardarDatosPresupuesto(actionName) {
+			    if(window.saveEmpresaData) window.saveEmpresaData();
+			    
+			    const emp = document.getElementById('pres-empresa').value || 'N/A';
+			    const tel = document.getElementById('pres-telefonos').value || '';
+			    const email = document.getElementById('pres-email').value || '';
+			    const tipoEvento = document.getElementById('pres-tipo-evento').value || 'PRESUPUESTO';
+			    const evento = document.getElementById('pres-evento').value || 'N/A';
+			    const fInicio = document.getElementById('pres-fecha').value || 'N/A';
+			    const total = document.getElementById('pres-gran-total').textContent;
+
+			    let isEditing = window.currentEditingPresupuestoId ? true : false;
+			    let newStatus = actionName === 'guardar' ? 'GENERADO' : (isEditing ? 'MODIFICADO Y ENVIADO' : 'ENVIADO');
+			    
+			    if (isEditing && actionName === 'guardar') {
+			        const oldEntry = (window._globalBudgets || []).find(x => x.id === window.currentEditingPresupuestoId);
+			        if (oldEntry) newStatus = oldEntry.estatus || 'MODIFICADO';
+			    }
+
+			    const payload = {
+			        empresa: emp,
+			        evento: evento,
+			        fecha: fInicio,
+			        monto: total,
+			        timestamp: window.currentEditingPresupuestoTimestamp || new Date().getTime(),
+			        action: actionName,
+			        estatus: newStatus,
+			        form: {
+			            empresaEmisora: document.getElementById('pres-empresa-emisora').value,
+			            emp,
+			            atencion: document.getElementById('pres-atencion').value,
+			            telefonos: tel,
+			            email: email,
+			            tipoEvento: tipoEvento,
+			            evento: evento,
+			            personas: document.getElementById('pres-personas').value,
+			            direccion: document.getElementById('pres-direccion').value,
+			            lugar: document.getElementById('pres-lugar').value,
+			            ciudad: document.getElementById('pres-ciudad').value,
+			            fecha: fInicio,
+			            inicio: document.getElementById('pres-inicio').value,
+			            fecha_fin: document.getElementById('pres-fecha-fin').value,
+			            fin_hora: document.getElementById('pres-fin-hora').value
+			        },
+			        items: JSON.parse(JSON.stringify(itemsPresupuesto))
+			    };
+			    
+			    let correlativo = window.currentEditingPresupuestoId;
+			    
+			    if (isEditing) {
+			        await apiFetch('/api/presupuestos/' + correlativo, {
+			            method: 'PUT',
+			            body: JSON.stringify(payload)
+			        });
+			    } else {
+			        const res = await apiFetch('/api/presupuestos', {
+			            method: 'POST',
+			            body: JSON.stringify(payload)
+			        });
+			        if (res.success && res.id) {
+			            correlativo = res.id;
+			            window.currentEditingPresupuestoId = correlativo;
+			            window.currentEditingPresupuestoTimestamp = payload.timestamp;
+			            document.getElementById('generador-title').innerHTML = \`MODIFICANDO PRESUPUESTO #\${correlativo}\`;
+			        }
+			    }
+			    
+			    if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			    
+			    // Guardar en BBDD de Clientes del Sistema
+			    if (emp && emp !== 'N/A') {
+			        apiFetch('/api/presupuestos/client', {
+			            method: 'POST',
+			            body: JSON.stringify({ name: emp, phone: tel, email: email, event_type: tipoEvento })
+			        }).catch(e => console.warn('Error saving client to db', e));
+			    }
+
+			    return { correlativo, emp, evento, fInicio };
+			}
+
+			function obtenerNombresSeguros(evento, fInicio) {
+			    let safeEvento = (evento && evento !== 'N/A') ? evento.toUpperCase() : 'EVENTO';
+			    let safeFecha = (fInicio && fInicio !== 'N/A') ? fInicio.toUpperCase() : 'FECHA';
+			    safeEvento = safeEvento.replace(/[^A-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+			    safeFecha = safeFecha.replace(/[^A-Z0-9-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+			    return { safeEvento, safeFecha };
+			}
+
+			window.limpiarGeneradorPresupuesto = function() {
+			    if(confirm('¿Está seguro de eliminar los datos y limpiar todo el formulario del presupuesto?')) {
+			        renderPresupuestos(document.getElementById('current-view'));
+			    }
+			}
+
+			async function accionPresupuesto(tipo) {
+			    if (itemsPresupuesto.length === 0) return toast('Debe agregar al menos un servicio', 'error');
+			    
+			    const requiredFields = [
+			        { id: 'pres-atencion', name: 'NOMBRE DE CLIENTE' },
+			        { id: 'pres-telefonos', name: 'TELÉFONOS' },
+			        { id: 'pres-email', name: 'E-MAIL' },
+			        { id: 'pres-tipo-evento', name: 'TIPO DE EVENTO' },
+			        { id: 'pres-direccion', name: 'DIRECCIÓN DEL EVENTO' },
+			        { id: 'pres-fecha', name: 'FECHA DEL EVENTO' },
+			        { id: 'pres-inicio', name: 'HORA DE INICIO' },
+			        { id: 'pres-fecha-fin', name: 'FECHA TENTATIVA CULMINACIÓN' },
+			        { id: 'pres-fin-hora', name: 'HORA CULMINACIÓN' }
+			    ];
+
+			    for (const field of requiredFields) {
+			        const el = document.getElementById(field.id);
+			        if (!el || !el.value || el.value.trim() === '') {
+			            return toast(\`El campo "\${field.name}" es obligatorio\`, 'error');
+			        }
+			    }
+			    
+			    const datos = await guardarDatosPresupuesto(tipo);
+			    const { correlativo, evento, fInicio } = datos;
+			    const { safeEvento, safeFecha } = obtenerNombresSeguros(evento, fInicio);
+			    const nombreArchivo = \`PRESUPUESTO_\${correlativo}_\${safeEvento}_\${safeFecha}\`;
+
+			    if (tipo === 'pdf') {
+			        await generarPDFPresupuesto(nombreArchivo);
+			    } else if (tipo === 'excel') {
+			        generarExcelPresupuesto(nombreArchivo);
+			    } else if (tipo === 'email') {
+			        await enviarEmailPresupuesto(nombreArchivo, evento);
+			    } else if (tipo === 'guardar') {
+			        toast('Presupuesto guardado en el historial', 'success');
+			    }
+			    
+			    switchPresupuestoTab('historial');
+			}
+
+			function generarExcelPresupuesto(nombreArchivo) {
+			    toast('Generando Excel...', 'info');
+			    let csv = "CANT.;DESCRIPCION;PRECIO U.;DIAS;TOTAL\\\\n";
+			    itemsPresupuesto.forEach(i => {
+			        csv += \`\${i.cant};\${i.desc};\${i.precio};\${i.dias};\${i.total.toFixed(2)}\\\\n\`;
+			    });
+			    
+			    // Totales
+			    const subtotal = document.getElementById('pres-subtotal').textContent;
+			    const iva = document.getElementById('pres-total-iva').textContent;
+			    const total = document.getElementById('pres-gran-total').textContent;
+			    csv += \`\\\\n;;SUBTOTAL;;\${subtotal}\\\\n\`;
+			    csv += \`;;IVA;;\${iva}\\\\n\`;
+			    csv += \`;;TOTAL A PAGAR;;\${total}\\\\n\`;
+
+			    const blob = new Blob(["\\\\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+			    const link = document.createElement("a");
+			    const url = URL.createObjectURL(blob);
+			    link.setAttribute("href", url);
+			    link.setAttribute("download", nombreArchivo + ".csv");
+			    link.style.visibility = 'hidden';
+			    document.body.appendChild(link);
+			    link.click();
+			    document.body.removeChild(link);
+			    toast('Excel descargado', 'success');
+			}
+
+			async function enviarEmailPresupuesto(nombreArchivo, evento) {
+			    const email = document.getElementById('pres-email').value;
+			    if(!email) return toast('Debe colocar el E-Mail del cliente para enviar', 'error');
+			    
+			    toast('Generando PDF y preparando envío...', 'info');
+			    try {
+			        const base64Data = await generarPDFPresupuesto(nombreArchivo, 'base64');
+			        if (!base64Data) throw new Error('Falló la conversión del PDF a Base64');
+
+			        const res = await apiFetch('/api/presupuestos/send-email', {
+			            method: 'POST',
+			            body: JSON.stringify({
+			                to: email,
+			                subject: \`Presupuesto de Servicios - \${evento}\`,
+			                pdfData: base64Data,
+			                filename: \`\${nombreArchivo}.pdf\`
+			            })
+			        });
+			        
+			        if (!res) return; // Error ya notificado en apiFetch
+
+			        if (res.success) {
+			            toast('Email enviado exitosamente', 'success');
+			        } else {
+			            const errMsg = res.error?.message || (typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
+			            toast('Error al enviar email: ' + errMsg, 'error');
+			        }
+			    } catch(e) {
+			        console.error(e);
+			        toast('Error crítico: ' + e.message, 'error');
+			    }
+			}
+
+			async function generarPDFPresupuesto(nombreArchivo, action = 'download') {
+			    toast('Generando PDF...', 'info');
+			    const { jsPDF } = window.jspdf;
+			    const doc = new jsPDF();
+			    
+			    // Configuración
+			    const primaryColor = [40, 40, 40];
+			    const secondaryColor = [100, 100, 100];
+			    
+			    try {
+			        const emisora = document.getElementById('pres-empresa-emisora') ? document.getElementById('pres-empresa-emisora').value : 'EYE STAFF';
+			        const img = new Image();
+			        if (emisora === 'RENTAEQUIPOS') {
+			            img.src = '/rentaequipos.jpeg';
+			        } else {
+			            img.src = '/eyestaff.jpeg';
+			        }
+			        await new Promise((resolve) => {
+			            img.onload = resolve;
+			            img.onerror = resolve; 
+			        });
+			        const ratio = img.width && img.height ? img.width / img.height : (40/15);
+			        const newWidth = 15 * ratio;
+			        doc.addImage(img, 'JPEG', 14, 10, newWidth, 15);
+			    } catch(e) {}
+
+			    // Título / Cabecera
+			    doc.setFontSize(22);
+			    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+			    const emisoraTexto = (document.getElementById('pres-empresa-emisora') ? document.getElementById('pres-empresa-emisora').value : 'EYE STAFF');
+			    doc.text("PRESUPUESTO DE SERVICIOS", 60, 20); // Movido a la derecha por el logo
+			    
+			    doc.setFontSize(10);
+			    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+			    doc.text("Generado por: " + (emisoraTexto === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'), 60, 28);
+			    doc.text("Fecha: " + new Date().toLocaleDateString(), 60, 34);
+
+			    // Datos del Cliente y Evento
+			    const emp = document.getElementById('pres-empresa').value || 'N/A';
+			    const aten = document.getElementById('pres-atencion').value || 'N/A';
+			    const tel = document.getElementById('pres-telefonos').value || 'N/A';
+			    const email = document.getElementById('pres-email').value || 'N/A';
+			    
+			    const evento = document.getElementById('pres-evento').value || 'N/A';
+			    const personas = document.getElementById('pres-personas').value || 'N/A';
+			    const direccion = document.getElementById('pres-direccion').value || 'N/A';
+			    const lugar = document.getElementById('pres-lugar').value || 'N/A';
+			    const ciudad = document.getElementById('pres-ciudad').value || 'N/A';
+			    
+			    const fInicio = document.getElementById('pres-fecha').value || 'N/A';
+			    const convEl = document.getElementById('pres-convocatoria');
+			    const hConv = convEl ? (convEl.value || 'N/A') : 'N/A';
+			    const hIni = document.getElementById('pres-inicio').value || 'N/A';
+			    
+			    const fFin = document.getElementById('pres-fecha-fin').value || 'N/A';
+			    const hFin = document.getElementById('pres-fin-hora').value || 'N/A';
+
+			    if(window.saveEmpresaData) window.saveEmpresaData(); // Guardar datos para proxima vez
+
+			    doc.autoTable({
+			        startY: 45,
+			        theme: 'grid',
+			        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+			        body: [
+			            ['Empresa:', emp, 'Evento:', evento],
+			            ['Atención a:', aten, 'Aforo:', personas + ' pax'],
+			            ['Teléfonos:', tel, 'Dirección:', direccion],
+			            ['E-Mail:', email, 'Lugar/Ciudad:', lugar + ' / ' + ciudad],
+			            ['Fecha Inicio:', fInicio + ' (Conv: ' + hConv + ' | Ini: ' + hIni + ')', 'Fecha Fin:', fFin + ' (Culm: ' + hFin + ')']
+			        ]
+			    });
+
+			    // Líneas de Detalles
+			    const tableData = itemsPresupuesto.map(i => [
+			        i.cant, 
+			        i.desc, 
+			        Number(i.precio).toFixed(2), 
+			        i.dias, 
+			        Number(i.total).toFixed(2)
+			    ]);
+
+			    doc.autoTable({
+			        startY: doc.lastAutoTable.finalY + 15,
+			        head: [['Cant.', 'Descripción', 'Precio U.', 'Días', 'Total']],
+			        body: tableData,
+			        theme: 'striped',
+			        headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
+			        columnStyles: {
+			            0: { halign: 'center', cellWidth: 20 },
+			            1: { cellWidth: 80 },
+			            2: { halign: 'right', cellWidth: 30 },
+			            3: { halign: 'center', cellWidth: 20 },
+			            4: { halign: 'right', cellWidth: 30 }
+			        }
+			    });
+
+			    // Totales
+			    const ivaPerc = Number(document.getElementById('pres-iva').value || 12);
+			    const subtotal = document.getElementById('pres-subtotal').textContent;
+			    const iva = document.getElementById('pres-total-iva').textContent;
+			    const total = document.getElementById('pres-gran-total').textContent;
+
+			    const finalY = doc.lastAutoTable.finalY + 10;
+			    
+			    doc.autoTable({
+			        startY: finalY,
+			        theme: 'plain',
+			        body: [
+			            ['', '', 'SUBTOTAL:', subtotal],
+			            ['', '', \`IVA (\${ivaPerc}%):\`, iva],
+			            ['', '', 'TOTAL A PAGAR:', total]
+			        ],
+			        columnStyles: {
+			            0: { cellWidth: 80 },
+			            1: { cellWidth: 30 },
+			            2: { halign: 'right', fontStyle: 'bold', cellWidth: 40 },
+			            3: { halign: 'right', fontStyle: 'bold', cellWidth: 30 }
+			        }
+			    });
+
+			    // Pie de página
+			    doc.setFontSize(9);
+			    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+			    doc.text("Este presupuesto es válido por 15 días.", 14, doc.lastAutoTable.finalY + 20);
+			    
+			    // Guardar o retornar PDF
+			    if (action === 'download') {
+			        doc.save(\`\${nombreArchivo}.pdf\`);
+			        toast('PDF Descargado exitosamente', 'success');
+			    } else if (action === 'base64') {
+			        try {
+			            const dataUri = doc.output('datauristring');
+			            if (dataUri && dataUri.includes('base64,')) {
+			                return dataUri.split('base64,')[1];
+			            } else if (dataUri && dataUri.includes(',')) {
+			                return dataUri.split(',')[1];
+			            }
+			            return btoa(doc.output());
+			        } catch(err) {
+			            console.error('Error doc.output:', err);
+			            return btoa(doc.output());
+			        }
+			    }
+			}
+
+			window.migrarPresupuestosLocales = async function() {
+			    let data = JSON.parse(localStorage.getItem('historial_presupuestos') || '[]');
+			    if (data && data.length > 0) {
+			        console.log('Migrando ' + data.length + ' presupuestos a la nube...');
+			        try {
+			            const res = await apiFetch('/api/presupuestos', {
+			                method: 'POST',
+			                body: JSON.stringify(data)
+			            });
+			            if (res.success) {
+			                localStorage.removeItem('historial_presupuestos');
+			                console.log('Migración exitosa');
+			                if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+			            }
+			        } catch(e) {
+			            console.error('Migración fallida', e);
+			        }
+			    }
+			};
+
+			setTimeout(() => {
+			    window.migrarPresupuestosLocales();
+			}, 2000);
+
+			</script>
+
 			</body>
 			</html>
 			"

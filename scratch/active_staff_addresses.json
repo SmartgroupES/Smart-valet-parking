@@ -1,0 +1,564 @@
+[
+  {
+    "results": [
+      {
+        "name": "NELSON CARRILLO",
+        "address": "Calle Francisco Santos 29 2 A, Madrid, Españao, 28028",
+        "sector": "Madrid"
+      },
+      {
+        "name": "JOSÉ GREGORIO RAMOS",
+        "address": "Casa 64, Km 9 de la Panamericana, Sector El Puente,Los Teques",
+        "sector": "Los Teques"
+      },
+      {
+        "name": "NICOLÁS BETANCOURT",
+        "address": "Calle el colegio ,Residencias el naranjal,Los Samanes",
+        "sector": "Los Samanes"
+      },
+      {
+        "name": "VADYN TINOCO",
+        "address": "Edif. Irpinia, Piso 1, Apto. 3. Av. Buenos Aires,Los Caobos",
+        "sector": "Los Caobos"
+      },
+      {
+        "name": "GUSTAVO ORTIZ",
+        "address": "Edif. Puerto Escondido, Piso 3, Apto. 31,Catia La Mar",
+        "sector": "Catia La Mar"
+      },
+      {
+        "name": "PEDRO MALAVÉ",
+        "address": "Bloque 42, Piso 12, Apto. 1206, Zona F,23 de enero",
+        "sector": "23 de enero"
+      },
+      {
+        "name": "JOSÉ PIMENTEL",
+        "address": "Casa 115, Calle Principal de Maca,Maca, Petare",
+        "sector": "Maca, Petare"
+      },
+      {
+        "name": "DELVIN SUAREZ",
+        "address": "Casa \"Mi sueño\" #9, Calle 1, Terrazas de Vista Linda,Santa Teresa Tuy",
+        "sector": "Santa Teresa Tuy"
+      },
+      {
+        "name": "JAVIER LEÓN",
+        "address": "Edif. Ina, Piso 22, Apto. 229, Calle Venus,La Candelaria",
+        "sector": "La Candelaria"
+      },
+      {
+        "name": "NICOLÁS CABALLERO",
+        "address": "Edif. Leopardi, PB, Apto. 2, Av. Cecilio Acosta,San Bernardino",
+        "sector": "San Bernardino"
+      },
+      {
+        "name": "JEFFERSON CARABALLO",
+        "address": "Casa 17, Av. Principal del Cementerio, Barrio Santa Eduvigis,El Cementerio",
+        "sector": "El Cementerio"
+      },
+      {
+        "name": "CARLOS FLORES",
+        "address": "Edif. Santa Maria, Piso 1, Apto. 8, Av. Bogota,Los Caobos",
+        "sector": "Los Caobos"
+      },
+      {
+        "name": "ANDERSON CARABALLO",
+        "address": "Casa 17, Av. Principal del Cementerio, Barrio Santa Eduvigis,El Cementerio",
+        "sector": "El Cementerio"
+      },
+      {
+        "name": "ALVARO LÓPEZ",
+        "address": "Casa 41 1, Av. Principal,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "YORLEY SEIJAS",
+        "address": "Res. Radio Valle III, Piso 2, Apto. 24, Av. Intercomunal del Valle,El Valle",
+        "sector": "El Valle"
+      },
+      {
+        "name": "RICARDO RODRIGUEZ",
+        "address": "Edif. Carla, Piso 1, Apto. 11, ruta 8,Colinas de Santa Monica",
+        "sector": "Colinas de Santa Monica"
+      },
+      {
+        "name": "DERH DÍAZ",
+        "address": "Casa 24-4, Calle Principal ,Minas de Baruta",
+        "sector": "Minas de Baruta"
+      },
+      {
+        "name": "LEONARDO MUSSO",
+        "address": "Mariperez edf Olmar Piso 6 ,maripérez",
+        "sector": "maripérez"
+      },
+      {
+        "name": "FRANCYS RANGEL",
+        "address": "Casa 18, Sur 1, Samanes de Betania,Charallave",
+        "sector": "Charallave"
+      },
+      {
+        "name": "MIGUEL ORTEGA",
+        "address": "Valles del Tuy",
+        "sector": "Valles del Tuy"
+      },
+      {
+        "name": "JESUS VIVAS",
+        "address": "Casa 10, Av. Cecilio Acosta, Urb Independencia,Santa Teresa del Tuy",
+        "sector": "Santa Teresa del Tuy"
+      },
+      {
+        "name": "ELVIS BREA",
+        "address": "Res. Terepaima, Piso 14, Apto. 4, Torre E, Av. Sanz,El Marquez",
+        "sector": "El Marquez"
+      },
+      {
+        "name": "ELI HUNG",
+        "address": "Bloque 20, Piso 5, Apto. 0502, Calle La Haciencia,Sector UD5",
+        "sector": "Sector UD5"
+      },
+      {
+        "name": "MANUEL VARGAS",
+        "address": "Calle Monroy, Av.La Cascada, Quinta mi Refujio,San Antonio de los Altos",
+        "sector": "San Antonio de los Altos"
+      },
+      {
+        "name": "LUIS MANUEL SALAZAR",
+        "address": "Casa S/N, Calle Cerrito, Sector 2, Barrio San Blas,Petare",
+        "sector": "Petare"
+      },
+      {
+        "name": "DOUGLAS MARTÍNEZ",
+        "address": "Casa 4, Calle Segnini,Catia",
+        "sector": "Catia"
+      },
+      {
+        "name": "LUIS QUERALES",
+        "address": "Calle Principal de las Adjuntas,Santa Lucia",
+        "sector": "Santa Lucia"
+      },
+      {
+        "name": "WILLIAM RÍOS",
+        "address": "Casa 02-21, Calle San Guillermo, La Alcabala,Petare",
+        "sector": "Petare"
+      },
+      {
+        "name": "LEONARDO ALEZARD",
+        "address": "Casa S/N, Calle Tamanaco, La Culta,Santa Teresa del Tuy",
+        "sector": "Santa Teresa del Tuy"
+      },
+      {
+        "name": "ELENA ALVAREZ",
+        "address": "zona industrial la naya calle mara las minitas,Las Minitas",
+        "sector": "Las Minitas"
+      },
+      {
+        "name": "STEVENS ARZOLAR",
+        "address": "Casa 5, Calle Araguita II, Sector 28C,Ocumare del Tuy",
+        "sector": "Ocumare del Tuy"
+      },
+      {
+        "name": "SAMUEL BARRIOS",
+        "address": "santa teresa del tuy , transversal 5 casa 4840, calle principal cecilio acosta,Santa Teresa",
+        "sector": "Santa Teresa"
+      },
+      {
+        "name": "MAIFER BARRUETA",
+        "address": "Carretera Panamericana, Km 8, Los Teques,Figueroa, Los Salias",
+        "sector": "Figueroa, Los Salias"
+      },
+      {
+        "name": "JUAN BIGOTT",
+        "address": "Final Av Caroni Res Miña,Colinas de Bello Monte",
+        "sector": "Colinas de Bello Monte"
+      },
+      {
+        "name": "LUZ BLANCO",
+        "address": "Guarenas , Edo Miranda.,Urb .socialista, ciudad belen terraza 37.",
+        "sector": "Urb .socialista, ciudad belen terraza 37."
+      },
+      {
+        "name": "RICHARD BURGOS",
+        "address": "Mariperez,av, amdres bello,Maripérez",
+        "sector": "Maripérez"
+      },
+      {
+        "name": "WILMER BURGOS",
+        "address": "Casa S/N, El Bruzual,El Valle",
+        "sector": "El Valle"
+      },
+      {
+        "name": "NIKOL CABALLERO",
+        "address": "San benardino,San bernardino",
+        "sector": "San bernardino"
+      },
+      {
+        "name": "FRANKÑIN CAMPOS",
+        "address": "Avenida romulo gallegos, sector boleita municipio sucre,Av Romulo Gallegos",
+        "sector": "Av Romulo Gallegos"
+      },
+      {
+        "name": "MANIANNY CASTELLANOS",
+        "address": "Edif. Iberia, Piso 5, Apto. 16, Esq. San Ramón,Fuerzas Armadas",
+        "sector": "Fuerzas Armadas"
+      },
+      {
+        "name": "GRISON CHACON",
+        "address": "Petare Barrio miranda del este,casa n° 1020,Petare",
+        "sector": "Petare"
+      },
+      {
+        "name": "ANTHONY CHAPARRO",
+        "address": "Casa S/N, Calle El Reten, Santa Eduvigis,San Francisco de Yare",
+        "sector": "San Francisco de Yare"
+      },
+      {
+        "name": "JESUS CLEMENTE",
+        "address": "Casa 22, Colinas de la Empresa,Santa Teresa del Tuy",
+        "sector": "Santa Teresa del Tuy"
+      },
+      {
+        "name": "STEVEN CONTRERAS",
+        "address": "Casa 17, Carretera Nacional la Raiza, La Matera,Santa Teresa del Tuy",
+        "sector": "Santa Teresa del Tuy"
+      },
+      {
+        "name": "LUISA CORONADO",
+        "address": "Casa 42, Calle Principal,San Antonio de Yare",
+        "sector": "San Antonio de Yare"
+      },
+      {
+        "name": "JUAN CUADROS",
+        "address": "puerta caracas, f2 frente a la iglesia san judas tadeo.,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "YORLEIDY DE LAS SALAS",
+        "address": "El retiro san jose del avila casa # 17-,San jose del Avila",
+        "sector": "San jose del Avila"
+      },
+      {
+        "name": "LUIS DELGADO",
+        "address": "San Martin edificio boyaca  apto 5-A,Cruz de la vega",
+        "sector": "Cruz de la vega"
+      },
+      {
+        "name": "RAMÓN DÍAZ",
+        "address": "Bloque 3, Piso 6, Apto. 04,La Vega",
+        "sector": "La Vega"
+      },
+      {
+        "name": "ANDREA FERNÁNDEZ",
+        "address": "Final Av Caroni Res Miña,Colinas De bello Monte",
+        "sector": "Colinas De bello Monte"
+      },
+      {
+        "name": "NESTOR FLORES",
+        "address": "Casa 96, El Chorrito, Bulevard San Gregorio,La Dolorita",
+        "sector": "La Dolorita"
+      },
+      {
+        "name": "LEYSIMAR FUENTES",
+        "address": "Bloque 12 piso 13 apto 139 propatria,Propatria",
+        "sector": "Propatria"
+      },
+      {
+        "name": "MERVIN GARCÍA",
+        "address": "Casa B14A, Calle 3 a mano izquierda, Jardines de Betania,Ocumare del Tuy",
+        "sector": "Ocumare del Tuy"
+      },
+      {
+        "name": "YUSBELI GARCÍA",
+        "address": "antimano Barrio German Rodriguez.casa N° 26.,Antímano",
+        "sector": "Antímano"
+      },
+      {
+        "name": "JESSABETH GARCÍA",
+        "address": "SaN andres , el valle casa 114,El Valle",
+        "sector": "El Valle"
+      },
+      {
+        "name": "MANUEL GARCÍA",
+        "address": ",Valencia",
+        "sector": "Valencia"
+      },
+      {
+        "name": "YEISON GÓMEZ",
+        "address": "Antimano ,German Rodriguez,callejon la nuevecita cas n 28,Antimano",
+        "sector": "Antimano"
+      },
+      {
+        "name": "GINA GONZÁLEZ",
+        "address": "Charallave,cua la culebra  .,Charallave",
+        "sector": "Charallave"
+      },
+      {
+        "name": "HÉCTOR GONZÁLEZ",
+        "address": "Res. Juventud, Bloque 19, Piso 14, Apto. 1406, La Haciendita,UD3",
+        "sector": "UD3"
+      },
+      {
+        "name": "ANA GONZÁLEZ",
+        "address": "Bloque 20, Piso 5, Apto 502, Av. Principal La Hacienda, UD5,Caricuao",
+        "sector": "Caricuao"
+      },
+      {
+        "name": "YIMMY GUERRERO",
+        "address": "La pastora puerta de caracas el polverin, piso 1 .,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "DISTER GUEVARA",
+        "address": "barrio 5 de julio-petare,Petare",
+        "sector": "Petare"
+      },
+      {
+        "name": "SAMUEL HUNG",
+        "address": "Bloque 20, Piso 5, Apto. 0502, Av. Principal,Caricuao UD5",
+        "sector": "Caricuao UD5"
+      },
+      {
+        "name": "KARELYS ISEA",
+        "address": "Casa 6, Zona Industrial, Sector Las Palmas,Mamera II",
+        "sector": "Mamera II"
+      },
+      {
+        "name": "NELSON LOMBANO",
+        "address": "Casa 59, Calle Sucre, Casco Central,Santa Lucia",
+        "sector": "Santa Lucia"
+      },
+      {
+        "name": "JOSÉ LYON",
+        "address": "san francisco de yare , casa # 18, calle paez.,San Francisco de Yare",
+        "sector": "San Francisco de Yare"
+      },
+      {
+        "name": "CARLOS MALAVÉ",
+        "address": "residencias beatriz julieta, apto 02 ,esquina urapal frente a el museo arturo michelena,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "JEREMY MARCANO",
+        "address": "callejon el cuji casa # 14 carapita,Carapita",
+        "sector": "Carapita"
+      },
+      {
+        "name": "LEINNY MARCANO",
+        "address": "edo miranda ocumare del tuy araguita 3,Ocumare del Tuy",
+        "sector": "Ocumare del Tuy"
+      },
+      {
+        "name": "YOSELIZ MARTÍNEZ",
+        "address": "Charallave,Res Miravalles 45-B",
+        "sector": "Res Miravalles 45-B"
+      },
+      {
+        "name": "ADRIANA MENDOZA",
+        "address": "Casa 54, Calle Arauca, Sector Los Alpes,Ocumare del Tuy",
+        "sector": "Ocumare del Tuy"
+      },
+      {
+        "name": "EXIOBER MENDOZA",
+        "address": "Carapita,parroquia antimano,La Acequia el sol",
+        "sector": "La Acequia el sol"
+      },
+      {
+        "name": "ALBERT MENESES",
+        "address": "Edif. Jupiter, Piso 7, Apto. 71, Calle Principal de Oriones, Urb. La Estrella,Charallave",
+        "sector": "Charallave"
+      },
+      {
+        "name": "ALBERTH MUÑOZ",
+        "address": "Casa 81, Calle 4, La Raiza, Urb. Los Manguitos 5,Santa Lucia",
+        "sector": "Santa Lucia"
+      },
+      {
+        "name": "MARIA CRISBELY MUÑOZ",
+        "address": "Urb. Manguito 5, Calle 4, Casa 81,Santa Lucia",
+        "sector": "Santa Lucia"
+      },
+      {
+        "name": "LUIS NOGUEIRA",
+        "address": "Av Paez del paraiso,Puente Hierro",
+        "sector": "Puente Hierro"
+      },
+      {
+        "name": "YARELVIS PERDOMO",
+        "address": "Res. Hipodromo, Piso 14, Apto. 141, Av. Intercomunal de Coche,Coche",
+        "sector": "Coche"
+      },
+      {
+        "name": "RAIBER PÉREZ",
+        "address": "Pastora casa 43 ,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "MARLON PÉREZ",
+        "address": "Bloque 10 letra C URB RUIZ PINEDA,Ruiz Pineda",
+        "sector": "Ruiz Pineda"
+      },
+      {
+        "name": "NEUDELI RODRÍGUEZ",
+        "address": "Casa 34, Callejon San Jose, Puerta Caracas,La Pastora",
+        "sector": "La Pastora"
+      },
+      {
+        "name": "ROSMARYS RODRÍGUEZ",
+        "address": "Av nueva granada , Los rosales casa 20-1,Nueva granada",
+        "sector": "Nueva granada"
+      },
+      {
+        "name": "THAISERLY RODRÍGUEZ",
+        "address": "Caricuao. Edf residencias juventud apto 701.,Caricuao",
+        "sector": "Caricuao"
+      },
+      {
+        "name": "CARLOS ROMERO",
+        "address": "El Valle ,sector bruzual calle 128 de octubre casa N°26",
+        "sector": "sector bruzual calle 128 de octubre casa N°26"
+      },
+      {
+        "name": "GERARDO SALAZAR",
+        "address": ",Caricuao",
+        "sector": "Caricuao"
+      },
+      {
+        "name": "ADRIÁN SALOM",
+        "address": "Edf Chama .Calle chama av. Caroni colinas de bello monte,Bello monte",
+        "sector": "Bello monte"
+      },
+      {
+        "name": "YOSMEL SILVA",
+        "address": "Bloque 11 de lomas de urdaneta,Propatria",
+        "sector": "Propatria"
+      },
+      {
+        "name": "YOSWEL SILVA",
+        "address": "Casa 16, Primera Av. El Amparo, El Cuartel,Catia",
+        "sector": "Catia"
+      },
+      {
+        "name": "WILLIAM SILVA",
+        "address": "Casa 1709, Av. Simon Bolivar,Altamira",
+        "sector": "Altamira"
+      },
+      {
+        "name": "EDGARDO SOTO",
+        "address": "El cementerio.santa rosalia,El Cementerio",
+        "sector": "El Cementerio"
+      },
+      {
+        "name": "YUSVELI SUÁREZ",
+        "address": "km 9 de la panamericana,figueroa,San Antonio de los altos",
+        "sector": "San Antonio de los altos"
+      },
+      {
+        "name": "ABRANTHONY URBINA",
+        "address": "1era calle el polvorin, callejon san jose casa # 34 la pastora,Santa Teresa",
+        "sector": "Santa Teresa"
+      },
+      {
+        "name": "WILMER VÁZQUEZ",
+        "address": "Casa 22, Calle Santa Cecilia, Sector El Pauji,San Francisco de Yare",
+        "sector": "San Francisco de Yare"
+      },
+      {
+        "name": "EDWIN VIELMA",
+        "address": "Casa 53B  Ubn los castañoz los teques,Los Teques",
+        "sector": "Los Teques"
+      },
+      {
+        "name": "ANTONIO VIERA",
+        "address": "Edf venecia piso 3 apto25 chacao,Chacao",
+        "sector": "Chacao"
+      },
+      {
+        "name": "YONAIKEL VIÑA",
+        "address": "los jardines del valle casa  56,Jardines del valle",
+        "sector": "Jardines del valle"
+      },
+      {
+        "name": "ANGELA VIZCAÍNO",
+        "address": "Av Fuerzas Armadas esq.San enrique,Fuerzas Armadas",
+        "sector": "Fuerzas Armadas"
+      },
+      {
+        "name": "MEURY YÁNEZ",
+        "address": "Urb.valle alto 1 calle 3H-18,Ocumare del Tuy",
+        "sector": "Ocumare del Tuy"
+      },
+      {
+        "name": "PETER TORRES",
+        "address": "23 de enero ,bloque 44 piso 9 letra M, apto 924.,23 de enero",
+        "sector": "23 de enero"
+      },
+      {
+        "name": "JOSMARY AGREDA",
+        "address": "santa rosa casa A-8 , calle manzana 25 urb santa rosa, valles del tuy,Valles del Tuy",
+        "sector": "Valles del Tuy"
+      },
+      {
+        "name": "SOLANGE ALMENAR",
+        "address": "Av principal de los ruices,los almendros, piso 15 los ruices.,Los Ruices",
+        "sector": "Los Ruices"
+      },
+      {
+        "name": "JORGE DIAZ",
+        "address": "la urbina piso 4 apto 4-4,La Urbina",
+        "sector": "La Urbina"
+      },
+      {
+        "name": "IVOR MARTÍNEZ",
+        "address": "escalera los robles casa #12 , piso 3 via mesuca petare, sector el cerrito , vuelta la horquilla.,Petare",
+        "sector": "Petare"
+      },
+      {
+        "name": "WILSONMAN ECHENIQUE",
+        "address": "Bloque 47, Piso 15, Apto. 1530, El Mirador,23 de Enero",
+        "sector": "23 de Enero"
+      },
+      {
+        "name": "BILLY GONZÁLEZ",
+        "address": "Edif. Nicare, Piso 7, Apto. PH 1,Los Palos Grandes",
+        "sector": "Los Palos Grandes"
+      },
+      {
+        "name": "DANIELA SESCÚN",
+        "address": "Sector el Puente, Los Salias,Los Teques",
+        "sector": "Los Teques"
+      },
+      {
+        "name": "ÁNGEL LÓPEZ",
+        "address": "Los magallanes de catia, la laguna calle la recta apto 22 piso 2 .,Magallanes de catia",
+        "sector": "Magallanes de catia"
+      },
+      {
+        "name": "ALFONSO CALABRESE",
+        "address": "MIAMI",
+        "sector": "MIAMI"
+      },
+      {
+        "name": "INVITADO",
+        "address": "CALLE GARCILAZO, EDIFICIO FLANDES, PLANTA BAJA. LOCAL 1, 1080, COLINAS DE BELLO MONTE, CARACAS",
+        "sector": "CARACAS"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.7837
+      },
+      "duration": 0.7837,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 348160,
+      "rows_read": 111,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

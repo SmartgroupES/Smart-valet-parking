@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYPASS DE EMERGENCIA — EYE STAFF</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .btn { background: #10b981; color: white; border: none; padding: 25px 50px; border-radius: 20px; font-size: 1.5rem; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); transition: all 0.2s; }
+        .btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div style="font-size: 4rem; margin-bottom: 20px;">🔓</div>
+    <h1 style="margin-bottom: 10px;">ACCESO DE EMERGENCIA</h1>
+    <p style="color: #888; max-width: 300px; margin-bottom: 40px;">Haz clic abajo para saltar el login y entrar como Nelson Carrillo (Superadmin).</p>
+    
+    <button class="btn" onclick="runBypass()">
+        ENTRAR AL SISTEMA
+    </button>
+
+    <script>
+        async function runBypass() {
+            // 1. Limpiar rastro de invitado
+            localStorage.clear();
+            
+            // 2. Inyectar sesión de Nelson Carrillo
+            const emergencyUser = {
+                id: 1,
+                name: 'NELSON CARRILLO',
+                role: 'director',
+                is_superadmin: true,
+                token: 'emergency-bypass-active'
+            };
+            
+            localStorage.setItem('token', 'emergency-bypass-active');
+            localStorage.setItem('user', JSON.stringify(emergencyUser));
+            
+            // 3. Matar Service Workers para forzar actualización
+            if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for(let r of regs) await r.unregister();
+            }
+            
+            // 4. Redirigir a la aplicación principal con bypass de caché
+            window.location.href = '/?bypass=' + Date.now();
+        }
+    </script>
+</body>
+</html>

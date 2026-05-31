@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EYE STAFF — EMERGENCIA v2.3.60</title>
+    <script>
+        // RESET TOTAL AL CARGAR STAFF.HTML
+        console.log('EMERGENCY RESET');
+        localStorage.clear();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+        }
+    </script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .btn { background: #ef4444; color: white; border: none; padding: 20px 40px; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        .btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <h1 style="font-size: 2rem; margin-bottom: 10px;">PUERTA DE EMERGENCIA</h1>
+    <p style="color: #888; margin-bottom: 40px;">Usa este botón si la aplicación normal no te permite entrar.</p>
+    
+    <button class="btn" onclick="emergencyBypass()">
+        LIMPIAR TODO Y ENTRAR AL LOGIN
+    </button>
+
+    <script>
+        function emergencyBypass() {
+            localStorage.clear();
+            alert('MEMORIA LIMPIADA. Redirigiendo...');
+            window.location.href = '/?t=' + Date.now();
+        }
+    </script>
+</body>
+</html>

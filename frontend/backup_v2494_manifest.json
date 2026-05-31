@@ -1,0 +1,42 @@
+{
+  "name": "GRUPO EYE STAFF",
+  "short_name": "EYE STAFF",
+  "description": "Plataforma Integral de Operaciones — Grupo Eye Staff",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0f19",
+  "theme_color": "#0a0a0a",
+  "lang": "es",
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Valet Parking",
+      "short_name": "Valet",
+      "description": "Check-in y check-out de vehículos",
+      "url": "/?view=valet",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Eventos",
+      "short_name": "Eventos",
+      "description": "Gestión de eventos y staff",
+      "url": "/?view=events",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

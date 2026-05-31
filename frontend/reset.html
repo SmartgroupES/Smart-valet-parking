@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EYE STAFF — Reinicio</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .logo { font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; }
+  .logo span { color: #ef4444; }
+  .msg { color: #94a3b8; font-size: 0.9rem; text-align: center; }
+  .bar {
+    width: 200px; height: 4px;
+    background: #1e293b;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: #ef4444;
+    border-radius: 4px;
+    animation: fill 2s linear forwards;
+  }
+  @keyframes fill { from { width: 0; } to { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="logo">EYE<span>STAFF</span></div>
+<p class="msg" id="msg">Limpiando sesión...</p>
+<div class="bar"><div class="bar-fill"></div></div>
+
+<script>
+(async function() {
+  const msg = document.getElementById('msg');
+
+  // 1. Limpiar localStorage y sessionStorage
+  try { localStorage.clear(); } catch(e) {}
+  try { sessionStorage.clear(); } catch(e) {}
+  msg.textContent = 'Eliminando caché del navegador...';
+
+  // 2. Desregistrar todos los Service Workers
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations().catch(() => []);
+    for (const reg of regs) {
+      await reg.unregister().catch(() => {});
+    }
+  }
+  msg.textContent = 'Limpiando caché de aplicación...';
+
+  // 3. Borrar todos los caches del CacheStorage
+  if ('caches' in window) {
+    const keys = await caches.keys().catch(() => []);
+    await Promise.all(keys.map(k => caches.delete(k).catch(() => {})));
+  }
+
+  msg.textContent = '✅ Listo. Redirigiendo al login...';
+
+  // 4. Redirigir a la app con timestamp para evitar caché
+  setTimeout(() => {
+    window.location.replace('/?nocache=' + Date.now());
+  }, 1000);
+})();
+</script>
+</body>
+</html>

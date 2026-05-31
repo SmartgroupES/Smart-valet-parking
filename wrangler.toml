@@ -17,11 +17,47 @@ bucket_name = "valet-parking-photos"
 
 [vars]
 JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
-RESEND_API_KEY = "re_D2247Pmz_2w2BuqArEEmMvifyKmwtZwA5"
+RESEND_API_KEY = "re_GasgFDA6_BoBRxZRw5Ugs9goxzgBbzqTg"
+OFFICE_GROUP_ID = "1203630234567890@g.us"
+WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
+WHATSAPP_BOT_API_KEY = "dev-local-api-key"
+TELEGRAM_BOT_TOKEN = "8913183532:AAFmvsiSZKMd_IKXsqovzU3cUrOYQkmzsBs"
 [ai]
 binding = "AI"
 
 [triggers]
 crons = ["* * * * *"]
 
+[[routes]]
+pattern = "eye-staff.app"
+custom_domain = true
 
+
+
+[env.staging]
+name = "grupo-eye-staff-staging"
+routes = [
+  { pattern = "staging.eye-staff.app", custom_domain = true }
+]
+# Eliminamos o sobreescribimos triggers si queremos evitar crons en staging (opcional)
+triggers = { crons = [] }
+
+[env.staging.vars]
+JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
+RESEND_API_KEY = "re_GasgFDA6_BoBRxZRw5Ugs9goxzgBbzqTg"
+OFFICE_GROUP_ID = "1203630234567890@g.us"
+WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
+WHATSAPP_BOT_API_KEY = "dev-local-api-key"
+TELEGRAM_BOT_TOKEN = "8913183532:AAFmvsiSZKMd_IKXsqovzU3cUrOYQkmzsBs"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "d1-staging"
+database_id = "3ed7d3a3-82f7-49a0-b0a8-47c32d42e532"
+
+[[env.staging.r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "valet-parking-photos"
+
+[env.staging.ai]
+binding = "AI"

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ÚNETE AL EQUIPO — EYE STAFF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #161b2c;
+            --accent: #ef4444;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; background: var(--bg); color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+            text-transform: uppercase;
+        }
+
+        .container { width: 100%; max-width: 500px; }
+
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo-text { font-weight: 800; font-size: 2.5rem; letter-spacing: -1px; }
+        .brand-eye { color: var(--accent); }
+        .brand-staff { color: #fff; }
+        .subtitle { color: var(--muted); font-size: 0.8rem; letter-spacing: 4px; margin-top: 10px; }
+
+        .card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; }
+        
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+            outline: none;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .photo-upload {
+            width: 100%;
+            height: 200px;
+            background: rgba(255,255,255,0.02);
+            border: 2px dashed var(--border);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .photo-upload.filled { border-style: solid; border-color: #22c55e; }
+        .photo-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-upload i { font-size: 2rem; margin-bottom: 10px; opacity: 0.5; }
+        .photo-upload span { font-size: 0.7rem; color: var(--muted); }
+
+        .btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+            transition: all 0.3s;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(11, 15, 25, 0.9);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .success-msg {
+            display: none; text-align: center;
+            padding: 40px 20px;
+        }
+        .success-msg i { font-size: 4rem; color: #22c55e; display: block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; letter-spacing: 2px;">ENVIANDO POSTULACIÓN...</div>
+    </div>
+
+    <div class="container" id="form-container">
+        <button onclick="location.href='/'" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:800; font-size:0.7rem; letter-spacing:1px; margin-bottom:20px; display:flex; align-items:center; gap:8px; transition:all 0.3s;">
+            ← VOLVER AL PORTAL
+        </button>
+
+        <div class="header">
+            <div class="logo-text">
+                <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
+            </div>
+            <div class="subtitle">CAPTACIÓN DE PERSONAL</div>
+        </div>
+
+        <div class="card">
+            <form id="apply-form">
+                <div class="field">
+                    <label>FOTO TIPO CARNET / PERFIL</label>
+                    <div class="photo-upload" onclick="document.getElementById('photo-input').click()" id="photo-preview">
+                        <i>👤</i>
+                        <span>TOCA PARA SUBIR FOTO</span>
+                        <img id="img-display" style="display:none">
+                    </div>
+                    <input type="file" id="photo-input" hidden accept="image/*">
+                </div>
+
+                <div class="field">
+                    <label>NOMBRE COMPLETO</label>
+                    <input type="text" id="name" required placeholder="EJ: JUAN PÉREZ">
+                </div>
+
+                <div class="field">
+                    <label>CÉDULA DE IDENTIDAD</label>
+                    <input type="text" id="cedula" required placeholder="EJ: V-12345678" inputmode="numeric">
+                </div>
+
+                <div class="field">
+                    <label>CORREO ELECTRÓNICO</label>
+                    <input type="email" id="email" required placeholder="CORREO@EJEMPLO.COM">
+                </div>
+
+                <div class="field">
+                    <label>TELÉFONO DE CONTACTO</label>
+                    <input type="tel" id="phone" required placeholder="EJ: 04121234567">
+                </div>
+
+                <div class="field">
+                    <label>DIRECCIÓN DE HABITACIÓN</label>
+                    <textarea id="address" rows="3" required placeholder="AV. PRINCIPAL, EDIF..."></textarea>
+                </div>
+
+                <div class="field">
+                    <label>FECHA DE NACIMIENTO</label>
+                    <input type="date" id="birth_date" required>
+                </div>
+
+                <div class="field">
+                    <label>RESUMEN DE EXPERIENCIA</label>
+                    <textarea id="experience" rows="5" required placeholder="CUÉNTANOS BREVEMENTE TU EXPERIENCIA LABORAL..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" id="submit-btn">ENVIAR POSTULACIÓN</button>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: var(--muted); font-size: 0.6rem; letter-spacing: 1px;">
+            GRUPO EYE STAFF &copy; 2026 — TODOS LOS DERECHOS RESERVADOS
+        </div>
+    </div>
+
+    <div class="container success-msg" id="success-container">
+        <i>✅</i>
+        <h2 style="font-weight: 800;">¡POSTULACIÓN RECIBIDA!</h2>
+        <p style="color: var(--muted); line-height: 1.6; margin-bottom: 30px;">HEMOS REGISTRADO TUS DATOS CORRECTAMENTE. NUESTRO EQUIPO DE RECURSOS HUMANOS REVISARÁ TU PERFIL Y TE CONTACTARÁ SI ERES SELECCIONADO.</p>
+        
+        <button onclick="location.href='/'" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); box-shadow: none;">
+            VOLVER AL INICIO
+        </button>
+    </div>
+
+    <script>
+        const photoInput = document.getElementById('photo-input');
+        const photoPreview = document.getElementById('photo-preview');
+        const imgDisplay = document.getElementById('img-display');
+        let photoBase64 = null;
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    photoBase64 = re.target.result;
+                    imgDisplay.src = photoBase64;
+                    imgDisplay.style.display = 'block';
+                    photoPreview.classList.add('filled');
+                    photoPreview.querySelector('i').style.display = 'none';
+                    photoPreview.querySelector('span').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('apply-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!photoBase64) return alert('POR FAVOR, SUBE UNA FOTO.');
+
+            const data = {
+                name: document.getElementById('name').value,
+                cedula: document.getElementById('cedula').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                birth_date: document.getElementById('birth_date').value,
+                experience: document.getElementById('experience').value,
+                photo: photoBase64
+            };
+
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('submit-btn').disabled = true;
+
+            try {
+                const res = await fetch('/api/staff/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById('form-container').style.display = 'none';
+                    document.getElementById('success-container').style.display = 'block';
+                } else {
+                    alert('ERROR AL ENVIAR: ' + result.error);
+                }
+            } catch (err) {
+                alert('ERROR DE CONEXIÓN');
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

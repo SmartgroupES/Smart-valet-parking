@@ -1,0 +1,2028 @@
+Cargando Excel desde /Users/nelsoncarrillokosak/Downloads/NUEVO_STAFF.xlsx...
+Filas leídas del Excel: 108
+Descargando base de datos actual...
+Ejecutando 108 sentencias SQL en la base de datos...
+Procesando lote 1 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.69ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.373
+      },
+      "duration": 0.373,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2359
+      },
+      "duration": 0.2359,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1401
+      },
+      "duration": 0.1401,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.122
+      },
+      "duration": 0.122,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1232
+      },
+      "duration": 0.1232,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1852
+      },
+      "duration": 0.1852,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.119
+      },
+      "duration": 0.119,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1114
+      },
+      "duration": 0.1114,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0997
+      },
+      "duration": 0.0997,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1779
+      },
+      "duration": 0.1779,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 2 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.38ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2422
+      },
+      "duration": 0.2422,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2137
+      },
+      "duration": 0.2137,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1439
+      },
+      "duration": 0.1439,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1055
+      },
+      "duration": 0.1055,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.162
+      },
+      "duration": 0.162,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0948
+      },
+      "duration": 0.0948,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1086
+      },
+      "duration": 0.1086,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1028
+      },
+      "duration": 0.1028,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1064
+      },
+      "duration": 0.1064,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1035
+      },
+      "duration": 0.1035,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 3 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.33ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2647
+      },
+      "duration": 0.2647,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1506
+      },
+      "duration": 0.1506,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1138
+      },
+      "duration": 0.1138,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1144
+      },
+      "duration": 0.1144,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1168
+      },
+      "duration": 0.1168,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1105
+      },
+      "duration": 0.1105,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1061
+      },
+      "duration": 0.1061,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.127
+      },
+      "duration": 0.127,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1128
+      },
+      "duration": 0.1128,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1094
+      },
+      "duration": 0.1094,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 4 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.29ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2428
+      },
+      "duration": 0.2428,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1374
+      },
+      "duration": 0.1374,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1194
+      },
+      "duration": 0.1194,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.117
+      },
+      "duration": 0.117,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1105
+      },
+      "duration": 0.1105,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1022
+      },
+      "duration": 0.1022,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1446
+      },
+      "duration": 0.1446,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1093
+      },
+      "duration": 0.1093,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1014
+      },
+      "duration": 0.1014,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.105
+      },
+      "duration": 0.105,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 5 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 2.61ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.252
+      },
+      "duration": 0.252,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1645
+      },
+      "duration": 0.1645,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1395
+      },
+      "duration": 0.1395,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1228
+      },
+      "duration": 0.1228,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1257
+      },
+      "duration": 0.1257,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1418
+      },
+      "duration": 0.1418,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.132
+      },
+      "duration": 0.132,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1274
+      },
+      "duration": 0.1274,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1224
+      },
+      "duration": 0.1224,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 1.2788
+      },
+      "duration": 1.2788,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 6 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.18ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2043
+      },
+      "duration": 0.2043,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.099
+      },
+      "duration": 0.099,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0903
+      },
+      "duration": 0.0903,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1368
+      },
+      "duration": 0.1368,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1008
+      },
+      "duration": 0.1008,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1079
+      },
+      "duration": 0.1079,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1001
+      },
+      "duration": 0.1001,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.096
+      },
+      "duration": 0.096,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1436
+      },
+      "duration": 0.1436,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.103
+      },
+      "duration": 0.103,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 7 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.28ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2798
+      },
+      "duration": 0.2798,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1223
+      },
+      "duration": 0.1223,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1249
+      },
+      "duration": 0.1249,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0983
+      },
+      "duration": 0.0983,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1268
+      },
+      "duration": 0.1268,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1045
+      },
+      "duration": 0.1045,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0948
+      },
+      "duration": 0.0948,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1151
+      },
+      "duration": 0.1151,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1095
+      },
+      "duration": 0.1095,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1014
+      },
+      "duration": 0.1014,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 8 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.30ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2128
+      },
+      "duration": 0.2128,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1111
+      },
+      "duration": 0.1111,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1014
+      },
+      "duration": 0.1014,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1582
+      },
+      "duration": 0.1582,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1029
+      },
+      "duration": 0.1029,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2105
+      },
+      "duration": 0.2105,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1133
+      },
+      "duration": 0.1133,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0986
+      },
+      "duration": 0.0986,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0918
+      },
+      "duration": 0.0918,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0945
+      },
+      "duration": 0.0945,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 9 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 10 commands in 1.20ms
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.21
+      },
+      "duration": 0.21,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1124
+      },
+      "duration": 0.1124,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1592
+      },
+      "duration": 0.1592,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1056
+      },
+      "duration": 0.1056,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1069
+      },
+      "duration": 0.1069,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1134
+      },
+      "duration": 0.1134,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0976
+      },
+      "duration": 0.0976,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0969
+      },
+      "duration": 0.0969,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.0978
+      },
+      "duration": 0.0978,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "MAD",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1046
+      },
+      "duration": 0.1046,
+      "changes": 1,
+      "last_row_id": 0,
+      "changed_db": true,
+      "size_after": 327680,
+      "rows_read": 2,
+      "rows_written": 2,
+      "total_attempts": 1
+    }
+  }
+]
+Procesando lote 10 de 11...
+
+ ⛅️ wrangler 4.83.0 (update available 4.92.0)
+─────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database valet-db (0c3d5545-adc7-47ac-84b6-02405dd1df22):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API (/accounts/020953556771a3695e7f0a5f0acdf064/d1/database/0c3d5545-adc7-47ac-84b6-02405dd1df22/query) failed.[0m
+
+  UNIQUE constraint failed: users.name: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_UNIQUE) [code: 7500]
+  
+  If you think this is a bug, please open an issue at: [4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to "/Users/nelsoncarrillokosak/.wrangler/logs/wrangler-2026-05-16_07-32-13_666.log"
+❌ Error en el proceso: Error: Command failed: npx wrangler d1 execute valet-db --remote -y --command="UPDATE users SET                      name='WILLIAM SILVA',                      cedula='25503825',                      email='',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04168982432',                      address='Casa 1709, Av. Simon Bolivar,Altamira',                      sector='Altamira',                      bank_name='',                      bank_account='',                      emergency_contact='Antony Salazar',                      emergency_phone='04264153827',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=533; UPDATE users SET                      name='EDGARDO SOTO',                      cedula='21090376',                      email='edgardosoto_03@hotmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04168307538',                      address='El cementerio.santa rosalia,El Cementerio',                      sector='El Cementerio',                      bank_name='',                      bank_account='',                      emergency_contact='Annabel Mata',                      emergency_phone='04168006787',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=534; UPDATE users SET                      name='YUSVELI SUÁREZ',                      cedula='25579769',                      email='yusbelisuarez20@gmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04125587305',                      address='km 9 de la panamericana,figueroa,San Antonio de los altos',                      sector='San Antonio de los altos',                      bank_name='',                      bank_account='',                      emergency_contact='Elena Cano',                      emergency_phone='04125588271',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=535; UPDATE users SET                      name='ISMAEL TORREALBA',                      cedula='17967745',                      email='one_tree_hill_new_life@hotmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04142571114',                      address='',                      sector='',                      bank_name='',                      bank_account='',                      emergency_contact='Marisol Garrido',                      emergency_phone='04241992513',                      is_allergic='MENTIOLATE',                     role='driver',                     is_active=1                     WHERE id=536; UPDATE users SET                      name='ABRANTHONY URBINA',                      cedula='28115350',                      email='abranthony.urbina02@gmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04242720334',                      address='1era calle el polvorin, callejon san jose casa # 34 la pastora,Santa Teresa',                      sector='Santa Teresa',                      bank_name='',                      bank_account='',                      emergency_contact='',                      emergency_phone='',                      is_allergic='',                     role='driver',                     is_active=1                     WHERE id=476; UPDATE users SET                      name='WILMER VÁZQUEZ',                      cedula='26312783',                      email='wilmer_14vt@hotmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04149907785',                      address='Casa 22, Calle Santa Cecilia, Sector El Pauji,San Francisco de Yare',                      sector='San Francisco de Yare',                      bank_name='',                      bank_account='',                      emergency_contact='Ana Torrealba',                      emergency_phone='04264124596',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=538; UPDATE users SET                      name='EDWIN VIELMA',                      cedula='24901924',                      email='edwin.valleblanco96@gmail',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04122685321',                      address='Casa 53B  Ubn los castañoz los teques,Los Teques',                      sector='Los Teques',                      bank_name='',                      bank_account='',                      emergency_contact='',                      emergency_phone='',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=539; UPDATE users SET                      name='ANTONIO VIERA',                      cedula='24597276',                      email='antonioviera16@gmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04123297906',                      address='Edf venecia piso 3 apto25 chacao,Chacao',                      sector='Chacao',                      bank_name='',                      bank_account='',                      emergency_contact='Nathasha Millan',                      emergency_phone='04149059258',                      is_allergic='POLVO -OLORES FUERTES-PINTURA-CEMENTO',                     role='driver',                     is_active=1                     WHERE id=540; UPDATE users SET                      name='YONAIKEL VIÑA',                      cedula='27333454',                      email='yetsacalpa@gmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='0426584942',                      address='los jardines del valle casa  56,Jardines del valle',                      sector='Jardines del valle',                      bank_name='',                      bank_account='',                      emergency_contact='Maria Leal',                      emergency_phone='04262376030',                      is_allergic='NO',                     role='driver',                     is_active=1                     WHERE id=541; UPDATE users SET                      name='ANGELA VIZCAÍNO',                      cedula='21759531',                      email='aviscaino35@gmail.com',                      profile_admin='NO APLICA',                      profile_opera='LOGÍSTICA',                      eye_id='LOGÍSTICA',                      phone='04125812472',                      address='Av Fuerzas Armadas esq.San enrique,Fuerzas Armadas',                      sector='Fuerzas Armadas',                      bank_name='',                      bank_account='',                      emergency_contact='Angelina Martinez',                      emergency_phone='04140512728',                      is_allergic='OLORES FUERTES',                     role='driver',                     is_active=1                     WHERE id=542;"
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at execSync (node:child_process:963:15)
+    at sync (/Users/nelsoncarrillokosak/valet-eye/scratch/upload_staff_excel.js:119:17)
+    at Object.<anonymous> (/Users/nelsoncarrillokosak/valet-eye/scratch/upload_staff_excel.js:131:1)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 15013,
+  stdout: null,
+  stderr: null
+}
