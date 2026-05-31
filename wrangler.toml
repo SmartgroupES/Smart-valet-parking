@@ -1,6 +1,7 @@
 name = "grupo-eye-staff"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+account_id = "020953556771a3695e7f0a5f0acdf064"
 
 [assets]
 directory = "./frontend"
