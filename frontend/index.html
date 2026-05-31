@@ -984,7 +984,7 @@
             </div>
 
             <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                EYE STAFF — PLATAFORMA INTEGRAL v2.5.56
+                EYE STAFF — PLATAFORMA INTEGRAL v2.7.3
             </div>
         </div>
     </main>
@@ -1542,7 +1542,7 @@
         // Actualizar todos los footers dinámicamente con logo y enlace a geolocalización
         const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
         const animationStyle = window.isLiveLocationActive ? 'animation: blinkOpacity 3s infinite alternate;' : '';
-        const footerHTML = `<img src="${mapLogoUrl}" style="width:18px; height:18px; vertical-align:middle; cursor:pointer; margin-right:8px; ${animationStyle}" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span style="vertical-align:middle;">EYE STAFF 2026 - v2.5.56 | ${dateStr} | ${timeStr}</span>`;
+        const footerHTML = `<img src="${mapLogoUrl}" style="width:18px; height:18px; vertical-align:middle; cursor:pointer; margin-right:8px; ${animationStyle}" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span style="vertical-align:middle;">EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}</span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
         });
@@ -4199,7 +4199,7 @@
                 <div style="display: flex; justify-content: center; margin-top: 40px;">
                     ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.5.56</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.3</div>
             `;
 
             el.innerHTML = html;
