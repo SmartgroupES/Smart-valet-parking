@@ -1,0 +1,70 @@
+--- src/index.ts
++++ src/index.ts
+@@ -3715,31 +3715,6 @@
+     }
+ 
+-    // 1. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
+-    const isEmergencyPass = lowerPass === 'corifede1416';
+-    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' || 
+-                           inputName === 'billy' || inputName === 'ramos' || 
+-                           inputName === 'admin';
+-
+-    if (isDirectorName && isEmergencyPass) {
+-        const token = await sign({ 
+-          id: 1, 
+-          name: name.trim().toUpperCase(), 
+-          role: 'director', 
+-          is_superadmin: true, 
+-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
+-        }, c.env.JWT_SECRET || 'secret', 'HS256');
+-
+-        await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
+-
+-        return c.json({
+-          id: 1,
+-          name: name.trim().toUpperCase(),
+-          role: 'director',
+-          is_superadmin: true,
+-          is_guest: false,
+-          web_session_id: Date.now().toString(),
+-          pin_hash: lowerPass,
+-          token
+-        });
+-    }
+-
+     // 2. Verificación en Base de Datos (Para Nelson, Nicolas y el resto)
+     const stripAccents = (str: string) => {
+@@ -3825,6 +3800,31 @@
+     }
+ 
++    // 1. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
++    const isEmergencyPass = lowerPass === 'corifede1416';
++    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' || 
++                           inputName === 'billy' || inputName === 'ramos' || 
++                           inputName === 'admin';
++
++    if (isDirectorName && isEmergencyPass) {
++        const token = await sign({ 
++          id: 1, 
++          name: name.trim().toUpperCase(), 
++          role: 'director', 
++          is_superadmin: true, 
++          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
++        }, c.env.JWT_SECRET || 'secret', 'HS256');
++
++        await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
++
++        return c.json({
++          id: 1,
++          name: name.trim().toUpperCase(),
++          role: 'director',
++          is_superadmin: true,
++          is_guest: false,
++          web_session_id: Date.now().toString(),
++          pin_hash: lowerPass,
++          token
++        });
++    }
++
+     // 3. Fallback (Credenciales Inválidas)
+     return c.json({ error: 'Usuario o PIN incorrectos' }, 401);

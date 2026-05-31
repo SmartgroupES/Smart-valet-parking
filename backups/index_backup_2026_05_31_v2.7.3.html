@@ -24,7 +24,7 @@
             100% { background: #3b82f6; border-color: #3b82f6; color: #ffffff; box-shadow: 0 0 10px rgba(59,130,246,0.6); }
         }
         @keyframes blinkOpacity {
-            0% { opacity: 0; }
+            0% { opacity: 0.2; }
             100% { opacity: 1; }
         }
         @keyframes btn-blink {
@@ -855,34 +855,13 @@
 
 <div id="app">
     <header>
-        <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; display:block; position: relative; width: 110px; height: 28px;" id="main-logo-link">
-            <div id="logo-eye-staff" style="line-height:1; position: absolute; top:0; left:0; width: 100%; transition: opacity 0.6s ease-in-out; opacity: 1;">
+        <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; display:block;">
+            <div style="line-height:1">
                 <div class="logo-text" style="font-size: 1.2rem; flex-direction: column; align-items: flex-start; gap: 0;">
                     <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
                 </div>
             </div>
-            <div id="logo-desarrollo" style="position: absolute; top:0; left:0; width: 100%; height: 22px; background: white; color: black; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border-radius: 4px; letter-spacing: 1px; opacity: 0; transition: opacity 0.6s ease-in-out; display: none; margin-top: 2px;">
-                DESARROLLO
-            </div>
         </a>
-        <script>
-            if (window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group.workers.dev')) {
-                const lEye = document.getElementById('logo-eye-staff');
-                const lDev = document.getElementById('logo-desarrollo');
-                lDev.style.display = 'flex';
-                let showDev = false;
-                setInterval(() => {
-                    showDev = !showDev;
-                    if (showDev) {
-                        lEye.style.opacity = '0';
-                        setTimeout(() => lDev.style.opacity = '1', 600);
-                    } else {
-                        lDev.style.opacity = '0';
-                        setTimeout(() => lEye.style.opacity = '1', 600);
-                    }
-                }, 3000);
-            }
-        </script>
         <div style="display:flex; gap:10px; align-items:center;">
             <div id="user-profile-nav" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03); padding:4px 12px; border-radius:12px; border:1px solid var(--border);">
                 <div style="text-align:right;">
@@ -938,8 +917,7 @@
                         }
                         
                         // REEMPLAZAR 'TU_BOT_USERNAME' CON EL USERNAME DEL BOT (sin el @)
-                        const isStaging = window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group.workers.dev');
-                        const botUsername = isStaging ? 'eye_staff_dev_bot' : 'eye_staff_bot';
+                        const botUsername = 'eye_staff_bot'; 
                         
                         const telegramUrl = `https://t.me/${botUsername}?start=link_${user.id}`;
                         window.open(telegramUrl, '_blank');
@@ -1563,7 +1541,7 @@
 
         // Actualizar todos los footers dinámicamente con logo y enlace a geolocalización
         const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
-        const animationStyle = window.isLiveLocationActive ? 'animation: blinkOpacity 4s ease-in-out infinite alternate;' : '';
+        const animationStyle = window.isLiveLocationActive ? 'animation: blinkOpacity 3s infinite alternate;' : '';
         const footerHTML = `<img src="${mapLogoUrl}" style="width:18px; height:18px; vertical-align:middle; cursor:pointer; margin-right:8px; ${animationStyle}" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span style="vertical-align:middle;">EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}</span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
@@ -13455,7 +13433,6 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
 </div>
 
     <script src="telegram-chat.js?v=2.5.54"></script>
-    <script src="chat-widget.js"></script>
 </body>
 
 <!-- MODAL PIN CAMBIO ESTATUS -->

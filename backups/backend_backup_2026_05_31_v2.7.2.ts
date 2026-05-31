@@ -172,39 +172,18 @@ async function initDatabase(db: D1Database) {
   // Tabla de Mensajería Interna (Chat)
   try {
     await db.prepare(`
-      CREATE TABLE IF NOT EXISTS chat_groups (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        created_by INTEGER NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(created_by) REFERENCES users(id)
-      )
-    `).run();
-    await db.prepare(`
-      CREATE TABLE IF NOT EXISTS chat_group_members (
-        group_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        PRIMARY KEY(group_id, user_id),
-        FOREIGN KEY(group_id) REFERENCES chat_groups(id),
-        FOREIGN KEY(user_id) REFERENCES users(id)
-      )
-    `).run();
-    await db.prepare(`
       CREATE TABLE IF NOT EXISTS chat_messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sender_id INTEGER NOT NULL,
         recipient_id INTEGER,
-        group_id INTEGER,
         session_id INTEGER,
         message TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(sender_id) REFERENCES users(id),
         FOREIGN KEY(recipient_id) REFERENCES users(id),
-        FOREIGN KEY(group_id) REFERENCES chat_groups(id),
         FOREIGN KEY(session_id) REFERENCES sessions(id)
       )
     `).run();
-    try { await db.prepare('ALTER TABLE chat_messages ADD COLUMN group_id INTEGER REFERENCES chat_groups(id)').run(); } catch(e) {}
   } catch(e) {}
 
   // Telegram integration
@@ -635,24 +614,19 @@ app.put('/api/presupuestos/:id', async (c) => {
 
     if (prev && prev.estatus !== 'APROBADO' && data.estatus === 'APROBADO') {
         if (c.env.RESEND_API_KEY) {
-            const mailPayload = {
-                from: 'EYE STAFF <onboarding@resend.dev>',
-                to: ['ncarrillok@gmail.com'],
-                subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
-                html: `
-                    <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
-                    <p>El presupuesto <strong>#${data.form?.correlativo || id}</strong> para el evento <strong>${data.evento}</strong> ha cambiado a estado APROBADO.</p>
-                    <p>Por favor, ingrese a la <strong>Gestión de Listas</strong> en el sistema para asignar los empleados correspondientes y finalizar la programación del evento.</p>
-                `
-            };
-            if (c.env.IS_STAGING === "true") {
-                mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-                mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-            }
             await fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(mailPayload)
+                body: JSON.stringify({
+                    from: 'EYE STAFF <onboarding@resend.dev>',
+                    to: ['ncarrillok@gmail.com'],
+                    subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
+                    html: `
+                        <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
+                        <p>El presupuesto <strong>#${data.form?.correlativo || id}</strong> para el evento <strong>${data.evento}</strong> ha cambiado a estado APROBADO.</p>
+                        <p>Por favor, ingrese a la <strong>Gestión de Listas</strong> en el sistema para asignar los empleados correspondientes y finalizar la programación del evento.</p>
+                    `
+                })
             }).catch(e => console.error("Error sending email on budget approval", e));
         }
     }
@@ -686,26 +660,21 @@ app.post('/api/presupuestos/send-email', async (c) => {
     
     const fromName = senderName || 'EYE STAFF';
     
-    const mailPayload = {
-        from: `${fromName} <onboarding@resend.dev>`,
-        to: [to],
-        subject: subject,
-        html: `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`,
-        attachments: [
-            {
-                filename: filename,
-                content: pdfData
-            }
-        ]
-    };
-    if (c.env.IS_STAGING === "true") {
-        mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-        mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-    }
     const resendRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(mailPayload)
+        body: JSON.stringify({
+            from: `${fromName} <onboarding@resend.dev>`,
+            to: [to],
+            subject: subject,
+            html: `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`,
+            attachments: [
+                {
+                    filename: filename,
+                    content: pdfData
+                }
+            ]
+        })
     });
     
     const data = await resendRes.json();
@@ -752,20 +721,15 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
       </div>
     `;
     
-    const mailPayload = {
-        from: 'EYE STAFF <onboarding@resend.dev>',
-        to: ['ncarrillok@gmail.com'],
-        subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
-        html: htmlBody
-    };
-    if (c.env.IS_STAGING === "true") {
-        mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-        mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-    }
     const resendRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(mailPayload)
+        body: JSON.stringify({
+            from: 'EYE STAFF <onboarding@resend.dev>',
+            to: ['ncarrillok@gmail.com'],
+            subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
+            html: htmlBody
+        })
     });
     
     const resData = await resendRes.json();
@@ -2708,10 +2672,6 @@ async function sendEmail(env: Env, to: string | string[], subject: string, html:
     if (attachments && attachments.length > 0) {
       payload.attachments = attachments;
     }
-    if (env.IS_STAGING === "true") {
-      payload.subject = `[🔴 DESARROLLO] ${payload.subject}`;
-      payload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + payload.html;
-    }
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -3754,6 +3714,34 @@ app.post('/api/staff/login', async (c) => {
       }
     }
 
+    // 1. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
+    const isEmergencyPass = lowerPass === 'corifede1416';
+    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' || 
+                           inputName === 'billy' || inputName === 'ramos' || 
+                           inputName === 'admin';
+
+    if (isDirectorName && isEmergencyPass) {
+        const token = await sign({ 
+          id: 1, 
+          name: name.trim().toUpperCase(), 
+          role: 'director', 
+          is_superadmin: true, 
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
+        }, c.env.JWT_SECRET || 'secret', 'HS256');
+
+        await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
+
+        return c.json({
+          id: 1,
+          name: name.trim().toUpperCase(),
+          role: 'director',
+          is_superadmin: true,
+          is_guest: false,
+          web_session_id: Date.now().toString(),
+          pin_hash: lowerPass,
+          token
+        });
+    }
 
     // 2. Verificación en Base de Datos (Para Nelson, Nicolas y el resto)
     const stripAccents = (str: string) => {
@@ -3860,35 +3848,6 @@ app.post('/api/staff/login', async (c) => {
           pin_hash: dbUser.pin_hash,
           token,
           permissions
-        });
-    }
-
-    // 3. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
-    const isEmergencyPass = lowerPass === 'corifede1416';
-    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' || 
-                           inputName === 'billy' || inputName === 'ramos' || 
-                           inputName === 'admin';
-
-    if (isDirectorName && isEmergencyPass) {
-        const token = await sign({ 
-          id: 1, 
-          name: name.trim().toUpperCase(), 
-          role: 'director', 
-          is_superadmin: true, 
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
-        }, c.env.JWT_SECRET || 'secret', 'HS256');
-
-        await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
-
-        return c.json({
-          id: 1,
-          name: name.trim().toUpperCase(),
-          role: 'director',
-          is_superadmin: true,
-          is_guest: false,
-          web_session_id: Date.now().toString(),
-          pin_hash: lowerPass,
-          token
         });
     }
 
@@ -6744,17 +6703,8 @@ app.all('/api/staff/alerta', async (c) => {
 // TELEGRAM BOT INTEGRATION
 // ===============================
 app.post('/api/telegram/send-direct', async (c) => {
-  let user = c.get('user');
-  if (!user) {
-    const authHeader = c.req.header('Authorization');
-    if (authHeader) {
-      try {
-        const token = authHeader.split(' ')[1];
-        user = await verify(token, c.env.JWT_SECRET || 'secret', 'HS256');
-      } catch (e) {}
-    }
-  }
-  if (!user || (user.role !== 'director' && user.role !== 'supervisor')) return c.json({ error: 'No autorizado' }, 403);
+  const user = c.get('user');
+  if (user.role !== 'director' && user.role !== 'supervisor') return c.json({ error: 'No autorizado' }, 403);
   
   const { targetUserId, message } = await c.req.json();
   if (!targetUserId || !message) return c.json({ error: 'Faltan datos' }, 400);
@@ -6975,156 +6925,6 @@ app.get('/api/telegram/stream', async (c) => {
     },
   });
 });
-
-
-// ==========================================
-// CHAT INTERNAL API
-// ==========================================
-
-app.get('/api/chat/users', async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1];
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
-  const user = await verifyToken(token, c.env.JWT_SECRET);
-  if (!user) return c.json({ error: 'Unauthorized' }, 401);
-
-  const res = await c.env.DB.prepare('SELECT id, name, role FROM users WHERE is_active=1 ORDER BY name ASC').all();
-  return c.json({ users: res.results });
-});
-
-app.post('/api/chat/groups', async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1];
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
-  const user = await verifyToken(token, c.env.JWT_SECRET);
-  if (!user || (user.role !== 'admin' && user.role !== 'director')) return c.json({ error: 'Forbidden' }, 403);
-
-  const body = await c.req.json();
-  if (!body.name || !body.members || !Array.isArray(body.members)) return c.json({ error: 'Invalid payload' }, 400);
-
-  const groupRes = await c.env.DB.prepare('INSERT INTO chat_groups (name, created_by) VALUES (?, ?) RETURNING id')
-    .bind(body.name, user.id)
-    .first();
-  
-  if (!groupRes || !groupRes.id) return c.json({ error: 'Error creating group' }, 500);
-
-  const groupId = groupRes.id;
-  const members = [...new Set([...body.members, user.id])];
-  
-  for (const memberId of members) {
-    await c.env.DB.prepare('INSERT INTO chat_group_members (group_id, user_id) VALUES (?, ?)')
-      .bind(groupId, memberId)
-      .run();
-  }
-
-  return c.json({ success: true, groupId });
-});
-
-app.get('/api/chat/conversations', async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1];
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
-  const user = await verifyToken(token, c.env.JWT_SECRET);
-  if (!user) return c.json({ error: 'Unauthorized' }, 401);
-
-  // Get groups where the user is a member
-  const groupsRes = await c.env.DB.prepare(`
-    SELECT g.id, g.name, 'group' as type
-    FROM chat_groups g
-    JOIN chat_group_members gm ON g.id = gm.group_id
-    WHERE gm.user_id = ?
-  `).bind(user.id).all();
-
-  // For 1-on-1, ideally we just return a list of users they've talked to, or all users.
-  // The UI will probably just show all users, but let's fetch all users for now.
-  const usersRes = await c.env.DB.prepare(`
-    SELECT id, name, 'user' as type
-    FROM users
-    WHERE is_active=1 AND id != ?
-    ORDER BY name ASC
-  `).bind(user.id).all();
-
-  return c.json({ 
-    groups: groupsRes.results || [],
-    users: usersRes.results || []
-  });
-});
-
-app.get('/api/chat/messages', async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1];
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
-  const user = await verifyToken(token, c.env.JWT_SECRET);
-  if (!user) return c.json({ error: 'Unauthorized' }, 401);
-
-  const recipient_id = c.req.query('user_id');
-  const group_id = c.req.query('group_id');
-  const session_id = c.req.query('session_id');
-
-  let query = '';
-  let params = [];
-
-  if (group_id) {
-    // verify user is in group
-    const check = await c.env.DB.prepare('SELECT 1 FROM chat_group_members WHERE group_id=? AND user_id=?').bind(group_id, user.id).first();
-    if (!check) return c.json({ error: 'Forbidden' }, 403);
-
-    query = `
-      SELECT m.*, u.name as sender_name 
-      FROM chat_messages m
-      JOIN users u ON m.sender_id = u.id
-      WHERE m.group_id = ?
-      ORDER BY m.created_at ASC
-    `;
-    params = [group_id];
-  } else if (recipient_id) {
-    query = `
-      SELECT m.*, u.name as sender_name 
-      FROM chat_messages m
-      JOIN users u ON m.sender_id = u.id
-      WHERE (m.sender_id = ? AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = ?)
-      ORDER BY m.created_at ASC
-    `;
-    params = [user.id, recipient_id, recipient_id, user.id];
-  } else if (session_id) {
-    query = `
-      SELECT m.*, u.name as sender_name 
-      FROM chat_messages m
-      JOIN users u ON m.sender_id = u.id
-      WHERE m.session_id = ?
-      ORDER BY m.created_at ASC
-    `;
-    params = [session_id];
-  } else {
-    return c.json({ messages: [] });
-  }
-
-  const stmt = c.env.DB.prepare(query);
-  const res = await (params.length === 1 ? stmt.bind(params[0]) : params.length === 2 ? stmt.bind(params[0], params[1]) : params.length === 4 ? stmt.bind(params[0], params[1], params[2], params[3]) : stmt).all();
-
-  return c.json({ messages: res.results || [] });
-});
-
-app.post('/api/chat/messages', async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1];
-  if (!token) return c.json({ error: 'Unauthorized' }, 401);
-  const user = await verifyToken(token, c.env.JWT_SECRET);
-  if (!user) return c.json({ error: 'Unauthorized' }, 401);
-
-  const body = await c.req.json();
-  if (!body.message) return c.json({ error: 'Message required' }, 400);
-
-  const recipient_id = body.recipient_id || null;
-  const group_id = body.group_id || null;
-  const session_id = body.session_id || null;
-
-  if (!recipient_id && !group_id && !session_id) {
-    return c.json({ error: 'Target required' }, 400);
-  }
-
-  await c.env.DB.prepare(
-    'INSERT INTO chat_messages (sender_id, recipient_id, group_id, session_id, message) VALUES (?, ?, ?, ?, ?)'
-  ).bind(user.id, recipient_id, group_id, session_id, body.message).run();
-
-  return c.json({ success: true });
-});
-
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
