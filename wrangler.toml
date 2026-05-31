@@ -38,6 +38,7 @@ custom_domain = true
 [env.staging]
 name = "grupo-eye-staff-staging"
 workers_dev = true
+routes = []
 # Eliminamos o sobreescribimos triggers si queremos evitar crons en staging (opcional)
 triggers = { crons = [] }
 
