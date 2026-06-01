@@ -22,6 +22,12 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Apply D1 Migrations to Production
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 migrations apply DB --remote
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

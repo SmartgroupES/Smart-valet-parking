@@ -11,6 +11,7 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "valet-db"
 database_id = "0c3d5545-adc7-47ac-84b6-02405dd1df22"
+migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "PHOTOS"
@@ -55,6 +56,7 @@ TELEGRAM_BOT_TOKEN = "8688024661:AAHq4i1JnEFg7vImx10SrdsAshhbuDoGz2s"
 binding = "DB"
 database_name = "d1-staging"
 database_id = "3ed7d3a3-82f7-49a0-b0a8-47c32d42e532"
+migrations_dir = "migrations"
 
 [[env.staging.r2_buckets]]
 binding = "PHOTOS"

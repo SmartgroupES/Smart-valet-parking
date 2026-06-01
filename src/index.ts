@@ -168,6 +168,13 @@ async function initDatabase(db: D1Database) {
   try { await db.prepare('ALTER TABLE users ADD COLUMN profile_opera TEXT').run(); } catch(e) {}
   try { await db.prepare('ALTER TABLE users ADD COLUMN eye_id TEXT').run(); } catch(e) {}
   try { await db.prepare('ALTER TABLE users ADD COLUMN last_login DATETIME').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_ve INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_mod INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_ve INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_mod INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_ve INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_mod INTEGER DEFAULT 0').run(); } catch(e) {}
+  try { await db.prepare('ALTER TABLE budgets ADD COLUMN is_deleted INTEGER DEFAULT 0').run(); } catch(e) {}
   
   // Tabla de Mensajería Interna (Chat)
   try {
@@ -530,7 +537,7 @@ app.post('/api/presupuestos/client', async (c) => {
 });
 app.get('/api/presupuestos', async (c) => {
   try {
-    const result = await c.env.DB.prepare('SELECT * FROM budgets ORDER BY CAST(id AS INTEGER) DESC').all();
+    const result = await c.env.DB.prepare('SELECT * FROM budgets WHERE is_deleted = 0 ORDER BY CAST(id AS INTEGER) DESC').all();
     return c.json({ success: true, budgets: result.results });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
@@ -665,11 +672,8 @@ app.put('/api/presupuestos/:id', async (c) => {
 app.delete('/api/presupuestos/:id', async (c) => {
   try {
     const id = c.req.param('id');
-    // Eliminar referencias en tabla rentals para evitar error de FOREIGN KEY
-    await c.env.DB.prepare('DELETE FROM rentals WHERE budget_id = ?').bind(id).run();
-    
-    // Eliminar el presupuesto
-    await c.env.DB.prepare('DELETE FROM budgets WHERE id = ?').bind(id).run();
+    // Soft delete el presupuesto
+    await c.env.DB.prepare('UPDATE budgets SET is_deleted = 1 WHERE id = ?').bind(id).run();
     return c.json({ success: true });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
@@ -4714,6 +4718,12 @@ app.get('/api/my-permissions', async (c) => {
       accesos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
       alquiler_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
       alquiler_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+      traslados_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+      traslados_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+      guardia_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+      guardia_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+      custodia_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+      custodia_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
       eventos_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
       eventos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
       admin_ve: isSuperadmin ? 1 : 0,
@@ -4731,7 +4741,7 @@ app.get('/api/admin/user-permissions', async (c) => {
   const user = c.get('user');
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
-  const staffRes = await c.env.DB.prepare('SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC').all();
+  const staffRes = await c.env.DB.prepare('SELECT id, name, role, eye_id FROM users WHERE is_active = 1 ORDER BY name ASC').all();
   const staff = staffRes.results || [];
   
   const permRowsRes = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
@@ -4753,6 +4763,12 @@ app.get('/api/admin/user-permissions', async (c) => {
         accesos_mod: permRow.accesos_mod,
         alquiler_ve: permRow.alquiler_ve,
         alquiler_mod: permRow.alquiler_mod,
+        traslados_ve: permRow.traslados_ve,
+        traslados_mod: permRow.traslados_mod,
+        guardia_ve: permRow.guardia_ve,
+        guardia_mod: permRow.guardia_mod,
+        custodia_ve: permRow.custodia_ve,
+        custodia_mod: permRow.custodia_mod,
         eventos_ve: permRow.eventos_ve,
         eventos_mod: permRow.eventos_mod,
         admin_ve: permRow.admin_ve,
@@ -4776,6 +4792,12 @@ app.get('/api/admin/user-permissions', async (c) => {
         accesos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
         alquiler_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
         alquiler_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+        traslados_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+        traslados_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+        guardia_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+        guardia_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+        custodia_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+        custodia_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
         eventos_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
         eventos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
         admin_ve: isSuperadmin ? 1 : 0,
@@ -4798,7 +4820,7 @@ app.post('/api/admin/user-permissions', async (c) => {
   const { user_id, field, value } = await c.req.json();
   if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const validFields = ['valet_ve', 'valet_mod', 'accesos_ve', 'accesos_mod', 'alquiler_ve', 'alquiler_mod', 'eventos_ve', 'eventos_mod', 'admin_ve', 'admin_mod', 'vip_ve', 'vip_mod', 'seg_ve', 'seg_mod', 'loc_ve', 'loc_mod'];
+  const validFields = ['valet_ve', 'valet_mod', 'accesos_ve', 'accesos_mod', 'alquiler_ve', 'alquiler_mod', 'traslados_ve', 'traslados_mod', 'guardia_ve', 'guardia_mod', 'custodia_ve', 'custodia_mod', 'eventos_ve', 'eventos_mod', 'admin_ve', 'admin_mod', 'vip_ve', 'vip_mod', 'seg_ve', 'seg_mod', 'loc_ve', 'loc_mod'];
   if (!validFields.includes(field)) {
     return c.json({ error: 'Campo inválido' }, 400);
   }
@@ -4817,6 +4839,12 @@ app.post('/api/admin/user-permissions', async (c) => {
   const d_accesos_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
   const d_alquiler_ve = (isSuperadmin || isSupervisor) ? 1 : 0;
   const d_alquiler_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_traslados_ve = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_traslados_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_guardia_ve = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_guardia_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_custodia_ve = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_custodia_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
   const d_eventos_ve = (isSuperadmin || isSupervisor) ? 1 : 0;
   const d_eventos_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
   const d_admin_ve = isSuperadmin ? 1 : 0;
@@ -4830,9 +4858,9 @@ app.post('/api/admin/user-permissions', async (c) => {
 
   await c.env.DB.prepare(`
     INSERT OR IGNORE INTO user_permissions_matrix 
-    (user_id, valet_ve, valet_mod, accesos_ve, accesos_mod, alquiler_ve, alquiler_mod, eventos_ve, eventos_mod, admin_ve, admin_mod, vip_ve, vip_mod, seg_ve, seg_mod, loc_ve, loc_mod) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(user_id, d_valet_ve, d_valet_mod, d_accesos_ve, d_accesos_mod, d_alquiler_ve, d_alquiler_mod, d_eventos_ve, d_eventos_mod, d_admin_ve, d_admin_mod, d_vip_ve, d_vip_mod, d_seg_ve, d_seg_mod, d_loc_ve, d_loc_mod)
+    (user_id, valet_ve, valet_mod, accesos_ve, accesos_mod, alquiler_ve, alquiler_mod, traslados_ve, traslados_mod, guardia_ve, guardia_mod, custodia_ve, custodia_mod, eventos_ve, eventos_mod, admin_ve, admin_mod, vip_ve, vip_mod, seg_ve, seg_mod, loc_ve, loc_mod) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(user_id, d_valet_ve, d_valet_mod, d_accesos_ve, d_accesos_mod, d_alquiler_ve, d_alquiler_mod, d_traslados_ve, d_traslados_mod, d_guardia_ve, d_guardia_mod, d_custodia_ve, d_custodia_mod, d_eventos_ve, d_eventos_mod, d_admin_ve, d_admin_mod, d_vip_ve, d_vip_mod, d_seg_ve, d_seg_mod, d_loc_ve, d_loc_mod)
     .run();
 
   const intVal = value ? 1 : 0;

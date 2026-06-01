@@ -1,6 +1,4 @@
 (function() {
-  const isDev = window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group') || window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-  if (!isDev) return;
 
   const style = document.createElement('style');
   style.innerHTML = `
@@ -128,7 +126,7 @@
       if (u.id == currentUser.id) return;
       const lbl = document.createElement('label');
       lbl.style.display = 'flex'; lbl.style.gap = '5px'; lbl.style.fontSize = '12px'; lbl.style.marginBottom = '4px';
-      lbl.innerHTML = \`<input type="checkbox" value="\${u.id}"> \${u.name}\`;
+      lbl.innerHTML = `<input type="checkbox" value="${u.id}"> ${u.name}`;
       groupMembersContainer.appendChild(lbl);
     });
   };
@@ -229,12 +227,12 @@
     msgs.forEach(m => {
       const isMe = m.sender_id === currentUser.id;
       const div = document.createElement('div');
-      div.className = \`tc-msg \${isMe ? 'tc-msg-outgoing' : 'tc-msg-incoming'}\`;
+      div.className = `tc-msg ${isMe ? 'tc-msg-outgoing' : 'tc-msg-incoming'}`;
       let inner = '';
       if (!isMe && activeChat.type === 'group') {
-        inner += \`<div class="tc-sender">\${m.sender_name}</div>\`;
+        inner += `<div class="tc-sender">${m.sender_name}</div>`;
       }
-      inner += \`<div>\${m.message}</div>\`;
+      inner += `<div>${m.message}</div>`;
       div.innerHTML = inner;
       chatBody.appendChild(div);
     });

@@ -1,0 +1,71 @@
+name: Refresh Staging Database (Clone & Mask)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "CONFIRM" to overwrite staging DB'
+        required: true
+        default: ''
+
+jobs:
+  clone-and-mask:
+    runs-on: ubuntu-latest
+    name: Clone Prod DB and Mask
+    steps:
+      - name: Verify Confirmation
+        if: ${{ github.event.inputs.confirm != 'CONFIRM' }}
+        run: |
+          echo "Aborting: You must type CONFIRM to proceed."
+          exit 1
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install SQLite
+        run: sudo apt-get update && sudo apt-get install -y sqlite3
+
+      - name: Install Wrangler
+        run: npm i -g wrangler
+
+      - name: Export Production DB
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "Downloading production database..."
+          wrangler d1 export valet-db --remote --output=prod_dump.sql
+          echo "Prod database exported."
+
+      - name: Create Local Temp DB & Apply Masking
+        run: |
+          echo "Importing prod_dump.sql to temp.db..."
+          sqlite3 temp.db < prod_dump.sql
+          
+          echo "Running masking.sql to anonymize data..."
+          sqlite3 temp.db < scripts/masking.sql
+          
+          echo "Dumping sanitized database to sanitized.sql..."
+          sqlite3 temp.db .dump > sanitized.sql
+
+      - name: Upload to Staging DB
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "Executing sanitized.sql on d1-staging..."
+          # Utilizamos execute para cargar el archivo SQL completo
+          wrangler d1 execute d1-staging --remote --file=sanitized.sql
+          echo "Staging database has been refreshed."
+
+      - name: Cleanup Zero-Trust
+        if: always()
+        run: |
+          echo "Cleaning up sensitive files..."
+          rm -f prod_dump.sql temp.db sanitized.sql

@@ -27,6 +27,10 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
+        @keyframes blinkMapLogo {
+            0% { filter: grayscale(0) brightness(1); opacity: 1; }
+            100% { filter: grayscale(1) brightness(0); opacity: 0; }
+        }
         @keyframes btn-blink {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.85; transform: scale(0.98); }
@@ -1037,6 +1041,8 @@
     // --- CONFIG & STATE ---
     const API_BASE = window.location.origin;
     const VERSION = '2.5.54';
+    window.ENABLE_MODULE_ACCESOS = true;
+    window.ENABLE_MODULE_ALQUILER = true;
     
     function formatPhone(phone) {
         if (!phone) return '---';
@@ -1067,7 +1073,7 @@
             console.warn("Ignored script error (external/injected):", msg, "at", url, "line", line);
             return false;
         }
-        const errorMsg = `ERROR: ${msg}\nEn: ${line}:${col}`;
+        const errorMsg = `ERROR V2: ${msg}\nEn: ${line}:${col}`;
         console.error(errorMsg, error);
         if (typeof toast === 'function') toast(errorMsg, 'error');
         else alert(errorMsg);
@@ -1563,7 +1569,7 @@
 
         // Actualizar todos los footers dinámicamente con logo y enlace a geolocalización
         const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
-        const animationStyle = window.isLiveLocationActive ? 'animation: blinkOpacity 4s ease-in-out infinite alternate;' : '';
+        const animationStyle = window.isLiveLocationActive ? 'animation: blinkMapLogo 4s ease-in-out infinite alternate;' : '';
         const footerHTML = `<img src="${mapLogoUrl}" style="width:18px; height:18px; vertical-align:middle; cursor:pointer; margin-right:8px; ${animationStyle}" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span style="vertical-align:middle;">EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}</span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
@@ -2397,9 +2403,12 @@
         ));
 
         const canSeeValet = hasPermission('valet_ve');
-        const canSeeAccesos = hasPermission('accesos_ve');
-        const canSeeAlquiler = hasPermission('alquiler_ve');
-        const canSeeEvents = canSeeValet || canSeeAccesos || canSeeAlquiler;
+        const canSeeAccesos = window.ENABLE_MODULE_ACCESOS && hasPermission('accesos_ve');
+        const canSeeAlquiler = window.ENABLE_MODULE_ALQUILER && hasPermission('alquiler_ve');
+        const canSeeTraslados = hasPermission('traslados_ve');
+        const canSeeGuardia = hasPermission('guardia_ve');
+        const canSeeCustodia = hasPermission('custodia_ve');
+        const canSeeEvents = canSeeValet || canSeeAccesos || canSeeAlquiler || canSeeTraslados || canSeeGuardia || canSeeCustodia;
 
         // Calcular estado de Valet Parking
         const activeSessions = window.activeSessions || [];
@@ -2455,12 +2464,16 @@
                                             ${(() => {
                                                 const active = (window.activeSessions || []).filter(s => {
                                                     if (s.status !== 'active') return false;
+                                                    const sType = (s.type || 'valet').toLowerCase();
+                                                    if (sType.includes('accesos') && !canSeeAccesos) return false;
+                                                    if (sType.includes('alquiler') && !canSeeAlquiler) return false;
+                                                    if (sType.includes('valet') && !canSeeValet) return false;
                                                     if (isDirector) return true;
                                                     return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
                                                 });
                                                 if (active.length > 0) {
                                                     return active.map(s => `
-                                                        <tr onclick="selectSession(${s.id}, '${s.type || 'valet'}')" style="border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                                                        <tr onclick="selectSession(${s.id}, ${JSON.stringify(s.type || 'valet').replace(/"/g, '&quot;')})" style="border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
                                                             <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
                                                                  <div style="font-weight:900; color:#fff; font-size:0.85rem; text-align:center; text-transform:uppercase;">${s.name}</div>
                                                              </td>
@@ -2542,6 +2555,10 @@
                                             ${(() => {
                                                 const planning = (window.activeSessions || []).filter(s => {
                                                     if (s.status !== 'planning' && s.status !== 'pending') return false;
+                                                    const sType = (s.type || 'valet').toLowerCase();
+                                                    if (sType.includes('accesos') && !canSeeAccesos) return false;
+                                                    if (sType.includes('alquiler') && !canSeeAlquiler) return false;
+                                                    if (sType.includes('valet') && !canSeeValet) return false;
                                                     if (isDirector) return true;
                                                     return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
                                                 });
@@ -2588,8 +2605,8 @@
                                                 });
                                                 if (planning.length > 0) {
                                                     return planning.map(s => {
-                                                        const hasStaff = s.assigned_staff_count > 0;
-                                                        const clickAction = hasStaff ? (s.is_budget ? `cargarPresupuestoDesdeHistorial('${s.budget_id}', ${s.budget_timestamp}); document.getElementById('current-view').style.display='none'; document.getElementById('presupuestos-view').style.display='block'; window.scrollTo(0,0);` : `renderScheduledEventDetail(${s.id})`) : '';
+                                                        const hasStaff = s.assigned_staff_list && s.assigned_staff_list.length > 0;
+                                                        const clickAction = hasStaff ? (s.is_budget ? `cargarPresupuestoDesdeHistorial(${JSON.stringify(s.budget_id || '').replace(/"/g, '&quot;')}, ${s.budget_timestamp}); document.getElementById('current-view').style.display='none'; document.getElementById('presupuestos-view').style.display='block'; window.scrollTo(0,0);` : `renderScheduledEventDetail(${s.id})`) : '';
                                                         const rowStyle = hasStaff ? "border-bottom:1px solid rgba(255,255,255,0.03); opacity:0.8; cursor:pointer; transition: background 0.2s;" : "border-bottom:1px solid rgba(255,255,255,0.03); filter:grayscale(100%); opacity:0.3; cursor:not-allowed;";
                                                         const hoverEvents = hasStaff ? `onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"` : '';
 
@@ -2673,44 +2690,34 @@
                             </div>
                         </div>
                         ` : ''}
-                    </div>
-
-                    <!-- Servicios Inactivos / Colapsables -->
-                    ${isDirector ? `
-                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 16px; margin-top: 12px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-                        <div onclick="window.toggleServicesSection()" style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; cursor:pointer; background:rgba(255,255,255,0.01); transition: background 0.2s;">
-                            <span style="font-size:0.75rem; font-weight:800; color:var(--muted); letter-spacing:1px; display:flex; align-items:center; gap:8px;">
-                                🗂️ VER OTROS SERVICIOS <span style="font-size:0.6rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:10px; color:#fff;">3</span>
-                            </span>
-                            <span id="services-toggle-arrow" style="font-size:0.7rem; color:var(--muted); transition: transform 0.3s; display: inline-block; transform: ${window.isServicesExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</span>
-                        </div>
-                        <div id="collapsed-services-container" style="display: ${window.isServicesExpanded ? 'block' : 'none'}; padding: 15px; border-top: 1px solid var(--border); background:rgba(0,0,0,0.15);">
-                            <div class="menu-grid" style="margin-top:0; gap:12px;">
-                                <!-- TRASLADOS -->
-                                <div class="menu-item disabled" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
-                                    <i style="font-size:1.5rem">🚐</i>
-                                    <div class="menu-item-content">
-                                        <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
-                                    </div>
-                                </div>
-                                <!-- GUARDIA DIURNA/NOCTURNA -->
-                                <div class="menu-item disabled" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
-                                    <i style="font-size:1.5rem">🌙</i>
-                                    <div class="menu-item-content">
-                                        <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
-                                    </div>
-                                </div>
-                                <!-- CUSTODIA -->
-                                <div class="menu-item disabled" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
-                                    <i style="font-size:1.5rem">🛡️</i>
-                                    <div class="menu-item-content">
-                                        <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
-                                    </div>
-                                </div>
+                        ${canSeeTraslados ? `
+                        <!-- TRASLADOS -->
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🚐</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
                             </div>
                         </div>
+                        ` : ''}
+                        ${canSeeGuardia ? `
+                        <!-- GUARDIA DIURNA/NOCTURNA -->
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🌙</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeCustodia ? `
+                        <!-- CUSTODIA -->
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
+                            <i style="font-size:1.5rem">🛡️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
-                    ` : ''}
                 </div>
 
                 <div id="portal-operations-section">
@@ -7763,9 +7770,13 @@
                         <thead>
                             <tr style="background:rgba(255,255,255,0.03); color:white; font-weight:bold; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10;">
                                 <th rowspan="2" style="padding:12px; text-align:left; border-right: 1px solid var(--border); min-width:180px; background: #161b2c;">Empleado</th>
+                                <th rowspan="2" style="padding:12px; text-align:center; border-right: 1px solid var(--border); min-width:80px; background: #161b2c;">ID Eye</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Valet Parking</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Control Accesos</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Alquiler Equipos</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Traslados</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Guardia Diurna/Nocturna</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Custodia</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Eventos y Listas</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Admin General</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Dirección Eye Staff</th>
@@ -7780,11 +7791,13 @@
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="background: #161b2c;">Mod</th>
                             </tr>
                         </thead>
                         <tbody id="permissions-matrix-tbody">
-                            <tr><td colspan="17" style="padding:30px; color:var(--muted);">Cargando matriz de permisos...</td></tr>
+                            <tr><td colspan="24" style="padding:30px; color:var(--muted);">Cargando matriz de permisos...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -7842,7 +7855,7 @@
             }
             
             if (list.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="15" style="padding:20px; color:var(--muted);">No hay empleados activos</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="24" style="padding:20px; color:var(--muted);">No hay empleados activos</td></tr>';
                 return;
             }
             
@@ -7858,12 +7871,21 @@
                         <td style="padding:10px 12px; text-align:left; font-weight:700; border-right:1px solid var(--border); color:white;">
                             ${u.name.toUpperCase()}
                         </td>
+                        <td style="padding:10px 12px; text-align:center; font-weight:900; border-right:1px solid var(--border); color:${(u.eye_id || '').toUpperCase() === 'ORO' ? '#FFD700' : (u.eye_id || '').toUpperCase() === 'PLATA' ? '#E5E4E2' : (u.eye_id || '').toUpperCase() === 'BRONCE' ? '#CD7F32' : 'var(--muted)'};">
+                            ${(u.eye_id || '---').toUpperCase()}
+                        </td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('valet_ve', u.valet_ve)}</td>
                         <td style="padding:8px; border-right:1px solid var(--border);">${chk('valet_mod', u.valet_mod)}</td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('accesos_ve', u.accesos_ve)}</td>
                         <td style="padding:8px; border-right:1px solid var(--border);">${chk('accesos_mod', u.accesos_mod)}</td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('alquiler_ve', u.alquiler_ve)}</td>
                         <td style="padding:8px; border-right:1px solid var(--border);">${chk('alquiler_mod', u.alquiler_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('traslados_ve', u.traslados_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('traslados_mod', u.traslados_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('guardia_ve', u.guardia_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('guardia_mod', u.guardia_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('custodia_ve', u.custodia_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('custodia_mod', u.custodia_mod)}</td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('eventos_ve', u.eventos_ve)}</td>
                         <td style="padding:8px; border-right:1px solid var(--border);">${chk('eventos_mod', u.eventos_mod)}</td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('admin_ve', u.admin_ve)}</td>
@@ -11951,18 +11973,17 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         if (text) {
             try {
                 toast('Enviando mensaje...', 'info');
-                const res = await fetch('/api/telegram/send-direct', {
+                const data = await apiFetch('/api/telegram/send-direct', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ targetUserId: userId, message: text })
                 });
-                const data = await res.json();
-                if (data.success) {
+                if (data && data.success) {
                     toast('✅ Mensaje enviado a ' + userName, 'success');
-                } else {
-                    Swal.fire('Error', data.error || 'No se pudo enviar el mensaje', 'error');
+                } else if (data && data.error) {
+                    Swal.fire('Error', data.error, 'error');
                 }
             } catch (e) {
+                console.error(e);
                 Swal.fire('Error', 'Error de red al enviar', 'error');
             }
         }
@@ -12620,6 +12641,25 @@ window.switchPresupuestoTab = function(tab) {
 
 window._globalBudgets = [];
 
+window.eliminarPresupuestoFront = async function(e, id) {
+    e.stopPropagation();
+    if (!confirm(`¿Estás seguro de que deseas eliminar el presupuesto #${id}? No se mostrará más aquí.`)) return;
+
+    try {
+        const res = await apiFetch(`/api/presupuestos/${id}`, {
+            method: 'DELETE'
+        });
+        if (res && res.success) {
+            toast('Presupuesto eliminado de la vista', 'success');
+            if (window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
+        } else {
+            toast(res?.error || 'Error al eliminar', 'error');
+        }
+    } catch (err) {
+        toast('Error de conexión', 'error');
+    }
+};
+
 window.renderHistorialPresupuestos = async function() {
     const listEl = document.getElementById('historial-list');
     const countEl = document.getElementById('historial-count');
@@ -12662,7 +12702,7 @@ window.renderHistorialPresupuestos = async function() {
         if(tableData.length === 0) return '';
         let tHtml = `<h4 style="color:${titleColor}; margin-top:25px; margin-bottom:10px; font-weight:900; padding-left:5px; font-size: 0.9rem; text-transform: uppercase;">${title} (${tableData.length})</h4>`;
         tHtml += `<div style="border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.1); margin-bottom:20px; overflow-x:auto;">
-            <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 95px; gap:8px; background:var(--surface2); padding:12px 15px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.7rem; letter-spacing:0.5px; min-width:800px;">
+            <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 125px; gap:8px; background:var(--surface2); padding:12px 15px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.7rem; letter-spacing:0.5px; min-width:800px;">
                 <div>ID</div>
                 <div>CONTACTO</div>
                 <div>EMPRESA</div>
@@ -12685,7 +12725,7 @@ window.renderHistorialPresupuestos = async function() {
             }
             
             return `
-                <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 95px; gap:8px; padding:12px 15px; border-bottom:${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.75rem; min-width:800px;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 125px; gap:8px; padding:12px 15px; border-bottom:${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.75rem; min-width:800px;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
                     <div style="cursor:pointer;" onclick="cargarPresupuestoDesdeHistorial('${d.id}', ${d.timestamp})">
                         <span style="font-weight:900; color:var(--brand-white); border-bottom:1px dashed var(--accent);">#${d.id}</span>
                     </div>
@@ -12706,6 +12746,7 @@ window.renderHistorialPresupuestos = async function() {
                     <div style="text-align:center; display:flex; justify-content:center; gap:8px;">
                         <button onclick="generarDesdeHistorial(event, '${d.id}', 'pdf')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Generar PDF">📄</button>
                         <button onclick="generarDesdeHistorial(event, '${d.id}', 'email')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Enviar Email">📧</button>
+                        <button onclick="eliminarPresupuestoFront(event, '${d.id}')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Eliminar Presupuesto">🗑️</button>
                     </div>
                 </div>
             `;
