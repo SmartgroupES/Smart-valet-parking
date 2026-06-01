@@ -18,9 +18,7 @@ export interface Env {
   ADMIN_KEY?: string;
   DIRECTOR_EMAIL?: string;
   OFFICE_GROUP_ID?: string;
-  WHATSAPP_BOT_URL?: string;
-  WHATSAPP_BOT_API_KEY?: string;
-  TELEGRAM_BOT_TOKEN?: string;
+      TELEGRAM_BOT_TOKEN?: string;
   AI: any;
 }
 
@@ -58,7 +56,7 @@ function formatFull24h(date: Date): string {
   }).replace(',', '');
 }
 
-export function sanitizeWhatsAppNumber(phone: string): string | null {
+export function sanitizePhoneNumber(phone: string): string | null {
   // Eliminar todo lo que no sea dígito
   let clean = phone.replace(/\D/g, '');
 
@@ -1322,20 +1320,20 @@ app.get('/api/comunicacion/directo', async (c) => {
     return c.json({ error: 'Receptor ("to" o "receiver") es requerido' }, 400);
   }
 
-  const cleanedPhone = sanitizeWhatsAppNumber(receiver);
+  const cleanedPhone = sanitizePhoneNumber(receiver);
   if (!cleanedPhone) {
     c.header('Content-Type', 'application/json');
     return c.json({ error: 'Número de teléfono inválido o formato no soportado' }, 400);
   }
   const encodedText = encodeURIComponent(message);
-  const waUrl = `https://wa.me/${cleanedPhone}?text=${encodedText}`;
+  const tgUrl = `https://t.me/+${cleanedPhone}?text=${encodedText}`;
 
   c.header('Content-Type', 'application/json');
   return c.json({
     success: true,
     phone: cleanedPhone,
     text: encodedText,
-    url: waUrl
+    url: tgUrl
   });
 });
 
@@ -1356,51 +1354,21 @@ app.post('/api/comunicacion/directo', async (c) => {
     return c.json({ error: 'Receptor ("to" o "receiver") es requerido' }, 400);
   }
 
-  const cleanedPhone = sanitizeWhatsAppNumber(to);
+  const cleanedPhone = sanitizePhoneNumber(to);
   if (!cleanedPhone) {
     c.header('Content-Type', 'application/json');
     return c.json({ error: 'Número de teléfono inválido o formato no soportado' }, 400);
   }
   const encodedText = encodeURIComponent(text);
-  const waUrl = `https://wa.me/${cleanedPhone}?text=${encodedText}`;
+  const tgUrl = `https://t.me/+${cleanedPhone}?text=${encodedText}`;
 
   c.header('Content-Type', 'application/json');
-
-  const botUrl = c.env.WHATSAPP_BOT_URL;
-  const botApiKey = c.env.WHATSAPP_BOT_API_KEY;
-
-  if (botUrl && botApiKey) {
-    try {
-      const botRes = await fetch(botUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${botApiKey}`,
-          'Bypass-Tunnel-Reminder': 'true'
-        },
-        body: JSON.stringify({
-          to: cleanedPhone + '@s.whatsapp.net',
-          message: text
-        })
-      });
-
-      const botData = await botRes.json();
-      return c.json({
-        success: botRes.ok,
-        phone: cleanedPhone,
-        bot_response: botData
-      }, botRes.status as any);
-    } catch (e) {
-      console.error('Error enviando a WhatsApp Bot (directo):', e);
-      return c.json({ error: 'Fallo al conectar con el microservicio de WhatsApp' }, 500);
-    }
-  }
 
   return c.json({
     success: true,
     phone: cleanedPhone,
     text: encodedText,
-    url: waUrl
+    url: tgUrl
   });
 });
 
@@ -1413,7 +1381,6 @@ app.post('/api/comunicacion/oficina-alerta', async (c) => {
     return c.json({ error: 'event_name e incident_type son requeridos' }, 400);
   }
 
-  // Huso horario oficial de Venezuela (America/Caracas - GMT-4)
   const now = new Date();
   const formatCaracas = now.toLocaleString('es-VE', { 
     timeZone: 'America/Caracas', 
@@ -1427,37 +1394,33 @@ app.post('/api/comunicacion/oficina-alerta', async (c) => {
     `⚠️ *Tipo:* ${incident_type.toUpperCase()} (Severidad: ${(severity || 'MEDIA').toUpperCase()})\n` +
     `📝 *Detalles:* ${description || 'Sin detalles adicionales.'}`;
 
-  const officeGroupId = c.env.OFFICE_GROUP_ID || '1203630234567890@g.us';
-  const botUrl = c.env.WHATSAPP_BOT_URL;
-  const botApiKey = c.env.WHATSAPP_BOT_API_KEY;
+  const officeGroupId = c.env.OFFICE_GROUP_ID || '-1001234567890';
+  const token = c.env.TELEGRAM_BOT_TOKEN;
 
-  if (botUrl && botApiKey) {
+  if (token && officeGroupId) {
     try {
-      const botRes = await fetch(botUrl, {
+      const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${botApiKey}`,
-          'Bypass-Tunnel-Reminder': 'true'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          to: officeGroupId,
-          message: formattedMessage
+          chat_id: officeGroupId,
+          text: formattedMessage,
+          parse_mode: 'Markdown'
         })
       });
 
-      const botData = await botRes.json();
+      const tgData = await tgRes.json();
       c.header('Content-Type', 'application/json');
       return c.json({
-        success: botRes.ok,
+        success: tgRes.ok,
         timestamp: formatCaracas,
         group_id: officeGroupId,
-        bot_response: botData
-      }, botRes.status as any);
+        bot_response: tgData
+      }, tgRes.status as any);
     } catch (e) {
-      console.error('Error enviando a WhatsApp Bot:', e);
+      console.error('Error enviando alerta por Telegram:', e);
       c.header('Content-Type', 'application/json');
-      return c.json({ error: 'Fallo al conectar con el microservicio de WhatsApp' }, 500);
+      return c.json({ error: 'Fallo al conectar con Telegram' }, 500);
     }
   }
 
@@ -1467,8 +1430,7 @@ app.post('/api/comunicacion/oficina-alerta', async (c) => {
     timestamp: formatCaracas,
     group_id: officeGroupId,
     message: formattedMessage,
-    simulated_send: true,
-    url: `https://wa.me/`
+    simulated_send: true
   });
 });
 
@@ -4023,7 +3985,7 @@ app.get('/api/staff', async (c) => {
 app.post('/api/staff/location', async (c) => {
   try {
     const authHeader = c.req.header('Authorization') || '';
-    const expectedKey = c.env.WHATSAPP_BOT_API_KEY || 'dev-local-api-key';
+    const expectedKey = c.env.TELEGRAM_BOT_TOKEN || 'dev-local-api-key';
     if (authHeader !== `Bearer ${expectedKey}`) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -7163,15 +7125,7 @@ export default {
     env.DIRECTOR_EMAIL = 'ncarrillok@gmail.com';
     ctx.waitUntil(checkScheduledNotifications(env));
 
-    // Ping the Render Bot to keep it awake
-    if (env.WHATSAPP_BOT_URL) {
-      try {
-        const pingUrl = env.WHATSAPP_BOT_URL.replace('/api/send', '/ping');
-        ctx.waitUntil(fetch(pingUrl).catch(() => {}));
-      } catch (e) {
-        console.error('Ping failed:', e);
-      }
-    }
+
   },
   async email(message: any, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = 'ncarrillok@gmail.com';

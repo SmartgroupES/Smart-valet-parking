@@ -359,7 +359,7 @@
         .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
         .btn-secondary { background: var(--surface2); border: 1px solid var(--border); }
         .btn-danger { background: var(--accent2); }
-        .btn-success { background: var(--success); }
+        .btn-primary { background: var(--success); }
 
         /* --- MODALS --- */
         .modal-overlay {
@@ -4179,11 +4179,11 @@
                                                         </div>
                                                         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                                                             ${hasApiKey ? `
-                                                                <button class="btn btn-sm btn-success" onclick="triggerManualCallMeBotWhatsApp(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por WhatsApp automático (CallMeBot)" style="padding:4px 8px; font-size:0.6rem; font-weight:900; border-radius:6px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                                                                <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:4px 8px; font-size:0.6rem; font-weight:900; border-radius:6px; display:flex; align-items:center; gap:4px; cursor:pointer;">
                                                                     📲 AUTO
                                                                 </button>
                                                             ` : ''}
-                                                            <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:4px 8px; font-size:0.7rem; font-weight:900; border-radius:6px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                            <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:4px 8px; font-size:0.7rem; font-weight:900; border-radius:6px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
                                                                 💬
                                                             </button>
                                                         </div>
@@ -4367,11 +4367,11 @@
                                                     </div>
                                                     <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                                                         ${hasApiKey ? `
-                                                            <button class="btn btn-sm btn-success" onclick="triggerManualCallMeBotWhatsApp(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por WhatsApp automático (CallMeBot)" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                                                            <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
                                                                 📲 AUTO
                                                             </button>
                                                         ` : ''}
-                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de WhatsApp pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
                                                             💬
                                                         </button>
                                                     </div>
@@ -4778,7 +4778,7 @@
                 </div>
 
                 <div style="display:flex; gap:12px; margin-top:25px;">
-                    <button class="btn btn-success" style="flex:1; height:50px; font-weight:800;" onclick="confirmNewSession('${name}')">INICIAR EVENTO</button>
+                    <button class="btn btn-primary" style="flex:1; height:50px; font-weight:800;" onclick="confirmNewSession('${name}')">INICIAR EVENTO</button>
                     <button class="btn btn-secondary" style="flex:1; height:50px; font-weight:800;" onclick="this.closest('.modal-overlay').remove()">CANCELAR</button>
                 </div>
             </div>
@@ -5236,7 +5236,7 @@
         loadStaffChat(vehicleId);
     }
 
-    function shareWhatsApp(phone, plate, code) {
+    function shareTelegram(phone, plate, code) {
         if (!phone) {
             toast('⚠️ Este cliente no tiene teléfono registrado', 'warning');
             return;
@@ -5244,9 +5244,9 @@
         const cleanPhone = phone.replace(/\D/g, '');
         const ticketUrl = `${API_BASE}/ticket/${code}`;
         const msg = `🚗 *EYE STAFF — Ticket Valet Parking*\n\nHola, bienvenido/a. Aquí está el registro digital de tu vehículo:\n\n📋 *Placa:* ${plate}\n🔗 *Ver ticket y fotos aquí:*\n${ticketUrl}\n\n_Para solicitar tu vehículo, muestra este mensaje o el código al coordinador._`;
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
-        toast('✅ Abriendo WhatsApp con ticket del cliente...', 'success');
+        toast('✅ Abriendo Telegram con ticket del cliente...', 'success');
     }
 
     async function loadDetailPhotos(id) {
@@ -5410,7 +5410,7 @@
             toast('✅ Vehículo entregado', 'success');
             closeModal();
 
-            // WhatsApp Integration (Fase 1)
+            // Telegram Integration (Nativo)
             if (phone) {
                 try {
                     const waRes = await apiFetch('/api/valet/notificar', {
@@ -8208,7 +8208,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">IMPORTACIÓN / ACTUALIZACIÓN RRHH</h2>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn btn-sm btn-success" onclick="downloadRRHHTemplate()" style="font-size:0.7rem;">📥 DESCARGAR PLANTILLA RRHH</button>
+                        <button class="btn btn-sm btn-primary" onclick="downloadRRHHTemplate()" style="font-size:0.7rem;">📥 DESCARGAR PLANTILLA RRHH</button>
                     </div>
                 </div>
                 <p style="font-size:0.75rem; color:var(--muted); margin-bottom:10px;">FORMATO EXCEL (.XLSX) REQUERIDO. EL SISTEMA ACTUALIZARÁ POR PIN O CREARÁ NUEVOS.</p>
@@ -9945,7 +9945,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
                                 <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👥 PARA INVITADOS / VIP</h3>
                                 <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
-                                    <li>QR Dinámico vía WhatsApp/Email</li>
+                                    <li>QR Dinámico vía Telegram/Email</li>
                                     <li>Check-in rápido vía Tablets</li>
                                     <li>Brazaletes con NFC/RFID o Térmicos</li>
                                 </ul>
@@ -11276,7 +11276,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 const homeMarkersLayer = L.layerGroup().addTo(map);
                 window._staffHomeMarkers = [];
 
-                // ── UBICACIONES EN TIEMPO REAL (vía WhatsApp) ──
+                // ── UBICACIONES EN TIEMPO REAL (vía Telegram) ──
                 const liveLocLayer = L.layerGroup().addTo(map);
                 window._liveLocMarkers = {};
                 window._hasLiveLocationsAtStart = false;
@@ -11937,16 +11937,16 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     window.deleteCurrentStaff = deleteCurrentStaff;
 
     // ── WHATSAPP CLICK-TO-CHAT: Chat directo con empleado ──
-    window.openDirectWhatsApp = function(phone, name) {
+    window.openDirectTelegram = function(phone, name) {
         if (!phone) {
             toast('⚠️ ' + name + ' no tiene teléfono registrado', 'warning');
             return;
         }
         const cleanPhone = phone.replace(/\D/g, '');
         const msg = `Hola ${name}, te contactamos desde EYE STAFF.`;
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
-        toast('✅ Abriendo WhatsApp con ' + name, 'success');
+        toast('✅ Abriendo Telegram con ' + name, 'success');
     };
 
     window.openTelegramDirectMessage = async function(userId, userName, hasTelegram) {
@@ -12006,30 +12006,31 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             `🏁 *Fin evento:* ${endTime || 'Por confirmar'}\n` +
             `📍 *Dirección:* ${address || 'Por confirmar'}\n\n` +
             `_Confirma tu asistencia respondiendo este mensaje._`;
-        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
-        toast('✅ Abriendo WhatsApp con convocatoria para ' + name, 'success');
+        toast('✅ Abriendo Telegram con convocatoria para ' + name, 'success');
     };
 
     // ── CALLMEBOT: Notificación automática vía servidor (requiere API Key del empleado) ──
-    window.triggerManualCallMeBotWhatsApp = async function(userId, name, sessionName, convocationTime, startTime, endTime, address) {
+    window.triggerTelegramConvocation = async function(userId, name, sessionName, convocationTime, startTime, endTime, address) {
         try {
-            showLoading('ENVIANDO WHATSAPP...');
-            const res = await apiFetch('/api/whatsapp/send-convocation', {
+            showLoading('ENVIANDO POR TELEGRAM...');
+            const msg = `📢 *CONVOCATORIA*\nHola ${name}, estás convocado/a:\n\n🎫 *Evento:* ${sessionName}\n🕒 *Cita:* ${convocationTime || startTime}\n🏁 *Fin est.:* ${endTime || 'N/A'}\n📍 *Lugar:* ${address || 'No especificada'}`;
+            const res = await apiFetch('/api/telegram/send-direct', {
                 method: 'POST',
-                body: JSON.stringify({ userId, sessionName, convocationTime, startTime, endTime, address })
+                body: JSON.stringify({ targetUserId: userId, message: msg })
             });
             hideLoading();
             if (res && res.success) {
-                toast('✅ WhatsApp enviado a ' + name + ' via CallMeBot', 'success');
+                toast('✅ Telegram enviado a ' + name, 'success');
             } else {
                 // Fallback a Click-to-Chat si no tiene API Key
                 const staffData = fullStaffData ? fullStaffData.find(u => u.id === userId) : null;
                 if (staffData && staffData.phone) {
-                    toast('⚠️ Sin API Key — Abriendo WhatsApp manual para ' + name, 'warning');
+                    toast('⚠️ Sin Telegram — Abriendo manual para ' + name, 'warning');
                     window.openDirectConvocationLink(name, staffData.phone, sessionName, convocationTime, startTime, endTime, address);
                 } else {
-                    toast('❌ ' + (res && res.error ? res.error : 'Error al enviar WhatsApp'), 'error');
+                    toast('❌ ' + (res && res.error ? res.error : 'Error al enviar por Telegram'), 'error');
                 }
             }
         } catch(e) {
