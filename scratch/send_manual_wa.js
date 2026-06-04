@@ -1,5 +1,5 @@
 const API_KEY = "re_Fu3JRkwq_Lxt6DeWEKoey8xkdn8ijbCRF";
-const TO = "ncarrillok@gmail.com";
+const TO = "eyestaff.ncarrillo@gmail.com";
 
 const manualHtml = `
 <!DOCTYPE html>

@@ -1096,7 +1096,7 @@
 
     window.hasPermission = function(perm) {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (user.id === 1 || (user.name || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes('NELSON CARRILLO')) {
+        if (user.id === 1) {
             return true;
         }
         if (user.permissions && user.permissions[perm] !== undefined) {
@@ -1218,6 +1218,16 @@
 
     // --- INITIALIZATION ---
     window.onload = async () => {
+        const hash = window.location.hash;
+        if (hash.startsWith('#actualizar-datos')) {
+            const urlParams = new URLSearchParams(hash.split('?')[1]);
+            const token = urlParams.get('token');
+            if (token) {
+                renderDataUpdateForm(token);
+                return;
+            }
+        }
+
         updateClock();
         setInterval(updateClock, 1000); 
         initScreenSaver();
@@ -1805,7 +1815,7 @@
                     `;
                 }).join('');
             } else {
-                eventsHtml = `<div style="color:var(--muted); font-size:0.7rem; font-style:italic; padding:10px 0; text-align:center;">Sin eventos programados.</div>`;
+                eventsHtml = `<div style="min-height:20px;"></div>`;
             }
 
             html += `
@@ -1828,6 +1838,189 @@
         
         html += `</div>
 
+            </div>
+        </div>`;
+        
+        return html;
+    }
+
+    window.currentHomeMonthDate = new Date();
+
+    window.changeHomeCalendarMonth = function(offset) {
+        if (offset === 'today') {
+            window.currentHomeMonthDate = new Date();
+        } else {
+            window.currentHomeMonthDate.setMonth(window.currentHomeMonthDate.getMonth() + offset);
+        }
+        renderHome();
+    };
+
+    function generateMonthlyCalendarHTML() {
+        const viewDate = new Date(window.currentHomeMonthDate);
+        viewDate.setDate(1);
+        
+        const monthName = viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+        
+        const actualToday = new Date();
+        actualToday.setHours(0,0,0,0);
+        const displayMonth = viewDate.getMonth();
+        const displayYear = viewDate.getFullYear();
+        const isCurrentCalendarMonth = displayMonth === actualToday.getMonth() && displayYear === actualToday.getFullYear();
+        
+        let startOfGrid;
+        let numWeeksToRender = 6;
+        
+        if (isCurrentCalendarMonth) {
+            const currentWeekMonday = new Date(actualToday);
+            const wd = currentWeekMonday.getDay();
+            const diffDay = currentWeekMonday.getDate() - wd + (wd === 0 ? -6 : 1);
+            currentWeekMonday.setDate(diffDay);
+            currentWeekMonday.setHours(0,0,0,0);
+            
+            startOfGrid = new Date(currentWeekMonday);
+            startOfGrid.setDate(startOfGrid.getDate() - 7); // week -1
+            numWeeksToRender = 3;
+        } else {
+            const currentDay = viewDate.getDay();
+            const diff = viewDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+            startOfGrid = new Date(viewDate.setDate(diff));
+            startOfGrid.setHours(0,0,0,0);
+        }
+        
+        const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
+        const isDirector = isUserAdminOrStaff(user);
+
+        const allSessionsRaw = window.allSessions || [];
+        const allSessions = allSessionsRaw.filter(s => {
+            if (isDirector) return true;
+            return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+
+        function getEventColor(s) {
+            if (s.is_budget) return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--muted)', grayscale: true };
+            const t = (s.type || '').toLowerCase();
+            if (t.includes('valet')) return { bg: 'rgba(239, 68, 68, 0.15)', border: 'var(--brand-red)', text: '#ef4444' };
+            if (t.includes('boda')) return { bg: 'rgba(245, 158, 11, 0.15)', border: 'var(--warning)', text: '#f59e0b' };
+            if (t.includes('corp')) return { bg: 'rgba(99, 102, 241, 0.15)', border: 'var(--accent)', text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16, 185, 129, 0.15)', border: 'var(--brand-green)', text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        let html = `
+        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">CALENDARIO DE EVENTOS</h3>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">⬅️</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:0.8rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">➡️</button>
+                </div>
+            </div>
+            
+            <div id="calendario-mensual-content" style="display:flex; flex-direction:column; width:100%;">
+            <div style="font-size:0.8rem; color:var(--accent); font-weight:900; background:rgba(99, 102, 241, 0.1); padding:8px 15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                ${monthName}
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px; margin-bottom:5px;">
+                ${weekDays.map(d => `<div style="text-align:center; font-size:0.7rem; font-weight:900; color:var(--muted);">${d}</div>`).join('')}
+            </div>
+            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:5px;">
+        `;
+        
+        const currentDateIterator = new Date(startOfGrid);
+        
+        let combinedSessions = [...(window.allSessions || [])];
+        if (window._globalBudgets) {
+            const futureBudgets = window._globalBudgets.filter(b => {
+                if (b.estatus !== 'APROBADO') return false;
+                if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+                return true;
+            }).map(b => ({
+                id: 'budget-' + b.id,
+                name: b.evento || 'PRESUPUESTO APROBADO',
+                started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+                event_start_time: (b.form && b.form.inicio) || '00:00',
+                type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+                status: 'planning',
+                is_budget: true,
+                budget_id: b.id,
+                budget_timestamp: b.timestamp
+            }));
+            combinedSessions.push(...futureBudgets);
+        }
+
+        for (let week = 0; week < numWeeksToRender; week++) {
+            if (!isCurrentCalendarMonth && week >= 4 && currentDateIterator.getMonth() !== displayMonth) {
+                break;
+            }
+
+            html += `<div class="calendar-week-row" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px;">`;
+
+            for (let day = 0; day < 7; day++) {
+                const isToday = currentDateIterator.getTime() === actualToday.getTime();
+                const isCurrentMonth = currentDateIterator.getMonth() === displayMonth;
+                const dateStr = currentDateIterator.getDate();
+                
+                const sessionsThisDay = combinedSessions.filter(s => {
+                    if (s.status === 'budgeted') return false;
+                    const rawDate = s.started_at || s.created_at;
+                    let sDate;
+                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                        const parts = rawDate.split('-');
+                        sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    } else {
+                        sDate = new Date(rawDate);
+                    }
+                    sDate.setHours(0,0,0,0);
+                    return sDate.getTime() === currentDateIterator.getTime();
+                });
+                
+                let bg = isCurrentMonth ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.005)';
+                let border = isCurrentMonth ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(255,255,255,0.01)';
+                if (isToday) {
+                    bg = 'rgba(99, 102, 241, 0.05)';
+                    border = '1px solid var(--accent)';
+                }
+                
+                let eventsHtml = '';
+                if (sessionsThisDay.length > 0) {
+                    eventsHtml = sessionsThisDay.map(s => {
+                        const colorSet = getEventColor(s);
+                        const isClosed = s.status === 'closed' || s.status === 'concluded';
+                        return `
+                            <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="cursor:pointer; background:${colorSet.bg}; border-left:3px solid ${colorSet.border}; color:${colorSet.text}; font-size:0.6rem; padding:4px; border-radius:4px; margin-bottom:4px; display:flex; flex-direction:column; gap:2px; transition:0.2s; filter:${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:${isCurrentMonth ? (colorSet.grayscale ? '0.85' : '1') : '0.5'}; text-align:left; overflow:hidden;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${colorSet.bg}';">
+                                <div style="font-weight:900; font-size:0.6rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' (FIN)' : ''}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    eventsHtml = `<div style="min-height:20px;"></div>`;
+                }
+
+                html += `
+                    <div class="calendar-day-cell" style="background:${bg}; border:${border}; border-radius:6px; padding:4px; display:flex; flex-direction:column; min-height:80px; overflow:hidden;">
+                        <div style="text-align:right; margin-bottom:4px; position:relative;">
+                            <span style="font-size:0.7rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:${isCurrentMonth ? '1' : '0.4'};"><span style="display:none;">${weekDays[(currentDateIterator.getDay() + 6) % 7]}</span>${dateStr}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; flex:1; overflow-y:auto; scrollbar-width:none;">
+                            ${eventsHtml}
+                        </div>
+                    </div>
+                `;
+                
+                currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+            }
+            html += `</div>`; // Close week row
+        }
+
+
+        html += `</div>
             </div>
         </div>`;
         
@@ -2651,6 +2844,9 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div style="grid-column: span 3; margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:20px;">
+                                    ${generateMonthlyCalendarHTML()}
+                                </div>
                                 ` : ''}
                             </div>
                         </div>
@@ -3422,7 +3618,7 @@
                                     const hasExited = exit !== undefined; // Ya marcó salida definitiva
 
                                     // NO puede marcar Entrada si ya salió o si el evento no está activo
-                                    const canEntry = !hasExited && (!lastAction || lastAction === 'exit' || lastAction === 'break_start') && isEventActive;
+                                    const canEntry = !hasExited && lastAction !== 'absent' && (!lastAction || lastAction === 'exit' || lastAction === 'break_start') && isEventActive;
                                     
                                     const activeStaff = (window.activeSession.assigned_staff_list || []).filter(usr => {
                                         const uAtt = usr.attendance || [];
@@ -3432,11 +3628,13 @@
                                     const canBreak = !hasExited && lastAction === 'entry' && !isLastActive;
 
                                     const canExit = !hasExited && (lastAction === 'entry' || lastAction === 'break_start');
+                                    const canAbsent = lastAction !== 'absent' && !hasExited && lastAction !== 'break_start';
 
                                     let statusText = 'INACTIVO';
                                     let statusColor = 'var(--muted)';
                                     if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
                                     else if (lastAction === 'break_start') { statusText = 'EN DESCANSO'; statusColor = 'var(--warning)'; }
+                                    else if (lastAction === 'absent') { statusText = 'INASISTENTE'; statusColor = 'var(--danger)'; }
                                     else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
 
                                     let buttonsHtml = '';
@@ -3445,6 +3643,7 @@
                                             <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
                                             <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} title="${isLastActive ? 'No se puede iniciar el descanso: debe haber al menos un empleado activo en el evento' : ''}" style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
                                             <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                            ${canAbsent ? `<button onclick="logStaffAttendance(${u.id}, 'absent')" style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:pointer;" title="Marcar inasistencia (bloquea la entrada)">INASISTENTE</button>` : ''}
                                         `;
                                     } else {
                                         // Para el staff operativo regular (ellos mismos en su perfil) habilitar entrada y salida
@@ -3675,15 +3874,7 @@
                     </div>
                 </div>
 
-                <!-- INFORMES Y REPORTES -->
-                ${hasCfoAccess ? `
-                <div class="menu-item admin-card-bg" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b; padding: 24px; border-radius: 24px;">
-                    <i style="font-size:1.8rem">📈</i>
-                    <div class="menu-item-content">
-                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
-                    </div>
-                </div>
-                ` : ''}
+
 
                 <!-- AUDITORÍA -->
                 ${(() => {
@@ -4595,7 +4786,6 @@
 
             <div id="custodia-list-detail"></div>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
             </div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
@@ -5719,7 +5909,7 @@
     }
 
     async function sendClosingReport() {
-        if (!confirm('¿Seguro que deseas finalizar la jornada y enviar el reporte a ncarrillok@gmail.com?')) return;
+        if (!confirm('¿Seguro que deseas finalizar la jornada y enviar el reporte a eyestaff.ncarrillo@gmail.com?')) return;
         
         showLoading('Generando y enviando reporte...');
         const res = await apiFetch('/api/reports/send-summary', { method: 'POST' });
@@ -6454,7 +6644,7 @@
                 <!-- Body -->
                 <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
                     <div style="background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.2); padding:12px; border-radius:12px; font-size:0.75rem; color:#fff; line-height:1.4;">
-                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>ncarrillok@gmail.com</b>
+                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>eyestaff.ncarrillo@gmail.com</b>
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:6px;">
@@ -6765,7 +6955,7 @@
 
 
     window.solicitarPruebaReporte = async function() {
-        const type = confirm("¿Desea probar el REPORTE DE CUMPLEAÑEROS (Aceptar) o la NOTIFICACIÓN DE CONVOCATORIA (Cancelar)?\n\nAmbas pruebas se enviarán al correo corporativo: ncarrillok@gmail.com") ? 'birthday' : 'convocation';
+        const type = confirm("¿Desea probar el REPORTE DE CUMPLEAÑEROS (Aceptar) o la NOTIFICACIÓN DE CONVOCATORIA (Cancelar)?\n\nAmbas pruebas se enviarán al correo corporativo: eyestaff.ncarrillo@gmail.com") ? 'birthday' : 'convocation';
         
         showLoading('ENVIANDO PRUEBA...');
         try {
@@ -6775,7 +6965,7 @@
             });
             if (res && res.success) {
                 toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-                alert(`📧 PRUEBA ENVIADA CON ÉXITO\n\nEl correo de prueba ha sido despachado correctamente a ncarrillok@gmail.com. Por favor, revise su bandeja de entrada (y la carpeta de Spam si no lo visualiza).`);
+                alert(`📧 PRUEBA ENVIADA CON ÉXITO\n\nEl correo de prueba ha sido despachado correctamente a eyestaff.ncarrillo@gmail.com. Por favor, revise su bandeja de entrada (y la carpeta de Spam si no lo visualiza).`);
             } else {
                 throw new Error(res.error || 'Error desconocido');
             }
@@ -6800,7 +6990,7 @@
         else if (type === 'personal') title = 'MATRIZ COMPLETA DE PERSONAL';
         else if (type === 'cierre_pago') title = 'CIERRE DE CICLO DE PAGO';
         
-        if (!confirm(`¿Desea solicitar una prueba de: "${title}"?\n\nEl reporte de simulación se enviará a: ncarrillok@gmail.com`)) return;
+        if (!confirm(`¿Desea solicitar una prueba de: "${title}"?\n\nEl reporte de simulación se enviará a: eyestaff.ncarrillo@gmail.com`)) return;
         
         showLoading('ENVIANDO PRUEBA...');
         try {
@@ -6810,13 +7000,36 @@
             });
             if (res && res.success) {
                 toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-                alert(`📧 PRUEBA DESPACHADA\n\nEl reporte de prueba para "${title}" ha sido enviado con éxito a ncarrillok@gmail.com.\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
+                alert(`📧 PRUEBA DESPACHADA\n\nEl reporte de prueba para "${title}" ha sido enviado con éxito a eyestaff.ncarrillo@gmail.com.\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
             } else {
                 throw new Error((res && res.error) || 'Error de servidor (Revise el toast para más detalles)');
             }
         } catch(e) {
             toast('❌ ERROR AL ENVIAR PRUEBA', 'error');
             alert('Error al enviar la prueba: ' + e.message);
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.sendDataUpdateRequests = async function(type) {
+        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a todos los empleados suscritos en la matriz?`)) return;
+        
+        showLoading('ENVIANDO SOLICITUDES...');
+        try {
+            const res = await apiFetch('/api/admin/send-update-requests', {
+                method: 'POST',
+                body: JSON.stringify({ type })
+            });
+            if (res && res.success) {
+                toast(`✅ ${res.sent} CORREOS ENVIADOS`, 'success');
+                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.`);
+            } else {
+                throw new Error((res && res.error) || 'Error de servidor');
+            }
+        } catch(e) {
+            toast('❌ ERROR AL ENVIAR', 'error');
+            alert('Error al enviar solicitudes: ' + e.message);
         } finally {
             hideLoading();
         }
@@ -6950,7 +7163,7 @@
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
                             <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML)</b></span>
-                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
                         </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('convocation')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(245, 158, 11, 0.12); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); cursor:pointer; text-transform:uppercase;">
                             ✉️ PROBAR CONVOCATORIA
@@ -6973,7 +7186,7 @@
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
                             <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF adjunto</b></span>
-                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
                         </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('birthday')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(14, 165, 233, 0.12); color:#0ea5e9; border:1px solid rgba(14, 165, 233, 0.3); cursor:pointer; text-transform:uppercase;">
                             ✉️ PROBAR CUMPLEAÑOS
@@ -7115,7 +7328,7 @@
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
                             <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML) / Histórico</b></span>
-                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">ncarrillok@gmail.com</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
                         </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('cierre_pago')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(59, 130, 246, 0.12); color:#3b82f6; border:1px solid rgba(59, 130, 246, 0.3); cursor:pointer; text-transform:uppercase;">
                             ✉️ ENVIAR CORREO DE CIERRE
@@ -7151,18 +7364,60 @@
                     </div>
                 </div>
 
+                <!-- 11. Plantilla RRHH -->
+                <div class="card" style="border-top:4px solid #10b981; background:rgba(16, 185, 129, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span style="font-size:1.5rem;">📥</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(16, 185, 129, 0.15); color:#10b981; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Plantilla de Recursos Humanos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Base de datos completa del personal en formato Excel para importar o revisar en el sistema.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
+                        <button class="btn btn-sm" onclick="downloadRRHHTemplate()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📥 DESCARGAR PLANTILLA EXCEL
+                        </button>
+                        <div style="text-align:center; margin-top: 4px;">
+                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="color:#10b981; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+                                ✉️ Enviar por correo electrónico
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. Actualización de Datos -->
+                <div class="card" style="border-top:4px solid #f43f5e; background:rgba(244, 63, 94, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span style="font-size:1.5rem;">📝</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(244, 63, 94, 0.15); color:#f43f5e; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Solicitud de Actualización de Datos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Envía un enlace seguro y único al empleado para que actualice su información personal (foto, cuenta bancaria, teléfono, etc).
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Formulario Web</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
+                        </div>
+                        <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- MATRIZ DE SUSCRIPCIONES -->
-            <div id="report-matrix-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1); display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
-                    <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">👥 Matriz de Suscripciones a Reportes</h3>
-                </div>
-                <div style="width:100%; overflow-x:auto; scrollbar-width:thin; scrollbar-color:var(--muted) transparent;">
-                    <table id="report-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:center; min-width:600px;">
-                    </table>
-                </div>
-            </div>
+
 
             <!-- Volver footer -->
             <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
@@ -7186,50 +7441,7 @@
                 });
             }
 
-            // Render Matriz
-            const matrixContainer = document.getElementById('report-matrix-container');
-            const matrixTable = document.getElementById('report-matrix-table');
-            if (matrixContainer && matrixTable && users.length > 0) {
-                const reports = [
-                    { id: 'convocatoria', name: 'Convocatoria' },
-                    { id: 'cumpleanos', name: 'Cumpleaños' },
-                    { id: 'dossier', name: 'Dossier PDF' },
-                    { id: 'excel', name: 'BBDD Excel' },
-                    { id: 'nominas', name: 'Nóminas' },
-                    { id: 'permisos', name: 'Permisos' }
-                ];
-                
-                let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.65rem; text-transform:uppercase;"><th style="padding:10px; text-align:left; position:sticky; left:0; background:#0f111a;">EMPLEADO</th>';
-                reports.forEach(r => thead += `<th style="padding:10px;">${r.name}</th>`);
-                thead += '</tr></thead>';
 
-                let tbody = '<tbody>';
-                users.forEach(u => {
-                    tbody += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
-                    tbody += `<td style="padding:12px 10px; text-align:left; font-weight:900; color:white; font-size:0.8rem; position:sticky; left:0; background:inherit;">${u.name.toUpperCase()}<div style="font-size:0.6rem; color:var(--muted); font-weight:400; text-transform:lowercase;">${u.email}</div></td>`;
-                    reports.forEach(r => {
-                        tbody += `<td style="padding:12px 10px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:18px; height:18px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
-                    });
-                    tbody += '</tr>';
-                });
-                tbody += '</tbody>';
-                
-                matrixTable.innerHTML = thead + tbody;
-                matrixContainer.style.display = 'block';
-                
-                // Cargar suscripciones desde la API
-                const subRes = await apiFetch('/api/reports/subscriptions');
-                if (subRes && subRes.success && subRes.subscriptions) {
-                    const saved = subRes.subscriptions;
-                    document.querySelectorAll('.report-matrix-checkbox').forEach(chk => {
-                        const uid = chk.getAttribute('data-user');
-                        const rid = chk.getAttribute('data-report');
-                        if (saved[uid] && saved[uid].includes(rid)) {
-                            chk.checked = true;
-                        }
-                    });
-                }
-            }
         } catch(e) { console.error('Error cargando matriz de reportes:', e); }
     }
 
@@ -7267,6 +7479,17 @@
                             <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">RECLUTAMIENTO Y CAPACITACIÓN</span>
                         </div>
                     </div>
+
+                    <!-- INFORMES Y REPORTES -->
+                    ${hasCfoAccess ? `
+                    <div class="menu-item admin-card-bg" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b;">
+                        <i>📈</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">MAPA DE AUTOMATIZACIÓN</span>
+                        </div>
+                    </div>
+                    ` : ''}
 
 
 
@@ -7760,7 +7983,7 @@
                         <thead>
                             <tr style="background:rgba(255,255,255,0.03); color:white; font-weight:bold; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10;">
                                 <th rowspan="2" style="padding:12px; text-align:left; border-right: 1px solid var(--border); min-width:180px; background: #161b2c;">Empleado</th>
-                                <th rowspan="2" style="padding:12px; text-align:center; border-right: 1px solid var(--border); min-width:80px; background: #161b2c;">ID Eye</th>
+                                <th rowspan="2" style="padding:12px; text-align:center; border-right: 1px solid var(--border); min-width:80px; background: #161b2c;">ROL</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Valet Parking</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Control Accesos</th>
                                 <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Alquiler Equipos</th>
@@ -7774,6 +7997,7 @@
                                 <th colspan="2" style="padding:8px; background: #161b2c;">Ubicación en Vivo</th>
                             </tr>
                             <tr style="background:rgba(255,255,255,0.02); color:var(--muted); font-size:0.7rem; border-bottom: 1px solid var(--border); position: sticky; top: 38px; z-index: 10;">
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
                                 <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
@@ -7862,7 +8086,7 @@
                             ${u.name.toUpperCase()}
                         </td>
                         <td style="padding:10px 12px; text-align:center; font-weight:900; border-right:1px solid var(--border); color:${(u.eye_id || '').toUpperCase() === 'ORO' ? '#FFD700' : (u.eye_id || '').toUpperCase() === 'PLATA' ? '#E5E4E2' : (u.eye_id || '').toUpperCase() === 'BRONCE' ? '#CD7F32' : 'var(--muted)'};">
-                            ${(u.eye_id || '---').toUpperCase()}
+                            ${(u.eye_id || 'LOGÍSTICA').toUpperCase()}
                         </td>
                         <td style="padding:8px; border-right:1px dashed var(--border);">${chk('valet_ve', u.valet_ve)}</td>
                         <td style="padding:8px; border-right:1px solid var(--border);">${chk('valet_mod', u.valet_mod)}</td>
@@ -8189,6 +8413,32 @@
                 </div>
             </div>
 
+            <!-- SOLICITUDES PENDIENTES DE ACTUALIZACIÓN -->
+            <div id="pending-updates-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">📝 Solicitudes de Actualización Pendientes</h3>
+                    <button class="btn btn-secondary" onclick="loadPendingUpdates()" style="font-size:0.7rem; padding:8px 15px;">🔄 REFRESCAR</button>
+                </div>
+                <div id="pending-updates-content">
+                    <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.85rem;">Cargando solicitudes...</div>
+                </div>
+            </div>
+
+            <!-- MATRIZ DE SUSCRIPCIONES -->
+            <div id="report-matrix-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1); display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">👥 Matriz de Suscripciones a Reportes</h3>
+                    <button class="btn btn-accent" onclick="window.toggleMatrixSection()" style="font-size:0.7rem; white-space:nowrap; display:flex; align-items:center; gap:8px; padding:8px 15px;">
+                        <span id="matrix-toggle-text">MOSTRAR MATRIZ</span>
+                        <div id="matrix-toggle-arrow" style="font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
+                    </button>
+                </div>
+                <div id="matrix-content-wrapper" style="width:100%; overflow-x:auto; overflow-y:auto; max-height:280px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent; display:none;">
+                    <table id="report-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:center; min-width:600px;">
+                    </table>
+                </div>
+            </div>
+
             <!-- 3. IMPORTACIÓN (AL FINAL) -->
             <div class="card" style="margin-bottom:30px; opacity:0.9; background:rgba(255,255,255,0.02);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -8206,6 +8456,7 @@
 
         `;
         loadStaffList();
+        loadPendingUpdates();
     }
 
     let fullStaffData = [];
@@ -8292,6 +8543,82 @@
             availableSessions = res.sessions || [];
             updateStaffStats();
             renderFilteredStaff();
+            renderSubscriptionMatrix(fullStaffData.filter(u => u.is_active !== 0));
+        }
+    }
+
+    function renderSubscriptionMatrix(users) {
+        const matrixContainer = document.getElementById('report-matrix-container');
+        const matrixTable = document.getElementById('report-matrix-table');
+        if (matrixContainer && matrixTable && users.length > 0) {
+            const reports = [
+                { id: 'convocatoria', name: 'Convocatoria' },
+                { id: 'cumpleanos', name: 'Cumpleaños' },
+                { id: 'dossier', name: 'Dossier PDF' },
+                { id: 'excel', name: 'BBDD Excel' },
+                { id: 'nominas', name: 'Nóminas' },
+                { id: 'permisos', name: 'Permisos' },
+                { id: 'plantilla', name: 'Plantilla RRHH' },
+                { id: 'actualizacion_datos', name: 'Actualización Datos' }
+            ];
+            
+            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.65rem; text-transform:uppercase;"><th style="padding:15px 10px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; box-shadow:0 1px 0 rgba(255,255,255,0.1);">EMPLEADO</th>';
+            reports.forEach(r => thead += `<th style="padding:15px 10px; position:sticky; top:0; background:#0f111a; z-index:9; box-shadow:0 1px 0 rgba(255,255,255,0.1);">${r.name}</th>`);
+            thead += '</tr></thead>';
+
+            let tbody = '<tbody>';
+            users.forEach(u => {
+                tbody += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
+                tbody += `<td style="padding:12px 10px; text-align:left; font-weight:900; color:white; font-size:0.85rem; position:sticky; left:0; background:inherit;">${u.name.toUpperCase()}<div style="font-size:0.75rem; color:#a1a1aa; font-weight:600; text-transform:lowercase; margin-top:4px;">${u.email}</div></td>`;
+                reports.forEach(r => {
+                    tbody += `<td style="padding:12px 10px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:18px; height:18px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
+                });
+                tbody += '</tr>';
+            });
+            tbody += '</tbody>';
+            
+            matrixTable.innerHTML = thead + tbody;
+            matrixContainer.style.display = 'block';
+            
+            // Fetch and check subscriptions
+            apiFetch('/api/admin/report-subscriptions').then(res => {
+                if (res && res.success && res.subscriptions) {
+                    res.subscriptions.forEach(sub => {
+                        let fieldMap = {
+                            'convocatoria': 'convocatoria',
+                            'cumpleanos': 'cumpleanos',
+                            'dossier_pdf': 'dossier',
+                            'bbdd_excel': 'excel',
+                            'nominas': 'nominas',
+                            'permisos': 'permisos',
+                            'plantilla_rrhh': 'plantilla',
+                            'actualizacion_datos': 'actualizacion_datos'
+                        };
+                        for (const [dbField, uiField] of Object.entries(fieldMap)) {
+                            const checkbox = document.querySelector(`.report-matrix-checkbox[data-user="${sub.user_id}"][data-report="${uiField}"]`);
+                            if (checkbox) {
+                                checkbox.checked = sub[dbField] === 1;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    window.toggleMatrixSection = function() {
+        const content = document.getElementById('matrix-content-wrapper');
+        const arrow = document.getElementById('matrix-toggle-arrow');
+        const text = document.getElementById('matrix-toggle-text');
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+            text.textContent = 'OCULTAR MATRIZ';
+        } else {
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            text.textContent = 'MOSTRAR MATRIZ';
         }
     }
 
@@ -8779,6 +9106,89 @@
             loadStaffList();
         }
     }
+
+    window.loadPendingUpdates = async function() {
+        const container = document.getElementById('pending-updates-content');
+        if (!container) return;
+        try {
+            const res = await apiFetch('/api/admin/pending-updates');
+            if (!res || res.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted); font-size:0.85rem;">No hay solicitudes pendientes.</div>';
+                return;
+            }
+            let html = '';
+            res.forEach(update => {
+                const d = JSON.parse(update.proposed_data || '{}');
+                html += `
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px; margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <h4 style="margin:0; color:white; font-size:1rem;">${update.user_name} (PIN: ${update.user_pin})</h4>
+                                <div style="font-size:0.75rem; color:var(--muted); margin-top:5px; line-height:1.4;">
+                                    <b style="color:#fff;">Teléfono:</b> ${d.phone || 'N/A'}<br>
+                                    <b style="color:#fff;">Banco:</b> ${d.bank_name || 'N/A'} - ${d.bank_account || 'N/A'}<br>
+                                    <b style="color:#fff;">Dirección:</b> ${d.address || 'N/A'}<br>
+                                    <b style="color:#fff;">Emergencia:</b> ${d.emergency_contact || 'N/A'} (${d.emergency_phone || 'N/A'})<br>
+                                    <b style="color:#fff;">Alergias:</b> ${d.is_allergic || 'N/A'}
+                                </div>
+                            </div>
+                            ${update.photo_base64 ? `<img src="${update.photo_base64}" style="width:60px; height:60px; object-fit:cover; border-radius:8px; border:2px solid var(--brand-blue);">` : ''}
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button class="btn btn-sm" onclick="approveUpdate(${update.id})" style="flex:1; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">APROBAR</button>
+                            <button class="btn btn-sm" onclick="rejectUpdate(${update.id})" style="flex:1; background:#ef4444; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">RECHAZAR</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch(e) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; font-size:0.85rem;">Error al cargar solicitudes.</div>';
+        }
+    };
+
+    window.approveUpdate = async function(id) {
+        const pin = prompt('Ingrese su CLAVE DE APROBACIÓN (RRHH) para autorizar este cambio:');
+        if (!pin) return;
+        showLoading('APROBANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/approve-data-update/${id}`, {
+                method: 'POST',
+                body: JSON.stringify({ pin })
+            });
+            if (res && res.success) {
+                toast('Cambios aprobados correctamente', 'success');
+                loadPendingUpdates();
+                loadStaffList();
+            } else {
+                toast(res.error || 'Error al aprobar', 'error');
+            }
+        } catch(e) {
+            toast('Error de conexión', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.rejectUpdate = async function(id) {
+        if (!confirm('¿Está seguro de rechazar esta solicitud de actualización?')) return;
+        showLoading('RECHAZANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/reject-data-update/${id}`, {
+                method: 'POST'
+            });
+            if (res && res.success) {
+                toast('Solicitud rechazada', 'success');
+                loadPendingUpdates();
+            } else {
+                toast(res.error || 'Error al rechazar', 'error');
+            }
+        } catch(e) {
+            toast('Error de conexión', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
 
     async function importStaffCSV() {
         const fileInput = document.getElementById('staff-csv-file');
@@ -9630,7 +10040,7 @@
                                     const hasExited = exit !== undefined; // Ya marcó salida definitiva
 
                                     // NO puede marcar Entrada si ya salió o si el evento no está activo
-                                    const canEntry = !hasExited && (!lastAction || lastAction === 'exit' || lastAction === 'break_start') && isEventActive;
+                                    const canEntry = !hasExited && lastAction !== 'absent' && (!lastAction || lastAction === 'exit' || lastAction === 'break_start') && isEventActive;
                                     
                                     const activeStaff = (window.activeSession.assigned_staff_list || []).filter(usr => {
                                         const uAtt = usr.attendance || [];
@@ -9640,11 +10050,13 @@
                                     const canBreak = !hasExited && lastAction === 'entry' && !isLastActive;
 
                                     const canExit = !hasExited && (lastAction === 'entry' || lastAction === 'break_start');
+                                    const canAbsent = lastAction !== 'absent' && !hasExited && lastAction !== 'break_start';
 
                                     let statusText = 'INACTIVO';
                                     let statusColor = 'var(--muted)';
                                     if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
                                     else if (lastAction === 'break_start') { statusText = 'EN DESCANSO'; statusColor = 'var(--warning)'; }
+                                    else if (lastAction === 'absent') { statusText = 'INASISTENTE'; statusColor = 'var(--danger)'; }
                                     else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
 
                                     let buttonsHtml = '';
@@ -9653,6 +10065,7 @@
                                             <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
                                             <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} title="${isLastActive ? 'No se puede iniciar el descanso: debe haber al menos un empleado activo en el evento' : ''}" style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
                                             <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                            ${canAbsent ? `<button onclick="logStaffAttendance(${u.id}, 'absent')" style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:pointer;" title="Marcar inasistencia (bloquea la entrada)">INASISTENTE</button>` : ''}
                                         `;
                                     } else {
                                         // Para el staff operativo regular (ellos mismos en su perfil) habilitar entrada y salida
@@ -10984,6 +11397,15 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             const emp = staff.find(u => u.id === userId);
             const nombre = emp ? emp.name.toUpperCase() : 'ESTE EMPLEADO';
             if (!confirm(`⚠️ ¿REALMENTE DESEA REGISTRAR LA SALIDA DE:\n\n👉 ${nombre}?\n\nEsta acción finalizará su jornada y registrará su hora de salida.`)) {
+                return;
+            }
+        }
+
+        if (type === 'absent') {
+            const staff = window.activeSession.assigned_staff_list || [];
+            const emp = staff.find(u => u.id === userId);
+            const nombre = emp ? emp.name.toUpperCase() : 'ESTE EMPLEADO';
+            if (!confirm(`⚠️ ¿REALMENTE DESEA MARCAR COMO INASISTENTE A:\n\n👉 ${nombre}?\n\nEsta acción bloqueará su acceso a este evento y quedará registrado en el reporte de cierre.`)) {
                 return;
             }
         }
@@ -12578,12 +13000,22 @@ window.toggleReportSubscription = async function(checkboxElement, userId, report
     const originalState = checkboxElement.checked;
     
     try {
-        const res = await apiFetch('/api/reports/subscriptions', {
+        let fieldMap = {
+            'convocatoria': 'convocatoria',
+            'cumpleanos': 'cumpleanos',
+            'dossier': 'dossier_pdf',
+            'excel': 'bbdd_excel',
+            'nominas': 'nominas',
+            'permisos': 'permisos',
+            'plantilla': 'plantilla_rrhh',
+            'actualizacion_datos': 'actualizacion_datos'
+        };
+        const res = await apiFetch('/api/admin/report-subscriptions', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: userId,
-                report_id: reportId,
-                active: originalState
+                field: fieldMap[reportId] || reportId,
+                value: originalState
             })
         });
         
@@ -13626,5 +14058,181 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
             btn.innerText = 'Enviar Reportes';
         }
     });
+
+    // ==========================================
+    // FORMULARIO PÚBLICO: ACTUALIZACIÓN DE DATOS
+    // ==========================================
+    window.renderDataUpdateForm = async function(token) {
+        document.body.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19;"><h2>Cargando...</h2></div>';
+        try {
+            const res = await fetch('/api/public/update-data/' + token);
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                document.body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19; font-family:'Outfit', sans-serif;">
+                        <h1 style="font-size:3rem;">❌</h1>
+                        <h2 style="margin-top:10px;">${data.error || 'Error al cargar'}</h2>
+                        <p style="color:var(--muted); margin-top:10px;">Este enlace puede ser inválido o ya fue utilizado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const user = data.user;
+            const formatDate = (d) => d ? d.split('T')[0] : '';
+
+            document.body.innerHTML = `
+                <div style="background:#0b0f19; min-height:100vh; font-family:'Outfit', sans-serif; color:white; padding:20px;">
+                    <div style="max-width:600px; margin:0 auto; background:var(--surface); border-radius:20px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="text-align:center; margin-bottom:30px;">
+                            <img src="/logo.png" style="height:50px; margin-bottom:15px;">
+                            <h2>Actualización de Datos</h2>
+                            <p style="color:var(--muted); font-size:0.9rem;">Por favor revisa y actualiza tu información personal.</p>
+                        </div>
+                        
+                        <form id="update-data-form" style="display:flex; flex-direction:column; gap:15px;">
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FOTO DE PERFIL (Opcional)</label>
+                                <input type="file" id="upd-photo" accept="image/*" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                ${user.photo_url ? `<div style="margin-top:10px;"><img src="${user.photo_url}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>` : ''}
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FECHA DE NACIMIENTO</label>
+                                <input type="date" id="upd-birth" value="${formatDate(user.birth_date)}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO</label>
+                                <input type="text" id="upd-phone" value="${user.phone || ''}" placeholder="+346..." style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">DIRECCIÓN (Código Postal, Calle, Ciudad)</label>
+                                <textarea id="upd-address" rows="2" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">${user.address || ''}</textarea>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">SECTOR (Opcional)</label>
+                                <input type="text" id="upd-sector" value="${user.sector || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ENTIDAD BANCARIA</label>
+                                <select id="upd-bank" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f111a; color:white;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Caixabank" ${user.bank_name === 'Caixabank' ? 'selected' : ''}>Caixabank</option>
+                                    <option value="Santander" ${user.bank_name === 'Santander' ? 'selected' : ''}>Santander</option>
+                                    <option value="BBVA" ${user.bank_name === 'BBVA' ? 'selected' : ''}>BBVA</option>
+                                    <option value="Sabadell" ${user.bank_name === 'Sabadell' ? 'selected' : ''}>Sabadell</option>
+                                    <option value="Bankinter" ${user.bank_name === 'Bankinter' ? 'selected' : ''}>Bankinter</option>
+                                    <option value="Unicaja" ${user.bank_name === 'Unicaja' ? 'selected' : ''}>Unicaja</option>
+                                    <option value="Kutxabank" ${user.bank_name === 'Kutxabank' ? 'selected' : ''}>Kutxabank</option>
+                                    <option value="Ibercaja" ${user.bank_name === 'Ibercaja' ? 'selected' : ''}>Ibercaja</option>
+                                    <option value="ING" ${user.bank_name === 'ING' ? 'selected' : ''}>ING Bank</option>
+                                    <option value="Abanca" ${user.bank_name === 'Abanca' ? 'selected' : ''}>Abanca</option>
+                                    <option value="Openbank" ${user.bank_name === 'Openbank' ? 'selected' : ''}>Openbank</option>
+                                    <option value="N26" ${user.bank_name === 'N26' ? 'selected' : ''}>N26</option>
+                                    <option value="Revolut" ${user.bank_name === 'Revolut' ? 'selected' : ''}>Revolut</option>
+                                    <option value="Laboral Kutxa" ${user.bank_name === 'Laboral Kutxa' ? 'selected' : ''}>Laboral Kutxa</option>
+                                    <option value="Caja Rural" ${user.bank_name === 'Caja Rural' ? 'selected' : ''}>Grupo Caja Rural</option>
+                                    <option value="Otro" ${user.bank_name === 'Otro' ? 'selected' : ''}>Otro</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">NÚMERO DE CUENTA (IBAN)</label>
+                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="ES00 0000 0000 0000 0000" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">CONTACTO DE EMERGENCIA (Nombre y Parentesco)</label>
+                                <input type="text" id="upd-emer-name" value="${user.emergency_contact || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO DE EMERGENCIA</label>
+                                <input type="text" id="upd-emer-phone" value="${user.emergency_phone || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ALERGIAS O CONDICIONES MÉDICAS (Dejar en blanco si ninguna)</label>
+                                <input type="text" id="upd-allergies" value="${user.is_allergic || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
+
+                            <button type="submit" id="upd-submit" style="margin-top:20px; width:100%; padding:15px; border-radius:10px; background:#3b82f6; color:white; font-size:1rem; font-weight:bold; border:none; cursor:pointer;">ENVIAR ACTUALIZACIÓN</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('update-data-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('upd-submit');
+                btn.disabled = true;
+                btn.innerText = 'PROCESANDO...';
+
+                const payload = {
+                    birth_date: document.getElementById('upd-birth').value,
+                    phone: document.getElementById('upd-phone').value,
+                    address: document.getElementById('upd-address').value,
+                    sector: document.getElementById('upd-sector').value,
+                    bank_name: document.getElementById('upd-bank').value,
+                    bank_account: document.getElementById('upd-account').value,
+                    emergency_contact: document.getElementById('upd-emer-name').value,
+                    emergency_phone: document.getElementById('upd-emer-phone').value,
+                    is_allergic: document.getElementById('upd-allergies').value
+                };
+
+                const photoInput = document.getElementById('upd-photo');
+                if (photoInput.files && photoInput.files[0]) {
+                    const file = photoInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = async function(ev) {
+                        payload.photo_base64 = ev.target.result;
+                        await submitUpdateForm(token, payload);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    await submitUpdateForm(token, payload);
+                }
+            });
+
+        } catch(e) {
+            document.body.innerHTML = `<div style="color:white; text-align:center; margin-top:50px;">Error de conexión</div>`;
+        }
+    };
+
+    async function submitUpdateForm(token, payload) {
+        try {
+            const res = await fetch('/api/public/update-data/' + token, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                document.body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19; font-family:'Outfit', sans-serif;">
+                        <h1 style="font-size:4rem; margin:0; color:#10b981;">✅</h1>
+                        <h2 style="margin-top:20px;">¡Datos Enviados!</h2>
+                        <p style="color:var(--muted); margin-top:10px; max-width:400px; text-align:center;">
+                            Tus datos han sido enviados exitosamente a Recursos Humanos para su verificación.
+                            Puedes cerrar esta ventana.
+                        </p>
+                    </div>
+                `;
+            } else {
+                alert('Error al enviar: ' + (data.error || 'Error desconocido'));
+                document.getElementById('upd-submit').disabled = false;
+                document.getElementById('upd-submit').innerText = 'ENVIAR ACTUALIZACIÓN';
+            }
+        } catch(e) {
+            alert('Error de conexión');
+            document.getElementById('upd-submit').disabled = false;
+            document.getElementById('upd-submit').innerText = 'ENVIAR ACTUALIZACIÓN';
+        }
+    }
+
 </script>
 <!-- FIN PANEL ENVÍOS MASIVOS -->

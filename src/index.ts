@@ -34,11 +34,25 @@ async function logEvent(env: any, vehicleId: number, userId: number | null, even
 
 async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]> {
   try {
+    let fieldMap: any = {
+        'convocatoria': 'convocatoria',
+        'cumpleanos': 'cumpleanos',
+        'dossier': 'dossier_pdf',
+        'excel': 'bbdd_excel',
+        'nominas': 'nominas',
+        'permisos': 'permisos',
+        'plantilla_rrhh': 'plantilla_rrhh',
+        'actualizacion_datos': 'actualizacion_datos'
+    };
+    let field = fieldMap[reportId] || reportId;
+    const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos'];
+    if (!validFields.includes(field)) return [];
+
     const subs = await env.DB.prepare(`
-      SELECT u.email FROM report_subscriptions rs
+      SELECT u.email FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.report_id = ? AND u.email IS NOT NULL AND u.email != ''
-    `).bind(reportId).all();
+      WHERE rs.${field} = 1 AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
+    `).all();
     if (subs && subs.results) {
       return subs.results.map((r: any) => r.email);
     }
@@ -123,6 +137,19 @@ async function initDatabase(db: D1Database) {
       vip_mod INTEGER DEFAULT 0,
       seg_ve INTEGER DEFAULT 0,
       seg_mod INTEGER DEFAULT 0,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS user_report_subscriptions (
+      user_id INTEGER PRIMARY KEY,
+      convocatoria INTEGER DEFAULT 0,
+      cumpleanos INTEGER DEFAULT 0,
+      dossier_pdf INTEGER DEFAULT 0,
+      bbdd_excel INTEGER DEFAULT 0,
+      nominas INTEGER DEFAULT 0,
+      permisos INTEGER DEFAULT 0,
       FOREIGN KEY(user_id) REFERENCES users(id)
     )
   `).run();
@@ -642,7 +669,7 @@ app.put('/api/presupuestos/:id', async (c) => {
       if (c.env.RESEND_API_KEY) {
         const mailPayload = {
           from: 'EYE STAFF <onboarding@resend.dev>',
-          to: ['ncarrillok@gmail.com'],
+          to: ['eyestaff.ncarrillo@gmail.com'],
           subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
           html: `
                     <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
@@ -756,7 +783,7 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
 
     const mailPayload = {
       from: 'EYE STAFF <onboarding@resend.dev>',
-      to: ['ncarrillok@gmail.com'],
+      to: ['eyestaff.ncarrillo@gmail.com'],
       subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
       html: htmlBody
     };
@@ -1543,11 +1570,79 @@ app.post('/api/reports/test-request', async (c) => {
   try {
     const { type } = await c.req.json();
     const env = c.env;
-    const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+    const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
 
     if (type === 'birthday') {
       await sendMonthlyBirthdayReport(env, true);
-      return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado a ${adminEmail}` });
+      return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado masivamente` });
+
+    } else if (type === 'plantilla_rrhh') {
+      const res = await env.DB.prepare('SELECT * FROM users').all();
+      const list = (res.results || []) as any[];
+      const eyePriority: Record<string, number> = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
+      list.sort((a, b) => {
+        const prioA = eyePriority[(a.eye_id || '').toUpperCase()] || 99;
+        const prioB = eyePriority[(b.eye_id || '').toUpperCase()] || 99;
+        if (prioA !== prioB) return prioA - prioB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+
+      const excelData = [
+          ['Item', 'Status', 'Nombre', 'Cedula', 'Email', 'Perfil Admin', 'Perfil Opera', 'EYE ID', 'Telefono', 'Direccion', 'Sector', 'Entidad Bancaria', 'Numero de Cuenta', 'Familiar', 'TelFamiliar', 'Alergias', 'Edad'],
+          ...list.map((u, i) => {
+              let age = '';
+              if (u.birth_date) {
+                  const birth = new Date(u.birth_date);
+                  if (!isNaN(birth.getTime())) {
+                      const today = new Date();
+                      age = (today.getFullYear() - birth.getFullYear()).toString();
+                      const m = today.getMonth() - birth.getMonth();
+                      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                          age = (parseInt(age) - 1).toString();
+                      }
+                  }
+              }
+              return [
+                  i + 1, 
+                  u.is_active === 0 ? 'INACTIVO' : 'ACTIVO', 
+                  u.name || '', 
+                  u.cedula || '', 
+                  u.email || '',
+                  u.profile_admin || '',
+                  u.profile_opera || '', 
+                  u.eye_id || '',
+                  u.phone || '', 
+                  u.address || '', 
+                  u.sector || '', 
+                  u.bank_entity || '', 
+                  u.bank_account || '', 
+                  u.emergency_contact_name || '', 
+                  u.emergency_contact_phone || '', 
+                  u.allergies || '',
+                  age
+              ];
+          })
+      ];
+
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const colWidths = excelData[0].map((_, i) => ({ wch: i === 2 || i === 4 ? 30 : 15 }));
+      ws['!cols'] = colWidths;
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Plantilla RRHH");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+
+      const htmlBody = `
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #0f172a;">Plantilla de Recursos Humanos — EYE STAFF</h2>
+        <p style="color: #334155;">Hola,</p>
+        <p style="color: #334155;">Se adjunta la plantilla completa de recursos humanos con la base de datos de todo el personal en formato Excel (.xlsx).</p>
+        <p style="color: #334155; font-size: 0.8rem; margin-top: 20px;">Atentamente,<br>Sistema Automatizado EYE STAFF</p>
+      </div>`;
+
+      await sendEmail(env, adminEmail, `EYE STAFF: Plantilla de Recursos Humanos`, htmlBody, [{ filename: 'Plantilla_RRHH.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }], [], 'plantilla_rrhh');
+
+      return c.json({ success: true, message: `Plantilla RRHH enviada a ${adminEmail}` });
 
     } else if (type === 'permissions-matrix') {
       const allUsers = await env.DB.prepare("SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC").all();
@@ -1881,7 +1976,7 @@ app.post('/api/reports/send-credentials', async (c) => {
   </div>
 </body>
 </html>`;
-    await sendEmail(c.env, 'ncarrillok@gmail.com', `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
+    await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
     return c.json({ success: true });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
@@ -2295,7 +2390,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     const summary = report.summary_json ? JSON.parse(report.summary_json) : {};
     const html = buildClosingEmailHtml(session, vehicles, staffWithAttendance, summary);
 
-    const primaryEmail = 'ncarrillok@gmail.com';
+    const primaryEmail = 'eyestaff.ncarrillo@gmail.com';
 
     // Agregar CCs
     const ccEmailsSet = new Set<string>();
@@ -2369,6 +2464,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     ).bind(member.id, sessionId).all<any>();
     const att = attRes.results || [];
 
+    const isAbsent = att.some((a: any) => a.type === 'absent');
     const entry = att.find((a: any) => a.type === 'entry');
     const exit = att.find((a: any) => a.type === 'exit');
     const breaks = att.filter((a: any) => a.type === 'break_start' || a.type === 'break_end');
@@ -2396,8 +2492,8 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
     staffWithAttendance.push({
       ...member,
-      entry_time: entry ? fmtTime(new Date(entry.timestamp)) : '—',
-      exit_time: exit ? fmtTime(new Date(exit.timestamp)) : '—',
+      entry_time: isAbsent ? 'INASISTENTE' : (entry ? fmtTime(new Date(entry.timestamp)) : '—'),
+      exit_time: isAbsent ? 'INASISTENTE' : (exit ? fmtTime(new Date(exit.timestamp)) : '—'),
       break_mins: breakMins,
       total_mins: totalMins,
       vehicles_attended: vehiclesAttended,
@@ -2658,13 +2754,11 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     { filename: `Reporte_${safeName}.xlsx`, content: xlsxBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
     { filename: `Reporte_${safeName}.pdf`, content: pdfBase64, content_type: 'application/pdf' },
   ];
-  const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
 
-  // DESACTIVADO POR LÍMITE DE RESEND
-  // const dossierSubs = await getSubscribedEmails(env, 'dossier');
-  // const excelSubs = await getSubscribedEmails(env, 'excel');
-  // const ccList = [...new Set([...dossierSubs, ...excelSubs])];
-  const ccList: string[] = [];
+  const dossierSubs = await getSubscribedEmails(env, 'dossier');
+  const excelSubs = await getSubscribedEmails(env, 'excel');
+  const ccList = [...new Set([...dossierSubs, ...excelSubs])];
 
   await sendEmail(env, adminEmail, `EYE STAFF: Reporte Final — ${session.name}`, html, attachments, ccList);
 
@@ -2744,50 +2838,108 @@ async function sendEventActivationEmail(env: Env, sessionId: number) {
     </div>
   `;
 
-  const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
   await sendEmail(env, adminEmail, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
 }
 
 
 
 // Ayudante para correos
+function wrapInCorporateTemplate(content: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin:0; padding:0; background-color:#f8fafc; font-family:'Inter', Arial, sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; padding:40px 20px;">
+        <tr>
+          <td align="center">
+            <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.05); max-width:600px; margin:0 auto;">
+              <tr>
+                <td align="center" style="background-color:#0f172a; padding:30px 20px; border-bottom:3px solid #6366f1;">
+                  <img src="https://eyestaff.app/logo.png" alt="EYE STAFF" style="height:50px; display:block; margin-bottom:10px;" onerror="this.src='https://valet.eye-staff.app/logo.png';" />
+                  <h2 style="color:#ffffff; margin:0; font-size:20px; font-weight:800; letter-spacing:1px;">SISTEMA AUTOMATIZADO</h2>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:40px 30px; color:#334155; line-height:1.6;">
+                  ${content}
+                </td>
+              </tr>
+              <tr>
+                <td style="background-color:#f1f5f9; padding:20px; text-align:center; border-top:1px solid #e2e8f0;">
+                  <p style="margin:0; color:#64748b; font-size:12px;">
+                    Este es un mensaje generado automáticamente por la plataforma EYE STAFF.<br>
+                    Por favor no respondas directamente a este correo.
+                  </p>
+                  <p style="margin:10px 0 0 0; color:#94a3b8; font-size:11px;">
+                    © ${new Date().getFullYear()} EYE STAFF. Todos los derechos reservados.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
 async function sendEmail(env: Env, to: string | string[], subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string) {
-  if (!env.RESEND_API_KEY) return;
+  if (!env.BREVO_API_KEY) {
+      console.log('BREVO_API_KEY no configurado.');
+      return;
+  }
   try {
     let toArray = Array.isArray(to) ? to : [to];
     let ccArray = cc || [];
 
     if (reportId) {
-      // DESACTIVADO POR LÍMITE DE RESEND: Todo va solo al admin
-      // const subs = await getSubscribedEmails(env, reportId);
-      // ccArray = [...new Set([...ccArray, ...subs])];
+      const subs = await getSubscribedEmails(env, reportId);
+      ccArray = [...new Set([...ccArray, ...subs])].filter(e => e !== '');
     }
 
+    // Brevo format
     const payload: any = {
-      from: 'EYE STAFF <onboarding@resend.dev>',
-      to: toArray,
+      sender: { name: 'EYE STAFF', email: 'no-reply@eye-staff.app' },
+      to: toArray.map(e => ({ email: e.trim() })),
       subject,
-      html
+      htmlContent: wrapInCorporateTemplate(html)
     };
+    
     if (ccArray && ccArray.length > 0) {
-      payload.cc = ccArray.map((email: string) => email.trim()).filter(Boolean);
+      payload.cc = ccArray.map((email: string) => ({ email: email.trim() }));
     }
+    
     if (attachments && attachments.length > 0) {
-      payload.attachments = attachments;
+      payload.attachment = attachments.map((att: any) => ({
+        content: att.content,
+        name: att.filename || att.name
+      }));
     }
+    
     if (env.IS_STAGING === "true") {
       payload.subject = `[🔴 DESARROLLO] ${payload.subject}`;
-      payload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + payload.html;
+      payload.htmlContent = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + payload.htmlContent;
     }
-    const res = await fetch('https://api.resend.com/emails', {
+    
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      headers: {
+        'accept': 'application/json',
+        'api-key': env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
     if (!res.ok) {
       const errText = await res.text();
-      console.error('Email API Error details:', errText);
-      throw new Error(`Email API Error: ${res.status} - ${errText}`);
+      console.error('Brevo API Error details:', errText);
+      throw new Error(`Brevo API Error: ${res.status} - ${errText}`);
     }
   } catch (e: any) {
     console.error('Email Error:', e);
@@ -2848,7 +3000,7 @@ async function checkScheduledNotifications(env: Env) {
       }
     }
 
-    const email = 'ncarrillok@gmail.com';
+    const email = 'eyestaff.ncarrillo@gmail.com';
     const subject = `🔔 CONVOCATORIA: ${session.name}`;
     const html = `
       <div style="font-family: 'Outfit', sans-serif; background: #0b0f19; color: white; padding: 30px; border-radius: 20px; border: 1px solid #1e253c; max-width: 600px; margin: 0 auto;">
@@ -3169,7 +3321,7 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   const pdfBytes = await generateBirthdayPDF(birthdayGuys, nextMonthName);
   const pdfBase64 = uint8ArrayToBase64(pdfBytes);
 
-  const recipient = 'ncarrillok@gmail.com';
+  const recipient = 'eyestaff.ncarrillo@gmail.com';
 
   let listHtml = '';
   for (const guy of birthdayGuys) {
@@ -3322,7 +3474,7 @@ async function sendDeliveryConfirmationEmail(env: Env, vehicle: any) {
     </div>
   `;
 
-  const adminCopy = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const adminCopy = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
 
   // Enviar al cliente si tiene email
   if (vehicle.owner_email) {
@@ -3359,6 +3511,46 @@ function uint8ArrayToBase64(uint8Array: Uint8Array): string {
     binary += String.fromCharCode(uint8Array[i]);
   }
   return btoa(binary);
+}
+
+async function sendBrevoEmail(env: any, toEmails: string[], subject: string, htmlContent: string, attachment?: { content: string, name: string }) {
+  if (!env.BREVO_API_KEY) {
+    console.log('BREVO_API_KEY not set. Cannot send email to:', toEmails);
+    return false;
+  }
+
+  const to = toEmails.map(email => ({ email }));
+
+  const body: any = {
+    sender: { name: 'EYE STAFF', email: 'no-reply@eye-staff.app' },
+    to: to,
+    subject: subject,
+    htmlContent: htmlContent
+  };
+
+  if (attachment) {
+    body.attachment = [
+      { content: attachment.content, name: attachment.name }
+    ];
+  }
+
+  try {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    console.log('Brevo response:', data);
+    return res.ok;
+  } catch (error) {
+    console.error('Brevo error:', error);
+    return false;
+  }
 }
 
 async function generateTicketPDF(data: any) {
@@ -3475,7 +3667,7 @@ app.post('/api/email/start', async (c) => {
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
-  const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
 
   // Reutilizamos la misma estructura visual profesional
   const html = `
@@ -3768,7 +3960,7 @@ app.post('/api/public/confirm-conformity/:code', async (c) => {
 app.post('/api/public/test-birthday-report', async (c) => {
   try {
     await sendMonthlyBirthdayReport(c.env, true);
-    return c.json({ success: true, message: 'Reporte de cumpleaños enviado a ncarrillok@gmail.com' });
+    return c.json({ success: true, message: 'Reporte de cumpleaños enviado a eyestaff.ncarrillo@gmail.com' });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
   }
@@ -4285,7 +4477,7 @@ app.post('/api/admin/send-staff-list', async (c) => {
     </div>
   `;
 
-  const adminEmail = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const adminEmail = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
   await sendEmail(c.env, adminEmail, 'EYE STAFF — Listado Completo de Accesos y Pines', html);
 
   return c.json({ success: true, message: `Correo enviado con éxito a ${adminEmail}` });
@@ -4836,7 +5028,9 @@ app.get('/api/admin/user-permissions', async (c) => {
         vip_ve: permRow.vip_ve,
         vip_mod: permRow.vip_mod,
         seg_ve: permRow.seg_ve,
-        seg_mod: permRow.seg_mod
+        seg_mod: permRow.seg_mod,
+        loc_ve: permRow.loc_ve,
+        loc_mod: permRow.loc_mod
       };
     } else {
       const isSuperadmin = u.role === 'director';
@@ -4865,7 +5059,9 @@ app.get('/api/admin/user-permissions', async (c) => {
         vip_ve: isVIP ? 1 : 0,
         vip_mod: isVIP ? 1 : 0,
         seg_ve: isSuperadmin ? 1 : 0,
-        seg_mod: isSuperadmin ? 1 : 0
+        seg_mod: isSuperadmin ? 1 : 0,
+        loc_ve: 1,
+        loc_mod: (isSuperadmin || isSupervisor) ? 1 : 0
       };
     }
   });
@@ -4927,6 +5123,239 @@ app.post('/api/admin/user-permissions', async (c) => {
   await c.env.DB.prepare(`UPDATE user_permissions_matrix SET ${field} = ? WHERE user_id = ?`)
     .bind(intVal, user_id)
     .run();
+
+  return c.json({ success: true });
+});
+
+// ===============================
+// REPORT SUBSCRIPTIONS
+// ===============================
+app.get('/api/admin/report-subscriptions', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const staffRes = await c.env.DB.prepare('SELECT id, name, role, eye_id, email FROM users WHERE is_active = 1 ORDER BY name ASC').all();
+  const staff = staffRes.results || [];
+
+  const subRowsRes = await c.env.DB.prepare('SELECT * FROM user_report_subscriptions').all();
+  const subRows = subRowsRes.results || [];
+  const subMap = new Map(subRows.map((r: any) => [r.user_id, r]));
+
+  const subscriptions = staff.map((u: any) => {
+    const subRow = subMap.get(u.id);
+    if (subRow) {
+      return {
+        user_id: u.id,
+        name: u.name,
+        email: u.email,
+        convocatoria: subRow.convocatoria,
+        cumpleanos: subRow.cumpleanos,
+        dossier_pdf: subRow.dossier_pdf,
+        bbdd_excel: subRow.bbdd_excel,
+        nominas: subRow.nominas,
+        permisos: subRow.permisos
+      };
+    } else {
+      return {
+        user_id: u.id,
+        name: u.name,
+        email: u.email,
+        convocatoria: 0,
+        cumpleanos: 0,
+        dossier_pdf: 0,
+        bbdd_excel: 0,
+        nominas: 0,
+        permisos: 0
+      };
+    }
+  });
+
+  return c.json({ success: true, subscriptions });
+});
+
+app.post('/api/admin/report-subscriptions', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const { user_id, field, value } = await c.req.json();
+  if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
+
+  const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos'];
+  if (!validFields.includes(field)) {
+    return c.json({ error: 'Campo inválido' }, 400);
+  }
+
+  const targetUser = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(user_id).first<any>();
+  if (!targetUser) return c.json({ error: 'Usuario no encontrado' }, 404);
+
+  await c.env.DB.prepare(`
+    INSERT OR IGNORE INTO user_report_subscriptions 
+    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos) 
+    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0)
+  `).bind(user_id).run();
+
+  const intVal = value ? 1 : 0;
+  await c.env.DB.prepare(`UPDATE user_report_subscriptions SET ${field} = ? WHERE user_id = ?`)
+    .bind(intVal, user_id)
+    .run();
+
+  return c.json({ success: true });
+});
+
+app.post('/api/admin/send-update-requests', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const { type, userIds } = await c.req.json();
+  let targetEmails: {id: number, email: string, name: string}[] = [];
+
+  if (type === 'matrix') {
+    const subs = await c.env.DB.prepare(`
+      SELECT u.id, u.email, u.name FROM user_report_subscriptions rs
+      JOIN users u ON rs.user_id = u.id
+      WHERE rs.actualizacion_datos = 1 AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
+    `).all();
+    targetEmails = subs.results as any;
+  } else if (userIds && Array.isArray(userIds) && userIds.length > 0) {
+    const placeholders = userIds.map(() => '?').join(',');
+    const subs = await c.env.DB.prepare(`
+      SELECT id, email, name FROM users 
+      WHERE id IN (${placeholders}) AND email IS NOT NULL AND email != '' AND is_active = 1
+    `).bind(...userIds).all();
+    targetEmails = subs.results as any;
+  }
+
+  if (targetEmails.length === 0) {
+    return c.json({ error: 'No se encontraron empleados con email válido.' }, 400);
+  }
+
+  let sentCount = 0;
+  for (const emp of targetEmails) {
+    const token = crypto.randomUUID();
+    await c.env.DB.prepare(`
+      INSERT INTO employee_data_updates (token, user_id, status)
+      VALUES (?, ?, 'pending_user')
+    `).bind(token, emp.id).run();
+
+    const link = `https://eye-staff.app/#actualizar-datos?token=${token}`;
+    const html = `
+      <div style="text-align: center;">
+        <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${emp.name},</h2>
+        <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
+          El departamento de Recursos Humanos de EYE STAFF requiere que actualices o verifiques tus datos personales.
+        </p>
+        <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          📋 ACTUALIZAR MIS DATOS
+        </a>
+        <p style="margin-top: 30px; font-size: 12px; color: #94a3b8;">
+          Este enlace es único y personal. Por favor no lo compartas con nadie.
+        </p>
+      </div>
+    `;
+
+    try {
+      await sendEmail(c.env, emp.email, '⚠️ Acción Requerida: Actualización de Datos', html);
+      sentCount++;
+    } catch (e) {
+      console.error(`Failed to send email to ${emp.email}`, e);
+    }
+  }
+
+  return c.json({ success: true, sent: sentCount, total: targetEmails.length });
+});
+
+app.get('/api/admin/pending-updates', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const updates = await c.env.DB.prepare(`
+    SELECT e.*, u.name as user_name, u.pin as user_pin
+    FROM employee_data_updates e
+    JOIN users u ON e.user_id = u.id
+    WHERE e.status = 'pending_review'
+    ORDER BY e.created_at DESC
+  `).all();
+
+  return c.json(updates.results);
+});
+
+app.post('/api/admin/approve-data-update/:id', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const id = c.req.param('id');
+  const { pin } = await c.req.json();
+
+  if (pin !== user.pin) return c.json({ error: 'PIN incorrecto' }, 403);
+
+  const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE id = ?').bind(id).first<any>();
+  if (!update || update.status !== 'pending_review') return c.json({ error: 'Solicitud inválida' }, 400);
+
+  const proposed = JSON.parse(update.proposed_data || '{}');
+
+  // Convertir fecha de YYYY-MM-DD a unix timestamp para 'birth_date'
+  let birthDateUnix = null;
+  if (proposed.birth_date) {
+    birthDateUnix = Math.floor(new Date(proposed.birth_date).getTime());
+  }
+
+  let photoUrl = null;
+  if (update.photo_base64) {
+    const base64Data = update.photo_base64.split(',')[1];
+    if (base64Data) {
+      const binaryData = Uint8Array.from(atob(base64Data), char => char.charCodeAt(0));
+      const key = `staff/${update.user_id}_${Date.now()}.jpg`;
+      await c.env.PHOTOS.put(key, binaryData, { httpMetadata: { contentType: 'image/jpeg' } });
+      photoUrl = `https://r2.eye-staff.app/${key}`;
+    }
+  }
+
+  let updateQuery = `
+    UPDATE users SET
+      phone = COALESCE(?, phone),
+      address = COALESCE(?, address),
+      sector = COALESCE(?, sector),
+      bank_name = COALESCE(?, bank_name),
+      bank_account = COALESCE(?, bank_account),
+      emergency_contact = COALESCE(?, emergency_contact),
+      emergency_phone = COALESCE(?, emergency_phone),
+      is_allergic = COALESCE(?, is_allergic)
+  `;
+  const params: any[] = [
+    proposed.phone || null,
+    proposed.address || null,
+    proposed.sector || null,
+    proposed.bank_name || null,
+    proposed.bank_account || null,
+    proposed.emergency_contact || null,
+    proposed.emergency_phone || null,
+    proposed.is_allergic || null
+  ];
+
+  if (birthDateUnix) {
+    updateQuery += `, birth_date = ?`;
+    params.push(birthDateUnix);
+  }
+  if (photoUrl) {
+    updateQuery += `, photo_url = ?`;
+    params.push(photoUrl);
+  }
+
+  updateQuery += ` WHERE id = ?`;
+  params.push(update.user_id);
+
+  await c.env.DB.prepare(updateQuery).bind(...params).run();
+  await c.env.DB.prepare("UPDATE employee_data_updates SET status = 'approved', photo_base64 = NULL WHERE id = ?").bind(id).run();
+
+  return c.json({ success: true });
+});
+
+app.post('/api/admin/reject-data-update/:id', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const id = c.req.param('id');
+  await c.env.DB.prepare("UPDATE employee_data_updates SET status = 'rejected', photo_base64 = NULL WHERE id = ?").bind(id).run();
 
   return c.json({ success: true });
 });
@@ -5509,7 +5938,7 @@ app.post('/api/reports/send-start', async (c) => {
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
-  const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
@@ -5550,7 +5979,7 @@ app.post('/api/reports/send-start', async (c) => {
 // Reportes consolidados en /api/sessions/close
 
 app.post('/api/test/changelog', async (c) => {
-  const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
   const html = `
     <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 30px; border-radius: 20px;">
       <h2 style="color: #ef4444; border-bottom: 2px solid #ef4444; padding-bottom: 10px;">AVANCE DEL PROYECTO: v2.2.6</h2>
@@ -5641,7 +6070,7 @@ app.get('/api/debug/trigger-report', async (c) => {
     FROM vehicles WHERE session_id = ? AND status != 'pre-registered'
   `).bind(last.id).first<{ total: number, revenue: number }>();
 
-  const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
   await sendEmail(c.env, to, `🧪 PRUEBA DE ENVÍO: ${last.name}`, `
     <div style="font-family:sans-serif; max-width:500px; margin:auto; border:1px solid #eee; border-radius:15px; overflow:hidden; border-top:5px solid #ef4444;">
       <div style="padding:30px; text-align:center;">
@@ -5938,7 +6367,7 @@ app.post('/api/payroll/submit', async (c) => {
       </li>
     `).join('');
 
-    await sendEmail(c.env, 'ncarrillok@gmail.com', `💰 NUEVO REPORTE DE COBRO: ${staff?.name || 'EMPLEADO'}`, `
+    await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', `💰 NUEVO REPORTE DE COBRO: ${staff?.name || 'EMPLEADO'}`, `
           <div style="font-family:sans-serif; max-width:500px; margin:auto; border:1px solid #eee; border-radius:15px; overflow:hidden; border-top:5px solid #a855f7;">
             <div style="padding:30px;">
               <h2 style="color:#a855f7; margin:0;">REPORTE DE COBRO</h2>
@@ -6048,7 +6477,7 @@ app.post('/api/attendance/log', async (c) => {
         } else {
           // Enviar correo de alerta crítica al director
           try {
-            const adminEmail = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+            const adminEmail = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
             const sessionInfo = await c.env.DB.prepare("SELECT name FROM sessions WHERE id = ?").bind(session_id).first<{ name: string }>();
             const sessionName = sessionInfo ? sessionInfo.name : 'Evento';
 
@@ -7213,20 +7642,54 @@ app.post('/api/chat/messages', async (c) => {
   return c.json({ success: true });
 });
 
+app.get('/api/public/update-data/:token', async (c) => {
+  const token = c.req.param('token');
+  const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE token = ?').bind(token).first<any>();
+  
+  if (!update) return c.json({ error: 'Token inválido o expirado' }, 404);
+  if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
+
+  const user = await c.env.DB.prepare('SELECT name, cedula, sector, phone, emergency_contact, emergency_phone, is_allergic, bank_name, bank_account, birth_date, address, photo_url FROM users WHERE id = ?').bind(update.user_id).first<any>();
+  
+  if (!user) return c.json({ error: 'Usuario no encontrado' }, 404);
+
+  return c.json({ success: true, user });
+});
+
+app.post('/api/public/update-data/:token', async (c) => {
+  const token = c.req.param('token');
+  const body = await c.req.json();
+
+  const update = await c.env.DB.prepare('SELECT id, status FROM employee_data_updates WHERE token = ?').bind(token).first<any>();
+  if (!update) return c.json({ error: 'Token inválido' }, 404);
+  if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
+
+  const photo_base64 = body.photo_base64 || null;
+  delete body.photo_base64;
+
+  await c.env.DB.prepare(`
+    UPDATE employee_data_updates 
+    SET proposed_data = ?, photo_base64 = ?, status = 'pending_review'
+    WHERE id = ?
+  `).bind(JSON.stringify(body), photo_base64, update.id).run();
+
+  return c.json({ success: true });
+});
+
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'ncarrillok@gmail.com';
+    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
     return app.fetch(request, env, ctx);
   },
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'ncarrillok@gmail.com';
+    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
     ctx.waitUntil(checkScheduledNotifications(env));
 
 
   },
   async email(message: any, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'ncarrillok@gmail.com';
+    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
     try {
       const parser = new PostalMime();
       const email = await parser.parse(message.raw);
