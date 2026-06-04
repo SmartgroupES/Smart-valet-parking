@@ -4624,7 +4624,11 @@ app.post('/api/staff/:id/photo', async (c) => {
 
   const key = `staff/${id}/photo_${Date.now()}.jpg`;
   const base64Data = image.includes(',') ? image.split(',')[1] : image;
-  const binaryData = Uint8Array.from(atob(base64Data), (ch) => ch.charCodeAt(0));
+  const binaryString = atob(base64Data);
+  const binaryData = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    binaryData[i] = binaryString.charCodeAt(i);
+  }
 
   await c.env.PHOTOS.put(key, binaryData, {
     httpMetadata: { contentType: 'image/jpeg' }
