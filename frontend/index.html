@@ -14085,41 +14085,41 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                 <div style="background:#0b0f19; min-height:100vh; font-family:'Outfit', sans-serif; color:white; padding:20px;">
                     <div style="max-width:600px; margin:0 auto; background:var(--surface); border-radius:20px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                         <div style="text-align:center; margin-bottom:30px;">
-                            <img src="eye-staff-logo.png" style="height:50px; margin-bottom:15px;">
+                            <img src="logo-eye-staff.jpeg" style="height:50px; margin-bottom:15px;">
                             <h2>Actualización de Datos</h2>
                             <p style="color:var(--muted); font-size:0.9rem;">Por favor revisa y actualiza tu información personal.</p>
                         </div>
                         
                         <form id="update-data-form" style="display:flex; flex-direction:column; gap:15px;">
                             <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FOTO DE PERFIL (Opcional)</label>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FOTO DE PERFIL</label>
                                 <input type="file" id="upd-photo" accept="image/*" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                                ${user.photo_url ? `<div style="margin-top:10px;"><img src="${user.photo_url}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>` : ''}
+                                <div style="margin-top:10px;"><img src="${user.photo_url ? '/api/photos/' + user.photo_url : 'logo-eye-staff.jpeg'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FECHA DE NACIMIENTO</label>
-                                <input type="date" id="upd-birth" value="${formatDate(user.birth_date)}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <input type="date" id="upd-birth" value="${formatDate(user.birth_date)}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO</label>
-                                <input type="text" id="upd-phone" value="${user.phone || ''}" placeholder="+346..." style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <input type="text" id="upd-phone" value="${user.phone || ''}" placeholder="+346..." required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">DIRECCIÓN (Código Postal, Calle, Ciudad)</label>
-                                <textarea id="upd-address" rows="2" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">${user.address || ''}</textarea>
+                                <textarea id="upd-address" rows="2" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">${user.address || ''}</textarea>
                             </div>
 
                             <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">SECTOR (Opcional)</label>
-                                <input type="text" id="upd-sector" value="${user.sector || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">SECTOR</label>
+                                <input type="text" id="upd-sector" value="${user.sector || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ENTIDAD BANCARIA</label>
-                                <select id="upd-bank" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f111a; color:white;">
+                                <select id="upd-bank" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f111a; color:white;">
                                     <option value="">Seleccionar...</option>
                                     <option value="Caixabank" ${user.bank_name === 'Caixabank' ? 'selected' : ''}>Caixabank</option>
                                     <option value="Santander" ${user.bank_name === 'Santander' ? 'selected' : ''}>Santander</option>
@@ -14142,22 +14142,22 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">NÚMERO DE CUENTA (IBAN)</label>
-                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="ES00 0000 0000 0000 0000" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="ES00 0000 0000 0000 0000" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">CONTACTO DE EMERGENCIA (Nombre y Parentesco)</label>
-                                <input type="text" id="upd-emer-name" value="${user.emergency_contact || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <input type="text" id="upd-emer-name" value="${user.emergency_contact || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO DE EMERGENCIA</label>
-                                <input type="text" id="upd-emer-phone" value="${user.emergency_phone || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <input type="text" id="upd-emer-phone" value="${user.emergency_phone || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ALERGIAS O CONDICIONES MÉDICAS (Dejar en blanco si ninguna)</label>
-                                <input type="text" id="upd-allergies" value="${user.is_allergic || ''}" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ALERGIAS O CONDICIONES MÉDICAS (Escribir "Ninguna" si no aplica)</label>
+                                <input type="text" id="upd-allergies" value="${user.is_allergic || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
 
                             <button type="submit" id="upd-submit" style="margin-top:20px; width:100%; padding:15px; border-radius:10px; background:#3b82f6; color:white; font-size:1rem; font-weight:bold; border:none; cursor:pointer;">ENVIAR ACTUALIZACIÓN</button>
