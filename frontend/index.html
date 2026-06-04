@@ -171,6 +171,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
             border-bottom: 1px solid var(--border);
             z-index: 9000;
             position: relative;
@@ -1040,7 +1042,7 @@
 
     // --- CONFIG & STATE ---
     const API_BASE = window.location.origin;
-    const VERSION = '2.5.54';
+    const VERSION = '2.5.55';
     window.ENABLE_MODULE_ACCESOS = true;
     window.ENABLE_MODULE_ALQUILER = true;
     
@@ -5410,7 +5412,9 @@
             toast('✅ Vehículo entregado', 'success');
             closeModal();
 
-            // Telegram Integration (Nativo)
+            // [TEMPORALMENTE DESHABILITADO POR SOLICITUD DEL USUARIO]
+            // Telegram Integration (Nativo) - WhatsApp
+            /*
             if (phone) {
                 try {
                     const waRes = await apiFetch('/api/valet/notificar', {
@@ -5424,6 +5428,7 @@
                     console.error('Error enviando WA:', e);
                 }
             }
+            */
 
             const sid = window.activeSession ? window.activeSession.id : null;
             let inCustodyCount = 0;
@@ -7068,31 +7073,7 @@
                     </div>
                 </div>
 
-                <!-- 7. Matriz Completa de Personal -->
-                <div class="card" style="border-top:4px solid #14b8a6; background:rgba(20, 184, 166, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
-                            <span style="font-size:1.5rem;">👥</span>
-                            <span style="font-size:0.6rem; font-weight:900; background:rgba(20,184,166,0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">CONSULTA EN VIVO</span>
-                        </div>
-                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Matriz Completa de Personal</h3>
-                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
-                            Visualización y control interactivo en tiempo real de la base de datos completa de empleados del sistema, estados, rangos de EYE ID y perfiles administrativos.
-                        </p>
-                    </div>
-                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
-                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Tabla Interactiva</b></span>
-                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Gestión de Personal</b></span>
-                        </div>
-                        <button class="btn btn-sm" onclick="window.showAllStaff = true; renderAdmin(document.getElementById('current-view'), 'personal');" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
-                            📊 VER MATRIZ COMPLETA
-                        </button>
-                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('personal')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase; margin-top:8px;">
-                            ✉️ ENVIAR MATRIZ POR EMAIL
-                        </button>
-                    </div>
-                </div>
+
                 <!-- 8. Envío de Credenciales de Acceso -->
                 <div class="card" style="border-top:4px solid #eab308; background:rgba(234,179,8,0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
                     <div>
@@ -7313,6 +7294,15 @@
                         <div class="menu-item-content">
                             <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE VEHÍCULOS</span>
                             <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">HISTORIAL DE FLOTA</span>
+                        </div>
+                    </div>
+
+                    <!-- ENVÍOS MASIVOS -->
+                    <div class="menu-item admin-card-bg" onclick="openBulkReportsPanel()" style="border-top: 4px solid #8b5cf6;">
+                        <i>📨</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">ENVÍOS MASIVOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">ENVÍO DE REPORTES Y TICKETS</span>
                         </div>
                     </div>
 
@@ -8106,13 +8096,9 @@
                                         <option value="">SIN ASIGNAR</option>
                                         <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
                                         <option value="SUPERVISOR">SUPERVISOR</option>
-                                        <option value="COORDINADOR GENERAL">COORDINADOR GENERAL</option>
                                         <option value="COORDINADOR">COORDINADOR</option>
-                                        <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                        <option value="CHOFER">CHOFER</option>
-                                        <option value="OPERADOR">OPERADOR</option>
-                                        <option value="ESCOLTA">ESCOLTA</option>
-                                        <option value="TRANSPORTE">TRANSPORTE</option>
+                                        <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
+                                        <option value="LOGÍSTICA">LOGISTICA</option>
                                     </select>
                                 </div>
                             </div>
@@ -11578,7 +11564,8 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 // Cargar personal activo para geocodificar
                 try {
                     const staffRes = await apiFetch('/api/staff');
-                    const allStaff = (staffRes.staff || []).filter(s => s.is_active !== 0 && s.address);
+                    const allStaff = (staffRes.staff || []);
+
                     
                     // Cargar caché local
                     let cachedCoords = {};
@@ -11616,7 +11603,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                             <div class="staff-home-row" data-search-text="${cleanSearchText}" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); gap:8px; transition:all 0.2s ease;">
                                                 <div style="min-width:0;">
                                                     <div style="font-size:0.7rem; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div>
-                                                    <div style="font-size:0.55rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.address}</div>
+                                                    <div style="font-size:0.55rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.address ? s.address : 'SIN DIRECCIÓN REGISTRADA'}</div>
                                                 </div>
                                                 <button id="home-btn-${s.name.replace(/\s/g,'_')}" class="btn btn-sm" disabled style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#22c55e; color:#fff; opacity:0.4; flex-shrink:0;">VER</button>
                                             </div>
@@ -11662,6 +11649,8 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     let uncachedCount = 0;
                     for (let i = 0; i < allStaff.length; i++) {
                         const s = allStaff[i];
+                        if (!s.address) continue;
+                        
                         const addressKey = s.address;
                         const sectorKey = (s.sector || '').trim().toLowerCase();
                         
@@ -12248,13 +12237,9 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             <select id="edit-staff-profile-opera" style="font-weight:800;">
                                 <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
                                 <option value="SUPERVISOR">SUPERVISOR</option>
-                                <option value="COORDINADOR GENERAL">COORD. GEN</option>
                                 <option value="COORDINADOR">COORDINADOR</option>
-                                <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                <option value="CHOFER">CHOFER</option>
-                                <option value="OPERADOR">OPERADOR</option>
-                                <option value="ESCOLTA">ESCOLTA</option>
-                                <option value="TRANSPORTE">TRANSPORTE</option>
+                                <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
+                                <option value="LOGÍSTICA">LOGISTICA</option>
                             </select>
                         </div>
                         <div class="field" style="margin-bottom:0;"><label>ESTADO</label>
@@ -13515,3 +13500,131 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
 </div>
 
 </html>
+
+<!-- INICIO PANEL ENVÍOS MASIVOS -->
+<div id="bulk-reports-modal" class="modal-overlay" style="display:none; z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center;">
+    <div style="background: var(--surface2, #1e1e2d); border: 1px solid var(--border, #2d2d3f); border-radius: 12px; padding: 20px; color: #fff; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; font-size: 1.2rem;">Envío Masivo de Reportes</h3>
+            <span id="bulk-counter" style="font-size: 0.8rem; color: var(--muted);">0 seleccionados</span>
+        </div>
+        
+        <input type="text" id="bulk-search" placeholder="Buscar empleado por nombre o cédula..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: #fff; margin-bottom: 15px; box-sizing: border-box;">
+        
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+            <button type="button" id="bulk-select-all" class="btn btn-secondary btn-sm" style="background: #374151; white-space: nowrap;">Seleccionar Todos</button>
+            <select id="bulk-report-type" style="padding: 10px; border-radius: 8px; background: var(--surface); color: #fff; border: 1px solid var(--border); flex-grow: 1;">
+                <option value="TICKET_DIGITAL_VALET">Ticket Digital Valet</option>
+                <option value="REPORTE_MPI">Reporte MPI</option>
+            </select>
+        </div>
+
+        <div id="bulk-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;">
+            <!-- Carga dinámica -->
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('bulk-reports-modal').style.display='none'" style="flex:1;">Cerrar</button>
+            <button type="button" id="bulk-submit-btn" style="flex:2; background: #4f46e5; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">Enviar Reportes</button>
+        </div>
+        
+        <div id="bulk-logs" style="margin-top: 15px; font-size: 0.75rem; color: #9ca3af; white-space: pre-wrap; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none;"></div>
+    </div>
+</div>
+
+<script>
+    let bulkEmployees = [];
+
+    async function openBulkReportsPanel() {
+        document.getElementById('bulk-reports-modal').style.display = 'flex';
+        document.getElementById('bulk-grid').innerHTML = '<div style="text-align:center; grid-column: 1/-1; padding: 20px;">Cargando personal...</div>';
+        try {
+            const res = await apiFetch('/api/staff');
+            if (res && res.staff) {
+                bulkEmployees = res.staff;
+                renderBulkGrid(bulkEmployees);
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('bulk-grid').innerHTML = 'Error cargando empleados';
+        }
+    }
+
+    function renderBulkGrid(data) {
+        const grid = document.getElementById('bulk-grid');
+        grid.innerHTML = '';
+        data.forEach(emp => {
+            if (emp.status === 'inactivo' || !emp.email) return;
+            const card = document.createElement('div');
+            card.style.cssText = 'background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;';
+            card.innerHTML = `
+                <input type="checkbox" class="bulk-checkbox" value="${emp.id}">
+                <div>
+                    <div style="font-weight: bold; font-size: 0.85rem;">${emp.name}</div>
+                    <div style="font-size: 0.65rem; color: #9ca3af;">${emp.email || 'Sin correo'}</div>
+                </div>
+            `;
+            card.addEventListener('click', (e) => {
+                if(e.target.tagName !== 'INPUT') {
+                    const cb = card.querySelector('input');
+                    cb.checked = !cb.checked;
+                    updateBulkCounter();
+                }
+            });
+            card.querySelector('input').addEventListener('change', updateBulkCounter);
+            grid.appendChild(card);
+        });
+        updateBulkCounter();
+    }
+
+    function updateBulkCounter() {
+        const selected = document.querySelectorAll('.bulk-checkbox:checked').length;
+        document.getElementById('bulk-counter').innerText = selected + ' seleccionados';
+        document.getElementById('bulk-submit-btn').disabled = selected === 0;
+        document.getElementById('bulk-submit-btn').style.opacity = selected === 0 ? '0.5' : '1';
+    }
+
+    document.getElementById('bulk-search').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        renderBulkGrid(bulkEmployees.filter(emp => (emp.name && emp.name.toLowerCase().includes(term))));
+    });
+
+    document.getElementById('bulk-select-all').addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.bulk-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        updateBulkCounter();
+    });
+
+    document.getElementById('bulk-submit-btn').addEventListener('click', async () => {
+        const checkboxes = document.querySelectorAll('.bulk-checkbox:checked');
+        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+        if(selectedIds.length === 0) return;
+        
+        const btn = document.getElementById('bulk-submit-btn');
+        const logs = document.getElementById('bulk-logs');
+        btn.disabled = true;
+        btn.innerText = 'Enviando...';
+        logs.style.display = 'block';
+        logs.innerText = 'Iniciando envío...\n';
+
+        try {
+            const res = await apiFetch('/api/send-bulk-reports', {
+                method: 'POST',
+                body: JSON.stringify({ employeeIds: selectedIds, reportType: document.getElementById('bulk-report-type').value })
+            });
+            
+            if(res && res.success) {
+                logs.innerText += 'Completado.\\nÉxitos: ' + res.successCount + '\\nFallos: ' + res.failureCount + '\\n';
+                if(res.failures && res.failures.length > 0) logs.innerText += JSON.stringify(res.failures, null, 2);
+                toast('Envío masivo completado', 'success');
+            }
+        } catch(err) {
+            logs.innerText += 'Error crítico: ' + err.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Enviar Reportes';
+        }
+    });
+</script>
+<!-- FIN PANEL ENVÍOS MASIVOS -->

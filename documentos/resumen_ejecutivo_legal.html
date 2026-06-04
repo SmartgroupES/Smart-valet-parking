@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen Ejecutivo - Estrategia Legal y Técnica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; }
+        h3 { color: #7f8c8d; }
+        ul { margin-bottom: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .alert { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 15px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Resumen Ejecutivo: Estrategia de Protección Legal y Técnica de la APP</h1>
+
+    <h2>1. Análisis de la Situación</h2>
+    <p>La protección de la APP debe abordarse desde un enfoque mixto (legal y técnico) para evitar el plagio, la ingeniería inversa y la competencia desleal.</p>
+    <ul>
+        <li><strong>Propiedad Intelectual (Derechos de Autor):</strong> Protege el código fuente, código objeto y manuales, pero <strong>no</strong> las ideas, funcionalidades o el modelo de negocio.</li>
+        <li><strong>Secreto Empresarial (Know-How):</strong> Protege la lógica de negocio, algoritmos de optimización de operaciones y arquitectura. Exige que la información sea secreta y que existan medidas activas para protegerla.</li>
+        <li><strong>Derecho "Sui Generis" de Bases de Datos:</strong> Protege la estructura y contenido de la base de datos si ha requerido una inversión sustancial.</li>
+    </ul>
+
+    <h2>2. Propuestas de Protección</h2>
+    <h3>A. Medidas Técnicas (Mi responsabilidad)</h3>
+    <ul>
+        <li><strong>Ofuscación y Minificación de Código:</strong> El código del frontend y del backend (Workers) se compila y minifica antes de producción, lo que dificulta enormemente la ingeniería inversa.</li>
+        <li><strong>Control de Accesos (RBAC) y Trazabilidad:</strong> La APP ya cuenta con un sistema estricto de roles, tokens JWT y un registro de auditoría que detecta accesos indebidos o fugas de información.</li>
+        <li><strong>Aislamiento de Entornos e Infraestructura:</strong> El código fuente y las bases de datos están alojados en Cloudflare. Ningún cliente tiene acceso a los servidores ni a la base de datos subyacente.</li>
+    </ul>
+
+    <h3>B. Medidas Legales (Tu responsabilidad)</h3>
+    <ul>
+        <li><strong>NDAs y Cláusulas de Confidencialidad:</strong> Imprescindibles antes de cualquier demostración profunda.</li>
+        <li><strong>Licencia de Uso (EULA) y Términos de Servicio:</strong> Los clientes no "compran" la APP, adquieren una licencia temporal y revocable de uso. Queda expresamente prohibida la ingeniería inversa o la copia de funcionalidades.</li>
+        <li><strong>Registro y Custodia:</strong> Inscripción del código fuente y documentación técnica para establecer una "fecha cierta" de autoría.</li>
+    </ul>
+
+    <h2>3. Plan de Acción y Próximos Pasos</h2>
+    <ul>
+        <li><strong>Fase 1: Preparación Documental (Corto Plazo - Días):</strong> Redacción de NDAs estándar para clientes y partners. Empaquetado del código fuente actual en un archivo encriptado para su registro.</li>
+        <li><strong>Fase 2: Blindaje Técnico (Corto Plazo - 1 Semana):</strong> Verificación de que los procesos de compilación (build) ofusquen al máximo el código entregado al navegador. Revocación de permisos de desarrollo a ex-colaboradores.</li>
+        <li><strong>Fase 3: Registro Oficial (Medio Plazo - 1 Mes):</strong> Depositar el código fuente mediante depósito notarial (Escrow) o en el Registro de la Propiedad Intelectual en España.</li>
+        <li><strong>Fase 4: Expansión Global:</strong> Mantener el modelo SaaS (Software as a Service) puro. Al no entregar el backend a nadie, el Secreto Empresarial se mantiene intacto a nivel mundial.</li>
+    </ul>
+
+    <h2>4. Costes Estimados (Aproximación - Mercado Español)</h2>
+    <table>
+        <tr>
+            <th>Concepto</th>
+            <th>Coste Estimado</th>
+            <th>Frecuencia</th>
+        </tr>
+        <tr>
+            <td><strong>Medidas Técnicas (Ofuscación, Logs, Auth)</strong></td>
+            <td>0 € (Incluido en desarrollo)</td>
+            <td>Único</td>
+        </tr>
+        <tr>
+            <td><strong>Infraestructura Segura (Cloudflare)</strong></td>
+            <td>~0 € - 20 € / mes</td>
+            <td>Recurrente</td>
+        </tr>
+        <tr>
+            <td><strong>Tasas Registro Propiedad Intelectual</strong></td>
+            <td>~15 € - 50 €</td>
+            <td>Único por versión mayor</td>
+        </tr>
+        <tr>
+            <td><strong>Depósito Notarial del Código Fuente</strong></td>
+            <td>~200 € - 500 €</td>
+            <td>Único / Actualizable</td>
+        </tr>
+        <tr>
+            <td><strong>Redacción de Contratos (SaaS EULA, NDA)</strong></td>
+            <td>Interno / Asesoría (variable)</td>
+            <td>Único</td>
+        </tr>
+    </table>
+
+    <div class="alert">
+        <strong>Conclusión Estratégica:</strong><br>
+        La mejor protección contra la copia de la APP es que el modelo es <strong>SaaS</strong> (Software as a Service). Como el cliente nunca recibe el código del backend ni la base de datos, es técnicamente inviable que hagan un "copy-paste" del motor del sistema. Si alguien intenta copiar el diseño (frontend), la Ley de Propiedad Intelectual y la Ley de Competencia Desleal nos amparan.
+    </div>
+
+    <script>
+        // Opcional: imprimir automáticamente al abrir (comentado para evitar sustos)
+        // window.onload = () => window.print();
+    </script>
+</body>
+</html>

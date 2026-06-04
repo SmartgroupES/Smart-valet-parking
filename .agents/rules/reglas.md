@@ -11,3 +11,4 @@ ESTRICTAS REGLAS DE AHORRO DE CUOTA Y COMPORTAMIENTO:
 5. VERSIONAMIENTO Y BACKUPS: Mantén el sistema de "Cambio Versión_xxx". NO hagas backups completos locales de los archivos (ej. backup_xxx.html) en cada cambio. Los backups completos solo se hacen en el primer cambio de la primera sesión del día, o cuando se te solicite explícitamente: "Hagamos backup completo".
 7. REMITENTE DE EMAILS: El remitente de emails desde eye-staff.app siempre debe ser "EYE STAFF", y para Rentaequipos "RENTAEQUIPOS". Nunca uses "Acme".
 6. RESPUESTAS: Sé conciso. No generes explicaciones largas ni resúmenes innecesarios que consuman tokens de salida.
+8. DEPLOY A PRODUCCIÓN: Los pases a producción (deploy a producción) requieren siempre revisión previa y autorización explícita. El pase a desarrollo puede hacerse para pruebas.

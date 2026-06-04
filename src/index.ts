@@ -18,7 +18,7 @@ export interface Env {
   ADMIN_KEY?: string;
   DIRECTOR_EMAIL?: string;
   OFFICE_GROUP_ID?: string;
-      TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_BOT_TOKEN?: string;
   AI: any;
 }
 
@@ -49,10 +49,10 @@ async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]
 }
 
 function formatFull24h(date: Date): string {
-  return date.toLocaleString('es-VE', { 
-    timeZone: 'America/Caracas', 
+  return date.toLocaleString('es-VE', {
+    timeZone: 'America/Caracas',
     day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: false 
+    hour: '2-digit', minute: '2-digit', hour12: false
   }).replace(',', '');
 }
 
@@ -158,22 +158,22 @@ async function initDatabase(db: D1Database) {
   `).run();
 
   // Ensure columns in tables
-  try { await db.prepare("ALTER TABLE event_reports ADD COLUMN sent_emails_history TEXT DEFAULT '[]'").run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN bank_name TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN bank_account TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN carnet_url TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN profile_admin TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN profile_opera TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN eye_id TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN last_login DATETIME').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_ve INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_mod INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_ve INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_mod INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_ve INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_mod INTEGER DEFAULT 0').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE budgets ADD COLUMN is_deleted INTEGER DEFAULT 0').run(); } catch(e) {}
-  
+  try { await db.prepare("ALTER TABLE event_reports ADD COLUMN sent_emails_history TEXT DEFAULT '[]'").run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN bank_name TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN bank_account TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN carnet_url TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN profile_admin TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN profile_opera TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN eye_id TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN last_login DATETIME').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_ve INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN traslados_mod INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_ve INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN guardia_mod INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_ve INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_mod INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE budgets ADD COLUMN is_deleted INTEGER DEFAULT 0').run(); } catch (e) { }
+
   // Tabla de Mensajería Interna (Chat)
   try {
     await db.prepare(`
@@ -209,13 +209,13 @@ async function initDatabase(db: D1Database) {
         FOREIGN KEY(session_id) REFERENCES sessions(id)
       )
     `).run();
-    try { await db.prepare('ALTER TABLE chat_messages ADD COLUMN group_id INTEGER REFERENCES chat_groups(id)').run(); } catch(e) {}
-  } catch(e) {}
+    try { await db.prepare('ALTER TABLE chat_messages ADD COLUMN group_id INTEGER REFERENCES chat_groups(id)').run(); } catch (e) { }
+  } catch (e) { }
 
   // Telegram integration
-  try { await db.prepare('ALTER TABLE users ADD COLUMN telegram_chat_id TEXT').run(); } catch(e) {}
-  try { await db.prepare('ALTER TABLE users ADD COLUMN telegram_link_token TEXT').run(); } catch(e) {}
-  
+  try { await db.prepare('ALTER TABLE users ADD COLUMN telegram_chat_id TEXT').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE users ADD COLUMN telegram_link_token TEXT').run(); } catch (e) { }
+
   try {
     await db.prepare(`
       CREATE TABLE IF NOT EXISTS telegram_messages (
@@ -230,7 +230,7 @@ async function initDatabase(db: D1Database) {
         ts TEXT DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
-  } catch(e) {}
+  } catch (e) { }
 }
 
 async function logAudit(env: Env, userId: number, action: string, details: string = '', c?: any) {
@@ -272,7 +272,7 @@ async function saveBase64ToR2(env: Env, base64: string, path: string): Promise<s
     const binary = atob(data);
     const array = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
-    
+
     await env.PHOTOS.put(path, array, { httpMetadata: { contentType: mime } });
     return path;
   } catch (e) {
@@ -342,7 +342,7 @@ app.get('/join', async (c) => {
 app.post('/api/staff/apply', async (c) => {
   try {
     const { name, cedula, email, phone, address, birth_date, experience, photo } = await c.req.json();
-    
+
     let photoUrl = '';
     if (photo && photo.startsWith('data:image')) {
       const filename = `apps/${cedula.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}.jpg`;
@@ -396,16 +396,16 @@ app.post('/api/verify-pin', async (c) => {
 app.get('/api/sessions/active', async (c) => {
   const sessionsRes = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("planning", "active") ORDER BY id ASC').all();
   const sessions = (sessionsRes.results || []) as any[];
-  
+
   // Fetch assigned staff and vehicle counts for each session
   for (let s of sessions) {
     // Si no tiene internal_key (registros viejos), usamos el name
     if (!s.internal_key) s.internal_key = s.name;
-    
+
     // Staff details
     const staffRes = await c.env.DB.prepare("SELECT id, name, role FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
     const staff = staffRes.results || [] as any[];
-    
+
     for (let u of staff) {
       const attRes = await c.env.DB.prepare('SELECT type, timestamp FROM staff_attendance WHERE user_id = ? AND session_id = ? ORDER BY timestamp ASC').bind(u.id, s.id).all();
       u.attendance = attRes.results || [];
@@ -414,7 +414,7 @@ app.get('/api/sessions/active', async (c) => {
     s.assigned_staff_list = staff; // List of {id, name, role, attendance}
     s.assigned_staff_count = staff.length;
     s.assigned_staff = staff.map(u => u.name).join(', '); // Legacy support
-    
+
     // Vehicle counts
     const vehicleStats = await c.env.DB.prepare(`
       SELECT 
@@ -423,12 +423,12 @@ app.get('/api/sessions/active', async (c) => {
       FROM vehicles 
       WHERE session_id = ?
     `).bind(s.id).first<any>();
-    
+
     s.total_entries = vehicleStats?.total_entries || 0;
     s.total_exits = vehicleStats?.total_exits || 0;
     s.active_vehicles = s.total_entries - s.total_exits;
   }
-  
+
   return c.json({ sessions });
 });
 
@@ -455,7 +455,7 @@ app.get('/api/sessions/active/stats', async (c) => {
 });
 
 app.get('/api/sessions/next-correlativo', async (c) => {
-  const result = await c.env.DB.prepare('SELECT MAX(id) as maxId FROM sessions').first<{maxId: number | null}>();
+  const result = await c.env.DB.prepare('SELECT MAX(id) as maxId FROM sessions').first<{ maxId: number | null }>();
   const next = (result?.maxId || 0) + 1;
   return c.json({ next });
 });
@@ -502,8 +502,8 @@ app.get('/api/admin/clients', async (c) => {
     ...cl,
     event_types: cl.event_types || 'VALET PARKING',
     history: ((cl.visit_history as string) || '').split('::').filter((h: string) => h.includes('|')).map((h: string) => {
-        const [event, date, plate] = h.split('|');
-        return { event: event || 'S/E', date, plate };
+      const [event, date, plate] = h.split('|');
+      return { event: event || 'S/E', date, plate };
     })
   }));
   return c.json({ clients });
@@ -517,17 +517,17 @@ app.post('/api/presupuestos/client', async (c) => {
     // Check if client exists to avoid exact duplicates
     const checkQuery = `SELECT * FROM valet_clients WHERE UPPER(TRIM(name)) = UPPER(TRIM(?))`;
     const existing = await c.env.DB.prepare(checkQuery).bind(name).first();
-    
+
     if (existing) {
-        // Update phone and email if they were empty
-        if (!existing.phone && phone) {
-            await c.env.DB.prepare(`UPDATE valet_clients SET phone = ?, email = ? WHERE id = ?`).bind(phone || '', email || '', existing.id).run();
-        }
+      // Update phone and email if they were empty
+      if (!existing.phone && phone) {
+        await c.env.DB.prepare(`UPDATE valet_clients SET phone = ?, email = ? WHERE id = ?`).bind(phone || '', email || '', existing.id).run();
+      }
     } else {
-        const insertQuery = `INSERT INTO valet_clients (name, phone, email, event_type) VALUES (?, ?, ?, ?)`;
-        await c.env.DB.prepare(insertQuery).bind(name, phone || '', email || '', event_type || 'PRESUPUESTO').run();
+      const insertQuery = `INSERT INTO valet_clients (name, phone, email, event_type) VALUES (?, ?, ?, ?)`;
+      await c.env.DB.prepare(insertQuery).bind(name, phone || '', email || '', event_type || 'PRESUPUESTO').run();
     }
-    
+
     return c.json({ success: true });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
@@ -607,9 +607,9 @@ app.post('/api/presupuestos', async (c) => {
     } else {
       await c.env.DB.prepare('INSERT INTO budget_company_seq (empresa, year, seq) VALUES (?, ?, 1)').bind(empresaVal, currentYear).run();
     }
-    
+
     const correlativo = `${prefix}-${String(seq).padStart(3, '0')}`;
-    
+
     await c.env.DB.prepare(`
       INSERT INTO budgets (id, empresa, evento, fecha, monto, estatus, action, form_data, items_data, timestamp)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -639,27 +639,27 @@ app.put('/api/presupuestos/:id', async (c) => {
     ).run();
 
     if (prev && prev.estatus !== 'APROBADO' && data.estatus === 'APROBADO') {
-        if (c.env.RESEND_API_KEY) {
-            const mailPayload = {
-                from: 'EYE STAFF <onboarding@resend.dev>',
-                to: ['ncarrillok@gmail.com'],
-                subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
-                html: `
+      if (c.env.RESEND_API_KEY) {
+        const mailPayload = {
+          from: 'EYE STAFF <onboarding@resend.dev>',
+          to: ['ncarrillok@gmail.com'],
+          subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
+          html: `
                     <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
                     <p>El presupuesto <strong>#${data.form?.correlativo || id}</strong> para el evento <strong>${data.evento}</strong> ha cambiado a estado APROBADO.</p>
                     <p>Por favor, ingrese a la <strong>Gestión de Listas</strong> en el sistema para asignar los empleados correspondientes y finalizar la programación del evento.</p>
                 `
-            };
-            if (c.env.IS_STAGING === "true") {
-                mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-                mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-            }
-            await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(mailPayload)
-            }).catch(e => console.error("Error sending email on budget approval", e));
+        };
+        if (c.env.IS_STAGING === "true") {
+          mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
+          mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
         }
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(mailPayload)
+        }).catch(e => console.error("Error sending email on budget approval", e));
+      }
     }
     return c.json({ success: true });
   } catch (e: any) {
@@ -681,43 +681,43 @@ app.delete('/api/presupuestos/:id', async (c) => {
 app.post('/api/presupuestos/send-email', async (c) => {
   try {
     const { to, subject, pdfData, filename, senderName } = await c.req.json();
-    
+
     if (!c.env.RESEND_API_KEY) {
-        return c.json({ success: false, error: 'RESEND API KEY missing' });
+      return c.json({ success: false, error: 'RESEND API KEY missing' });
     }
-    
+
     const fromName = senderName || 'EYE STAFF';
-    
+
     const mailPayload = {
-        from: `${fromName} <onboarding@resend.dev>`,
-        to: [to],
-        subject: subject,
-        html: `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`,
-        attachments: [
-            {
-                filename: filename,
-                content: pdfData
-            }
-        ]
+      from: `${fromName} <onboarding@resend.dev>`,
+      to: [to],
+      subject: subject,
+      html: `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`,
+      attachments: [
+        {
+          filename: filename,
+          content: pdfData
+        }
+      ]
     };
     if (c.env.IS_STAGING === "true") {
-        mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-        mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
+      mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
+      mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
     }
     const resendRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(mailPayload)
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(mailPayload)
     });
-    
+
     const data = await resendRes.json();
     if (!resendRes.ok) {
-        console.error('Resend error:', data);
-        return c.json({ success: false, error: data });
+      console.error('Resend error:', data);
+      return c.json({ success: false, error: data });
     }
-    
+
     return c.json({ success: true });
-  } catch(e: any) {
+  } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
 });
@@ -730,11 +730,11 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
     const evento = data.evento || 'N/A';
     const fecha = data.fecha || 'N/A';
     const tipo = (data.form && data.form.tipoEvento) ? data.form.tipoEvento : 'N/A';
-    
+
     if (!c.env.RESEND_API_KEY) {
-        return c.json({ success: false, error: 'RESEND API KEY missing' });
+      return c.json({ success: false, error: 'RESEND API KEY missing' });
     }
-    
+
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
         <h2 style="color: #2563eb;">Nuevo Presupuesto Aprobado</h2>
@@ -753,31 +753,125 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
         </a>
       </div>
     `;
-    
+
     const mailPayload = {
-        from: 'EYE STAFF <onboarding@resend.dev>',
-        to: ['ncarrillok@gmail.com'],
-        subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
-        html: htmlBody
+      from: 'EYE STAFF <onboarding@resend.dev>',
+      to: ['ncarrillok@gmail.com'],
+      subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
+      html: htmlBody
     };
     if (c.env.IS_STAGING === "true") {
-        mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-        mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
+      mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
+      mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
     }
     const resendRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(mailPayload)
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(mailPayload)
     });
-    
+
     const resData = await resendRes.json();
     if (!resendRes.ok) {
-        console.error('Resend error:', resData);
-        return c.json({ success: false, error: resData });
+      console.error('Resend error:', resData);
+      return c.json({ success: false, error: resData });
     }
-    
+
     return c.json({ success: true, data: resData });
   } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+// --- ENVÍO MASIVO DE REPORTES (ENTORNO DE DESARROLLO) ---
+app.post('/api/send-bulk-reports', async (c) => {
+  try {
+    const { employeeIds, reportType } = await c.req.json();
+    if (!employeeIds || !Array.isArray(employeeIds)) {
+      return c.json({ success: false, error: 'employeeIds array is required' }, 400);
+    }
+
+    // Requerimiento: Configurar el remitente como solicitado para pruebas
+    const fromAddress = 'EYE STAFF (TEST) <eyestaff.ncarrillo@gmail.com>';
+
+    // Consultar D1 para obtener los empleados
+    const placeholders = employeeIds.map(() => '?').join(',');
+    const query = `SELECT id, name, email FROM users WHERE id IN (${placeholders})`;
+    const employeesData = await c.env.DB.prepare(query).bind(...employeeIds).all();
+    const employees = employeesData.results || [];
+
+    const results = {
+      successCount: 0,
+      failureCount: 0,
+      failures: [] as any[]
+    };
+
+    console.log(`[BULK] Iniciando envío de ${reportType} a ${employees.length} empleados.`);
+
+    // Promise.all para enviar correos asincrónicamente con control individual
+    await Promise.all(employees.map(async (emp: any) => {
+      try {
+        if (!emp.email) throw new Error('Usuario no tiene correo registrado');
+
+        const mailPayload = {
+          from: fromAddress,
+          to: emp.email,
+          subject: `[TEST DESARROLLO] Simulación: ${reportType}`,
+          html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                <h2 style="color: #2563eb;">Reporte de Prueba</h2>
+                <p>Hola <strong>${emp.name}</strong>,</p>
+                <p>Este es un envío simulado desde el panel de desarrollo para verificar la carga masiva.</p>
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                  <p><b>Tipo de Reporte:</b> ${reportType}</p>
+                </div>
+                <p>Por favor ignorar este mensaje.</p>
+              </div>
+            `
+        };
+
+        // Lógica de motor de envío
+        // Usa GMAIL / BREVO / MAILGUN usando variables de entorno de desarrollo
+        if (c.env.DEVELOPMENT_API_KEY) {
+          // Ejemplo de fetch a intermediario HTTP usando la key (e.g. Mailgun/Resend)
+          // Aquí usamos Resend si DEVELOPMENT_API_KEY es de Resend para mantener consistencia
+          const resp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${c.env.DEVELOPMENT_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              from: mailPayload.from,
+              to: [mailPayload.to],
+              subject: mailPayload.subject,
+              html: mailPayload.html
+            })
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.text();
+            throw new Error(`API Error: ${errData}`);
+          }
+        } else {
+          // SIMULACIÓN (si no hay keys configuradas, registra en consola para testeo)
+          console.log(`[SIMULATED EMAIL] To: ${mailPayload.to} | Subject: ${mailPayload.subject}`);
+          // Simulamos un retraso de red
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        results.successCount++;
+        console.log(`✅ [BULK] Éxito enviando a ${emp.email}`);
+      } catch (err: any) {
+        results.failureCount++;
+        results.failures.push({ id: emp.id, email: emp.email, status: 'error', error: err.message });
+        console.error(`❌ [BULK] Error enviando a ${emp.email}: ${err.message}`);
+      }
+    }));
+
+    console.log(`[BULK] Envío finalizado. Éxitos: ${results.successCount}, Fallos: ${results.failureCount}`);
+    return c.json({ success: true, ...results });
+  } catch (e: any) {
+    console.error('[BULK] Error crítico en el endpoint:', e);
     return c.json({ success: false, error: e.message }, 500);
   }
 });
@@ -799,14 +893,14 @@ app.post('/api/accesos/:session_id/guests', async (c) => {
     const sessionId = c.req.param('session_id');
     const data = await c.req.json();
     if (!data.name) return c.json({ success: false, error: 'Name is required' }, 400);
-    
-    const qrCodeId = data.qr_code_id || `QR-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+
+    const qrCodeId = data.qr_code_id || `QR-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const type = data.guest_type || 'INVITADO';
-    
+
     await c.env.DB.prepare('INSERT INTO access_control_guests (session_id, name, qr_code_id, guest_type, phone, email) VALUES (?, ?, ?, ?, ?, ?)')
       .bind(sessionId, data.name, qrCodeId, type, data.phone || null, data.email || null)
       .run();
-      
+
     return c.json({ success: true, qr_code_id: qrCodeId });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
@@ -818,12 +912,12 @@ app.post('/api/accesos/:session_id/guests/bulk', async (c) => {
     const sessionId = c.req.param('session_id');
     const { guests } = await c.req.json();
     if (!guests || !Array.isArray(guests)) return c.json({ success: false, error: 'Invalid data format' }, 400);
-    
+
     let added = 0;
     // Basic loop insertion for bulk payload
     for (const g of guests) {
       if (!g.name) continue;
-      const qrCodeId = `QR-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+      const qrCodeId = `QR-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
       const type = g.guest_type || 'INVITADO';
       await c.env.DB.prepare('INSERT INTO access_control_guests (session_id, name, qr_code_id, guest_type, phone, email) VALUES (?, ?, ?, ?, ?, ?)')
         .bind(sessionId, g.name.trim(), qrCodeId, type.trim().toUpperCase(), g.phone || null, g.email || null)
@@ -839,7 +933,7 @@ app.post('/api/accesos/:session_id/guests/bulk', async (c) => {
 app.get('/acceso/qr/:qr_id', async (c) => {
   const qrId = c.req.param('qr_id');
   const guest: any = await c.env.DB.prepare('SELECT g.*, s.name as session_name FROM access_control_guests g JOIN sessions s ON g.session_id = s.id WHERE g.qr_code_id = ?').bind(qrId).first();
-  
+
   if (!guest) return c.html('<h1>Pase no encontrado o no válido.</h1>', 404);
 
   const html = `
@@ -895,13 +989,13 @@ app.put('/api/accesos/checkin/:qr_or_id', async (c) => {
     const term = c.req.param('qr_or_id');
     const guestData: any = await c.env.DB.prepare('SELECT id, session_id, status, name FROM access_control_guests WHERE qr_code_id = ? OR id = ?')
       .bind(term, term).first();
-      
+
     if (!guestData) return c.json({ success: false, error: 'Guest not found' }, 404);
     if (guestData.status === 'CHECKED_IN') return c.json({ success: false, error: 'Guest already checked in', guest: guestData }, 400);
-    
+
     await c.env.DB.prepare('UPDATE access_control_guests SET status = \'CHECKED_IN\', checked_in_at = CURRENT_TIMESTAMP WHERE id = ?')
       .bind(guestData.id).run();
-      
+
     return c.json({ success: true, guest: guestData });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
@@ -953,7 +1047,7 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
     const budgetId = c.req.param('budget_id');
     const body = await c.req.json();
     const { status, notes, type, signature, photos, receiver_name, receiver_id, verified_items } = body;
-    
+
     // Si viene información de firma y fotos (conformidad completa)
     if (type === 'delivery' || type === 'retrieval') {
       let signatureUrl = null;
@@ -1013,7 +1107,7 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
         UPDATE rentals SET status = ?, notes = ? WHERE budget_id = ?
       `).bind(status, notes || null, budgetId).run();
     }
-    
+
     // Si el status final es 'completed', crear registro en event_reports
     const finalStatus = status;
     if (finalStatus === 'completed') {
@@ -1026,7 +1120,7 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
           try {
             const fd = budget.form_data ? JSON.parse(budget.form_data) : {};
             totalStaff = parseInt(fd.personal || fd.staff || '0') || 0;
-          } catch(e) {}
+          } catch (e) { }
           await c.env.DB.prepare(`
             INSERT INTO event_reports (session_id, session_name, event_type, total_vehicles, total_staff, closed_at)
             VALUES (0, ?, 'alquiler de equipos', 0, ?, datetime('now'))
@@ -1034,9 +1128,9 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
         }
       }
     }
-    
+
     return c.json({ success: true });
-  } catch(e: any) {
+  } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
 });
@@ -1045,7 +1139,7 @@ app.post('/api/rentals/:budget_id/soportes', async (c) => {
   try {
     const budgetId = c.req.param('budget_id');
     const { type, photos, signature } = await c.req.json(); // type: 'delivery' or 'retrieval'
-    
+
     let signatureUrl = null;
     if (signature && signature.startsWith('data:image')) {
       const filename = `rentals/${budgetId}/${type}_signature_${Date.now()}.png`;
@@ -1066,7 +1160,7 @@ app.post('/api/rentals/:budget_id/soportes', async (c) => {
 
     // Get current arrays if appending (to be safe, though right now we overwrite)
     const existing = await c.env.DB.prepare('SELECT delivery_photos, retrieval_photos FROM rentals WHERE budget_id = ?').bind(budgetId).first<any>();
-    
+
     if (type === 'delivery') {
       const allPhotos = [...(existing?.delivery_photos ? JSON.parse(existing.delivery_photos) : []), ...photoUrls];
       await c.env.DB.prepare(`
@@ -1078,9 +1172,9 @@ app.post('/api/rentals/:budget_id/soportes', async (c) => {
         UPDATE rentals SET retrieval_photos = ?, retrieval_signature = COALESCE(?, retrieval_signature) WHERE budget_id = ?
       `).bind(JSON.stringify(allPhotos), signatureUrl, budgetId).run();
     }
-    
+
     return c.json({ success: true, signatureUrl, photoUrls });
-  } catch(e: any) {
+  } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
 });
@@ -1088,12 +1182,12 @@ app.post('/api/rentals/:budget_id/soportes', async (c) => {
 app.get('/api/sessions/concluded', async (c) => {
   const result = await c.env.DB.prepare('SELECT * FROM sessions WHERE status = "closed" ORDER BY id DESC').all();
   const sessions = result.results || [];
-  
+
   for (let s of sessions) {
     const staffRes = await c.env.DB.prepare("SELECT name FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
     s.assigned_staff = (staffRes.results || []).map(u => u.name).join(', ');
   }
-  
+
   return c.json({ sessions });
 });
 
@@ -1122,13 +1216,13 @@ app.post('/api/sessions/:id/assign-staff', async (c) => {
   if (!user_id) return c.json({ error: 'User ID requerido' }, 400);
 
   // REGLA: Verificar si el empleado ya está asignado a otra sesión activa
-  const user = await c.env.DB.prepare('SELECT current_session_id, name FROM users WHERE id = ?').bind(user_id).first<{current_session_id: string | null, name: string}>();
-  
+  const user = await c.env.DB.prepare('SELECT current_session_id, name FROM users WHERE id = ?').bind(user_id).first<{ current_session_id: string | null, name: string }>();
+
   if (user && user.current_session_id) {
     const assignedIds = user.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean);
     for (const otherId of assignedIds) {
       if (otherId !== sessionId.toString()) {
-        const otherSession = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ? AND status = "active"').bind(otherId).first<{name: string}>();
+        const otherSession = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ? AND status = "active"').bind(otherId).first<{ name: string }>();
         if (otherSession) {
           return c.json({ error: `EL EMPLEADO ${user.name} YA ESTÁ ASIGNADO AL EVENTO "${otherSession.name}"` }, 400);
         }
@@ -1144,7 +1238,7 @@ app.post('/api/sessions/:id/assign-staff', async (c) => {
   await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?')
     .bind(currentIds.join(','), user_id)
     .run();
-  
+
   return c.json({ success: true });
 });
 
@@ -1153,14 +1247,14 @@ app.post('/api/sessions/:id/unassign-staff', async (c) => {
   const { user_id } = await c.req.json();
   if (!user_id) return c.json({ error: 'User ID requerido' }, 400);
 
-  const user = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(user_id).first<{current_session_id: string | null}>();
+  const user = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(user_id).first<{ current_session_id: string | null }>();
   let currentIds = user && user.current_session_id ? user.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
   currentIds = currentIds.filter(x => x !== sessionId.toString());
 
   await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?')
     .bind(currentIds.length > 0 ? currentIds.join(',') : null, user_id)
     .run();
-  
+
   return c.json({ success: true });
 });
 
@@ -1177,11 +1271,11 @@ app.post('/api/sessions/plan', async (c) => {
   if (allIds.length > 0) {
     const busyUsers: string[] = [];
     for (const userId of allIds) {
-      const userObj = await c.env.DB.prepare('SELECT name, current_session_id FROM users WHERE id = ?').bind(userId).first<{name: string, current_session_id: string | null}>();
+      const userObj = await c.env.DB.prepare('SELECT name, current_session_id FROM users WHERE id = ?').bind(userId).first<{ name: string, current_session_id: string | null }>();
       if (userObj?.current_session_id) {
         const assignedIds = userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean);
         for (const sId of assignedIds) {
-          const actSession = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ? AND status = "active"').bind(sId).first<{name: string}>();
+          const actSession = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ? AND status = "active"').bind(sId).first<{ name: string }>();
           if (actSession) {
             busyUsers.push(userObj.name);
             break;
@@ -1200,13 +1294,13 @@ app.post('/api/sessions/plan', async (c) => {
   `)
     .bind(sessionName, internalKey, sessionType, supervisor_id || null, started_at || null, phone || null, address || null, contact_name || null, email || null, observations || null, convocation_time || null, event_start_time || null, event_end_time || null, event_end_date || null, budget_id || null)
     .run();
-  
+
   const sessionId = result.meta.last_row_id;
-  
+
   // Asignar personal
   if (allIds.length > 0) {
     for (const userId of allIds) {
-      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{current_session_id: string | null}>();
+      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
       let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
       if (!currentIds.includes(sessionId.toString())) {
         currentIds.push(sessionId.toString());
@@ -1238,17 +1332,17 @@ app.post('/api/sessions/update', async (c) => {
     .run();
 
   // 2. Gestionar personal
-  const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{id: number, current_session_id: string}>();
+  const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
   for (const u of (usersWithSession.results || [])) {
     let currentIds = u.current_session_id ? u.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
     currentIds = currentIds.filter(x => x !== id.toString());
     await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, u.id).run();
   }
-  
+
   const allIds = [...new Set([supervisor_id, ...(staff_ids || [])])].filter(Boolean);
   if (allIds.length > 0) {
     for (const userId of allIds) {
-      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{current_session_id: string | null}>();
+      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
       let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
       if (!currentIds.includes(id.toString())) {
         currentIds.push(id.toString());
@@ -1270,7 +1364,7 @@ app.post('/api/sessions/activate', async (c) => {
     const rawDate = session.started_at; // Asumimos formato YYYY-MM-DD o ISO
     const startTime = session.event_start_time || '00:00';
     const [h, m] = startTime.split(':');
-    
+
     let schedDate;
     if (rawDate.includes('T')) {
       schedDate = new Date(rawDate);
@@ -1284,8 +1378,8 @@ app.post('/api/sessions/activate', async (c) => {
     const diffHours = diffMs / (1000 * 60 * 60);
 
     if (diffHours > 3 && bypass_code !== c.env.ADMIN_KEY) {
-      return c.json({ 
-        error: `RESTRICCIÓN DE SEGURIDAD: El evento está programado para las ${startTime}. No se puede iniciar con más de 3 horas de antelación sin autorización de RRHH.` 
+      return c.json({
+        error: `RESTRICCIÓN DE SEGURIDAD: El evento está programado para las ${startTime}. No se puede iniciar con más de 3 horas de antelación sin autorización de RRHH.`
       }, 403);
     }
   }
@@ -1296,7 +1390,7 @@ app.post('/api/sessions/activate', async (c) => {
   // 3. Asignar Personal
   const allIds = [...new Set([supervisor_id, ...(staff_ids || [])])].filter(Boolean);
   for (const userId of allIds) {
-    const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{current_session_id: string | null}>();
+    const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
     let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
     if (!currentIds.includes(id.toString())) {
       currentIds.push(id.toString());
@@ -1382,10 +1476,10 @@ app.post('/api/comunicacion/oficina-alerta', async (c) => {
   }
 
   const now = new Date();
-  const formatCaracas = now.toLocaleString('es-VE', { 
-    timeZone: 'America/Caracas', 
+  const formatCaracas = now.toLocaleString('es-VE', {
+    timeZone: 'America/Caracas',
     day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
   }).replace(',', '');
 
   const formattedMessage = `🚨 *ALERTA DE INCIDENCIA - GRUPO OFICINA*\n` +
@@ -1441,78 +1535,79 @@ app.post('/api/staff/update-status', async (c) => {
   await c.env.DB.prepare('UPDATE users SET is_active = ? WHERE id = ?')
     .bind(is_active, id)
     .run();
-  
+
   return c.json({ success: true });
 });
 
 app.post('/api/reports/test-request', async (c) => {
-  const { type } = await c.req.json();
-  const env = c.env;
-  const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
+  try {
+    const { type } = await c.req.json();
+    const env = c.env;
+    const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
 
-  if (type === 'birthday') {
-    await sendMonthlyBirthdayReport(env, true);
-    return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado a ${adminEmail}` });
-  
-  } else if (type === 'permissions-matrix') {
-    const allUsers = await env.DB.prepare("SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC").all();
-    const users = (allUsers.results || []) as any[];
-    const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+    if (type === 'birthday') {
+      await sendMonthlyBirthdayReport(env, true);
+      return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado a ${adminEmail}` });
 
-    // Obtener los permisos guardados
-    const permRowsRes = await env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
-    const permRows = permRowsRes.results || [];
-    const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
+    } else if (type === 'permissions-matrix') {
+      const allUsers = await env.DB.prepare("SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC").all();
+      const users = (allUsers.results || []) as any[];
+      const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
-    let excelData = [
-      ['Empleado', 'Valet Parking Ve', 'Valet Parking Mod', 'Eventos y Listas Ve', 'Eventos y Listas Mod', 'Admin General Ve', 'Admin General Mod', 'VIP Eye Staff Ve', 'VIP Eye Staff Mod', 'Seguridad (Pines) Ve', 'Seguridad (Pines) Mod']
-    ];
+      // Obtener los permisos guardados
+      const permRowsRes = await env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
+      const permRows = permRowsRes.results || [];
+      const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
 
-    let htmlRows = '';
+      let excelData = [
+        ['Empleado', 'Valet Parking Ve', 'Valet Parking Mod', 'Eventos y Listas Ve', 'Eventos y Listas Mod', 'Admin General Ve', 'Admin General Mod', 'VIP Eye Staff Ve', 'VIP Eye Staff Mod', 'Seguridad (Pines) Ve', 'Seguridad (Pines) Mod']
+      ];
 
-    for (const u of users) {
-      const permRow: any = permMap.get(u.id);
-      let valetVe, valetMod, eventosVe, eventosMod, adminVe, adminMod, vipVe, vipMod, segVe, segMod;
+      let htmlRows = '';
 
-      if (permRow) {
-        valetVe = permRow.valet_ve === 1;
-        valetMod = permRow.valet_mod === 1;
-        eventosVe = permRow.eventos_ve === 1;
-        eventosMod = permRow.eventos_mod === 1;
-        adminVe = permRow.admin_ve === 1;
-        adminMod = permRow.admin_mod === 1;
-        vipVe = permRow.vip_ve === 1;
-        vipMod = permRow.vip_mod === 1;
-        segVe = permRow.seg_ve === 1;
-        segMod = permRow.seg_mod === 1;
-      } else {
-        const isSuperadmin = u.role === 'director';
-        const isSupervisor = u.role === 'supervisor';
-        const isVIP = allowedCfoNames.some(n => (u.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
-        valetVe = true;
-        valetMod = isSuperadmin || isSupervisor;
-        eventosVe = isSuperadmin || isSupervisor;
-        eventosMod = isSuperadmin || isSupervisor;
-        adminVe = isSuperadmin;
-        adminMod = isSuperadmin;
-        vipVe = isVIP;
-        vipMod = isVIP;
-        segVe = isSuperadmin;
-        segMod = isSuperadmin;
-      }
+      for (const u of users) {
+        const permRow: any = permMap.get(u.id);
+        let valetVe, valetMod, eventosVe, eventosMod, adminVe, adminMod, vipVe, vipMod, segVe, segMod;
 
-      const toMark = (b: boolean) => b ? '✅' : '❌';
+        if (permRow) {
+          valetVe = permRow.valet_ve === 1;
+          valetMod = permRow.valet_mod === 1;
+          eventosVe = permRow.eventos_ve === 1;
+          eventosMod = permRow.eventos_mod === 1;
+          adminVe = permRow.admin_ve === 1;
+          adminMod = permRow.admin_mod === 1;
+          vipVe = permRow.vip_ve === 1;
+          vipMod = permRow.vip_mod === 1;
+          segVe = permRow.seg_ve === 1;
+          segMod = permRow.seg_mod === 1;
+        } else {
+          const isSuperadmin = u.role === 'director';
+          const isSupervisor = u.role === 'supervisor';
+          const isVIP = allowedCfoNames.some(n => (u.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
+          valetVe = true;
+          valetMod = isSuperadmin || isSupervisor;
+          eventosVe = isSuperadmin || isSupervisor;
+          eventosMod = isSuperadmin || isSupervisor;
+          adminVe = isSuperadmin;
+          adminMod = isSuperadmin;
+          vipVe = isVIP;
+          vipMod = isVIP;
+          segVe = isSuperadmin;
+          segMod = isSuperadmin;
+        }
 
-      excelData.push([
-        u.name.toUpperCase(),
-        toMark(valetVe), toMark(valetMod),
-        toMark(eventosVe), toMark(eventosMod),
-        toMark(adminVe), toMark(adminMod),
-        toMark(vipVe), toMark(vipMod),
-        toMark(segVe), toMark(segMod)
-      ]);
+        const toMark = (b: boolean) => b ? '✅' : '❌';
 
-      htmlRows += `
+        excelData.push([
+          u.name.toUpperCase(),
+          toMark(valetVe), toMark(valetMod),
+          toMark(eventosVe), toMark(eventosMod),
+          toMark(adminVe), toMark(adminMod),
+          toMark(vipVe), toMark(vipMod),
+          toMark(segVe), toMark(segMod)
+        ]);
+
+        htmlRows += `
         <tr style="border-bottom: 1px solid #e2e8f0; background: white; color: #1e293b; font-size: 0.8rem; text-align: center;">
           <td style="padding: 10px; text-align: left; font-weight: bold; border-right: 1px solid #e2e8f0;">${u.name.toUpperCase()}</td>
           <td style="padding: 10px; border-right: 1px dashed #e2e8f0;">${toMark(valetVe)}</td><td style="padding: 10px; border-right: 1px solid #e2e8f0;">${toMark(valetMod)}</td>
@@ -1522,18 +1617,18 @@ app.post('/api/reports/test-request', async (c) => {
           <td style="padding: 10px; border-right: 1px dashed #e2e8f0;">${toMark(segVe)}</td><td style="padding: 10px;">${toMark(segMod)}</td>
         </tr>
       `;
-    }
+      }
 
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const colWidths = excelData.map(() => ({ wch: 15 }));
-    colWidths[0].wch = 30; // Nombre más ancho
-    ws['!cols'] = colWidths;
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Permisos");
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const colWidths = excelData.map(() => ({ wch: 15 }));
+      colWidths[0].wch = 30; // Nombre más ancho
+      ws['!cols'] = colWidths;
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Permisos");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
 
-    const htmlBody = `
+      const htmlBody = `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
         <h2 style="color: #0f172a;">Matriz Visual de Permisos por Empleado — EYE STAFF</h2>
         <p style="color: #334155;">Hola,</p>
@@ -1564,14 +1659,14 @@ app.post('/api/reports/test-request', async (c) => {
       </div>
     `;
 
-    await sendEmail(env, adminEmail, 'Matriz Checkbox de Permisos por Empleado — EYE STAFF', htmlBody, [
-      { filename: 'Matriz_Permisos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-    ], undefined, 'permisos');
+      await sendEmail(env, adminEmail, 'Matriz Checkbox de Permisos por Empleado — EYE STAFF', htmlBody, [
+        { filename: 'Matriz_Permisos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+      ], undefined, 'permisos');
 
-    return c.json({ success: true, message: `Matriz de permisos enviada a ${adminEmail}` });
-  } else if (type === 'convocation') {
-    // Generar una simulación de correo de convocatoria extremadamente detallado
-    const demoHtml = `
+      return c.json({ success: true, message: `Matriz de permisos enviada a ${adminEmail}` });
+    } else if (type === 'convocation') {
+      // Generar una simulación de correo de convocatoria extremadamente detallado
+      const demoHtml = `
       <div style="font-family: 'Outfit', sans-serif; background: #0b0f19; color: white; padding: 30px; border-radius: 20px; border: 1px solid #1e253c; max-width: 600px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 25px;">
            <h1 style="color: #ef4444; margin: 0; letter-spacing: 2px;">EYE STAFF</h1>
@@ -1644,80 +1739,84 @@ app.post('/api/reports/test-request', async (c) => {
         </p>
       </div>
     `;
-    await sendEmail(env, adminEmail, `🔔 PRUEBA DE CONVOCATORIA — EVENTO DEMO`, demoHtml, undefined, undefined, 'convocatoria');
-    return c.json({ success: true, message: `Simulación de convocatoria enviada a ${adminEmail}` });
-  } else if (type === 'pdf' || type === 'xlsx') {
-    // Buscar la última sesión en la base de datos para simular el reporte de cierre
-    const latestSession = await env.DB.prepare('SELECT id FROM sessions ORDER BY id DESC LIMIT 1').first<any>();
-    if (!latestSession) {
-      return c.json({ error: 'No hay eventos en la base de datos para simular un reporte de cierre.' }, 400);
+      await sendEmail(env, adminEmail, `🔔 PRUEBA DE CONVOCATORIA — EVENTO DEMO`, demoHtml, undefined, undefined, 'convocatoria');
+      return c.json({ success: true, message: `Simulación de convocatoria enviada a ${adminEmail}` });
+    } else if (type === 'pdf' || type === 'xlsx') {
+      // Buscar la última sesión en la base de datos para simular el reporte de cierre
+      const latestSession = await env.DB.prepare('SELECT id FROM sessions ORDER BY id DESC LIMIT 1').first<any>();
+      if (!latestSession) {
+        return c.json({ error: 'No hay eventos en la base de datos para simular un reporte de cierre.' }, 400);
+      }
+      try {
+        await sendEventClosingReport(env, latestSession.id);
+        return c.json({ success: true, message: `Reporte de cierre simulado para el evento ID ${latestSession.id} enviado a ${adminEmail}` });
+      } catch (e: any) {
+        console.error('Error in sendEventClosingReport test:', e);
+        return c.json({ error: `Error al generar el reporte de prueba: ${e.message || e}` }, 500);
+      }
+    } else if (type === 'bbdd_eventos') {
+      const events = await env.DB.prepare('SELECT id, session_id, event_type, closed_at, total_vehicles, total_staff FROM event_reports ORDER BY closed_at DESC LIMIT 100').all();
+      let excelData = [['ID', 'Session ID', 'Tipo', 'Fecha (Cierre)', 'Vehículos', 'Staff']];
+      for (const e of (events.results || [])) {
+        excelData.push([e.id, (e as any).session_id, (e as any).event_type, (e as any).closed_at, (e as any).total_vehicles, (e as any).total_staff]);
+      }
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Eventos");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+      await sendEmail(env, adminEmail, 'Base de Datos de Eventos Cerrados', '<p>Adjunto encontrarás la base de datos de los últimos 100 eventos cerrados.</p>', [{ filename: 'BBDD_Eventos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `BBDD de eventos enviada a ${adminEmail}` });
+    } else if (type === 'vehiculos') {
+      const vehicles = await env.DB.prepare('SELECT plate, brand, color, owner_phone, status, session_id FROM vehicles ORDER BY id DESC LIMIT 500').all();
+      let excelData = [['Placa', 'Marca', 'Color', 'Teléfono', 'Estado', 'Session ID']];
+      for (const v of (vehicles.results || [])) {
+        excelData.push([(v as any).plate, (v as any).brand, (v as any).color, (v as any).owner_phone, (v as any).status, (v as any).session_id]);
+      }
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Vehiculos");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+      await sendEmail(env, adminEmail, 'Base de Datos de Vehículos', '<p>Adjunto encontrarás la base de datos de los últimos 500 vehículos.</p>', [{ filename: 'BBDD_Vehiculos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `BBDD de vehículos enviada a ${adminEmail}` });
+    } else if (type === 'personal') {
+      const users = await env.DB.prepare('SELECT id, name, role, is_active, phone FROM users ORDER BY name ASC').all();
+      let excelData = [['ID', 'Nombre', 'Rol', 'Activo', 'Teléfono']];
+      for (const u of (users.results || [])) {
+        excelData.push([u.id, (u as any).name, (u as any).role, (u as any).is_active ? 'Sí' : 'No', (u as any).phone]);
+      }
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Personal");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+      await sendEmail(env, adminEmail, 'Matriz Completa de Personal', '<p>Adjunto encontrarás la matriz completa de personal.</p>', [{ filename: 'Matriz_Personal.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `Matriz de personal enviada a ${adminEmail}` });
+    } else if (type === 'nominas') {
+      // Para simplificar ya que staff_payroll u otra tabla de nómina puede no existir, devolvemos un reporte de sesiones
+      const sessions = await env.DB.prepare('SELECT id, name, status, started_at FROM sessions ORDER BY started_at DESC LIMIT 100').all();
+      let excelData = [['Session ID', 'Nombre', 'Estado', 'Fecha']];
+      for (const s of (sessions.results || [])) {
+        excelData.push([s.id, (s as any).name, (s as any).status, (s as any).started_at]);
+      }
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Nominas");
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+      const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+      await sendEmail(env, adminEmail, 'Resumen Contable de Nóminas (MOCK)', '<p>Adjunto encontrarás una simulación del resumen contable de nóminas.</p>', [{ filename: 'Nominas.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `Resumen de nóminas enviado a ${adminEmail}` });
+    } else if (type === 'cierre_pago') {
+      const html = `<div style="font-family: sans-serif; padding: 20px;"><h2>Cierre de Ciclo de Pago</h2><p>Este es un correo simulado de cierre de ciclo de pago. Se han marcado los eventos aprobados como PAGADOS.</p></div>`;
+      await sendEmail(env, adminEmail, 'Cierre de Ciclo de Pago', html);
+      return c.json({ success: true, message: `Correo de cierre enviado a ${adminEmail}` });
+    } else {
+      return c.json({ error: 'Tipo de reporte de prueba no soportado' }, 400);
     }
-    try {
-      await sendEventClosingReport(env, latestSession.id);
-      return c.json({ success: true, message: `Reporte de cierre simulado para el evento ID ${latestSession.id} enviado a ${adminEmail}` });
-    } catch(e: any) {
-      console.error('Error in sendEventClosingReport test:', e);
-      return c.json({ error: `Error al generar el reporte de prueba: ${e.message || e}` }, 500);
-    }
-  } else if (type === 'bbdd_eventos') {
-    const events = await env.DB.prepare('SELECT id, session_id, event_type, date_str, total_vehicles, total_staff, observations FROM event_reports ORDER BY closed_at DESC LIMIT 100').all();
-    let excelData = [['ID', 'Session ID', 'Tipo', 'Fecha', 'Vehículos', 'Staff', 'Observaciones']];
-    for (const e of (events.results || [])) {
-      excelData.push([e.id, (e as any).session_id, (e as any).event_type, (e as any).date_str, (e as any).total_vehicles, (e as any).total_staff, (e as any).observations]);
-    }
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Eventos");
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-    await sendEmail(env, adminEmail, 'Base de Datos de Eventos Cerrados', '<p>Adjunto encontrarás la base de datos de los últimos 100 eventos cerrados.</p>', [{ filename: 'BBDD_Eventos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-    return c.json({ success: true, message: `BBDD de eventos enviada a ${adminEmail}` });
-  } else if (type === 'vehiculos') {
-    const vehicles = await env.DB.prepare('SELECT plate, brand, color, is_vip, phone, status, session_id FROM vehicles ORDER BY id DESC LIMIT 500').all();
-    let excelData = [['Placa', 'Marca', 'Color', 'VIP', 'Teléfono', 'Estado', 'Session ID']];
-    for (const v of (vehicles.results || [])) {
-      excelData.push([(v as any).plate, (v as any).brand, (v as any).color, (v as any).is_vip ? 'Sí' : 'No', (v as any).phone, (v as any).status, (v as any).session_id]);
-    }
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Vehiculos");
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-    await sendEmail(env, adminEmail, 'Base de Datos de Vehículos', '<p>Adjunto encontrarás la base de datos de los últimos 500 vehículos.</p>', [{ filename: 'BBDD_Vehiculos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-    return c.json({ success: true, message: `BBDD de vehículos enviada a ${adminEmail}` });
-  } else if (type === 'personal') {
-    const users = await env.DB.prepare('SELECT id, name, role, is_active, phone FROM users ORDER BY name ASC').all();
-    let excelData = [['ID', 'Nombre', 'Rol', 'Activo', 'Teléfono']];
-    for (const u of (users.results || [])) {
-      excelData.push([u.id, (u as any).name, (u as any).role, (u as any).is_active ? 'Sí' : 'No', (u as any).phone]);
-    }
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Personal");
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-    await sendEmail(env, adminEmail, 'Matriz Completa de Personal', '<p>Adjunto encontrarás la matriz completa de personal.</p>', [{ filename: 'Matriz_Personal.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-    return c.json({ success: true, message: `Matriz de personal enviada a ${adminEmail}` });
-  } else if (type === 'nominas') {
-    // Para simplificar ya que staff_payroll u otra tabla de nómina puede no existir, devolvemos un reporte de sesiones
-    const sessions = await env.DB.prepare('SELECT id, name, status, created_at FROM sessions ORDER BY created_at DESC LIMIT 100').all();
-    let excelData = [['Session ID', 'Nombre', 'Estado', 'Fecha']];
-    for (const s of (sessions.results || [])) {
-      excelData.push([s.id, (s as any).name, (s as any).status, (s as any).created_at]);
-    }
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Nominas");
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-    await sendEmail(env, adminEmail, 'Resumen Contable de Nóminas (MOCK)', '<p>Adjunto encontrarás una simulación del resumen contable de nóminas.</p>', [{ filename: 'Nominas.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-    return c.json({ success: true, message: `Resumen de nóminas enviado a ${adminEmail}` });
-  } else if (type === 'cierre_pago') {
-    const html = `<div style="font-family: sans-serif; padding: 20px;"><h2>Cierre de Ciclo de Pago</h2><p>Este es un correo simulado de cierre de ciclo de pago. Se han marcado los eventos aprobados como PAGADOS.</p></div>`;
-    await sendEmail(env, adminEmail, 'Cierre de Ciclo de Pago', html);
-    return c.json({ success: true, message: `Correo de cierre enviado a ${adminEmail}` });
-  } else {
-    return c.json({ error: 'Tipo de reporte de prueba no soportado' }, 400);
+  } catch (e: any) {
+    console.error('Error global en test-request:', e);
+    return c.json({ error: 'Error del servidor procesando la prueba: ' + e.message }, 500);
   }
 });
 
@@ -1784,7 +1883,7 @@ app.post('/api/reports/send-credentials', async (c) => {
 </html>`;
     await sendEmail(c.env, 'ncarrillok@gmail.com', `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
     return c.json({ success: true });
-  } catch(e: any) {
+  } catch (e: any) {
     return c.json({ error: e.message }, 500);
   }
 });
@@ -1810,23 +1909,23 @@ app.post('/api/sessions/close', async (c) => {
   }
 
   if (!id) {
-    const active = await c.env.DB.prepare('SELECT id FROM sessions WHERE status = "active" ORDER BY id DESC LIMIT 1').first<{id:number}>();
+    const active = await c.env.DB.prepare('SELECT id FROM sessions WHERE status = "active" ORDER BY id DESC LIMIT 1').first<{ id: number }>();
     id = active ? active.id : null;
   }
 
   if (!id) return c.json({ error: 'No hay sesión activa para cerrar' }, 400);
 
   if (status === 'budgeted') {
-      await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run();
-      
-      const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{id: number, current_session_id: string}>();
-      for (const u of (usersWithSession.results || [])) {
-        let currentIds = u.current_session_id ? u.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
-        currentIds = currentIds.filter(x => x !== id.toString());
-        await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, u.id).run();
-      }
-      
-      return c.json({ success: true, status: 'budgeted', session_id: id });
+    await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run();
+
+    const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
+    for (const u of (usersWithSession.results || [])) {
+      let currentIds = u.current_session_id ? u.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
+      currentIds = currentIds.filter(x => x !== id.toString());
+      await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, u.id).run();
+    }
+
+    return c.json({ success: true, status: 'budgeted', session_id: id });
   }
 
   if (!pin) {
@@ -1844,9 +1943,9 @@ app.post('/api/sessions/close', async (c) => {
   }
 
   await c.env.DB.prepare('UPDATE sessions SET status = "closed", ended_at = CURRENT_TIMESTAMP WHERE id = ?').bind(id).run();
-  
+
   // Liberar personal asignado al cerrar
-  const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{id: number, current_session_id: string}>();
+  const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
   for (const u of (usersWithSession.results || [])) {
     let currentIds = u.current_session_id ? u.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
     currentIds = currentIds.filter(x => x !== id.toString());
@@ -1933,8 +2032,8 @@ app.get('/api/event-reports/:id/details', async (c) => {
 
       let breakMins = 0;
       for (let i = 0; i < breaks.length - 1; i += 2) {
-        if (breaks[i].type === 'break_start' && breaks[i+1]?.type === 'break_end') {
-          breakMins += Math.round((new Date(breaks[i+1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
+        if (breaks[i].type === 'break_start' && breaks[i + 1]?.type === 'break_end') {
+          breakMins += Math.round((new Date(breaks[i + 1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
         }
       }
 
@@ -2096,7 +2195,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
   try {
     const reportId = c.req.param('id');
     const body = await c.req.json<{ additionalEmails?: string[], ccEmail?: string }>().catch(() => ({}) as any);
-    
+
     const report = await c.env.DB.prepare('SELECT * FROM event_reports WHERE id = ?').bind(reportId).first<any>();
     if (!report) return c.json({ error: 'Reporte no encontrado' }, 404);
 
@@ -2167,8 +2266,8 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
       const breaks = att.filter((a: any) => a.type === 'break_start' || a.type === 'break_end');
       let breakMins = 0;
       for (let i = 0; i < breaks.length - 1; i += 2) {
-        if (breaks[i].type === 'break_start' && breaks[i+1]?.type === 'break_end') {
-          breakMins += Math.round((new Date(breaks[i+1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
+        if (breaks[i].type === 'break_start' && breaks[i + 1]?.type === 'break_end') {
+          breakMins += Math.round((new Date(breaks[i + 1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
         }
       }
       let totalMins = 0;
@@ -2197,7 +2296,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     const html = buildClosingEmailHtml(session, vehicles, staffWithAttendance, summary);
 
     const primaryEmail = 'ncarrillok@gmail.com';
-    
+
     // Agregar CCs
     const ccEmailsSet = new Set<string>();
     if (body.ccEmail) {
@@ -2219,7 +2318,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     try {
       currentHistory = report.sent_emails_history ? JSON.parse(report.sent_emails_history) : [];
       if (!Array.isArray(currentHistory)) currentHistory = [];
-    } catch(e) {
+    } catch (e) {
       currentHistory = [];
     }
 
@@ -2276,8 +2375,8 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
     let breakMins = 0;
     for (let i = 0; i < breaks.length - 1; i += 2) {
-      if (breaks[i].type === 'break_start' && breaks[i+1]?.type === 'break_end') {
-        breakMins += Math.round((new Date(breaks[i+1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
+      if (breaks[i].type === 'break_start' && breaks[i + 1]?.type === 'break_end') {
+        breakMins += Math.round((new Date(breaks[i + 1].timestamp).getTime() - new Date(breaks[i].timestamp).getTime()) / 60000);
       }
     }
 
@@ -2306,16 +2405,16 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   }
 
   // --- Estadísticas resumen ---
-  const delivered = vehicles.filter((v: any) => ['delivered','retrieved'].includes(v.status)).length;
+  const delivered = vehicles.filter((v: any) => ['delivered', 'retrieved'].includes(v.status)).length;
   const inCustody = vehicles.length - delivered;
   const eventStart = session.started_at ? new Date(session.started_at) : new Date();
   const eventEnd = session.ended_at ? new Date(session.ended_at) : new Date();
   const durationMins = Math.round((eventEnd.getTime() - eventStart.getTime()) / 60000);
   const avgStayMins = vehicles.length > 0
     ? Math.round(vehicles.reduce((acc: number, v: any) => {
-        if (!v.check_out_at) return acc;
-        return acc + (new Date(v.check_out_at).getTime() - new Date(v.created_at).getTime()) / 60000;
-      }, 0) / (delivered || 1))
+      if (!v.check_out_at) return acc;
+      return acc + (new Date(v.check_out_at).getTime() - new Date(v.created_at).getTime()) / 60000;
+    }, 0) / (delivered || 1))
     : 0;
 
   const summaryData = {
@@ -2341,14 +2440,14 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   const wb = XLSX.utils.book_new();
 
   // Hoja 1: Vehículos
-  const vehHeaders = ['#','PLACA','PROPIETARIO','MARCA','MODELO','COLOR','TIPO','ESTADO','ENTRADA','SALIDA','TIEMPO(min)','RECURRENTE','SECUENCIA'];
+  const vehHeaders = ['#', 'PLACA', 'PROPIETARIO', 'MARCA', 'MODELO', 'COLOR', 'TIPO', 'ESTADO', 'ENTRADA', 'SALIDA', 'TIEMPO(min)', 'RECURRENTE', 'SECUENCIA'];
   const vehRows = vehicles.map((v: any, i: number) => {
     const entry = v.created_at ? new Date(v.created_at) : null;
     const exit = v.check_out_at ? new Date(v.check_out_at) : null;
     const mins = (entry && exit) ? Math.round((exit.getTime() - entry.getTime()) / 60000) : '';
     const status = v.status === 'retrieved' || v.status === 'delivered' ? 'ENTREGADO' : 'EN CUSTODIA';
     return [
-      i+1, v.plate, v.owner_name || '', v.brand || '', v.model || '', v.color || '',
+      i + 1, v.plate, v.owner_name || '', v.brand || '', v.model || '', v.color || '',
       v.vehicle_type || 'auto', status,
       entry ? fmtTime(entry) : '', exit ? fmtTime(exit) : '', mins,
       v.recurrence_count > 0 ? 'SÍ' : 'NO', v.daily_seq || ''
@@ -2358,7 +2457,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   XLSX.utils.book_append_sheet(wb, wsVeh, 'VEHÍCULOS');
 
   // Hoja 2: Personal
-  const staffHeaders = ['NOMBRE','ROL','ENTRADA','SALIDA','DESCANSO(min)','JORNADA(min)','VEHÍCULOS ATENDIDOS'];
+  const staffHeaders = ['NOMBRE', 'ROL', 'ENTRADA', 'SALIDA', 'DESCANSO(min)', 'JORNADA(min)', 'VEHÍCULOS ATENDIDOS'];
   const staffRows = staffWithAttendance.map((s: any) => [
     s.name, s.role, s.entry_time, s.exit_time, s.break_mins, s.total_mins, s.vehicles_attended
   ]);
@@ -2409,16 +2508,16 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     page.drawRectangle({ x: 0, y: pageH - 60, width: pageW, height: 60, color: rgb(0.06, 0.09, 0.15) });
     page.drawText('EYE STAFF', { x: margin, y: pageH - 38, size: 20, font: bold, color: rgb(0.94, 0.27, 0.27) });
     page.drawText('REPORTE OFICIAL DE CIERRE DE EVENTO', { x: margin, y: pageH - 55, size: 8, font, color: rgb(0.6, 0.6, 0.6) });
-    page.drawText(`${session.name}  |  ID: ${sessionId}`, { x: 300, y: pageH - 38, size: 11, font: bold, color: rgb(1,1,1) });
-    page.drawText(`Generado: ${formatFull24h(new Date())}`, { x: 300, y: pageH - 55, size: 7, font, color: rgb(0.6,0.6,0.6) });
+    page.drawText(`${session.name}  |  ID: ${sessionId}`, { x: 300, y: pageH - 38, size: 11, font: bold, color: rgb(1, 1, 1) });
+    page.drawText(`Generado: ${formatFull24h(new Date())}`, { x: 300, y: pageH - 55, size: 7, font, color: rgb(0.6, 0.6, 0.6) });
     y = pageH - 75;
   };
 
   drawPageHeader();
 
   // Sección 1: Datos del evento
-  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
-  page.drawText('INFORMACIÓN DEL EVENTO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1,1,1) });
+  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
+  page.drawText('INFORMACIÓN DEL EVENTO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
   y -= 22;
 
   const infoItems = [
@@ -2439,15 +2538,15 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
   // Sección 2: Tabla de vehículos
   ensureSpace(30);
-  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 16, color: rgb(0.06, 0.09, 0.15) });
-  page.drawText('DETALLE DE VEHÍCULOS', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1,1,1) });
+  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.06, 0.09, 0.15) });
+  page.drawText('DETALLE DE VEHÍCULOS', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
   y -= 22;
 
   // Encabezado tabla
   const colsV = [40, 60, 90, 60, 55, 55, 60, 45, 45];
-  const headV = ['#','PLACA','PROPIETARIO','MARCA','COLOR','ENTRADA','SALIDA','ESTADO','REC.'];
+  const headV = ['#', 'PLACA', 'PROPIETARIO', 'MARCA', 'COLOR', 'ENTRADA', 'SALIDA', 'ESTADO', 'REC.'];
   let xCol = margin;
-  page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2*margin, height: 14, color: rgb(0.92, 0.93, 0.94) });
+  page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 14, color: rgb(0.92, 0.93, 0.94) });
   for (let ci = 0; ci < headV.length; ci++) {
     page.drawText(headV[ci], { x: xCol + 2, y: y + 1, size: 6, font: bold });
     xCol += colsV[ci];
@@ -2457,14 +2556,14 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   for (let i = 0; i < vehicles.length; i++) {
     ensureSpace(12);
     if (i % 2 === 0) {
-      page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2*margin, height: 12, color: rgb(0.97, 0.98, 0.99) });
+      page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 12, color: rgb(0.97, 0.98, 0.99) });
     }
     const v = vehicles[i];
     const tIn = v.created_at ? fmtTime(new Date(v.created_at)) : '';
     const tOut = v.check_out_at ? fmtTime(new Date(v.check_out_at)) : '—';
-    const status = ['delivered','retrieved'].includes(v.status) ? 'ENTREGADO' : 'CUSTODIA';
+    const status = ['delivered', 'retrieved'].includes(v.status) ? 'ENTREGADO' : 'CUSTODIA';
     const rec = v.recurrence_count > 0 ? 'SÍ' : 'NO';
-    const row = [String(i+1), v.plate||'', (v.owner_name||'').substring(0,14), v.brand||'', v.color||'', tIn, tOut, status, rec];
+    const row = [String(i + 1), v.plate || '', (v.owner_name || '').substring(0, 14), v.brand || '', v.color || '', tIn, tOut, status, rec];
     xCol = margin;
     for (let ci = 0; ci < row.length; ci++) {
       page.drawText(row[ci], { x: xCol + 2, y: y + 1, size: 6, font });
@@ -2477,14 +2576,14 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
   // Sección 3: Personal
   ensureSpace(30);
-  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 16, color: rgb(0.06, 0.09, 0.15) });
-  page.drawText('PERSONAL Y JORNADA LABORAL', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1,1,1) });
+  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.06, 0.09, 0.15) });
+  page.drawText('PERSONAL Y JORNADA LABORAL', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
   y -= 22;
 
   const colsS = [140, 80, 50, 50, 60, 70, 70];
-  const headS = ['NOMBRE','ROL','ENTRADA','SALIDA','DESC.(min)','JORNADA(min)','VEH. ATENDIDOS'];
+  const headS = ['NOMBRE', 'ROL', 'ENTRADA', 'SALIDA', 'DESC.(min)', 'JORNADA(min)', 'VEH. ATENDIDOS'];
   xCol = margin;
-  page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2*margin, height: 14, color: rgb(0.92, 0.93, 0.94) });
+  page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 14, color: rgb(0.92, 0.93, 0.94) });
   for (let ci = 0; ci < headS.length; ci++) {
     page.drawText(headS[ci], { x: xCol + 2, y: y + 1, size: 6, font: bold });
     xCol += colsS[ci];
@@ -2494,10 +2593,10 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   for (let i = 0; i < staffWithAttendance.length; i++) {
     ensureSpace(12);
     if (i % 2 === 0) {
-      page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2*margin, height: 12, color: rgb(0.97, 0.98, 0.99) });
+      page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 12, color: rgb(0.97, 0.98, 0.99) });
     }
     const s = staffWithAttendance[i];
-    const srow = [s.name.substring(0,22), s.role.substring(0,12), s.entry_time, s.exit_time, String(s.break_mins), String(s.total_mins), String(s.vehicles_attended)];
+    const srow = [s.name.substring(0, 22), s.role.substring(0, 12), s.entry_time, s.exit_time, String(s.break_mins), String(s.total_mins), String(s.vehicles_attended)];
     xCol = margin;
     for (let ci = 0; ci < srow.length; ci++) {
       page.drawText(srow[ci], { x: xCol + 2, y: y + 1, size: 6, font });
@@ -2510,8 +2609,8 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
   // Sección 4: Resumen ejecutivo
   ensureSpace(80);
-  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
-  page.drawText('RESUMEN EJECUTIVO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1,1,1) });
+  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
+  page.drawText('RESUMEN EJECUTIVO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
   y -= 22;
 
   const execLines = [
@@ -2531,7 +2630,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   }
 
   // Footer en última página
-  page.drawLine({ start: {x: margin, y: margin + 20}, end: {x: pageW - margin, y: margin + 20}, thickness: 0.5, color: rgb(0.8, 0.8, 0.8) });
+  page.drawLine({ start: { x: margin, y: margin + 20 }, end: { x: pageW - margin, y: margin + 20 }, thickness: 0.5, color: rgb(0.8, 0.8, 0.8) });
   page.drawText('EYE STAFF 2026 — Sistema de Gestión de Eventos y Personal  |  eye-staff.app', { x: margin, y: margin + 8, size: 6, font, color: rgb(0.6, 0.6, 0.6) });
 
   const pdfBytes = await pdfDoc.save();
@@ -2544,7 +2643,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   try {
     await env.PHOTOS.put(pdfKey, pdfBytes, { httpMetadata: { contentType: 'application/pdf' } });
     await env.PHOTOS.put(excelKey, xlsxBuffer, { httpMetadata: { contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' } });
-  } catch(e) { console.error('R2 Report Save Error:', e); }
+  } catch (e) { console.error('R2 Report Save Error:', e); }
 
   // ===================== 4. GUARDAR EN D1 =====================
   await env.DB.prepare(`
@@ -2560,18 +2659,20 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     { filename: `Reporte_${safeName}.pdf`, content: pdfBase64, content_type: 'application/pdf' },
   ];
   const adminEmail = env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
-  
-  const dossierSubs = await getSubscribedEmails(env, 'dossier');
-  const excelSubs = await getSubscribedEmails(env, 'excel');
-  const ccList = [...new Set([...dossierSubs, ...excelSubs])];
-  
+
+  // DESACTIVADO POR LÍMITE DE RESEND
+  // const dossierSubs = await getSubscribedEmails(env, 'dossier');
+  // const excelSubs = await getSubscribedEmails(env, 'excel');
+  // const ccList = [...new Set([...dossierSubs, ...excelSubs])];
+  const ccList: string[] = [];
+
   await sendEmail(env, adminEmail, `EYE STAFF: Reporte Final — ${session.name}`, html, attachments, ccList);
 
   return { summaryData, vehicles, staffWithAttendance };
 }
 
 function fmtTime(d: Date): string {
-  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
 }
 
 function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summary: any): string {
@@ -2582,17 +2683,17 @@ function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summ
     </div>
     <div style="padding:24px;">
       <h2 style="margin-top:0;">${session.name}</h2>
-      <p><b>Inicio:</b> ${formatFull24h(new Date(session.started_at))} &nbsp;|&nbsp; <b>Fin:</b> ${formatFull24h(new Date(session.ended_at||Date.now()))}</p>
+      <p><b>Inicio:</b> ${formatFull24h(new Date(session.started_at))} &nbsp;|&nbsp; <b>Fin:</b> ${formatFull24h(new Date(session.ended_at || Date.now()))}</p>
       <p><b>Duración:</b> ${summary.duration_mins} min &nbsp;|&nbsp; <b>Ubicación:</b> ${summary.location}</p>
       <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;">VEHÍCULOS (${vehicles.length})</h3>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <tr style="background:#f1f5f9;"><th style="border:1px solid #ddd;padding:6px;">PLACA</th><th style="border:1px solid #ddd;padding:6px;">MARCA/COLOR</th><th style="border:1px solid #ddd;padding:6px;">PROPIETARIO</th><th style="border:1px solid #ddd;padding:6px;">ENTRADA</th><th style="border:1px solid #ddd;padding:6px;">SALIDA</th><th style="border:1px solid #ddd;padding:6px;">ESTADO</th></tr>
-        ${vehicles.map((v:any)=>`<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${v.plate}</td><td style="border:1px solid #ddd;padding:6px;">${v.brand||''} ${v.color||''}</td><td style="border:1px solid #ddd;padding:6px;">${v.owner_name||'—'}</td><td style="border:1px solid #ddd;padding:6px;">${v.created_at?fmtTime(new Date(v.created_at)):''}</td><td style="border:1px solid #ddd;padding:6px;">${v.check_out_at?fmtTime(new Date(v.check_out_at)):'EN CUSTODIA'}</td><td style="border:1px solid #ddd;padding:6px;">${['delivered','retrieved'].includes(v.status)?'ENTREGADO':'CUSTODIA'}</td></tr>`).join('')}
+        ${vehicles.map((v: any) => `<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${v.plate}</td><td style="border:1px solid #ddd;padding:6px;">${v.brand || ''} ${v.color || ''}</td><td style="border:1px solid #ddd;padding:6px;">${v.owner_name || '—'}</td><td style="border:1px solid #ddd;padding:6px;">${v.created_at ? fmtTime(new Date(v.created_at)) : ''}</td><td style="border:1px solid #ddd;padding:6px;">${v.check_out_at ? fmtTime(new Date(v.check_out_at)) : 'EN CUSTODIA'}</td><td style="border:1px solid #ddd;padding:6px;">${['delivered', 'retrieved'].includes(v.status) ? 'ENTREGADO' : 'CUSTODIA'}</td></tr>`).join('')}
       </table>
       <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;margin-top:24px;">PERSONAL (${staff.length})</h3>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <tr style="background:#f1f5f9;"><th style="border:1px solid #ddd;padding:6px;">NOMBRE</th><th style="border:1px solid #ddd;padding:6px;">ROL</th><th style="border:1px solid #ddd;padding:6px;">ENTRADA</th><th style="border:1px solid #ddd;padding:6px;">SALIDA</th><th style="border:1px solid #ddd;padding:6px;">DESCANSO</th><th style="border:1px solid #ddd;padding:6px;">JORNADA</th><th style="border:1px solid #ddd;padding:6px;">VEH.</th></tr>
-        ${staff.map((s:any)=>`<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${s.name}</td><td style="border:1px solid #ddd;padding:6px;">${s.role}</td><td style="border:1px solid #ddd;padding:6px;">${s.entry_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.exit_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.break_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.total_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.vehicles_attended}</td></tr>`).join('')}
+        ${staff.map((s: any) => `<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${s.name}</td><td style="border:1px solid #ddd;padding:6px;">${s.role}</td><td style="border:1px solid #ddd;padding:6px;">${s.entry_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.exit_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.break_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.total_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.vehicles_attended}</td></tr>`).join('')}
       </table>
       <div style="background:#f8fafc;border-left:4px solid #ef4444;padding:16px;margin-top:24px;border-radius:4px;">
         <h3 style="margin-top:0;color:#ef4444;">RESUMEN EJECUTIVO</h3>
@@ -2655,7 +2756,7 @@ async function sendEmail(env: Env, to: string | string[], subject: string, html:
   try {
     let toArray = Array.isArray(to) ? to : [to];
     let ccArray = cc || [];
-    
+
     if (reportId) {
       // DESACTIVADO POR LÍMITE DE RESEND: Todo va solo al admin
       // const subs = await getSubscribedEmails(env, reportId);
@@ -2688,7 +2789,7 @@ async function sendEmail(env: Env, to: string | string[], subject: string, html:
       console.error('Email API Error details:', errText);
       throw new Error(`Email API Error: ${res.status} - ${errText}`);
     }
-  } catch (e: any) { 
+  } catch (e: any) {
     console.error('Email Error:', e);
     throw new Error(e.message || 'Error al enviar el email');
   }
@@ -2702,7 +2803,7 @@ async function checkScheduledNotifications(env: Env) {
   const now = new Date();
   const offset = -4; // Ajustado a Venezuela (GMT-4)
   const localTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
-  
+
   const hh = localTime.getUTCHours().toString().padStart(2, '0');
   const mm = localTime.getUTCMinutes().toString().padStart(2, '0');
   const currentTime = `${hh}:${mm}`;
@@ -2828,12 +2929,12 @@ async function checkScheduledNotifications(env: Env) {
       </div>
     `;
     await sendEmail(env, email, subject, html, undefined, undefined, 'convocatoria');
-    
 
-    
+
+
     // Marcar como notificado
     await env.DB.prepare("UPDATE sessions SET notified = 1 WHERE id = ?").bind(session.id).run();
-    
+
     console.log(`[CRON] Notificación enviada para: ${session.name}`);
   }
 
@@ -2845,7 +2946,7 @@ async function checkScheduledNotifications(env: Env) {
     (dateNum === 29 && isLeapYear(localTime.getUTCFullYear())) ||
     (dateNum === 28 && !isLeapYear(localTime.getUTCFullYear()))
   );
-  
+
   const isSendDay = dateNum === 30 || isFebruaryLastDay;
   if (isSendDay && currentTime === '12:00') {
     try {
@@ -2863,10 +2964,7 @@ async function generateBirthdayPDF(guys: any[], monthName: string) {
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  app.get('/api/telegram/users', async (c) => {
-  const { results } = await c.env.DB.prepare('SELECT id, name, role FROM users WHERE telegram_chat_id IS NOT NULL').all();
-  return c.json({ users: results || [] });
-});
+
 
   // Header con colores corporativos EYE STAFF (Dark/Indigo)
   page.drawRectangle({
@@ -2973,13 +3071,13 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   const now = new Date();
   const offset = -4;
   const localTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
-  
+
   const monthNum = localTime.getUTCMonth();
-  
+
   // Proximo mes (1-12)
   const nextMonth = ((monthNum + 1) % 12) + 1;
   const monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
   const nextMonthName = monthNames[nextMonth - 1];
@@ -2987,9 +3085,9 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   // Obtener usuarios activos
   const usersRes = await env.DB.prepare("SELECT name, eye_id, birth_date, email FROM users WHERE is_active = 1").all();
   const allUsers = usersRes.results || [];
-  
+
   const nextMonthStr = nextMonth.toString().padStart(2, '0');
-  
+
   const birthdayGuys = (allUsers as any[]).filter(u => {
     if (!u.birth_date) return false;
     const parts = u.birth_date.split('-');
@@ -3044,7 +3142,7 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(excelData);
-  
+
   // Ajustar el ancho de las columnas dinámicamente según el contenido
   const colWidths: number[] = [];
   excelData.forEach(row => {
@@ -3072,11 +3170,11 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   const pdfBase64 = uint8ArrayToBase64(pdfBytes);
 
   const recipient = 'ncarrillok@gmail.com';
-  
+
   let listHtml = '';
   for (const guy of birthdayGuys) {
     const day = guy.birth_date ? guy.birth_date.split('-')[2] : 'S/D';
-    
+
     // Calcular edad
     let age = 'S/D';
     if (guy.birth_date) {
@@ -3372,13 +3470,13 @@ async function generateTicketPDF(data: any) {
 app.post('/api/email/start', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const sessionId = body.session_id || body.id;
-  
+
   if (!sessionId) return c.json({ error: 'No session ID provided' }, 400);
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
   const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
-  
+
   // Reutilizamos la misma estructura visual profesional
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
@@ -3660,9 +3758,9 @@ app.post('/api/public/confirm-conformity/:code', async (c) => {
   const vehicle = await c.env.DB.prepare('SELECT id, status FROM vehicles WHERE ticket_code = ?').bind(code).first();
 
   if (!vehicle) return c.json({ error: 'Ticket no encontrado' }, 404);
-  
+
   await c.env.DB.prepare("UPDATE vehicles SET conformity_signed = 1 WHERE id = ?").bind(vehicle.id).run();
-  
+
   return c.json({ success: true, message: 'Conformidad firmada' });
 });
 
@@ -3686,21 +3784,21 @@ app.post('/api/staff/login', async (c) => {
     const password = cedula;
     const inputName = name.trim().toLowerCase();
     const lowerPass = (password || "").trim().toLowerCase();
-    
+
     // 0. Caso especial: Empleado de Prueba INVITADO (Sólo Lectura, Acceso Director/Oro)
     if (inputName.includes('invitado') || inputName === 'guest') {
       const isAllowedGuestPass = lowerPass === 'invitado' || lowerPass === '1234' || lowerPass.includes('corifede');
       if (isAllowedGuestPass) {
-        const token = await sign({ 
-          id: 999, 
-          name: 'EMPLEADO INVITADO (DEMO)', 
-          role: 'director', 
-          is_superadmin: true, 
+        const token = await sign({
+          id: 999,
+          name: 'EMPLEADO INVITADO (DEMO)',
+          role: 'director',
+          is_superadmin: true,
           profile_admin: 'DIRECTOR',
           profile_opera: 'JEFE DE GRUPO',
           eye_id: 'ORO',
-          is_guest: true, 
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
+          is_guest: true,
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
         }, c.env.JWT_SECRET || 'secret', 'HS256');
 
         await logAudit(c.env, 999, 'LOGIN', `Acceso bypass invitado: ${inputName}`, c);
@@ -3723,139 +3821,139 @@ app.post('/api/staff/login', async (c) => {
 
     // 2. Verificación en Base de Datos (Para Nelson, Nicolas y el resto)
     const stripAccents = (str: string) => {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
     // Buscamos ignorando tildes, espacios y permitiendo cédula
     const cleanInput = stripAccents(inputName).replace(/\s+/g, '').toLowerCase();
-    
+
     const allActiveUsers = await c.env.DB.prepare("SELECT * FROM users WHERE is_active = 1").all();
     const usersList = (allActiveUsers && allActiveUsers.results) ? allActiveUsers.results : [];
-    
+
     const dbUser: any = usersList.find((u: any) => {
-        const cleanDBName = stripAccents(u.name || '').replace(/\s+/g, '').toLowerCase();
-        const cleanCedula = (u.cedula || '').toString().trim();
-        // Comparación EXACTA: el nombre ingresado debe coincidir completamente
-        return cleanDBName === cleanInput || cleanCedula === inputName.trim();
+      const cleanDBName = stripAccents(u.name || '').replace(/\s+/g, '').toLowerCase();
+      const cleanCedula = (u.cedula || '').toString().trim();
+      // Comparación EXACTA: el nombre ingresado debe coincidir completamente
+      return cleanDBName === cleanInput || cleanCedula === inputName.trim();
     });
 
     if (dbUser && dbUser.pin_hash === lowerPass) {
-        let finalRole = dbUser.role || 'valet';
-        const isActuallyDirector = finalRole === 'director' || 
-                                    inputName.includes('nelson') || 
-                                    inputName.includes('nicolas') || 
-                                    inputName.includes('billy') || 
-                                    inputName.includes('ramos');
-        
-        if (isActuallyDirector) finalRole = 'director';
+      let finalRole = dbUser.role || 'valet';
+      const isActuallyDirector = finalRole === 'director' ||
+        inputName.includes('nelson') ||
+        inputName.includes('nicolas') ||
+        inputName.includes('billy') ||
+        inputName.includes('ramos');
 
-        const isGuestUser = dbUser.id === 999 || dbUser.name.toLowerCase().includes('invitado');
+      if (isActuallyDirector) finalRole = 'director';
 
-        const token = await sign({ 
-          id: dbUser.id, 
-          name: dbUser.name, 
-          role: finalRole, 
-          is_superadmin: finalRole === 'director',
-          profile_admin: dbUser.profile_admin || 'NO APLICA',
-          profile_opera: dbUser.profile_opera || 'NO APLICA',
-          is_guest: isGuestUser,
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
-        }, c.env.JWT_SECRET || 'secret', 'HS256');
+      const isGuestUser = dbUser.id === 999 || dbUser.name.toLowerCase().includes('invitado');
 
-        await logAudit(c.env, dbUser.id, 'LOGIN', `Acceso exitoso: ${dbUser.name}`, c);
-        
-        const device = c.req.header('User-Agent') || 'Unknown';
-        const ip = c.req.header('cf-connecting-ip') || 'unknown';
-        const sessionId = Date.now().toString();
+      const token = await sign({
+        id: dbUser.id,
+        name: dbUser.name,
+        role: finalRole,
+        is_superadmin: finalRole === 'director',
+        profile_admin: dbUser.profile_admin || 'NO APLICA',
+        profile_opera: dbUser.profile_opera || 'NO APLICA',
+        is_guest: isGuestUser,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+      }, c.env.JWT_SECRET || 'secret', 'HS256');
 
-        // Actualizar último login y dispositivo en la tabla de usuarios
-        await c.env.DB.prepare('UPDATE users SET last_login = datetime("now"), current_device = ? WHERE id = ?')
-            .bind(device, dbUser.id)
-            .run();
+      await logAudit(c.env, dbUser.id, 'LOGIN', `Acceso exitoso: ${dbUser.name}`, c);
 
-        // Verificación de concurrencia de sesiones
-        const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "NELSON CARRILLO", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
-        const cleanNameCheck = stripAccents(dbUser.name || '').toUpperCase();
-        const canHaveMultipleSessions = allowedMultipleSessions.includes(cleanNameCheck);
+      const device = c.req.header('User-Agent') || 'Unknown';
+      const ip = c.req.header('cf-connecting-ip') || 'unknown';
+      const sessionId = Date.now().toString();
 
-        if (!canHaveMultipleSessions) {
-            // Invalidar sesiones anteriores del empleado para forzar dispositivo único
-            await c.env.DB.prepare('UPDATE web_sessions SET is_active = 0, logout_at = datetime("now") WHERE user_id = ? AND is_active = 1').bind(dbUser.id).run();
-        }
+      // Actualizar último login y dispositivo en la tabla de usuarios
+      await c.env.DB.prepare('UPDATE users SET last_login = datetime("now"), current_device = ? WHERE id = ?')
+        .bind(device, dbUser.id)
+        .run();
 
-        // Registrar sesión activa
-        const sessionResult = await c.env.DB.prepare('INSERT INTO web_sessions (user_id, device, ip, is_active, last_activity_at) VALUES (?, ?, ?, 1, datetime("now"))')
-            .bind(dbUser.id, device, ip)
-            .run();
-        
-        const webSessionId = sessionResult.meta.last_row_id?.toString() || Date.now().toString();
+      // Verificación de concurrencia de sesiones
+      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "NELSON CARRILLO", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
+      const cleanNameCheck = stripAccents(dbUser.name || '').toUpperCase();
+      const canHaveMultipleSessions = allowedMultipleSessions.includes(cleanNameCheck);
 
-        // Obtener permisos personalizados o calcular defaults
-        const permRow = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix WHERE user_id = ?').bind(dbUser.id).first<any>();
-        let permissions = permRow;
-        if (!permRow) {
-          const isSuperadmin = finalRole === 'director';
-          const isSupervisor = finalRole === 'supervisor';
-          const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
-          const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
-          permissions = {
-            valet_ve: 1,
-            valet_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
-            eventos_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
-            eventos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
-            admin_ve: isSuperadmin ? 1 : 0,
-            admin_mod: isSuperadmin ? 1 : 0,
-            vip_ve: isVIP ? 1 : 0,
-            vip_mod: isVIP ? 1 : 0,
-            seg_ve: isSuperadmin ? 1 : 0,
-            seg_mod: isSuperadmin ? 1 : 0,
-            loc_ve: 1,
-            loc_mod: (isSuperadmin || isSupervisor) ? 1 : 0
-          };
-        }
+      if (!canHaveMultipleSessions) {
+        // Invalidar sesiones anteriores del empleado para forzar dispositivo único
+        await c.env.DB.prepare('UPDATE web_sessions SET is_active = 0, logout_at = datetime("now") WHERE user_id = ? AND is_active = 1').bind(dbUser.id).run();
+      }
 
-        return c.json({
-          id: dbUser.id,
-          name: dbUser.name,
-          role: finalRole,
-          is_superadmin: finalRole === 'director',
-          profile_admin: dbUser.profile_admin || 'NO APLICA',
-          profile_opera: dbUser.profile_opera || 'NO APLICA',
-          is_guest: isGuestUser,
-          web_session_id: webSessionId,
-          pin_hash: dbUser.pin_hash,
-          token,
-          permissions
-        });
+      // Registrar sesión activa
+      const sessionResult = await c.env.DB.prepare('INSERT INTO web_sessions (user_id, device, ip, is_active, last_activity_at) VALUES (?, ?, ?, 1, datetime("now"))')
+        .bind(dbUser.id, device, ip)
+        .run();
+
+      const webSessionId = sessionResult.meta.last_row_id?.toString() || Date.now().toString();
+
+      // Obtener permisos personalizados o calcular defaults
+      const permRow = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix WHERE user_id = ?').bind(dbUser.id).first<any>();
+      let permissions = permRow;
+      if (!permRow) {
+        const isSuperadmin = finalRole === 'director';
+        const isSupervisor = finalRole === 'supervisor';
+        const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+        const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
+        permissions = {
+          valet_ve: 1,
+          valet_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+          eventos_ve: (isSuperadmin || isSupervisor) ? 1 : 0,
+          eventos_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+          admin_ve: isSuperadmin ? 1 : 0,
+          admin_mod: isSuperadmin ? 1 : 0,
+          vip_ve: isVIP ? 1 : 0,
+          vip_mod: isVIP ? 1 : 0,
+          seg_ve: isSuperadmin ? 1 : 0,
+          seg_mod: isSuperadmin ? 1 : 0,
+          loc_ve: 1,
+          loc_mod: (isSuperadmin || isSupervisor) ? 1 : 0
+        };
+      }
+
+      return c.json({
+        id: dbUser.id,
+        name: dbUser.name,
+        role: finalRole,
+        is_superadmin: finalRole === 'director',
+        profile_admin: dbUser.profile_admin || 'NO APLICA',
+        profile_opera: dbUser.profile_opera || 'NO APLICA',
+        is_guest: isGuestUser,
+        web_session_id: webSessionId,
+        pin_hash: dbUser.pin_hash,
+        token,
+        permissions
+      });
     }
 
     // 3. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
     const isEmergencyPass = lowerPass === 'corifede1416';
-    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' || 
-                           inputName === 'billy' || inputName === 'ramos' || 
-                           inputName === 'admin';
+    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' ||
+      inputName === 'billy' || inputName === 'ramos' ||
+      inputName === 'admin';
 
     if (isDirectorName && isEmergencyPass) {
-        const token = await sign({ 
-          id: 1, 
-          name: name.trim().toUpperCase(), 
-          role: 'director', 
-          is_superadmin: true, 
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 
-        }, c.env.JWT_SECRET || 'secret', 'HS256');
+      const token = await sign({
+        id: 1,
+        name: name.trim().toUpperCase(),
+        role: 'director',
+        is_superadmin: true,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+      }, c.env.JWT_SECRET || 'secret', 'HS256');
 
-        await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
+      await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
 
-        return c.json({
-          id: 1,
-          name: name.trim().toUpperCase(),
-          role: 'director',
-          is_superadmin: true,
-          is_guest: false,
-          web_session_id: Date.now().toString(),
-          pin_hash: lowerPass,
-          token
-        });
+      return c.json({
+        id: 1,
+        name: name.trim().toUpperCase(),
+        role: 'director',
+        is_superadmin: true,
+        is_guest: false,
+        web_session_id: Date.now().toString(),
+        pin_hash: lowerPass,
+        token
+      });
     }
 
     return c.json({ error: `ACCESO DENEGADO PARA: [${inputName.toUpperCase()}]` }, 401);
@@ -3945,8 +4043,8 @@ app.use('/api/*', async (c, next) => {
     const method = c.req.method.toUpperCase();
     const isMutation = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
     if (payload.is_guest && isMutation && !path.includes('/api/staff/logout')) {
-      return c.json({ 
-        error: 'MODO DEMOSTRACIÓN: Las modificaciones de datos están desactivadas para el usuario INVITADO.' 
+      return c.json({
+        error: 'MODO DEMOSTRACIÓN: Las modificaciones de datos están desactivadas para el usuario INVITADO.'
       }, 403);
     }
 
@@ -4073,12 +4171,12 @@ app.post('/api/reports/subscriptions', async (c) => {
   if (current && current.role !== 'director') {
     return c.json({ success: false, error: 'No autorizado' }, 403);
   }
-  
+
   const { user_id, report_id, active } = await c.req.json();
   if (!user_id || !report_id) {
     return c.json({ success: false, error: 'Faltan datos' }, 400);
   }
-  
+
   try {
     if (active) {
       await c.env.DB.prepare('INSERT OR IGNORE INTO report_subscriptions (user_id, report_id) VALUES (?, ?)')
@@ -4199,8 +4297,8 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
 
   // Verificar rol del usuario
   const isAuthorized = (
-    current.profile_admin === 'DIRECTOR' || 
-    current.profile_admin === 'COORDINADOR' || 
+    current.profile_admin === 'DIRECTOR' ||
+    current.profile_admin === 'COORDINADOR' ||
     current.role === 'director'
   );
   if (!isAuthorized) {
@@ -4234,7 +4332,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
 
   // Fetch all staff members' codes
   const staff = await c.env.DB.prepare('SELECT id, name, cedula, pin_hash, profile_admin, profile_opera, eye_id, is_active FROM users ORDER BY name ASC').all();
-  
+
   return c.json({ success: true, staff: staff.results || [] });
 });
 
@@ -4243,7 +4341,7 @@ app.delete('/api/staff/:id', async (c) => {
   if (current && current.role !== 'supervisor' && current.role !== 'director') {
     return c.json({ error: 'No autorizado' }, 403);
   }
-  
+
   const id = c.req.param('id');
   const force = c.req.query('force') === 'true';
 
@@ -4304,10 +4402,10 @@ app.post('/api/staff/update-bulk', async (c) => {
   if (!id || !updates) return c.json({ error: 'Faltan datos' }, 400);
 
   const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'address', 'sector', 'bank_name', 'bank_account', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer'];
-  
+
   const setClauses = [];
   const values = [];
-  
+
   for (const [field, value] of Object.entries(updates)) {
     if (allowedFields.includes(field)) {
       setClauses.push(`${field} = ?`);
@@ -4358,7 +4456,7 @@ app.get('/api/chat/newest', async (c) => {
 
   try {
     const parsedUserId = parseInt(userId.toString());
-    
+
     // Obtener rol del usuario
     const userRes = await c.env.DB.prepare('SELECT role, current_session_id FROM users WHERE id = ?').bind(parsedUserId).first<any>();
     if (!userRes) return c.json({ max_id: 0, max_created_at: null });
@@ -4396,7 +4494,7 @@ app.get('/api/chat/newest', async (c) => {
     query += ` ) `;
 
     const res = await c.env.DB.prepare(query).bind(...binds).first<any>();
-    return c.json({ 
+    return c.json({
       max_id: res?.max_id || 0,
       max_created_at: res?.max_created_at || null
     });
@@ -4407,12 +4505,12 @@ app.get('/api/chat/newest', async (c) => {
 
 app.get('/api/chat/users', async (c) => {
   const userId = c.req.query('userId');
-  
+
   const allUsersRes = await c.env.DB.prepare(
     "SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC"
   ).all();
   const allUsers = allUsersRes.results || [];
-  
+
   let activeContacts: any[] = [];
   if (userId && userId !== 'undefined') {
     const activeRes = await c.env.DB.prepare(`
@@ -4428,8 +4526,8 @@ app.get('/api/chat/users', async (c) => {
     `).bind(userId, userId, userId).all();
     activeContacts = activeRes.results || [];
   }
-  
-  return c.json({ 
+
+  return c.json({
     users: allUsers,
     activeConversations: activeContacts
   });
@@ -4439,13 +4537,13 @@ app.get('/api/chat/messages', async (c) => {
   const recipient_id = c.req.query('recipient_id');
   const session_id = c.req.query('session_id');
   const sender_id = c.req.query('sender_id');
-  
+
   let query = `
     SELECT m.*, u.name as sender_name, u.role as sender_role
     FROM chat_messages m
     JOIN users u ON m.sender_id = u.id
   `;
-  
+
   const binds = [];
   if (session_id) {
     query += ` WHERE m.session_id = ? `;
@@ -4459,9 +4557,9 @@ app.get('/api/chat/messages', async (c) => {
   } else {
     query += ` WHERE m.recipient_id IS NULL AND m.session_id IS NULL `;
   }
-  
+
   query += ` ORDER BY m.created_at ASC LIMIT 100 `;
-  
+
   const res = await c.env.DB.prepare(query).bind(...binds).all();
   return c.json({ messages: res.results || [] });
 });
@@ -4469,7 +4567,7 @@ app.get('/api/chat/messages', async (c) => {
 app.post('/api/chat/messages', async (c) => {
   const { sender_id, recipient_id, session_id, message } = await c.req.json();
   if (!sender_id || !message) return c.json({ error: 'Faltan datos' }, 400);
-  
+
   const parsedSenderId = parseInt(sender_id.toString());
   const parsedRecipientId = recipient_id ? parseInt(recipient_id.toString()) : null;
   const parsedSessionId = session_id ? parseInt(session_id.toString()) : null;
@@ -4477,9 +4575,9 @@ app.post('/api/chat/messages', async (c) => {
   await c.env.DB.prepare(
     `INSERT INTO chat_messages (sender_id, recipient_id, session_id, message) VALUES (?, ?, ?, ?)`
   ).bind(
-    parsedSenderId, 
-    parsedRecipientId, 
-    parsedSessionId, 
+    parsedSenderId,
+    parsedRecipientId,
+    parsedSessionId,
     message
   ).run();
 
@@ -4541,12 +4639,12 @@ app.post('/api/staff/import', async (c) => {
   for (let line of lines.slice(1)) { // Skip header
     // Usar regex para dividir por comas respetando comas dentro de comillas
     const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((c: string) => c.trim().replace(/^"|"$/g, ''));
-    
+
     if (cols.length < 5) continue; // Línea inválida
 
     // Nuevo mapeo según plantilla v2.3.76:
     // 0:Item, 1:Status, 2:Nombre, 3:Cedula, 4:Email, 5:P_Admin, 6:P_Opera, 7:EYE_ID, 8:Tel, 9:Dir, 10:Sector, 11:Bank, 12:Account, 13:Fam, 14:TelFam, 15:Alergias
-    const pin = '1234'; 
+    const pin = '1234';
     const name = cols[2] || '';
     const cedula = cols[3] || '';
     const email = cols[4] || '';
@@ -4579,7 +4677,7 @@ app.post('/api/staff/import', async (c) => {
     if (!cleanName) continue;
 
     // Buscar por cédula primero (Identificador Único Real)
-    const existing = await c.env.DB.prepare('SELECT id FROM users WHERE cedula = ?').bind(cedula).first<{id: number}>();
+    const existing = await c.env.DB.prepare('SELECT id FROM users WHERE cedula = ?').bind(cedula).first<{ id: number }>();
 
     if (existing) {
       // Actualizar registro existente por ID (unifica aunque cambie el nombre o tildes)
@@ -4591,9 +4689,9 @@ app.post('/api/staff/import', async (c) => {
           profile_admin = ?, profile_opera = ?, eye_id = ?, is_active = 1
         WHERE id = ?
       `).bind(
-        cleanName, pin, role, email, phone, 
-        address, sector, bank_name, bank_account, 
-        e_contact, e_phone, allergies, 
+        cleanName, pin, role, email, phone,
+        address, sector, bank_name, bank_account,
+        e_contact, e_phone, allergies,
         pAdmin, pOpera, eye_id,
         existing.id
       ).run();
@@ -4607,12 +4705,12 @@ app.post('/api/staff/import', async (c) => {
         ) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
       `).bind(
-        cleanName, pin, role, cedula, email, phone, address, sector, 
-        bank_name, bank_account, e_contact, e_phone, 
+        cleanName, pin, role, cedula, email, phone, address, sector,
+        bank_name, bank_account, e_contact, e_phone,
         allergies, pAdmin, pOpera, eye_id
       ).run();
     }
-    
+
     count++;
   }
 
@@ -4624,14 +4722,14 @@ app.post('/api/staff/purge-duplicates', async (c) => {
   if (current && current.role !== 'supervisor' && current.role !== 'director') {
     return c.json({ error: 'No autorizado' }, 403);
   }
-  
+
   // Borrar inactivos que tengan la misma cédula que uno activo
   await c.env.DB.prepare(`
     DELETE FROM users 
     WHERE is_active = 0 
     AND cedula IN (SELECT cedula FROM users WHERE is_active = 1)
   `).run();
-  
+
   return c.json({ success: true, message: 'Duplicados inactivos depurados' });
 });
 
@@ -4654,7 +4752,7 @@ app.post('/api/admin/permissions', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const { role, module_id, can_view } = await c.req.json();
-  
+
   await c.env.DB.prepare(
     'INSERT INTO role_permissions (role, module_id, can_view) VALUES (?, ?, ?) ON CONFLICT(role, module_id) DO UPDATE SET can_view = ?'
   ).bind(role, module_id, can_view ? 1 : 0, can_view ? 1 : 0).run();
@@ -4705,7 +4803,7 @@ app.get('/api/admin/user-permissions', async (c) => {
 
   const staffRes = await c.env.DB.prepare('SELECT id, name, role, eye_id FROM users WHERE is_active = 1 ORDER BY name ASC').all();
   const staff = staffRes.results || [];
-  
+
   const permRowsRes = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
   const permRows = permRowsRes.results || [];
   const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
@@ -4848,7 +4946,7 @@ app.post('/api/admin/equivalences', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
   const { category, original_value, standard_value } = await c.req.json();
   if (!category || !original_value || !standard_value) return c.json({ error: 'Faltan datos' }, 400);
-  
+
   await c.env.DB.prepare('INSERT OR REPLACE INTO equivalences (category, original_value, standard_value) VALUES (?, ?, ?)')
     .bind(category, original_value.toUpperCase().trim(), standard_value.toUpperCase().trim())
     .run();
@@ -4902,9 +5000,9 @@ app.post('/api/events/checkin', async (c) => {
     `).bind(data.plate.toUpperCase()).first();
 
     if (existing) {
-      return c.json({ 
-        error: 'EL VEHÍCULO YA SE ENCUENTRA EN EL RECINTO', 
-        is_duplicate: true 
+      return c.json({
+        error: 'EL VEHÍCULO YA SE ENCUENTRA EN EL RECINTO',
+        is_duplicate: true
       }, 400);
     }
 
@@ -4956,11 +5054,11 @@ app.post('/api/events/checkin', async (c) => {
     if (data.owner_email) {
       try {
         const ticketUrl = `${new URL(c.req.url).origin}/ticket/${ticketCode}?v1=${authToken1}&v2=${authToken2}`;
-        const pdfBytes = await generateTicketPDF({ 
-          ...data, 
-          daily_seq: nextSeq, 
-          auth_token_1: authToken1, 
-          auth_token_2: authToken2 
+        const pdfBytes = await generateTicketPDF({
+          ...data,
+          daily_seq: nextSeq,
+          auth_token_1: authToken1,
+          auth_token_2: authToken2
         });
         const pdfBase64 = uint8ArrayToBase64(pdfBytes);
 
@@ -5132,7 +5230,7 @@ app.get('/api/vehicles/active', async (c) => {
     WHERE v.status NOT IN ('delivered', 'retrieved', 'pre-registered')
   `;
   const params = [];
-  
+
   if (sessionId) {
     query += " AND v.session_id = ?";
     params.push(sessionId);
@@ -5140,7 +5238,7 @@ app.get('/api/vehicles/active', async (c) => {
     // Si no se pide una sesión específica, solo mostrar de las sesiones ACTIVAS
     query += " AND s.status = 'active'";
   }
-  
+
   const { results } = await c.env.DB.prepare(query).bind(...params).all();
   return c.json({ vehicles: results });
 });
@@ -5405,14 +5503,14 @@ app.get('/api/dashboard/today', async (c) => {
 app.post('/api/reports/send-start', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const sessionId = body.id || body.session_id;
-  
+
   if (!sessionId) return c.json({ error: 'Session ID is required' }, 400);
 
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
   const to = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
-  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
       <div style="background: #ef4444; color: white; padding: 30px; text-align: center;">
@@ -5445,7 +5543,7 @@ app.post('/api/reports/send-start', async (c) => {
   `;
 
   await sendEmail(c.env, to, `🚀 JORNADA INICIADA: ${session.name}`, html);
-  
+
   return c.json({ success: true, message: 'Reporte de inicio enviado correctamente' });
 });
 
@@ -5481,7 +5579,7 @@ app.post('/api/reports/send-summary', async (c) => {
 
 app.post('/api/ai/scan-vehicle', async (c) => {
   const { images } = await c.req.json<{ images: string[] }>();
-  
+
   if (!images || images.length === 0) {
     return c.json({ error: 'No se proporcionaron imágenes' }, 400);
   }
@@ -5515,7 +5613,7 @@ Restricciones:
     });
 
     const text = response.description || response.text || '';
-    
+
     // Parsear el resultado
     const lines = text.split('\n');
     const result: any = {};
@@ -5535,7 +5633,7 @@ Restricciones:
 });
 
 app.get('/api/debug/trigger-report', async (c) => {
-  const last = await c.env.DB.prepare('SELECT id, name FROM sessions ORDER BY id DESC LIMIT 1').first<{id:number, name:string}>();
+  const last = await c.env.DB.prepare('SELECT id, name FROM sessions ORDER BY id DESC LIMIT 1').first<{ id: number, name: string }>();
   if (!last) return c.json({ error: 'No hay sesiones' });
 
   const stats = await c.env.DB.prepare(`
@@ -5728,7 +5826,7 @@ app.get('/api/payroll/pending-events', async (c) => {
     )
     ORDER BY s.ended_at DESC
   `;
-  
+
   const result = await c.env.DB.prepare(query).bind(userId, userId, userId).all();
   return c.json({ events: result.results || [] });
 });
@@ -5744,7 +5842,7 @@ app.get('/api/staff/search', async (c) => {
 
 app.get('/api/staff/:id/available-sessions', async (c) => {
   const id = c.req.param('id');
-  
+
   // Buscar sesiones cerradas donde el usuario tuvo actividad (events) 
   // pero que NO están en payroll_submissions para ese usuario
   const query = `
@@ -5758,7 +5856,7 @@ app.get('/api/staff/:id/available-sessions', async (c) => {
     )
     ORDER BY s.ended_at DESC
   `;
-  
+
   const result = await c.env.DB.prepare(query).bind(String(id), String(id)).all();
   return c.json(result.results);
 });
@@ -5767,7 +5865,7 @@ app.get('/api/staff/:id/available-sessions', async (c) => {
 app.post('/api/payroll/submit', async (c) => {
   const data = await c.req.json();
   const user = c.get('user');
-  
+
   // Normalizar datos para manejar tanto envío individual como masivo
   let sessionsToProcess = [];
   if (data.sessions_data && Array.isArray(data.sessions_data)) {
@@ -5790,8 +5888,8 @@ app.post('/api/payroll/submit', async (c) => {
   if (data.bank_name || data.bank_account) {
     await c.env.DB.prepare('UPDATE users SET bank_name = ?, bank_account = ? WHERE id = ?')
       .bind(
-        data.bank_name ? data.bank_name.toUpperCase() : null, 
-        data.bank_account || null, 
+        data.bank_name ? data.bank_name.toUpperCase() : null,
+        data.bank_account || null,
         userId
       ).run();
   }
@@ -5804,7 +5902,7 @@ app.post('/api/payroll/submit', async (c) => {
     const rateRecord = await c.env.DB.prepare('SELECT rate FROM payroll_rates WHERE role = ?')
       .bind(role)
       .first<{ rate: number }>();
-    
+
     const amount = rateRecord ? rateRecord.rate : 0;
 
     queries.push(
@@ -5813,12 +5911,12 @@ app.post('/api/payroll/submit', async (c) => {
         (user_id, session_id, date, role_at_event, bank_name, bank_account, amount, status) 
         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')`
       ).bind(
-        userId, 
-        session.session_id, 
-        session.date, 
-        session.role, 
-        data.bank_name ? data.bank_name.toUpperCase() : null, 
-        data.bank_account || null, 
+        userId,
+        session.session_id,
+        session.date,
+        session.role,
+        data.bank_name ? data.bank_name.toUpperCase() : null,
+        data.bank_account || null,
         amount
       )
     );
@@ -5831,7 +5929,7 @@ app.post('/api/payroll/submit', async (c) => {
   // Enviar notificación por email (Resumen de sesiones)
   try {
     const staff = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(userId).first<any>();
-    
+
     const sessionsListHtml = (data.sessions_data || sessionsToProcess).map((s: any) => `
       <li style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
         <strong>EVENTO:</strong> ${s.name}<br>
@@ -5872,7 +5970,7 @@ app.post('/api/attendance/log', async (c) => {
   const { type, session_id, user_id, bypass_custody } = await c.req.json().catch(() => ({}));
   const user = c.get('user');
   const targetUserId = user_id || (user ? user.id : null);
-  
+
   if (!session_id || !type || !targetUserId) return c.json({ error: 'Faltan datos' }, 400);
 
   // REGLA DE EXCLUSIVIDAD: Si es entrada, verificar si ya tiene una entrada activa en OTRO evento
@@ -5883,7 +5981,7 @@ app.post('/api/attendance/log', async (c) => {
       JOIN sessions s ON a.session_id = s.id
       WHERE a.user_id = ? AND a.type = 'entry' AND s.status = 'active' AND a.session_id != ?
       ORDER BY a.timestamp DESC LIMIT 1
-    `).bind(targetUserId, session_id).first<{name: string}>();
+    `).bind(targetUserId, session_id).first<{ name: string }>();
 
     if (activeEntry) {
       return c.json({ error: `⚠️ NO PUEDES ENTRAR: Ya tienes una entrada activa en el evento "${activeEntry.name}". Marca SALIDA allí primero.` }, 400);
@@ -5902,8 +6000,8 @@ app.post('/api/attendance/log', async (c) => {
       if (staff.id === targetUserId) continue; // Excluir al que quiere ir a descanso
       const latestAtt = await c.env.DB.prepare(
         "SELECT type FROM staff_attendance WHERE user_id = ? AND session_id = ? ORDER BY id DESC LIMIT 1"
-      ).bind(staff.id, session_id).first<{type: string}>();
-      
+      ).bind(staff.id, session_id).first<{ type: string }>();
+
       if (latestAtt && latestAtt.type === 'entry') {
         activeStaffCount++;
       }
@@ -5918,7 +6016,7 @@ app.post('/api/attendance/log', async (c) => {
   if (type === 'exit') {
     const custodyCountRes = await c.env.DB.prepare(
       "SELECT COUNT(*) as count FROM vehicles WHERE session_id = ? AND status = 'parked'"
-    ).bind(session_id).first<{count: number}>();
+    ).bind(session_id).first<{ count: number }>();
     const hasCustodyVehicles = custodyCountRes && custodyCountRes.count > 0;
 
     if (hasCustodyVehicles) {
@@ -5933,8 +6031,8 @@ app.post('/api/attendance/log', async (c) => {
         if (staff.id === targetUserId) continue; // Excluir al que quiere salir
         const latestAtt = await c.env.DB.prepare(
           "SELECT type FROM staff_attendance WHERE user_id = ? AND session_id = ? ORDER BY id DESC LIMIT 1"
-        ).bind(staff.id, session_id).first<{type: string}>();
-        
+        ).bind(staff.id, session_id).first<{ type: string }>();
+
         if (latestAtt && latestAtt.type !== 'exit') {
           activeStaffCount++;
         }
@@ -5951,10 +6049,10 @@ app.post('/api/attendance/log', async (c) => {
           // Enviar correo de alerta crítica al director
           try {
             const adminEmail = c.env.DIRECTOR_EMAIL || 'ncarrillok@gmail.com';
-            const sessionInfo = await c.env.DB.prepare("SELECT name FROM sessions WHERE id = ?").bind(session_id).first<{name: string}>();
+            const sessionInfo = await c.env.DB.prepare("SELECT name FROM sessions WHERE id = ?").bind(session_id).first<{ name: string }>();
             const sessionName = sessionInfo ? sessionInfo.name : 'Evento';
-            
-            const clockOutUser = await c.env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(targetUserId).first<{name: string}>();
+
+            const clockOutUser = await c.env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(targetUserId).first<{ name: string }>();
             const clockOutUserName = clockOutUser ? clockOutUser.name : 'Empleado';
             const supervisorName = user ? user.name : 'N/A';
 
@@ -6038,7 +6136,7 @@ app.post('/api/attendance/log', async (c) => {
   await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type) VALUES (?, ?, ?)')
     .bind(targetUserId, session_id, type)
     .run();
-    
+
   return c.json({ success: true });
 });
 
@@ -6051,20 +6149,20 @@ app.get('/api/attendance/session/:id', async (c) => {
     WHERE a.session_id = ?
     ORDER BY a.timestamp DESC
   `).bind(sessionId).all();
-  
+
   return c.json(result.results);
 });
 
 app.get('/api/attendance/current', async (c) => {
   const user = c.get('user');
   const sessionId = c.req.query('session_id');
-  
+
   const result = await c.env.DB.prepare(`
     SELECT * FROM staff_attendance 
     WHERE user_id = ? AND session_id = ? 
     ORDER BY timestamp DESC LIMIT 1
   `).bind(user.id, sessionId).first<any>();
-  
+
   return c.json({ status: result ? result.type : 'none' });
 });
 
@@ -6072,7 +6170,7 @@ app.get('/api/payroll/submissions', async (c) => {
 
   const user = c.get('user');
   const sessionId = c.req.query('session_id');
-  
+
   let query = `
     SELECT p.*, u.name as user_name, COALESCE(s.name, 'EVENTO GENERAL / OPERACIÓN EXTRA') as session_name 
     FROM payroll_submissions p
@@ -6081,12 +6179,12 @@ app.get('/api/payroll/submissions', async (c) => {
     WHERE 1=1
   `;
   const params: any[] = [];
-  
+
   if (sessionId) {
     query += " AND p.session_id = ?";
     params.push(sessionId);
   }
-  
+
   // Si no es admin, solo ve lo suyo
   if (user.role !== 'director') {
     query += " AND p.user_id = ?";
@@ -6094,7 +6192,7 @@ app.get('/api/payroll/submissions', async (c) => {
   }
 
   query += " ORDER BY p.created_at DESC";
-  
+
   const result = await c.env.DB.prepare(query).bind(...params).all();
   return c.json({ submissions: result.results || [] });
 });
@@ -6116,13 +6214,13 @@ app.post('/api/payroll/approve', async (c) => {
 app.post('/api/payroll/update-amount', async (c) => {
   const { id, amount } = await c.req.json();
   const user = c.get('user');
-  
+
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
-  
+
   await c.env.DB.prepare('UPDATE payroll_submissions SET amount = ? WHERE id = ?')
     .bind(amount, id)
     .run();
-    
+
   return c.json({ success: true });
 });
 
@@ -6132,7 +6230,7 @@ app.get('/api/payroll/summary', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const sessionId = c.req.query('session_id');
-  
+
   let query = `
     SELECT 
       COALESCE(s.name, 'EVENTO GENERAL / OPERACIÓN EXTRA') as session_name,
@@ -6151,7 +6249,7 @@ app.get('/api/payroll/summary', async (c) => {
   }
 
   query += " GROUP BY session_name, role_at_event";
-  
+
   const result = await c.env.DB.prepare(query).bind(...params).all();
   return c.json({ summary: result.results || [] });
 });
@@ -6159,12 +6257,12 @@ app.get('/api/payroll/summary', async (c) => {
 app.get('/api/payroll/session-user-info', async (c) => {
   const userId = c.req.query('user_id');
   const sessionId = c.req.query('session_id');
-  
+
   if (!userId || !sessionId) return c.json({ error: 'Faltan parámetros' }, 400);
 
   const session = await c.env.DB.prepare('SELECT ended_at, started_at FROM sessions WHERE id = ?').bind(sessionId).first<any>();
   const user = await c.env.DB.prepare('SELECT role, bank_name, bank_account FROM users WHERE id = ?').bind(userId).first<any>();
-  
+
   // Verificar si participó en el evento
   const participated = await c.env.DB.prepare(`
     SELECT 1 FROM events e 
@@ -6197,7 +6295,7 @@ app.get('/api/photos/*', async (c) => {
   const contentType = object.httpMetadata?.contentType || 'image/jpeg';
   headers.set('Content-Type', contentType);
   headers.set('Cache-Control', 'public, max-age=31536000');
-  
+
   return new Response(object.body, { headers });
 });
 
@@ -6251,7 +6349,7 @@ app.post('/api/admin/payroll/close-cycle', async (c) => {
   const result = await c.env.DB.prepare(
     "UPDATE payroll_submissions SET status = 'paid', approved_at = CURRENT_TIMESTAMP WHERE user_id = ? AND status = 'approved'"
   ).bind(user_id).run();
-  const user = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(user_id).first<{name:string}>();
+  const user = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(user_id).first<{ name: string }>();
   await logAudit(c.env, user_id, 'CIERRE_CICLO_PAGO', `Ciclo de pago cerrado para ${user?.name || user_id}. ${result.meta?.changes || 0} reportes marcados como PAGADO.`, c);
   return c.json({ success: true, closed: result.meta?.changes || 0 });
 });
@@ -6262,11 +6360,11 @@ app.post('/api/admin/payroll/close-cycle', async (c) => {
 app.post('/api/staff/update-bank', async (c) => {
   const user = c.get('user');
   const { bank_name, bank_account } = await c.req.json();
-  
+
   await c.env.DB.prepare('UPDATE users SET bank_name = ?, bank_account = ? WHERE id = ?')
     .bind(bank_name, bank_account, user.id)
     .run();
-    
+
   return c.json({ success: true });
 });
 
@@ -6332,7 +6430,7 @@ app.get('/api/admin/active-sessions', async (c) => {
     ORDER BY ws.last_activity_at DESC
   `;
   const { results } = await c.env.DB.prepare(query).all();
-  
+
   const active = (results || []).map((s: any) => ({
     ...s,
     is_recurrent: s.total_logins_this_device > 3
@@ -6519,7 +6617,7 @@ app.get('/api/settings', async (c) => {
     acc[curr.key] = curr.value;
     return acc;
   }, {});
-  
+
   return c.json({
     company_name: 'GRUPO EYE STAFF',
     currency: '€',
@@ -6639,7 +6737,7 @@ app.post('/api/location/report', async (c) => {
   await c.env.DB.prepare('INSERT INTO locations (entity_id, entity_type, latitude, longitude, accuracy) VALUES (?, ?, ?, ?, ?)')
     .bind(entity_id, entity_type, lat, lon, accuracy || null)
     .run();
-  
+
   return c.json({ success: true });
 });
 
@@ -6652,7 +6750,7 @@ app.get('/api/location/latest', async (c) => {
     WHERE l.id IN (SELECT MAX(id) FROM locations WHERE entity_type = 'staff' GROUP BY entity_id)
     AND (u.current_session_id IS NOT NULL OR u.role = 'director')
   `;
-  
+
   const assetQuery = `
     SELECT a.id, a.name, a.type, l.latitude, l.longitude, l.ts, l.accuracy
     FROM assets a
@@ -6663,9 +6761,9 @@ app.get('/api/location/latest', async (c) => {
   const staff = await c.env.DB.prepare(staffQuery).all();
   const assets = await c.env.DB.prepare(assetQuery).all();
 
-  return c.json({ 
-    staff: staff.results || [], 
-    assets: assets.results || [] 
+  return c.json({
+    staff: staff.results || [],
+    assets: assets.results || []
   });
 });
 
@@ -6699,17 +6797,17 @@ app.all('/api/valet/notificar', async (c) => {
   const isPost = c.req.method === 'POST';
   const data = isPost ? await c.req.json().catch(() => ({})) : c.req.query();
   const { nombre, vehiculo, placa, telefono } = data;
-  
+
   if (!telefono) return c.json({ error: 'Teléfono requerido' }, 400);
 
   const formattedPhone = formatVenezuelanPhone(telefono);
-  
+
   const timeString = new Date().toLocaleTimeString('es-VE', { timeZone: 'America/Caracas', hour: '2-digit', minute: '2-digit', hour12: true });
 
   const text = `Hola ${nombre || 'Cliente'}, su vehículo ${vehiculo || ''} (Placa: ${placa || ''}) está listo. Notificación enviada a las ${timeString}.`;
-  
+
   const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
-  
+
   return c.json({ url: waUrl });
 });
 
@@ -6717,16 +6815,16 @@ app.all('/api/staff/alerta', async (c) => {
   const isPost = c.req.method === 'POST';
   const data = isPost ? await c.req.json().catch(() => ({})) : c.req.query();
   const { personal_id, mensaje, telefono } = data;
-  
+
   if (!telefono) return c.json({ error: 'Teléfono requerido' }, 400);
 
   const formattedPhone = formatVenezuelanPhone(telefono);
   const timeString = new Date().toLocaleTimeString('es-VE', { timeZone: 'America/Caracas', hour: '2-digit', minute: '2-digit', hour12: true });
 
   const text = `🚨 *ALERTA EYE STAFF*\n\n${mensaje || 'Alerta generada'}\n\n🕒 ${timeString}`;
-  
+
   const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
-  
+
   return c.json({ url: waUrl });
 });
 
@@ -6741,11 +6839,11 @@ app.post('/api/telegram/send-direct', async (c) => {
       try {
         const token = authHeader.split(' ')[1];
         user = await verify(token, c.env.JWT_SECRET || 'secret', 'HS256');
-      } catch (e) {}
+      } catch (e) { }
     }
   }
   if (!user || (user.role !== 'director' && user.role !== 'supervisor')) return c.json({ error: 'No autorizado' }, 403);
-  
+
   const { targetUserId, message } = await c.req.json();
   if (!targetUserId || !message) return c.json({ error: 'Faltan datos' }, 400);
 
@@ -6776,7 +6874,7 @@ app.post('/api/telegram/send-direct', async (c) => {
 app.get('/api/telegram/set-webhook', async (c) => {
   const token = c.env.TELEGRAM_BOT_TOKEN;
   if (!token) return c.json({ error: 'Falta TELEGRAM_BOT_TOKEN' }, 500);
-  
+
   const webhookUrl = `https://eye-staff.app/api/telegram/webhook`;
   const tgUrl = `https://api.telegram.org/bot${token}/setWebhook?url=${webhookUrl}`;
   const res = await fetch(tgUrl);
@@ -6801,17 +6899,17 @@ app.post('/api/telegram/webhook', async (c) => {
       const lat = msg.location.latitude;
       const lon = msg.location.longitude;
       const isLive = !!msg.location.live_period;
-      
+
       const user: any = await c.env.DB.prepare('SELECT id, name, phone FROM users WHERE telegram_chat_id = ?').bind(chatId).first();
-      
+
       if (user) {
         const acc = msg.location.horizontal_accuracy || null;
-        
+
         // Guardar siempre en el histórico
         await c.env.DB.prepare('INSERT INTO locations (entity_id, entity_type, latitude, longitude, accuracy) VALUES (?, ?, ?, ?, ?)')
           .bind(user.id, 'staff', lat, lon, acc)
           .run();
-          
+
         if (isLive) {
           // Es ubicación en tiempo real (tiene live_period) -> Actualizar mapa en vivo
           await c.env.DB.prepare(`
@@ -6822,7 +6920,7 @@ app.post('/api/telegram/webhook', async (c) => {
               lon = excluded.lon,
               accuracy = excluded.accuracy,
               updated_at = datetime('now')
-          `).bind(user.phone || ('tg_'+user.id), user.name || 'Staff', user.id, lat, lon, acc).run();
+          `).bind(user.phone || ('tg_' + user.id), user.name || 'Staff', user.id, lat, lon, acc).run();
         } else if (body.message && !isLive) {
           // Es una ubicación estática (nuevo mensaje sin live_period) -> Añadir al mapa con 12 minutos vencidos para que dure 3 minutos en la ventana de 15 min
           await c.env.DB.prepare(`
@@ -6833,7 +6931,7 @@ app.post('/api/telegram/webhook', async (c) => {
               lon = excluded.lon,
               accuracy = excluded.accuracy,
               updated_at = datetime('now', '-12 minutes')
-          `).bind(user.phone || ('tg_'+user.id), user.name || 'Staff', user.id, lat, lon, acc).run();
+          `).bind(user.phone || ('tg_' + user.id), user.name || 'Staff', user.id, lat, lon, acc).run();
         } else if (body.edited_message && !isLive) {
           // Dejó de compartir (mensaje editado sin live_period) -> Eliminar inmediatamente
           await c.env.DB.prepare('DELETE FROM staff_live_locations WHERE staff_id = ?').bind(user.id).run();
@@ -6844,7 +6942,7 @@ app.post('/api/telegram/webhook', async (c) => {
       const chatId = body.edited_message.chat.id.toString();
       const user: any = await c.env.DB.prepare('SELECT id FROM users WHERE telegram_chat_id = ?').bind(chatId).first();
       if (user) {
-         await c.env.DB.prepare('DELETE FROM staff_live_locations WHERE staff_id = ?').bind(user.id).run();
+        await c.env.DB.prepare('DELETE FROM staff_live_locations WHERE staff_id = ?').bind(user.id).run();
       }
     }
 
@@ -6852,11 +6950,11 @@ app.post('/api/telegram/webhook', async (c) => {
     if (msg && msg.text && msg.text.startsWith('/start')) {
       const chatId = msg.chat.id;
       const parts = msg.text.split(' ');
-      
+
       if (parts.length > 1 && parts[1].startsWith('link_')) {
         const userId = parseInt(parts[1].split('_')[1], 10);
         const updateRes = await c.env.DB.prepare('UPDATE users SET telegram_chat_id = ? WHERE id = ?').bind(chatId.toString(), userId).run();
-        
+
         if (updateRes.meta.changes > 0) {
           await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
@@ -6877,21 +6975,21 @@ app.post('/api/telegram/webhook', async (c) => {
           });
         }
       } else {
-         await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: chatId,
-              text: '👋 Bienvenido a Eye Staff. Para vincular tu cuenta, haz clic en el botón "Vincular Telegram" desde tu portal web.'
-            })
-          });
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: '👋 Bienvenido a Eye Staff. Para vincular tu cuenta, haz clic en el botón "Vincular Telegram" desde tu portal web.'
+          })
+        });
       }
     } else if (msg && msg.text) {
       // Guardar mensaje de texto
       const chatId = msg.chat.id.toString();
       const senderName = msg.from?.first_name || 'Desconocido';
       const tgMsgId = msg.message_id?.toString() || '';
-      
+
       await c.env.DB.prepare('INSERT INTO telegram_messages (telegram_message_id, sender_chat_id, sender_name, text, is_incoming) VALUES (?, ?, ?, ?, 1)')
         .bind(tgMsgId, chatId, senderName, msg.text)
         .run();
@@ -6932,7 +7030,7 @@ app.get('/api/telegram/stream', async (c) => {
             WHERE t.id > ? 
             ORDER BY t.id ASC
           `).bind(lastId).all();
-          
+
           if (res.results && res.results.length > 0) {
             for (const msg of res.results) {
               lastId = msg.id as number;
@@ -6950,7 +7048,7 @@ app.get('/api/telegram/stream', async (c) => {
 
       c.req.raw.signal.addEventListener('abort', () => {
         isClosed = true;
-        try { controller.close(); } catch(e){}
+        try { controller.close(); } catch (e) { }
       });
 
       poll();
@@ -6993,12 +7091,12 @@ app.post('/api/chat/groups', async (c) => {
   const groupRes = await c.env.DB.prepare('INSERT INTO chat_groups (name, created_by) VALUES (?, ?) RETURNING id')
     .bind(body.name, user.id)
     .first();
-  
+
   if (!groupRes || !groupRes.id) return c.json({ error: 'Error creating group' }, 500);
 
   const groupId = groupRes.id;
   const members = [...new Set([...body.members, user.id])];
-  
+
   for (const memberId of members) {
     await c.env.DB.prepare('INSERT INTO chat_group_members (group_id, user_id) VALUES (?, ?)')
       .bind(groupId, memberId)
@@ -7031,7 +7129,7 @@ app.get('/api/chat/conversations', async (c) => {
     ORDER BY name ASC
   `).bind(user.id).all();
 
-  return c.json({ 
+  return c.json({
     groups: groupsRes.results || [],
     users: usersRes.results || []
   });
@@ -7132,17 +7230,17 @@ export default {
     try {
       const parser = new PostalMime();
       const email = await parser.parse(message.raw);
-      
+
       const bodyText = (email.text || '').toLowerCase();
       const keywords = [
-        'empleo', 'solicitud empleo', 'trabajo', 'me pongo a la orden', 'estoy interesado', 
-        'formar parte del equipo', 'candidatura', 'postulación', 'búsqueda activa', 
-        'perfil profesional', 'trayectoria', 'aportar', 'potencial', 'expectativa', 
+        'empleo', 'solicitud empleo', 'trabajo', 'me pongo a la orden', 'estoy interesado',
+        'formar parte del equipo', 'candidatura', 'postulación', 'búsqueda activa',
+        'perfil profesional', 'trayectoria', 'aportar', 'potencial', 'expectativa',
         'desafío', 'oportunidad', 'versatilidad', 'inquietud', 'evolución', 'sinergia', 'entusiasmo'
       ];
 
       const isJobRequest = keywords.some(k => bodyText.includes(k));
-      
+
       if (!isJobRequest) {
         console.log('Correo recibido pero no catalogado como postulación.');
         return;
@@ -7173,7 +7271,7 @@ export default {
 
       const responseText = aiResponse.response || '';
       const rawJson = responseText.match(/\{[\s\S]*\}/)?.[0];
-      
+
       if (rawJson) {
         const data = JSON.parse(rawJson);
         if (data.name && data.name.trim() !== "") {
