@@ -11268,15 +11268,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         <div style="font-size:0.75rem; font-weight:500; color:#cbd5e1; font-style:italic;">"${s.observations || 'Sin notas'}"</div>
                     </div>
                 </div>
-                <div style="display:${isClosed ? 'none' : 'flex'}; gap:10px; margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                    ${isActive ? `
-                        <button class="btn" style="flex:1; background:rgba(34, 197, 94, 0.2); color:var(--success); font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:1px solid var(--success); cursor:default;" disabled>✅ EN CURSO</button>
-                    ` : `
-                        <button class="btn" style="flex:1; background:#22c55e; color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none; box-shadow:0 4px 12px rgba(34, 197, 94, 0.2);" onclick="confirmEventFromCalendar(${s.id})">🚀 INICIAR</button>
-                    `}
-                    <button class="btn" style="flex:1; background:var(--accent); color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none;" onclick="editEventFromCalendar(${s.id})">📝 MODIFICAR</button>
-                    <button class="btn" style="flex:1; background:var(--brand-red); color:white; font-weight:900; border-radius:12px; padding:12px; font-size:0.75rem; border:none;" onclick="budgetEventFromCalendar(${s.id})">🗑️ ELIMINAR</button>
-                </div>
             </div>
         `;
         }).join('') : `
