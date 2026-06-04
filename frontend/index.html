@@ -3696,7 +3696,7 @@
                         if (!isAuthorizedSupervisor) return '';
                         
                         const staff = window.activeSession.assigned_staff_list || [];
-                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit'));
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
                         
                         return `
                             <button class="btn" 
@@ -10159,7 +10159,7 @@
                         if (!isAuthorizedSupervisor) return '';
                         
                         const staff = window.activeSession.assigned_staff_list || [];
-                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit'));
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
                         
                         return `
                             <button class="btn" 
