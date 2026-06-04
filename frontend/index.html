@@ -9125,6 +9125,7 @@
                             <div style="flex:1; padding-right:10px;">
                                 <h4 style="margin:0; color:white; font-size:1.15rem;">${update.user_name} (Cédula: ${update.user_cedula || 'N/A'})</h4>
                                 <div style="font-size:0.95rem; color:var(--muted); margin-top:8px; line-height:1.5;">
+                                    <b style="color:#fff;">Cédula:</b> ${update.user_cedula || 'N/A'}<br>
                                     <b style="color:#fff;">Teléfono:</b> ${d.phone || 'N/A'}<br>
                                     <b style="color:#fff;">Banco:</b> ${d.bank_name || 'N/A'}<br>
                                     <b style="color:#fff;">Cuenta:</b> ${d.bank_account || 'N/A'}<br>
@@ -9137,12 +9138,13 @@
                             <div>
                                 ${update.photo_base64 
                                     ? `<img src="${update.photo_base64}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--brand-blue);">` 
-                                    : `<img src="logo-eye-staff.jpeg" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--border);">`}
+                                    : `<img src="/logo-eye-staff.jpeg" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--border);">`}
                             </div>
                         </div>
-                        <div style="display:flex; gap:10px; margin-top:auto; padding-top:15px;">
-                            <button class="btn btn-sm" onclick="approveUpdate(${update.id})" style="flex:1; background:#10b981; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">APROBAR</button>
-                            <button class="btn btn-sm" onclick="rejectUpdate(${update.id})" style="flex:1; background:#ef4444; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">RECHAZAR</button>
+                        <div style="display:flex; gap:5px; margin-top:auto; padding-top:15px;">
+                            <button class="btn btn-sm" onclick="approveUpdate(${update.id})" style="flex:1; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">APROBAR</button>
+                            <button class="btn btn-sm" onclick='modifyPendingUpdate(${update.id}, ${JSON.stringify(d).replace(/'/g, "\\'")})' style="flex:1; background:#f59e0b; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">MODIFICAR</button>
+                            <button class="btn btn-sm" onclick="rejectUpdate(${update.id})" style="flex:1; background:#ef4444; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">RECHAZAR</button>
                         </div>
                     </div>
                 `;
@@ -9174,6 +9176,39 @@
         } finally {
             hideLoading();
         }
+    };
+
+    window.modifyPendingUpdate = async function(id, d) {
+        const newPhone = prompt('Teléfono propuesto:', d.phone || '');
+        if (newPhone === null) return;
+        const newAddress = prompt('Dirección propuesta:', d.address || '');
+        if (newAddress === null) return;
+        const newBank = prompt('Banco propuesto:', d.bank_name || '');
+        if (newBank === null) return;
+        const newAccount = prompt('Cuenta propuesta:', d.bank_account || '');
+        if (newAccount === null) return;
+        
+        const pin = prompt('Ingrese PIN administrativo para guardar los datos modificados:');
+        if (!pin) return;
+
+        d.phone = newPhone;
+        d.address = newAddress;
+        d.bank_name = newBank;
+        d.bank_account = newAccount;
+
+        showLoading('GUARDANDO MODIFICACIONES...');
+        try {
+            // Modify the proposed_data in the database and automatically approve it
+            const res = await apiFetch('/api/admin/approve-data-update/' + id, {
+                method: 'POST',
+                body: JSON.stringify({ pin, modifiedData: d })
+            });
+            if (res) {
+                toast('Datos modificados y aprobados con éxito', 'success');
+                loadPendingUpdates();
+            }
+        } catch(e) {}
+        hideLoading();
     };
 
     window.rejectUpdate = async function(id) {

@@ -5272,7 +5272,7 @@ app.get('/api/admin/pending-updates', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const updates = await c.env.DB.prepare(`
-    SELECT e.*, u.name as user_name, u.cedula as user_cedula
+    SELECT e.*, u.name as user_name, u.cedula as user_cedula, u.photo_url as current_photo, u.email as user_email
     FROM employee_data_updates e
     JOIN users u ON e.user_id = u.id
     WHERE e.status = 'pending_review'
@@ -5287,14 +5287,14 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const id = c.req.param('id');
-  const { pin } = await c.req.json();
+  const { pin, modifiedData } = await c.req.json();
 
   if (pin !== user.pin) return c.json({ error: 'PIN incorrecto' }, 403);
 
   const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE id = ?').bind(id).first<any>();
   if (!update || update.status !== 'pending_review') return c.json({ error: 'Solicitud inválida' }, 400);
 
-  const proposed = JSON.parse(update.proposed_data || '{}');
+  const proposed = modifiedData || JSON.parse(update.proposed_data || '{}');
 
   // Convertir fecha de YYYY-MM-DD a unix timestamp para 'birth_date'
   let birthDateUnix = null;
@@ -5358,7 +5358,36 @@ app.post('/api/admin/reject-data-update/:id', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const id = c.req.param('id');
-  await c.env.DB.prepare("UPDATE employee_data_updates SET status = 'rejected', photo_base64 = NULL WHERE id = ?").bind(id).run();
+  
+  const updateInfo = await c.env.DB.prepare(`
+    SELECT e.token, u.email, u.name 
+    FROM employee_data_updates e
+    JOIN users u ON e.user_id = u.id
+    WHERE e.id = ?
+  `).bind(id).first<any>();
+
+  await c.env.DB.prepare("UPDATE employee_data_updates SET status = 'pending_user', proposed_data = NULL, photo_base64 = NULL WHERE id = ?").bind(id).run();
+
+  if (updateInfo && updateInfo.email) {
+    const link = `https://eye-staff.app/#actualizar-datos?token=${updateInfo.token}`;
+    const html = `
+      <div style="text-align: center;">
+        <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${updateInfo.name},</h2>
+        <p style="font-size: 16px; color: #ef4444; margin-bottom: 30px;">
+          El departamento de Recursos Humanos ha <b>rechazado</b> la actualización de datos que enviaste debido a información faltante o incorrecta.
+        </p>
+        <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
+          Por favor, vuelve a rellenar el formulario correctamente.
+        </p>
+        <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          📋 REINTENTAR ACTUALIZACIÓN
+        </a>
+      </div>
+    `;
+    try {
+      await sendEmail(c.env, updateInfo.email, '❌ Actualización de Datos Rechazada - Acción Requerida', html);
+    } catch (e) { console.error(e); }
+  }
 
   return c.json({ success: true });
 });
