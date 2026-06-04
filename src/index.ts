@@ -669,7 +669,7 @@ app.put('/api/presupuestos/:id', async (c) => {
       if (c.env.RESEND_API_KEY) {
         const mailPayload = {
           from: 'EYE STAFF <onboarding@resend.dev>',
-          to: ['eyestaff.ncarrillo@gmail.com'],
+          to: [env.DIRECTOR_EMAIL],
           subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
           html: `
                     <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
@@ -783,7 +783,7 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
 
     const mailPayload = {
       from: 'EYE STAFF <onboarding@resend.dev>',
-      to: ['eyestaff.ncarrillo@gmail.com'],
+      to: [env.DIRECTOR_EMAIL],
       subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
       html: htmlBody
     };
@@ -1570,7 +1570,7 @@ app.post('/api/reports/test-request', async (c) => {
   try {
     const { type } = await c.req.json();
     const env = c.env;
-    const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+    const adminEmail = env.DIRECTOR_EMAIL ;
 
     if (type === 'birthday') {
       await sendMonthlyBirthdayReport(env, true);
@@ -1976,7 +1976,7 @@ app.post('/api/reports/send-credentials', async (c) => {
   </div>
 </body>
 </html>`;
-    await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
+    await sendEmail(c.env, c.env.DIRECTOR_EMAIL, `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
     return c.json({ success: true });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
@@ -2390,7 +2390,7 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     const summary = report.summary_json ? JSON.parse(report.summary_json) : {};
     const html = buildClosingEmailHtml(session, vehicles, staffWithAttendance, summary);
 
-    const primaryEmail = 'eyestaff.ncarrillo@gmail.com';
+    const primaryEmail = c.env.DIRECTOR_EMAIL;
 
     // Agregar CCs
     const ccEmailsSet = new Set<string>();
@@ -2754,7 +2754,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     { filename: `Reporte_${safeName}.xlsx`, content: xlsxBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
     { filename: `Reporte_${safeName}.pdf`, content: pdfBase64, content_type: 'application/pdf' },
   ];
-  const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const adminEmail = env.DIRECTOR_EMAIL ;
 
   const dossierSubs = await getSubscribedEmails(env, 'dossier');
   const excelSubs = await getSubscribedEmails(env, 'excel');
@@ -2838,7 +2838,7 @@ async function sendEventActivationEmail(env: Env, sessionId: number) {
     </div>
   `;
 
-  const adminEmail = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const adminEmail = env.DIRECTOR_EMAIL ;
   await sendEmail(env, adminEmail, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
 }
 
@@ -2894,12 +2894,17 @@ async function sendEmail(env: Env, to: string | string[], subject: string, html:
       throw new Error('BREVO_API_KEY no configurado en este entorno.');
   }
   try {
-    let toArray = Array.isArray(to) ? to : [to];
+    let toArray = (Array.isArray(to) ? to : [to]).filter(e => e && typeof e === 'string' && e.trim() !== '');
     let ccArray = cc || [];
 
     if (reportId) {
       const subs = await getSubscribedEmails(env, reportId);
-      ccArray = [...new Set([...ccArray, ...subs])].filter(e => e !== '');
+      ccArray = [...new Set([...ccArray, ...subs])].filter(e => e && typeof e === 'string' && e.trim() !== '');
+    }
+
+    if (toArray.length === 0) {
+        console.log('Skipping email since no recipients are defined.');
+        return true;
     }
 
     // Brevo format
@@ -2999,7 +3004,7 @@ async function checkScheduledNotifications(env: Env) {
       }
     }
 
-    const email = 'eyestaff.ncarrillo@gmail.com';
+    const email = env.DIRECTOR_EMAIL;
     const subject = `🔔 CONVOCATORIA: ${session.name}`;
     const html = `
       <div style="font-family: 'Outfit', sans-serif; background: #0b0f19; color: white; padding: 30px; border-radius: 20px; border: 1px solid #1e253c; max-width: 600px; margin: 0 auto;">
@@ -3320,7 +3325,7 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
   const pdfBytes = await generateBirthdayPDF(birthdayGuys, nextMonthName);
   const pdfBase64 = uint8ArrayToBase64(pdfBytes);
 
-  const recipient = 'eyestaff.ncarrillo@gmail.com';
+  const recipient = env.DIRECTOR_EMAIL;
 
   let listHtml = '';
   for (const guy of birthdayGuys) {
@@ -3473,7 +3478,7 @@ async function sendDeliveryConfirmationEmail(env: Env, vehicle: any) {
     </div>
   `;
 
-  const adminCopy = env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const adminCopy = env.DIRECTOR_EMAIL ;
 
   // Enviar al cliente si tiene email
   if (vehicle.owner_email) {
@@ -3666,7 +3671,7 @@ app.post('/api/email/start', async (c) => {
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
-  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL ;
 
   // Reutilizamos la misma estructura visual profesional
   const html = `
@@ -4476,7 +4481,7 @@ app.post('/api/admin/send-staff-list', async (c) => {
     </div>
   `;
 
-  const adminEmail = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const adminEmail = c.env.DIRECTOR_EMAIL ;
   await sendEmail(c.env, adminEmail, 'EYE STAFF — Listado Completo de Accesos y Pines', html);
 
   return c.json({ success: true, message: `Correo enviado con éxito a ${adminEmail}` });
@@ -5974,7 +5979,7 @@ app.post('/api/reports/send-start', async (c) => {
   const session = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(sessionId).first<{ name: string }>();
   if (!session) return c.json({ error: 'No session found' }, 404);
 
-  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL ;
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
@@ -6015,7 +6020,7 @@ app.post('/api/reports/send-start', async (c) => {
 // Reportes consolidados en /api/sessions/close
 
 app.post('/api/test/changelog', async (c) => {
-  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL ;
   const html = `
     <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 30px; border-radius: 20px;">
       <h2 style="color: #ef4444; border-bottom: 2px solid #ef4444; padding-bottom: 10px;">AVANCE DEL PROYECTO: v2.2.6</h2>
@@ -6106,7 +6111,7 @@ app.get('/api/debug/trigger-report', async (c) => {
     FROM vehicles WHERE session_id = ? AND status != 'pre-registered'
   `).bind(last.id).first<{ total: number, revenue: number }>();
 
-  const to = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+  const to = c.env.DIRECTOR_EMAIL ;
   await sendEmail(c.env, to, `🧪 PRUEBA DE ENVÍO: ${last.name}`, `
     <div style="font-family:sans-serif; max-width:500px; margin:auto; border:1px solid #eee; border-radius:15px; overflow:hidden; border-top:5px solid #ef4444;">
       <div style="padding:30px; text-align:center;">
@@ -6403,7 +6408,7 @@ app.post('/api/payroll/submit', async (c) => {
       </li>
     `).join('');
 
-    await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', `💰 NUEVO REPORTE DE COBRO: ${staff?.name || 'EMPLEADO'}`, `
+    await sendEmail(c.env, c.env.DIRECTOR_EMAIL, `💰 NUEVO REPORTE DE COBRO: ${staff?.name || 'EMPLEADO'}`, `
           <div style="font-family:sans-serif; max-width:500px; margin:auto; border:1px solid #eee; border-radius:15px; overflow:hidden; border-top:5px solid #a855f7;">
             <div style="padding:30px;">
               <h2 style="color:#a855f7; margin:0;">REPORTE DE COBRO</h2>
@@ -6513,7 +6518,7 @@ app.post('/api/attendance/log', async (c) => {
         } else {
           // Enviar correo de alerta crítica al director
           try {
-            const adminEmail = c.env.DIRECTOR_EMAIL || 'eyestaff.ncarrillo@gmail.com';
+            const adminEmail = c.env.DIRECTOR_EMAIL ;
             const sessionInfo = await c.env.DB.prepare("SELECT name FROM sessions WHERE id = ?").bind(session_id).first<{ name: string }>();
             const sessionName = sessionInfo ? sessionInfo.name : 'Evento';
 
@@ -7715,17 +7720,17 @@ app.post('/api/public/update-data/:token', async (c) => {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
+    env.DIRECTOR_EMAIL = undefined;
     return app.fetch(request, env, ctx);
   },
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
+    env.DIRECTOR_EMAIL = undefined;
     ctx.waitUntil(checkScheduledNotifications(env));
 
 
   },
   async email(message: any, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = 'eyestaff.ncarrillo@gmail.com';
+    env.DIRECTOR_EMAIL = undefined;
     try {
       const parser = new PostalMime();
       const email = await parser.parse(message.raw);
