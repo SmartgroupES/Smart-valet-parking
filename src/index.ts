@@ -2891,8 +2891,7 @@ function wrapInCorporateTemplate(content: string) {
 
 async function sendEmail(env: Env, to: string | string[], subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string) {
   if (!env.BREVO_API_KEY) {
-      console.log('BREVO_API_KEY no configurado.');
-      return;
+      throw new Error('BREVO_API_KEY no configurado en este entorno.');
   }
   try {
     let toArray = Array.isArray(to) ? to : [to];
@@ -5259,6 +5258,10 @@ app.post('/api/admin/send-update-requests', async (c) => {
     } catch (e) {
       console.error(`Failed to send email to ${emp.email}`, e);
     }
+  }
+
+  if (sentCount === 0) {
+    return c.json({ error: 'No se pudo enviar ningún correo. Verifica la configuración de Brevo.' }, 500);
   }
 
   return c.json({ success: true, sent: sentCount, total: targetEmails.length });

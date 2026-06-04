@@ -19,7 +19,6 @@ bucket_name = "valet-parking-photos"
 
 [vars]
 JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
-RESEND_API_KEY = "re_GasgFDA6_BoBRxZRw5Ugs9goxzgBbzqTg"
 OFFICE_GROUP_ID = "1203630234567890@g.us"
 WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
 WHATSAPP_BOT_API_KEY = "dev-local-api-key"
@@ -46,7 +45,6 @@ triggers = { crons = [] }
 [env.staging.vars]
 IS_STAGING = "true"
 JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
-RESEND_API_KEY = "re_GasgFDA6_BoBRxZRw5Ugs9goxzgBbzqTg"
 OFFICE_GROUP_ID = "1203630234567890@g.us"
 WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
 WHATSAPP_BOT_API_KEY = "dev-local-api-key"
