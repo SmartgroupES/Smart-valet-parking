@@ -4216,8 +4216,8 @@ app.use('/api/*', async (c, next) => {
   const path = c.req.path;
   const authHeader = c.req.header('Authorization');
 
-  // Permitir login y fotos sin token (para <img> tags)
-  if (path.includes('/api/staff/login') || path.includes('/api/photos/') || path.includes('/api/telegram/')) {
+  // Permitir login y fotos sin token (para <img> tags), rutas públicas
+  if (path.includes('/api/staff/login') || path.includes('/api/photos/') || path.includes('/api/telegram/') || path.includes('/api/public/')) {
     return await next();
   }
 
