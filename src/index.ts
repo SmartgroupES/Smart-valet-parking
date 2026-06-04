@@ -5272,7 +5272,7 @@ app.get('/api/admin/pending-updates', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const updates = await c.env.DB.prepare(`
-    SELECT e.*, u.name as user_name, u.pin as user_pin
+    SELECT e.*, u.name as user_name, u.cedula as user_cedula
     FROM employee_data_updates e
     JOIN users u ON e.user_id = u.id
     WHERE e.status = 'pending_review'
