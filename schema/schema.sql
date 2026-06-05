@@ -434,3 +434,49 @@ CREATE TABLE IF NOT EXISTS report_subscriptions (
   PRIMARY KEY(user_id, report_id),
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
+
+-- CHAT INTERNO
+CREATE TABLE IF NOT EXISTS chat_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  created_by INTEGER NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(created_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS chat_group_members (
+  group_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(group_id, user_id),
+  FOREIGN KEY(group_id) REFERENCES chat_groups(id),
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sender_id INTEGER NOT NULL,
+  recipient_id INTEGER,
+  group_id INTEGER,
+  session_id INTEGER,
+  message TEXT NOT NULL,
+  is_read INTEGER DEFAULT 0,
+  attachment_url TEXT,
+  attachment_type TEXT,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(sender_id) REFERENCES users(id),
+  FOREIGN KEY(recipient_id) REFERENCES users(id),
+  FOREIGN KEY(group_id) REFERENCES chat_groups(id)
+);
+
+-- Detalles de Guardia Diurna/Nocturna
+CREATE TABLE IF NOT EXISTS guardia_details (
+  session_id INTEGER PRIMARY KEY,
+  transport TEXT,
+  desayunos INTEGER DEFAULT 0,
+  almuerzos INTEGER DEFAULT 0,
+  cenas INTEGER DEFAULT 0,
+  materials TEXT,
+  FOREIGN KEY(session_id) REFERENCES sessions(id)
+);
+

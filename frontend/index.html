@@ -27,10 +27,11 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
-        @keyframes blinkMapLogo {
+        @keyframes blinkUserIcon {
             0% { filter: grayscale(0) brightness(1); opacity: 1; }
             100% { filter: grayscale(1) brightness(0); opacity: 0; }
         }
+
         @keyframes btn-blink {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.85; transform: scale(0.98); }
@@ -1581,8 +1582,11 @@
 
         // Actualizar todos los footers dinámicamente con logo y enlace a geolocalización
         const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
-        const animationStyle = window.isLiveLocationActive ? 'animation: blinkMapLogo 4s ease-in-out infinite alternate;' : '';
-        const footerHTML = `<img src="${mapLogoUrl}" style="width:18px; height:18px; vertical-align:middle; cursor:pointer; margin-right:8px; ${animationStyle}" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span style="vertical-align:middle;">EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}</span>`;
+        const userIconUrl = '/user_icon.png';
+        const onlineCount = typeof window.getOnlineChatUsersCount === 'function' ? window.getOnlineChatUsersCount() : 0;
+        const animationStyle = onlineCount > 0 ? 'animation: blinkUserIcon 2s ease-in-out infinite alternate;' : '';
+        const onlineText = onlineCount > 0 ? ` | <span style="color:var(--success); font-weight:900;">${onlineCount} ONLINE</span>` : '';
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}${onlineText}</span> <img src="${userIconUrl}" style="width:18px; height:18px; margin-left:8px; cursor:pointer; ${animationStyle}" title="Personal Conectado en el Chat" onclick="document.getElementById('internal-chat-fab').click()"></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
         });
@@ -2161,6 +2165,20 @@
             }
             if (res.error) throw new Error(res.error);
 
+            const newSessionId = res.id || window.editingSessionId;
+            if (type.toLowerCase() === 'guardia diurna/nocturna' && newSessionId) {
+                await apiFetch(`/api/guardia/${newSessionId}/details`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        transport: document.getElementById('lista-guardia-transporte')?.value || '',
+                        desayunos: parseInt(document.getElementById('lista-guardia-desayunos')?.value || '0'),
+                        almuerzos: parseInt(document.getElementById('lista-guardia-almuerzos')?.value || '0'),
+                        cenas: parseInt(document.getElementById('lista-guardia-cenas')?.value || '0'),
+                        materials: document.getElementById('lista-guardia-materiales')?.value || ''
+                    })
+                });
+            }
+
             await checkActiveSession();
             toast(isEditing ? '📝 EVENTO ACTUALIZADO CORRECTAMENTE' : '🚀 EVENTO GUARDADO Y PROGRAMADO', 'success');
             
@@ -2176,6 +2194,45 @@
             hideLoading();
         }
     }
+
+        window.toggleGuardiaFields = function() {
+            const type = document.getElementById('lista-tipo').value;
+            const container = document.getElementById('guardia-fields-container');
+            if(type === 'guardia diurna/nocturna') {
+                container.style.display = 'grid';
+            } else {
+                container.style.display = 'none';
+            }
+        };
+
+        window.calcularSugerenciasGuardia = function() {
+            const totalStaff = document.querySelectorAll('#list-supervisor .staff-item input:checked, #list-employee .staff-item input:checked').length;
+            if(totalStaff === 0) return toast('Asigna personal primero para calcular comidas', 'warning');
+            
+            const inicio = document.getElementById('lista-hora-inicio').value;
+            const fin = document.getElementById('lista-hora-fin').value;
+            let des = 0, alm = 0, cen = 0;
+            
+            if(inicio && fin) {
+               const startH = parseInt(inicio.split(':')[0] || 0);
+               let endH = parseInt(fin.split(':')[0] || 0);
+               if (endH < startH) endH += 24; 
+               
+               for(let h=startH; h<endH; h++) {
+                  let modH = h % 24;
+                  if (modH >= 2 && modH < 10) des = totalStaff;
+                  if (modH >= 10 && modH < 18) alm = totalStaff;
+                  if ((modH >= 18 && modH < 24) || (modH >= 0 && modH < 2)) cen = totalStaff;
+               }
+            } else {
+               alm = totalStaff; 
+            }
+            
+            document.getElementById('lista-guardia-desayunos').value = des;
+            document.getElementById('lista-guardia-almuerzos').value = alm;
+            document.getElementById('lista-guardia-cenas').value = cen;
+            toast('Comidas calculadas según el personal asignado', 'success');
+        };
 
     async function renderListas(view) {
         showLoading('CARGANDO PERSONAL...');
@@ -2229,7 +2286,7 @@
                             </div>
                             <div style="grid-column: span 1;">
                                 <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
-                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;">
+                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;" onchange="if(window.toggleGuardiaFields) window.toggleGuardiaFields()">
                                     <option value="" disabled selected>Seleccione...</option>
                                     <option value="valet parking">VALET PARKING</option>
                                     <option value="control de accesos">CONTROL DE ACCESOS</option>
@@ -2291,6 +2348,21 @@
                                 <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOTAS / OBSERVACIONES</label>
                                 <textarea id="lista-observaciones" class="input-field" placeholder="Notas adicionales..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box; height:60px; resize:none; background:var(--surface); color:#fff; border:1px solid var(--border);"></textarea>
                             </div>
+
+                            <div id="guardia-fields-container" style="display:none; grid-column: span 2; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; padding:15px; background:rgba(168,85,247,0.1); border-radius:12px; border:1px solid rgba(168,85,247,0.3);">
+                                <h4 style="grid-column: span 2; margin:0; color:#a855f7;">Requisitos de Guardia <button type="button" class="btn btn-sm" onclick="calcularSugerenciasGuardia()" style="background:var(--accent); color:white; padding:4px 10px; float:right; border-radius:6px; font-size:0.7rem;">CALCULAR COMIDAS</button></h4>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TRANSPORTE</label>
+                                     <input type="text" id="lista-guardia-transporte" class="input-field" placeholder="Ej. Autobús" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DESAYUNOS (02-10)</label>
+                                     <input type="number" id="lista-guardia-desayunos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">ALMUERZOS (10-18)</label>
+                                     <input type="number" id="lista-guardia-almuerzos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CENAS (18-02)</label>
+                                     <input type="number" id="lista-guardia-cenas" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div style="grid-column: span 2;"><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">MATERIALES REQUERIDOS</label>
+                                     <input type="text" id="lista-guardia-materiales" class="input-field" placeholder="Ej. Radios, Linternas" style="width:100%; border-radius:8px; padding:8px;"></div>
+                            </div>
+
                         </div>
 
                         <div onclick="showExpandedMap()" style="margin-top:20px; border-radius:16px; overflow:hidden; border:1px solid var(--border); height:160px; background:rgba(0,0,0,0.2); position:relative; cursor:zoom-in;">
@@ -3392,7 +3464,7 @@
                 <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
                     <div style="display: flex; flex-direction: column; gap: 8px;">
                         <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">EVENTO SELECCIONADO</label>
-                        <select onchange="window.currentSessionId = parseInt(this.value); localStorage.setItem('selectedSessionId', this.value); renderHome(document.getElementById('current-view'));" 
+                        <select onchange="(async () => { window.currentSessionId = parseInt(this.value); localStorage.setItem('selectedSessionId', this.value); await checkActiveSession(); if(document.getElementById('home-view')) renderHome(document.getElementById('current-view')); })()" 
                             style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
                             ${(filteredSessions || []).filter(s => !s.type || s.type.toLowerCase().includes('valet')).map(s => 
                                 `<option value="${s.id}" ${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="color:${s.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
@@ -3573,6 +3645,18 @@
                         const isEventActive = window.activeSession.status === 'active';
 
                         return `
+                            ${(window.activeSession.type === 'guardia diurna/nocturna' && window.activeSession.guardia_details) ? `
+                                <div style="margin-bottom:25px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:16px; padding:15px; text-align:left;">
+                                    <div style="font-size:0.7rem; color:var(--accent); font-weight:900; letter-spacing:2px; margin-bottom:10px;">🛡️ RECURSOS ASIGNADOS A LA GUARDIA</div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.8rem;">
+                                        <div><span style="color:var(--muted); font-weight:700;">TRANSPORTE:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.transport || 'N/A'}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">MATERIALES:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.materials || 'N/A'}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">DESAYUNOS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.desayunos || 0}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">ALMUERZOS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.almuerzos || 0}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">CENAS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.cenas || 0}</span></div>
+                                    </div>
+                                </div>
+                            ` : ''}
                             <div style="text-align:center; margin-bottom:25px;">
                                 <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
                                 <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
@@ -3628,7 +3712,7 @@
                                     const canBreak = !hasExited && lastAction === 'entry' && !isLastActive;
 
                                     const canExit = !hasExited && (lastAction === 'entry' || lastAction === 'break_start');
-                                    const canAbsent = lastAction !== 'absent' && !hasExited && lastAction !== 'break_start';
+                                    const canAbsent = att.length === 0;
 
                                     let statusText = 'INACTIVO';
                                     let statusColor = 'var(--muted)';
@@ -3643,7 +3727,7 @@
                                             <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
                                             <button onclick="logStaffAttendance(${u.id}, 'break_start')" ${!canBreak ? 'disabled' : ''} title="${isLastActive ? 'No se puede iniciar el descanso: debe haber al menos un empleado activo en el evento' : ''}" style="flex:1; background:var(--warning); color:black; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canBreak ? 'pointer' : 'not-allowed'}; opacity:${canBreak ? '1' : '0.3'}">DESCANSO</button>
                                             <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
-                                            ${canAbsent ? `<button onclick="logStaffAttendance(${u.id}, 'absent')" style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:pointer;" title="Marcar inasistencia (bloquea la entrada)">INASISTENTE</button>` : ''}
+                                            <button onclick="logStaffAttendance(${u.id}, 'absent')" ${!canAbsent ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canAbsent ? 'pointer' : 'not-allowed'}; opacity:${canAbsent ? '1' : '0.3'};" title="Marcar inasistencia (bloquea la entrada)">INASISTENTE</button>
                                         `;
                                     } else {
                                         // Para el staff operativo regular (ellos mismos en su perfil) habilitar entrada y salida
@@ -3657,7 +3741,7 @@
                                         <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
                                             <div style="display:flex; align-items:center; justify-content:space-between;">
                                                 <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-                                                    ${u.name.toUpperCase()}
+                                                    ${u.name.toUpperCase()} <span style="font-size:0.6rem; color:var(--muted);">${u.cedula || ''}</span>
                                                     ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
                                                 </div>
                                                 <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
@@ -7491,6 +7575,14 @@
                     </div>
                     ` : ''}
 
+                    <!-- MANEJO DE INVENTARIOS -->
+                    <div class="menu-item admin-card-bg" onclick="toast('PRÓXIMAMENTE: MÓDULO DE INVENTARIOS', 'info')" style="border-top: 4px solid #8b5cf6;">
+                        <i>📦</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">MANEJO DE INVENTARIOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE ACTIVOS Y MATERIALES</span>
+                        </div>
+                    </div>
 
 
                     <!-- BBDD DE EVENTOS -->
@@ -7520,14 +7612,6 @@
                         </div>
                     </div>
 
-                    <!-- ENVÍOS MASIVOS -->
-                    <div class="menu-item admin-card-bg" onclick="openBulkReportsPanel()" style="border-top: 4px solid #8b5cf6;">
-                        <i>📨</i>
-                        <div class="menu-item-content">
-                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">ENVÍOS MASIVOS</span>
-                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">ENVÍO DE REPORTES Y TICKETS</span>
-                        </div>
-                    </div>
 
                 </div>
 
@@ -7553,7 +7637,7 @@
             <div id="admin-content" style="margin-top:20px;"></div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('VOLVER A DIRECCIÓN EYE STAFF', 'renderVipEyeStaff(document.getElementById(\'current-view\'))')}
+                ${getVolverBtn('VOLVER A ADMINISTRACIÓN', 'renderAdmin(document.getElementById(\'current-view\'))')}
             </div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
         `;
@@ -8331,7 +8415,7 @@
                                 <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN <span style="color:var(--danger);">*</span></label><input type="text" id="staff-address" placeholder="EJ: AV. BOLIVAR, EDIF 1"></div>
                                 <div class="field" style="margin-bottom:0;"><label>SECTOR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-sector" placeholder="EJ: CHACAO / LAS MERCEDES"></div>
                             </div>
-                            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div class="grid" style="grid-template-columns: 1fr 1fr 150px; gap:15px; margin-bottom:15px; align-items: end;">
                                 <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA <span style="color:var(--danger);">*</span></label>
                                     <select id="staff-bank" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
                                         <option value="">Seleccione un banco...</option>
@@ -8365,6 +8449,10 @@
                                     </select>
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-account" placeholder="EJ: 0134..."></div>
+                                <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
+                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-bank').disabled = this.checked; document.getElementById('staff-account').disabled = this.checked; if(this.checked) { document.getElementById('staff-bank').value = ''; document.getElementById('staff-account').value = ''; }">
+                                    <label for="staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
+                                </div>
                             </div>
                             <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:20px;">
                                 <div class="field" style="margin-bottom:0;"><label>FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-e-contact" placeholder="EJ: MARIA PEREZ"></div>
@@ -8998,6 +9086,7 @@
         const sector = document.getElementById('staff-sector').value.trim();
         const bankName = document.getElementById('staff-bank')?.value.trim() || '';
         const bankAccount = document.getElementById('staff-account')?.value.trim() || '';
+        const pagoMovil = document.getElementById('staff-pago-movil')?.checked ? 1 : 0;
         const profileAdmin = document.getElementById('staff-profile-admin')?.value || '';
         const profileOpera = document.getElementById('staff-profile-opera')?.value || '';
         const eyeId = document.getElementById('staff-eye-id')?.value || '';
@@ -9009,7 +9098,7 @@
 
         const carnetFile = document.getElementById('staff-carnet').files[0];
 
-        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || !bankAccount || !carnetFile || !eContact || !ePhone || !allergies) {
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !carnetFile || !eContact || !ePhone || !allergies) {
             return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (INCLUYENDO FECHA NAC., FOTO Y DATOS DE EMERGENCIA)', 'warning');
         }
         
@@ -9050,6 +9139,7 @@
                 sector,
                 bank_name: bankName,
                 bank_account: bankAccount,
+                pago_movil: pagoMovil,
                 profile_admin: profileAdmin,
                 profile_opera: profileOpera,
                 eye_id: eyeId,
@@ -9077,6 +9167,9 @@
             document.getElementById('staff-e-phone').value = '';
             document.getElementById('staff-allergies').value = '';
             document.getElementById('staff-bank').value = '';
+            document.getElementById('staff-bank').disabled = false;
+            document.getElementById('staff-account').disabled = false;
+            if (document.getElementById('staff-pago-movil')) document.getElementById('staff-pago-movil').checked = false;
             document.getElementById('staff-profile-admin').value = '';
             document.getElementById('staff-profile-opera').value = '';
             document.getElementById('staff-eye-id').value = '';
@@ -9127,8 +9220,8 @@
                                 <div style="font-size:0.95rem; color:var(--muted); margin-top:8px; line-height:1.5;">
                                     <b style="color:#fff;">Cédula:</b> ${update.user_cedula || 'N/A'}<br>
                                     <b style="color:#fff;">Teléfono:</b> ${d.phone || 'N/A'}<br>
-                                    <b style="color:#fff;">Banco:</b> ${d.bank_name || 'N/A'}<br>
-                                    <b style="color:#fff;">Cuenta:</b> ${d.bank_account || 'N/A'}<br>
+                                    <b style="color:#fff;">Banco:</b> ${d.pago_movil ? 'PAGO MÓVIL' : (d.bank_name || 'N/A')}<br>
+                                    <b style="color:#fff;">Cuenta:</b> ${d.pago_movil ? 'N/A' : (d.bank_account || 'N/A')}<br>
                                     <b style="color:#fff;">Dirección:</b> ${d.address || 'N/A'}<br>
                                     <b style="color:#fff;">Emergencia:</b> ${d.emergency_contact || 'N/A'}<br>
                                     <b style="color:#fff;">Telf. Emerg.:</b> ${d.emergency_phone || 'N/A'}<br>
@@ -9183,9 +9276,9 @@
         if (newPhone === null) return;
         const newAddress = prompt('Dirección propuesta:', d.address || '');
         if (newAddress === null) return;
-        const newBank = prompt('Banco propuesto:', d.bank_name || '');
+        const newBank = prompt('Banco propuesto (o escribir PAGO MOVIL):', d.pago_movil ? 'PAGO MOVIL' : (d.bank_name || ''));
         if (newBank === null) return;
-        const newAccount = prompt('Cuenta propuesta:', d.bank_account || '');
+        const newAccount = prompt('Cuenta propuesta (dejar vacío si es Pago Móvil):', d.pago_movil ? '' : (d.bank_account || ''));
         if (newAccount === null) return;
         
         const pin = prompt('Ingrese PIN administrativo para guardar los datos modificados:');
@@ -9193,8 +9286,16 @@
 
         d.phone = newPhone;
         d.address = newAddress;
-        d.bank_name = newBank;
-        d.bank_account = newAccount;
+        
+        if (newBank.toUpperCase().includes('PAGO MOVIL') || newBank.toUpperCase().includes('PAGO MÓVIL')) {
+            d.pago_movil = 1;
+            d.bank_name = '';
+            d.bank_account = '';
+        } else {
+            d.pago_movil = 0;
+            d.bank_name = newBank;
+            d.bank_account = newAccount;
+        }
 
         showLoading('GUARDANDO MODIFICACIONES...');
         try {
@@ -9359,8 +9460,8 @@
                             u.phone || '', 
                             u.address || '', 
                             u.sector || '', 
-                            u.bank_name || '',
-                            u.bank_account || '',
+                            u.pago_movil ? 'PAGO MÓVIL' : (u.bank_name || ''),
+                            u.pago_movil ? 'N/A' : (u.bank_account || ''),
                             u.emergency_contact || '',
                             u.emergency_phone || '',
                             u.is_allergic || '',
@@ -10120,7 +10221,7 @@
                                         <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
                                             <div style="display:flex; align-items:center; justify-content:space-between;">
                                                 <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
-                                                    ${u.name.toUpperCase()}
+                                                    ${u.name.toUpperCase()} <span style="font-size:0.6rem; color:var(--muted);">${u.cedula || ''}</span>
                                                     ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
                                                 </div>
                                                 <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
@@ -10631,7 +10732,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const consolidated = {};
         res.submissions.filter(s => s.status === 'approved').forEach(s => {
             if (!consolidated[s.staff_name]) {
-                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.bank_name || 'N/A', account: s.bank_account || 'N/A', items: [], user_id: s.user_id };
+                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.pago_movil ? 'PAGO MÓVIL' : (s.bank_name || 'N/A'), account: s.pago_movil ? 'N/A' : (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
             }
             const amt = s.amount || 0;
             consolidated[s.staff_name].total += amt;
@@ -10982,6 +11083,22 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         updateStaffList('employee');
         
         window.editingSessionId = id;
+
+        if (window.toggleGuardiaFields) {
+            window.toggleGuardiaFields();
+            if ((s.type || '').toLowerCase() === 'guardia diurna/nocturna') {
+                apiFetch(`/api/guardia/${id}/details`).then(res => {
+                    if (res && res.success && res.data) {
+                        const d = res.data;
+                        if(document.getElementById('lista-guardia-transporte')) document.getElementById('lista-guardia-transporte').value = d.transport || '';
+                        if(document.getElementById('lista-guardia-desayunos')) document.getElementById('lista-guardia-desayunos').value = d.desayunos || 0;
+                        if(document.getElementById('lista-guardia-almuerzos')) document.getElementById('lista-guardia-almuerzos').value = d.almuerzos || 0;
+                        if(document.getElementById('lista-guardia-cenas')) document.getElementById('lista-guardia-cenas').value = d.cenas || 0;
+                        if(document.getElementById('lista-guardia-materiales')) document.getElementById('lista-guardia-materiales').value = d.materials || '';
+                    }
+                });
+            }
+        }
         
         // Scroll al inicio del panel
         document.querySelector('.vehicle-card')?.scrollIntoView({ behavior: 'smooth' });
@@ -12030,6 +12147,48 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     // Agregar sección DOMICILIOS al panel lateral
                     const sidePanel = document.querySelector('.tracking-grid > div:last-child');
                     if (sidePanel) {
+                        
+                        // --- INICIO PERSONAL CONECTADO EN EL CHAT ---
+                        const chatDiv = document.createElement('div');
+                        chatDiv.className = 'vehicle-card';
+                        chatDiv.id = 'panel-personal-conectado';
+                        chatDiv.style.cssText = 'padding:20px; border-radius:20px; background:rgba(14, 165, 233, 0.05); border:1px solid rgba(14, 165, 233, 0.2); margin-bottom:15px;';
+                        
+                        function renderChatDiv() {
+                            const onlineUsers = typeof window.getOnlineChatUsers === 'function' ? window.getOnlineChatUsers() : [];
+                            const userIconUrl = '/user_icon.png';
+                            const isBlinking = onlineUsers.length > 0 ? 'animation: blinkUserIcon 2s infinite alternate;' : '';
+                            
+                            chatDiv.innerHTML = `
+                                <h3 style="font-size:0.8rem; color:#0ea5e9; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="display:flex; align-items:center; gap:8px;">
+                                        <img src="${userIconUrl}" style="width:18px; height:18px; filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg); ${isBlinking}">
+                                        PERSONAL CONECTADO
+                                    </span>
+                                    <span style="font-size:0.6rem; background:#0ea5e9; color:white; padding:2px 8px; border-radius:10px;">${onlineUsers.length}</span>
+                                </h3>
+                                <div style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
+                                    ${onlineUsers.length === 0 ? '<div style="font-size:0.6rem;color:var(--muted);text-align:center;">NADIE CONECTADO AHORA</div>' :
+                                        onlineUsers.map(u => `
+                                            <div style="display:flex; align-items:center; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); gap:8px;">
+                                                <span style="width:6px; height:6px; background:#22c55e; border-radius:50%; box-shadow:0 0 5px #22c55e;"></span>
+                                                <div style="font-size:0.7rem; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${u.name}</div>
+                                                <button onclick="document.getElementById('internal-chat-fab').click()" class="btn btn-sm" style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#0ea5e9; color:#fff;">CHATEAR</button>
+                                            </div>
+                                        `).join('')
+                                    }
+                                </div>
+                            `;
+                        }
+                        renderChatDiv();
+                        // Actualizar panel cada 10 segundos
+                        const chatInterval = setInterval(() => {
+                            if (!document.getElementById('panel-personal-conectado')) clearInterval(chatInterval);
+                            else renderChatDiv();
+                        }, 10000);
+                        // La inserción se hará después de domDiv
+                        // --- FIN PERSONAL CONECTADO EN EL CHAT ---
+
                         const domDiv = document.createElement('div');
                         domDiv.className = 'vehicle-card';
                         domDiv.style.cssText = 'padding:20px; border-radius:20px; background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2);';
@@ -12071,8 +12230,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         const equiposCard = document.getElementById('equipos-activos-card');
                         if (equiposCard) {
                             sidePanel.insertBefore(domDiv, equiposCard);
+                            sidePanel.insertBefore(chatDiv, equiposCard);
                         } else {
                             sidePanel.appendChild(domDiv);
+                            sidePanel.appendChild(chatDiv);
                         }
 
                         // Inicializar el filtro de búsqueda interactivo en tiempo real
@@ -12222,6 +12383,9 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         document.getElementById('edit-staff-sector').value = u.sector || '';
         document.getElementById('edit-staff-bank').value = u.bank_name || '';
         document.getElementById('edit-staff-account').value = u.bank_account || '';
+        document.getElementById('edit-staff-pago-movil').checked = !!u.pago_movil;
+        document.getElementById('edit-staff-bank').disabled = !!u.pago_movil;
+        document.getElementById('edit-staff-account').disabled = !!u.pago_movil;
         document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
         document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
         document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
@@ -12259,29 +12423,44 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     async function saveStaffEdit() {
         const id = document.getElementById('edit-staff-id').value;
         const name = document.getElementById('edit-staff-name').value.trim();
-        
-        if (!name) {
-            toast('EL NOMBRE ES OBLIGATORIO', 'error');
-            return;
+        const cedula = document.getElementById('edit-staff-cedula').value.trim();
+        const email = document.getElementById('edit-staff-email').value.trim();
+        const birthDate = document.getElementById('edit-staff-birth-date').value;
+        const eyeId = document.getElementById('edit-staff-eye-id').value;
+        const profileAdmin = document.getElementById('edit-staff-profile-admin').value;
+        const profileOpera = document.getElementById('edit-staff-profile-opera').value;
+        const phone = document.getElementById('edit-staff-phone').value.trim();
+        const address = document.getElementById('edit-staff-address').value.trim();
+        const sector = document.getElementById('edit-staff-sector').value.trim();
+        const bankName = document.getElementById('edit-staff-bank').value;
+        const bankAccount = document.getElementById('edit-staff-account').value.trim();
+        const pagoMovil = document.getElementById('edit-staff-pago-movil').checked ? 1 : 0;
+        const eContact = document.getElementById('edit-staff-e-contact').value.trim();
+        const ePhone = document.getElementById('edit-staff-e-phone').value.trim();
+        const allergies = document.getElementById('edit-staff-allergies').value.trim();
+
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (EXCEPTO FOTO)', 'warning');
         }
 
         const updates = {
             name: name,
             is_active: parseInt(document.getElementById('edit-staff-active').value),
-            eye_id: document.getElementById('edit-staff-eye-id').value,
-            profile_admin: document.getElementById('edit-staff-profile-admin').value,
-            profile_opera: document.getElementById('edit-staff-profile-opera').value,
-            cedula: document.getElementById('edit-staff-cedula').value.replace(/\./g, ''),
-            phone: document.getElementById('edit-staff-phone').value.replace(/-/g, ''),
-            email: document.getElementById('edit-staff-email').value,
-            birth_date: document.getElementById('edit-staff-birth-date').value,
-            address: document.getElementById('edit-staff-address').value,
-            sector: document.getElementById('edit-staff-sector').value,
-            bank_name: document.getElementById('edit-staff-bank').value,
-            bank_account: document.getElementById('edit-staff-account').value,
-            emergency_contact: document.getElementById('edit-staff-e-contact').value,
-            emergency_phone: document.getElementById('edit-staff-e-phone').value,
-            is_allergic: document.getElementById('edit-staff-allergies').value,
+            eye_id: eyeId,
+            profile_admin: profileAdmin,
+            profile_opera: profileOpera,
+            cedula: cedula.replace(/\./g, ''),
+            phone: phone.replace(/-/g, ''),
+            email: email,
+            birth_date: birthDate,
+            address: address,
+            sector: sector,
+            bank_name: bankName,
+            bank_account: bankAccount,
+            pago_movil: pagoMovil,
+            emergency_contact: eContact,
+            emergency_phone: ePhone,
+            is_allergic: allergies,
 
             is_chofer: document.getElementById('edit-staff-chofer').checked ? 1 : 0
         };
@@ -12691,10 +12870,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 <div style="flex:2; min-width:300px;">
                     <input type="hidden" id="edit-staff-id">
                     
-                    <div class="field" style="margin-bottom:15px;"><label>NOMBRE COMPLETO</label><input type="text" id="edit-staff-name" style="font-weight:800; color:#fff;"></div>
+                    <div class="field" style="margin-bottom:15px;"><label>NOMBRE COMPLETO <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-name" style="font-weight:800; color:#fff;"></div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>EYE ID</label>
+                        <div class="field" style="margin-bottom:0;"><label>EYE ID <span style="color:var(--danger);">*</span></label>
                             <select id="edit-staff-eye-id" style="font-weight:900;">
                                 <option value="ORO">ORO</option>
                                 <option value="PLATA">PLATA</option>
@@ -12702,7 +12881,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 <option value="LOGÍSTICA">LOGÍSTICA</option>
                             </select>
                         </div>
-                        <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO</label>
+                        <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
                             <select id="edit-staff-profile-admin" style="font-weight:800;">
                                 <option value="NO APLICA">NO APLICA</option>
                                 <option value="DIRECTOR">DIRECTOR</option>
@@ -12713,7 +12892,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO</label>
+                        <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
                             <select id="edit-staff-profile-opera" style="font-weight:800;">
                                 <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
                                 <option value="SUPERVISOR">SUPERVISOR</option>
@@ -12722,7 +12901,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 <option value="LOGÍSTICA">LOGISTICA</option>
                             </select>
                         </div>
-                        <div class="field" style="margin-bottom:0;"><label>ESTADO</label>
+                        <div class="field" style="margin-bottom:0;"><label>ESTADO <span style="color:var(--danger);">*</span></label>
                             <select id="edit-staff-active" style="font-weight:800;">
                                 <option value="1">ACTIVO</option>
                                 <option value="0">INACTIVO (DEPURADO)</option>
@@ -12731,29 +12910,64 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>CÉDULA</label><input type="text" id="edit-staff-cedula" style="font-weight:700;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>TELÉFONO</label><input type="text" id="edit-staff-phone" style="font-weight:700;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>CÉDULA <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-cedula" style="font-weight:700;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>TELÉFONO <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-phone" style="font-weight:700;"></div>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>CORREO ELECTRÓNICO</label><input type="email" id="edit-staff-email"></div>
-                        <div class="field" style="margin-bottom:0;"><label>FECHA NACIMIENTO</label><input type="date" id="edit-staff-birth-date" onchange="updateEditAgeDisplay(this.value)" oninput="updateEditAgeDisplay(this.value)" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>CORREO ELECTRÓNICO <span style="color:var(--danger);">*</span></label><input type="email" id="edit-staff-email"></div>
+                        <div class="field" style="margin-bottom:0;"><label>FECHA NACIMIENTO <span style="color:var(--danger);">*</span></label><input type="date" id="edit-staff-birth-date" onchange="updateEditAgeDisplay(this.value)" oninput="updateEditAgeDisplay(this.value)" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;"></div>
                     </div>
                     
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN</label><input type="text" id="edit-staff-address"></div>
-                        <div class="field" style="margin-bottom:0;"><label>SECTOR</label><input type="text" id="edit-staff-sector"></div>
+                        <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-address"></div>
+                        <div class="field" style="margin-bottom:0;"><label>SECTOR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-sector"></div>
                     </div>
 
-                    <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA</label><input type="text" id="edit-staff-bank"></div>
-                        <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA</label><input type="text" id="edit-staff-account"></div>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr 130px; gap:15px; margin-bottom:15px; align-items: end;">
+                        <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA <span style="color:var(--danger);">*</span></label>
+                            <select id="edit-staff-bank" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                <option value="">Seleccione un banco...</option>
+                                <option value="BANCO DE VENEZUELA">Banco de Venezuela</option>
+                                <option value="BANCO DIGITAL DE LOS TRABAJADORES">Banco Digital de los Trabajadores (antes Bicentenario)</option>
+                                <option value="BANCO DEL TESORO">Banco del Tesoro</option>
+                                <option value="BANFANB">BANFANB</option>
+                                <option value="BANCO AGRÍCOLA DE VENEZUELA">Banco Agrícola de Venezuela</option>
+                                <option value="BANESCO">Banesco</option>
+                                <option value="MERCANTIL">Mercantil</option>
+                                <option value="BBVA PROVINCIAL">BBVA Provincial</option>
+                                <option value="BANCO NACIONAL DE CRÉDITO (BNC)">Banco Nacional de Crédito (BNC)</option>
+                                <option value="BANCARIBE">Bancaribe</option>
+                                <option value="BANCO EXTERIOR">Banco Exterior</option>
+                                <option value="BANCAMIGA">Bancamiga</option>
+                                <option value="BANPLUS">Banplus</option>
+                                <option value="BFC BANCO FONDO COMÚN">BFC Banco Fondo Común</option>
+                                <option value="BANCO PLAZA">Banco Plaza</option>
+                                <option value="100% BANCO">100% Banco</option>
+                                <option value="VENEZOLANO DE CRÉDITO">Venezolano de Crédito</option>
+                                <option value="BANCO ACTIVO">Banco Activo</option>
+                                <option value="BANCO CARONÍ">Banco Caroní</option>
+                                <option value="DELSUR">Delsur</option>
+                                <option value="BANCO SOFITASA">Banco Sofitasa</option>
+                                <option value="N58 BANCO DIGITAL">N58 Banco Digital</option>
+                                <option value="BANCRECER">Bancrecer</option>
+                                <option value="BANGENTE">Bangente</option>
+                                <option value="MI BANCO">Mi Banco</option>
+                                <option value="BANCO INTERNACIONAL DE DESARROLLO">Banco Internacional de Desarrollo</option>
+                                <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR">Instituto Municipal de Crédito Popular</option>
+                            </select>
+                        </div>
+                        <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-account"></div>
+                        <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
+                            <input type="checkbox" id="edit-staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('edit-staff-bank').disabled = this.checked; document.getElementById('edit-staff-account').disabled = this.checked; if(this.checked) { document.getElementById('edit-staff-bank').value = ''; document.getElementById('edit-staff-account').value = ''; }">
+                            <label for="edit-staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
+                        </div>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>FAMILIAR</label><input type="text" id="edit-staff-e-contact" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR</label><input type="text" id="edit-staff-e-phone" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>ALERGIAS</label><input type="text" id="edit-staff-allergies" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-e-contact" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-e-phone" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>ALERGIAS <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-allergies" style="font-size:0.75rem;"></div>
                     </div>
 
 
@@ -13170,7 +13384,7 @@ window.renderHistorialPresupuestos = async function() {
     }
     
     // Sort all budgets by correlativo desc (de mayor a menor)
-    data.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+    data.sort((a, b) => parseInt(String(b.id || '').replace(/\\D/g, '') || 0) - parseInt(String(a.id || '').replace(/\\D/g, '') || 0));
     
     let html = '';
     
@@ -13178,7 +13392,7 @@ window.renderHistorialPresupuestos = async function() {
         if(tableData.length === 0) return '';
         let tHtml = `<h4 style="color:${titleColor}; margin-top:25px; margin-bottom:10px; font-weight:900; padding-left:5px; font-size: 0.9rem; text-transform: uppercase;">${title} (${tableData.length})</h4>`;
         tHtml += `<div style="border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.1); margin-bottom:20px; overflow-x:auto;">
-            <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 125px; gap:8px; background:var(--surface2); padding:12px 15px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.7rem; letter-spacing:0.5px; min-width:800px;">
+            <div style="display:grid; grid-template-columns: 45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px; gap:6px; background:var(--surface2); padding:10px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.6rem; letter-spacing:0px; width:100%;">
                 <div>ID</div>
                 <div>CONTACTO</div>
                 <div>EMPRESA</div>
@@ -13187,8 +13401,9 @@ window.renderHistorialPresupuestos = async function() {
                 <div>FECHA</div>
                 <div>TOTAL</div>
                 <div>ESTATUS</div>
-                <div style="text-align:center;">ACCIONES</div>
             </div>`;
+        
+        tHtml += `<div style="height: 250px; overflow-y: auto; overflow-x: hidden;">`;
         
         tHtml += tableData.map((d, index) => {
             const status = d.estatus || 'GENERADO';
@@ -13201,11 +13416,11 @@ window.renderHistorialPresupuestos = async function() {
             }
             
             return `
-                <div style="display:grid; grid-template-columns: 55px minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) 75px 80px 115px 125px; gap:8px; padding:12px 15px; border-bottom:${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.75rem; min-width:800px;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                <div style="display:grid; grid-template-columns: 45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px; gap:6px; padding:10px; border-bottom:${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.65rem; width:100%;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
                     <div style="cursor:pointer;" onclick="cargarPresupuestoDesdeHistorial('${d.id}', ${d.timestamp})">
                         <span style="font-weight:900; color:var(--brand-white); border-bottom:1px dashed var(--accent);">#${d.id}</span>
                     </div>
-                    <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}">${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}</div>
+                    <div style="font-weight:bold; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.2;" title="${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}">${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}</div>
                     <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="${d.empresa}">${d.empresa}</div>
                     <div style="color:var(--warning); font-size:0.55rem; font-weight:800; text-align:center; display:flex; align-items:center; justify-content:center; white-space:normal; line-height:1.2; height:100%;" title="${tipo}">${tipo}</div>
                     <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="${d.evento}">${d.evento}</div>
@@ -13219,15 +13434,10 @@ window.renderHistorialPresupuestos = async function() {
                             <option value="NO APROBADO" ${status==='NO APROBADO'?'selected':''} style="color:var(--danger)">NO APROBADO</option>
                         </select>
                     </div>
-                    <div style="text-align:center; display:flex; justify-content:center; gap:8px;">
-                        <button onclick="generarDesdeHistorial(event, '${d.id}', 'pdf')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Generar PDF">📄</button>
-                        <button onclick="generarDesdeHistorial(event, '${d.id}', 'email')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Enviar Email">📧</button>
-                        <button onclick="eliminarPresupuestoFront(event, '${d.id}')" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:2px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Eliminar Presupuesto">🗑️</button>
-                    </div>
                 </div>
             `;
         }).join('');
-        tHtml += `</div>`;
+        tHtml += `</div></div>`;
         return tHtml;
     };
 
@@ -13971,7 +14181,6 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
     </div>
 </div>
 
-    <script src="telegram-chat.js?v=2.5.54"></script>
     <script src="chat-widget.js"></script>
 </body>
 
@@ -14178,30 +14387,47 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ENTIDAD BANCARIA</label>
                                 <select id="upd-bank" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f111a; color:white;">
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Caixabank" ${user.bank_name === 'Caixabank' ? 'selected' : ''}>Caixabank</option>
-                                    <option value="Santander" ${user.bank_name === 'Santander' ? 'selected' : ''}>Santander</option>
-                                    <option value="BBVA" ${user.bank_name === 'BBVA' ? 'selected' : ''}>BBVA</option>
-                                    <option value="Sabadell" ${user.bank_name === 'Sabadell' ? 'selected' : ''}>Sabadell</option>
-                                    <option value="Bankinter" ${user.bank_name === 'Bankinter' ? 'selected' : ''}>Bankinter</option>
-                                    <option value="Unicaja" ${user.bank_name === 'Unicaja' ? 'selected' : ''}>Unicaja</option>
-                                    <option value="Kutxabank" ${user.bank_name === 'Kutxabank' ? 'selected' : ''}>Kutxabank</option>
-                                    <option value="Ibercaja" ${user.bank_name === 'Ibercaja' ? 'selected' : ''}>Ibercaja</option>
-                                    <option value="ING" ${user.bank_name === 'ING' ? 'selected' : ''}>ING Bank</option>
-                                    <option value="Abanca" ${user.bank_name === 'Abanca' ? 'selected' : ''}>Abanca</option>
-                                    <option value="Openbank" ${user.bank_name === 'Openbank' ? 'selected' : ''}>Openbank</option>
-                                    <option value="N26" ${user.bank_name === 'N26' ? 'selected' : ''}>N26</option>
-                                    <option value="Revolut" ${user.bank_name === 'Revolut' ? 'selected' : ''}>Revolut</option>
-                                    <option value="Laboral Kutxa" ${user.bank_name === 'Laboral Kutxa' ? 'selected' : ''}>Laboral Kutxa</option>
-                                    <option value="Caja Rural" ${user.bank_name === 'Caja Rural' ? 'selected' : ''}>Grupo Caja Rural</option>
-                                    <option value="Otro" ${user.bank_name === 'Otro' ? 'selected' : ''}>Otro</option>
+                                    <option value="">Seleccione un banco...</option>
+                                    <option value="BANCO DE VENEZUELA" ${user.bank_name === 'BANCO DE VENEZUELA' ? 'selected' : ''}>Banco de Venezuela</option>
+                                    <option value="BANCO DIGITAL DE LOS TRABAJADORES" ${user.bank_name === 'BANCO DIGITAL DE LOS TRABAJADORES' ? 'selected' : ''}>Banco Digital de los Trabajadores (antes Bicentenario)</option>
+                                    <option value="BANCO DEL TESORO" ${user.bank_name === 'BANCO DEL TESORO' ? 'selected' : ''}>Banco del Tesoro</option>
+                                    <option value="BANFANB" ${user.bank_name === 'BANFANB' ? 'selected' : ''}>BANFANB</option>
+                                    <option value="BANCO AGRÍCOLA DE VENEZUELA" ${user.bank_name === 'BANCO AGRÍCOLA DE VENEZUELA' ? 'selected' : ''}>Banco Agrícola de Venezuela</option>
+                                    <option value="BANESCO" ${user.bank_name === 'BANESCO' ? 'selected' : ''}>Banesco</option>
+                                    <option value="MERCANTIL" ${user.bank_name === 'MERCANTIL' ? 'selected' : ''}>Mercantil</option>
+                                    <option value="BBVA PROVINCIAL" ${user.bank_name === 'BBVA PROVINCIAL' ? 'selected' : ''}>BBVA Provincial</option>
+                                    <option value="BANCO NACIONAL DE CRÉDITO (BNC)" ${user.bank_name === 'BANCO NACIONAL DE CRÉDITO (BNC)' ? 'selected' : ''}>Banco Nacional de Crédito (BNC)</option>
+                                    <option value="BANCARIBE" ${user.bank_name === 'BANCARIBE' ? 'selected' : ''}>Bancaribe</option>
+                                    <option value="BANCO EXTERIOR" ${user.bank_name === 'BANCO EXTERIOR' ? 'selected' : ''}>Banco Exterior</option>
+                                    <option value="BANCAMIGA" ${user.bank_name === 'BANCAMIGA' ? 'selected' : ''}>Bancamiga</option>
+                                    <option value="BANPLUS" ${user.bank_name === 'BANPLUS' ? 'selected' : ''}>Banplus</option>
+                                    <option value="BFC BANCO FONDO COMÚN" ${user.bank_name === 'BFC BANCO FONDO COMÚN' ? 'selected' : ''}>BFC Banco Fondo Común</option>
+                                    <option value="BANCO PLAZA" ${user.bank_name === 'BANCO PLAZA' ? 'selected' : ''}>Banco Plaza</option>
+                                    <option value="100% BANCO" ${user.bank_name === '100% BANCO' ? 'selected' : ''}>100% Banco</option>
+                                    <option value="VENEZOLANO DE CRÉDITO" ${user.bank_name === 'VENEZOLANO DE CRÉDITO' ? 'selected' : ''}>Venezolano de Crédito</option>
+                                    <option value="BANCO ACTIVO" ${user.bank_name === 'BANCO ACTIVO' ? 'selected' : ''}>Banco Activo</option>
+                                    <option value="BANCO CARONÍ" ${user.bank_name === 'BANCO CARONÍ' ? 'selected' : ''}>Banco Caroní</option>
+                                    <option value="DELSUR" ${user.bank_name === 'DELSUR' ? 'selected' : ''}>Delsur</option>
+                                    <option value="BANCO SOFITASA" ${user.bank_name === 'BANCO SOFITASA' ? 'selected' : ''}>Banco Sofitasa</option>
+                                    <option value="N58 BANCO DIGITAL" ${user.bank_name === 'N58 BANCO DIGITAL' ? 'selected' : ''}>N58 Banco Digital</option>
+                                    <option value="BANCRECER" ${user.bank_name === 'BANCRECER' ? 'selected' : ''}>Bancrecer</option>
+                                    <option value="BANGENTE" ${user.bank_name === 'BANGENTE' ? 'selected' : ''}>Bangente</option>
+                                    <option value="MI BANCO" ${user.bank_name === 'MI BANCO' ? 'selected' : ''}>Mi Banco</option>
+                                    <option value="BANCO INTERNACIONAL DE DESARROLLO" ${user.bank_name === 'BANCO INTERNACIONAL DE DESARROLLO' ? 'selected' : ''}>Banco Internacional de Desarrollo</option>
+                                    <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR" ${user.bank_name === 'INSTITUTO MUNICIPAL DE CRÉDITO POPULAR' ? 'selected' : ''}>Instituto Municipal de Crédito Popular</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">NÚMERO DE CUENTA (IBAN)</label>
-                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="ES00 0000 0000 0000 0000" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">NÚMERO DE CUENTA</label>
+                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="0000 0000 0000 0000 0000" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
                             </div>
+                            
+                            <div style="margin-top: 15px; display: flex; align-items: center;">
+                                <input type="checkbox" id="upd-pago-movil" ${user.pago_movil ? 'checked' : ''} style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('upd-bank').disabled = this.checked; document.getElementById('upd-account').disabled = this.checked; if(this.checked) { document.getElementById('upd-bank').value = ''; document.getElementById('upd-account').value = ''; document.getElementById('upd-bank').removeAttribute('required'); document.getElementById('upd-account').removeAttribute('required'); } else { document.getElementById('upd-bank').setAttribute('required', 'true'); document.getElementById('upd-account').setAttribute('required', 'true'); }">
+                                <label for="upd-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold; color: white;">QUIERO MI PAGO EN PAGO MÓVIL</label>
+                            </div>
+                            <div id="upd-pago-movil-init" data-checked="${user.pago_movil ? '1' : '0'}" style="display:none;"></div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">CONTACTO DE EMERGENCIA (Nombre y Parentesco)</label>
@@ -14224,6 +14450,15 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                 </div>
             `;
 
+            // Inicializar estado del checkbox pago_movil
+            const initEl = document.getElementById('upd-pago-movil-init');
+            if (initEl && initEl.dataset.checked === '1') {
+                document.getElementById('upd-bank').disabled = true;
+                document.getElementById('upd-account').disabled = true;
+                document.getElementById('upd-bank').removeAttribute('required');
+                document.getElementById('upd-account').removeAttribute('required');
+            }
+
             document.getElementById('update-data-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('upd-submit');
@@ -14237,6 +14472,7 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                     sector: document.getElementById('upd-sector').value,
                     bank_name: document.getElementById('upd-bank').value,
                     bank_account: document.getElementById('upd-account').value,
+                    pago_movil: document.getElementById('upd-pago-movil').checked ? 1 : 0,
                     emergency_contact: document.getElementById('upd-emer-name').value,
                     emergency_phone: document.getElementById('upd-emer-phone').value,
                     is_allergic: document.getElementById('upd-allergies').value

@@ -429,8 +429,13 @@ app.get('/api/sessions/active', async (c) => {
     // Si no tiene internal_key (registros viejos), usamos el name
     if (!s.internal_key) s.internal_key = s.name;
 
+    if (s.type === 'guardia diurna/nocturna') {
+      const gRes = await c.env.DB.prepare('SELECT * FROM guardia_details WHERE session_id = ?').bind(s.id).first();
+      s.guardia_details = gRes || null;
+    }
+
     // Staff details
-    const staffRes = await c.env.DB.prepare("SELECT id, name, role FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
+    const staffRes = await c.env.DB.prepare("SELECT id, name, role, cedula FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
     const staff = staffRes.results || [] as any[];
 
     for (let u of staff) {
@@ -1339,6 +1344,33 @@ app.post('/api/sessions/plan', async (c) => {
   return c.json({ success: true, id: sessionId, name: sessionName, internal_key: internalKey, type: sessionType, status: 'planning' });
 });
 
+app.get('/api/guardia/:session_id/details', async (c) => {
+  const sessionId = c.req.param('session_id');
+  const result = await c.env.DB.prepare('SELECT * FROM guardia_details WHERE session_id = ?').bind(sessionId).first();
+  return c.json({ success: true, data: result || {} });
+});
+
+app.post('/api/guardia/:session_id/details', async (c) => {
+  const sessionId = c.req.param('session_id');
+  const { transport, desayunos, almuerzos, cenas, materials } = await c.req.json().catch(() => ({}));
+  
+  const existing = await c.env.DB.prepare('SELECT session_id FROM guardia_details WHERE session_id = ?').bind(sessionId).first();
+  
+  if (existing) {
+    await c.env.DB.prepare(`
+      UPDATE guardia_details 
+      SET transport = ?, desayunos = ?, almuerzos = ?, cenas = ?, materials = ?
+      WHERE session_id = ?
+    `).bind(transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null, sessionId).run();
+  } else {
+    await c.env.DB.prepare(`
+      INSERT INTO guardia_details (session_id, transport, desayunos, almuerzos, cenas, materials)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(sessionId, transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null).run();
+  }
+  return c.json({ success: true });
+});
+
 app.post('/api/sessions/update', async (c) => {
   const { id, name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id } = await c.req.json();
   if (!id) return c.json({ error: 'ID requerido' }, 400);
@@ -1614,10 +1646,10 @@ app.post('/api/reports/test-request', async (c) => {
                   u.phone || '', 
                   u.address || '', 
                   u.sector || '', 
-                  u.bank_entity || '', 
-                  u.bank_account || '', 
-                  u.emergency_contact_name || '', 
-                  u.emergency_contact_phone || '', 
+                  u.pago_movil ? 'PAGO MÓVIL' : (u.bank_name || ''), 
+                  u.pago_movil ? 'N/A' : (u.bank_account || ''), 
+                  u.emergency_contact || '', 
+                  u.emergency_phone || '', 
                   u.allergies || '',
                   age
               ];
@@ -2860,7 +2892,7 @@ function wrapInCorporateTemplate(content: string) {
             <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.05); max-width:600px; margin:0 auto;">
               <tr>
                 <td align="center" style="background-color:#0f172a; padding:30px 20px; border-bottom:3px solid #6366f1;">
-                  <img src="https://eyestaff.app/logo.png" alt="EYE STAFF" style="height:50px; display:block; margin-bottom:10px;" onerror="this.src='https://valet.eye-staff.app/logo.png';" />
+                  <img src="https://eye-staff.app/logo-eye-staff.jpeg" alt="EYE STAFF" style="height:50px; display:block; margin-bottom:10px;" />
                   <h2 style="color:#ffffff; margin:0; font-size:20px; font-weight:800; letter-spacing:1px;">SISTEMA AUTOMATIZADO</h2>
                 </td>
               </tr>
@@ -4052,6 +4084,7 @@ app.post('/api/staff/login', async (c) => {
         is_superadmin: finalRole === 'director',
         profile_admin: dbUser.profile_admin || 'NO APLICA',
         profile_opera: dbUser.profile_opera || 'NO APLICA',
+        eye_id: dbUser.eye_id || null,
         is_guest: isGuestUser,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
       }, c.env.JWT_SECRET || 'secret', 'HS256');
@@ -4115,6 +4148,7 @@ app.post('/api/staff/login', async (c) => {
         is_superadmin: finalRole === 'director',
         profile_admin: dbUser.profile_admin || 'NO APLICA',
         profile_opera: dbUser.profile_opera || 'NO APLICA',
+        eye_id: dbUser.eye_id || null,
         is_guest: isGuestUser,
         web_session_id: webSessionId,
         pin_hash: dbUser.pin_hash,
@@ -4148,6 +4182,7 @@ app.post('/api/staff/login', async (c) => {
         is_guest: false,
         web_session_id: Date.now().toString(),
         pin_hash: lowerPass,
+        eye_id: 'ORO',
         token
       });
     }
@@ -4222,7 +4257,7 @@ app.use('/api/*', async (c, next) => {
   const authHeader = c.req.header('Authorization');
 
   // Permitir login y fotos sin token (para <img> tags), rutas públicas
-  if (path.includes('/api/staff/login') || path.includes('/api/photos/') || path.includes('/api/telegram/') || path.includes('/api/public/')) {
+  if (path.includes('/api/staff/login') || path.includes('/api/photos/') || path.includes('/api/telegram/') || path.includes('/api/public/') || path.includes('/api/chat/stream')) {
     return await next();
   }
 
@@ -4396,7 +4431,7 @@ app.post('/api/staff', async (c) => {
     return c.json({ error: 'No autorizado' }, 403);
   }
 
-  const { name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, carnet, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer } = await c.req.json();
+  const { name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, carnet, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer } = await c.req.json();
   if (!name || !pin_hash || !role) return c.json({ error: 'Faltan datos' }, 400);
 
   let carnetKey = null;
@@ -4423,8 +4458,8 @@ app.post('/api/staff', async (c) => {
 
   const mappedRole = mapRole(role || 'driver');
 
-  await c.env.DB.prepare('INSERT INTO users (name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, carnet_url, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(cleanName, pin_hash, mappedRole, cedula || null, phone || null, address || null, sector || null, bank_name || null, bank_account || null, carnetKey, profile_admin || null, profile_opera || null, eye_id || null, email || null, birth_date || null, emergency_contact || null, emergency_phone || null, is_allergic || null, is_chofer ? 1 : 0)
+  await c.env.DB.prepare('INSERT INTO users (name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, carnet_url, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    .bind(cleanName, pin_hash, mappedRole, cedula || null, phone || null, address || null, sector || null, bank_name || null, bank_account || null, pago_movil || 0, carnetKey, profile_admin || null, profile_opera || null, eye_id || null, email || null, birth_date || null, emergency_contact || null, emergency_phone || null, is_allergic || null, is_chofer ? 1 : 0)
     .run();
 
   return c.json({ message: 'Personal registrado correctamente', name: cleanName });
@@ -4583,7 +4618,7 @@ app.post('/api/staff/update', async (c) => {
   const { id, field, value } = await c.req.json();
   if (!id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'address', 'sector', 'bank_name', 'bank_account', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic'];
+  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic'];
   if (!allowedFields.includes(field)) return c.json({ error: 'Campo no permitido' }, 400);
 
   await c.env.DB.prepare(`UPDATE users SET ${field} = ? WHERE id = ?`)
@@ -4597,7 +4632,7 @@ app.post('/api/staff/update-bulk', async (c) => {
   const { id, updates } = await c.req.json();
   if (!id || !updates) return c.json({ error: 'Faltan datos' }, 400);
 
-  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'address', 'sector', 'bank_name', 'bank_account', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer'];
+  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer'];
 
   const setClauses = [];
   const values = [];
@@ -4733,57 +4768,7 @@ app.get('/api/chat/users', async (c) => {
   });
 });
 
-app.get('/api/chat/messages', async (c) => {
-  const recipient_id = c.req.query('recipient_id');
-  const session_id = c.req.query('session_id');
-  const sender_id = c.req.query('sender_id');
 
-  let query = `
-    SELECT m.*, u.name as sender_name, u.role as sender_role
-    FROM chat_messages m
-    JOIN users u ON m.sender_id = u.id
-  `;
-
-  const binds = [];
-  if (session_id) {
-    query += ` WHERE m.session_id = ? `;
-    binds.push(parseInt(session_id.toString()));
-  } else if (recipient_id) {
-    if (!sender_id) return c.json({ error: 'Falta sender_id para chat privado' }, 400);
-    query += ` WHERE (m.sender_id = ? AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = ?) `;
-    const sId = parseInt(sender_id.toString());
-    const rId = parseInt(recipient_id.toString());
-    binds.push(sId, rId, rId, sId);
-  } else {
-    query += ` WHERE m.recipient_id IS NULL AND m.session_id IS NULL `;
-  }
-
-  query += ` ORDER BY m.created_at ASC LIMIT 100 `;
-
-  const res = await c.env.DB.prepare(query).bind(...binds).all();
-  return c.json({ messages: res.results || [] });
-});
-
-app.post('/api/chat/messages', async (c) => {
-  const { sender_id, recipient_id, session_id, message } = await c.req.json();
-  if (!sender_id || !message) return c.json({ error: 'Faltan datos' }, 400);
-
-  const parsedSenderId = parseInt(sender_id.toString());
-  const parsedRecipientId = recipient_id ? parseInt(recipient_id.toString()) : null;
-  const parsedSessionId = session_id ? parseInt(session_id.toString()) : null;
-
-  await c.env.DB.prepare(
-    `INSERT INTO chat_messages (sender_id, recipient_id, session_id, message) VALUES (?, ?, ?, ?)`
-  ).bind(
-    parsedSenderId,
-    parsedRecipientId,
-    parsedSessionId,
-    message
-  ).run();
-
-
-  return c.json({ success: true });
-});
 
 app.get('/api/admin/applications', async (c) => {
   const res = await c.env.DB.prepare('SELECT * FROM job_applications ORDER BY created_at DESC').all();
@@ -5329,6 +5314,7 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
       sector = COALESCE(?, sector),
       bank_name = COALESCE(?, bank_name),
       bank_account = COALESCE(?, bank_account),
+      pago_movil = COALESCE(?, pago_movil),
       emergency_contact = COALESCE(?, emergency_contact),
       emergency_phone = COALESCE(?, emergency_phone),
       is_allergic = COALESCE(?, is_allergic)
@@ -5339,6 +5325,7 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
     proposed.sector || null,
     proposed.bank_name || null,
     proposed.bank_account || null,
+    proposed.pago_movil !== undefined ? proposed.pago_movil : null,
     proposed.emergency_contact || null,
     proposed.emergency_phone || null,
     proposed.is_allergic || null
@@ -6443,6 +6430,20 @@ app.post('/api/attendance/log', async (c) => {
 
   if (!session_id || !type || !targetUserId) return c.json({ error: 'Faltan datos' }, 400);
 
+  if (type === 'absent') {
+    await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type) VALUES (?, ?, ?)')
+      .bind(targetUserId, session_id, 'absent')
+      .run();
+    
+    const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(targetUserId).first<{ current_session_id: string | null }>();
+    if (userObj && userObj.current_session_id) {
+      let currentIds = userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean);
+      currentIds = currentIds.filter(x => x !== session_id.toString());
+      await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, targetUserId).run();
+    }
+    return c.json({ success: true, status: 'absent' });
+  }
+
   // REGLA DE EXCLUSIVIDAD: Si es entrada, verificar si ya tiene una entrada activa en OTRO evento
   if (type === 'entry') {
     const activeEntry = await c.env.DB.prepare(`
@@ -6775,6 +6776,7 @@ app.get('/api/admin/payroll-submissions', async (c) => {
     SELECT 
       ps.*, 
       u.name as staff_name, 
+      u.pago_movil,
       COALESCE(s.name, 'EVENTO GENERAL / OPERACIÓN EXTRA') as event_name,
       s.supervisor_id
     FROM payroll_submissions ps
@@ -7539,6 +7541,14 @@ app.get('/api/telegram/stream', async (c) => {
 // CHAT INTERNAL API
 // ==========================================
 
+async function verifyToken(token: string, secret: string): Promise<any> {
+  try {
+    return await verify(token, secret, 'HS256');
+  } catch(e) {
+    return null;
+  }
+}
+
 app.get('/api/chat/users', async (c) => {
   const token = c.req.header('Authorization')?.split(' ')[1];
   if (!token) return c.json({ error: 'Unauthorized' }, 401);
@@ -7590,18 +7600,37 @@ app.get('/api/chat/conversations', async (c) => {
     WHERE gm.user_id = ?
   `).bind(user.id).all();
 
-  // For 1-on-1, ideally we just return a list of users they've talked to, or all users.
-  // The UI will probably just show all users, but let's fetch all users for now.
-  const usersRes = await c.env.DB.prepare(`
-    SELECT id, name, 'user' as type
-    FROM users
-    WHERE is_active=1 AND id != ?
-    ORDER BY name ASC
+  // Active conversations (1-on-1)
+  const activeUsersRes = await c.env.DB.prepare(`
+    SELECT u.id, u.name, u.eye_id, 'user' as type, MAX(m.created_at) as last_msg_time,
+           (SELECT COUNT(*) FROM chat_messages unread WHERE unread.sender_id = u.id AND unread.recipient_id = ? AND unread.is_read = 0) as unread_count,
+           CASE WHEN EXISTS (
+             SELECT 1 FROM web_sessions ws 
+             WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')
+           ) THEN 1 ELSE 0 END as is_online
+    FROM users u
+    JOIN chat_messages m ON (m.sender_id = u.id AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = u.id)
+    WHERE u.is_active=1 AND u.id != ?
+    GROUP BY u.id
+    ORDER BY last_msg_time DESC
+  `).bind(user.id, user.id, user.id, user.id).all();
+
+  // All users for the "New Chat" modal
+  const allUsersRes = await c.env.DB.prepare(`
+    SELECT u.id, u.name, u.eye_id, 'user' as type,
+           CASE WHEN EXISTS (
+             SELECT 1 FROM web_sessions ws 
+             WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')
+           ) THEN 1 ELSE 0 END as is_online
+    FROM users u
+    WHERE u.is_active=1 AND u.id != ?
+    ORDER BY u.name ASC
   `).bind(user.id).all();
 
   return c.json({
     groups: groupsRes.results || [],
-    users: usersRes.results || []
+    users: activeUsersRes.results || [],
+    allUsers: allUsersRes.results || []
   });
 });
 
@@ -7619,42 +7648,63 @@ app.get('/api/chat/messages', async (c) => {
   let params = [];
 
   if (group_id) {
-    // verify user is in group
     const check = await c.env.DB.prepare('SELECT 1 FROM chat_group_members WHERE group_id=? AND user_id=?').bind(group_id, user.id).first();
     if (!check) return c.json({ error: 'Forbidden' }, 403);
 
     query = `
-      SELECT m.*, u.name as sender_name 
+      SELECT m.*, u.name as sender_name,
+             CASE WHEN m.sender_id = ? THEN 0 ELSE 1 END as is_incoming
       FROM chat_messages m
       JOIN users u ON m.sender_id = u.id
       WHERE m.group_id = ?
-      ORDER BY m.created_at ASC
+      ORDER BY m.id ASC
     `;
-    params = [group_id];
+    params = [user.id, group_id];
   } else if (recipient_id) {
+    // Mark incoming messages from this user as read
+    await c.env.DB.prepare(`
+      UPDATE chat_messages 
+      SET is_read = 1 
+      WHERE sender_id = ? AND recipient_id = ? AND is_read = 0
+    `).bind(recipient_id, user.id).run();
+
     query = `
-      SELECT m.*, u.name as sender_name 
+      SELECT m.*, u.name as sender_name,
+             CASE WHEN m.sender_id = ? THEN 0 ELSE 1 END as is_incoming
       FROM chat_messages m
       JOIN users u ON m.sender_id = u.id
       WHERE (m.sender_id = ? AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = ?)
-      ORDER BY m.created_at ASC
+      ORDER BY m.id ASC
     `;
-    params = [user.id, recipient_id, recipient_id, user.id];
+    params = [user.id, user.id, recipient_id, recipient_id, user.id];
   } else if (session_id) {
     query = `
-      SELECT m.*, u.name as sender_name 
+      SELECT m.*, u.name as sender_name,
+             CASE WHEN m.sender_id = ? THEN 0 ELSE 1 END as is_incoming
       FROM chat_messages m
       JOIN users u ON m.sender_id = u.id
       WHERE m.session_id = ?
-      ORDER BY m.created_at ASC
+      ORDER BY m.id ASC
     `;
-    params = [session_id];
+    params = [user.id, session_id];
   } else {
-    return c.json({ messages: [] });
+    // Si no manda recipient, traemos todos los mensajes del user
+    query = `
+      SELECT m.*, u.name as sender_name,
+             CASE WHEN m.sender_id = ? THEN 0 ELSE 1 END as is_incoming
+      FROM chat_messages m
+      JOIN users u ON m.sender_id = u.id
+      WHERE m.sender_id = ? OR m.recipient_id = ?
+      ORDER BY m.id ASC
+    `;
+    params = [user.id, user.id, user.id];
   }
 
   const stmt = c.env.DB.prepare(query);
-  const res = await (params.length === 1 ? stmt.bind(params[0]) : params.length === 2 ? stmt.bind(params[0], params[1]) : params.length === 4 ? stmt.bind(params[0], params[1], params[2], params[3]) : stmt).all();
+  // Max 5 params
+  const res = await (params.length === 2 ? stmt.bind(params[0], params[1]) : 
+                     params.length === 3 ? stmt.bind(params[0], params[1], params[2]) :
+                     params.length === 5 ? stmt.bind(params[0], params[1], params[2], params[3], params[4]) : stmt).all();
 
   return c.json({ messages: res.results || [] });
 });
@@ -7666,21 +7716,131 @@ app.post('/api/chat/messages', async (c) => {
   if (!user) return c.json({ error: 'Unauthorized' }, 401);
 
   const body = await c.req.json();
-  if (!body.message) return c.json({ error: 'Message required' }, 400);
+  if (!body.message && !body.attachment_url) return c.json({ error: 'Message or attachment required' }, 400);
 
   const recipient_id = body.recipient_id || null;
   const group_id = body.group_id || null;
   const session_id = body.session_id || null;
+  const attachment_url = body.attachment_url || null;
+  const attachment_type = body.attachment_type || null;
 
   if (!recipient_id && !group_id && !session_id) {
     return c.json({ error: 'Target required' }, 400);
   }
 
-  await c.env.DB.prepare(
-    'INSERT INTO chat_messages (sender_id, recipient_id, group_id, session_id, message) VALUES (?, ?, ?, ?, ?)'
-  ).bind(user.id, recipient_id, group_id, session_id, body.message).run();
+  try {
+    await c.env.DB.prepare(
+      'INSERT INTO chat_messages (sender_id, recipient_id, group_id, session_id, message, attachment_url, attachment_type) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).bind(user.id, recipient_id, group_id, session_id, body.message || '', attachment_url, attachment_type).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
 
-  return c.json({ success: true });
+app.delete('/api/chat/messages', async (c) => {
+  const token = c.req.header('Authorization')?.split(' ')[1];
+  if (!token) return c.json({ error: 'Unauthorized' }, 401);
+  const user = await verifyToken(token, c.env.JWT_SECRET);
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
+
+  const body = await c.req.json();
+  const recipient_id = body.recipient_id;
+
+  if (!recipient_id) return c.json({ error: 'recipient_id required' }, 400);
+
+  try {
+    await c.env.DB.prepare(
+      'DELETE FROM chat_messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?)'
+    ).bind(user.id, recipient_id, recipient_id, user.id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+app.post('/api/chat/upload', async (c) => {
+  const token = c.req.header('Authorization')?.split(' ')[1];
+  if (!token) return c.json({ error: 'Unauthorized' }, 401);
+  const user = await verifyToken(token, c.env.JWT_SECRET);
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
+
+  try {
+    const body = await c.req.parseBody();
+    const file = body['file'];
+    
+    if (!file || !(file instanceof File)) {
+      return c.json({ error: 'File is missing or invalid' }, 400);
+    }
+    
+    const ext = file.name.split('.').pop() || 'tmp';
+    const key = `chat_${user.id}_${Date.now()}.${ext}`;
+    
+    await c.env.PHOTOS.put(key, await file.arrayBuffer(), {
+      httpMetadata: { contentType: file.type }
+    });
+    
+    const url = `https://fotos.eye-staff.app/${key}`;
+    return c.json({ url });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+app.get('/api/chat/stream', async (c) => {
+  const token = c.req.query('token');
+  if (!token) return c.json({ error: 'Unauthorized' }, 401);
+  const user = await verifyToken(token, c.env.JWT_SECRET);
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      let lastId = Number(c.req.query('last_id')) || 0;
+      let isClosed = false;
+
+      const poll = async () => {
+        if (isClosed) return;
+        try {
+          const res = await c.env.DB.prepare(`
+            SELECT m.*, u.name as sender_name,
+                   CASE WHEN m.sender_id = ? THEN 0 ELSE 1 END as is_incoming
+            FROM chat_messages m
+            JOIN users u ON m.sender_id = u.id
+            WHERE m.id > ? AND (m.sender_id = ? OR m.recipient_id = ?)
+            ORDER BY m.id ASC
+          `).bind(user.id, lastId, user.id, user.id).all();
+
+          if (res.results && res.results.length > 0) {
+            for (const msg of res.results) {
+              lastId = msg.id as number;
+              controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(msg)}\n\n`));
+            }
+          }
+        } catch (e) {
+          console.error('SSE Poll Error', e);
+        }
+
+        if (!isClosed) {
+          setTimeout(poll, 3000);
+        }
+      };
+
+      c.req.raw.signal.addEventListener('abort', () => {
+        isClosed = true;
+        try { controller.close(); } catch (e) { }
+      });
+
+      poll();
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 });
 
 app.get('/api/public/update-data/:token', async (c) => {
@@ -7690,7 +7850,7 @@ app.get('/api/public/update-data/:token', async (c) => {
   if (!update) return c.json({ error: 'Token inválido o expirado' }, 404);
   if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
 
-  const user = await c.env.DB.prepare('SELECT name, cedula, sector, phone, emergency_contact, emergency_phone, is_allergic, bank_name, bank_account, birth_date, address, photo_url FROM users WHERE id = ?').bind(update.user_id).first<any>();
+  const user = await c.env.DB.prepare('SELECT name, cedula, sector, phone, emergency_contact, emergency_phone, is_allergic, bank_name, bank_account, pago_movil, birth_date, address, photo_url FROM users WHERE id = ?').bind(update.user_id).first<any>();
   
   if (!user) return c.json({ error: 'Usuario no encontrado' }, 404);
 

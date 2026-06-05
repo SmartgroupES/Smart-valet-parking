@@ -14,6 +14,13 @@
     }
     #tc-fab:hover { transform: scale(1.12); box-shadow: 0 6px 28px rgba(0,136,204,0.7); }
 
+    #tc-fab .fab-badge {
+      position: absolute; top: -5px; right: -5px; background: #ef4444; color: white;
+      border-radius: 50%; padding: 4px 8px; font-size: 12px; font-weight: bold;
+      display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .unread-badge { background: #ef4444; color: white; border-radius: 50%; padding: 2px 5px; font-size: 9px; font-weight: bold; margin-left: 5px; vertical-align: middle; }
+
     #telegram-chat-widget {
       position: fixed; bottom: 20px; right: 20px;
       width: 360px; height: 560px;
@@ -228,12 +235,21 @@
       flex-shrink: 0; text-transform: uppercase;
     }
     .tc-user-item-name { font-size: 13.5px; color: #f1f5f9; font-weight: 500; }
+    
+    @keyframes tcBlinkGreen {
+      0% { box-shadow: 0 0 0px #22c55e, inset 0 0 0px #22c55e; border: 2px solid transparent; }
+      50% { box-shadow: 0 0 8px #22c55e, inset 0 0 4px #22c55e; border: 2px solid #22c55e; }
+      100% { box-shadow: 0 0 0px #22c55e, inset 0 0 0px #22c55e; border: 2px solid transparent; }
+    }
+    .tc-online-avatar {
+      animation: tcBlinkGreen 2s infinite;
+    }
   `;
   document.head.appendChild(style);
 
   // ─── HTML ─────────────────────────────────────────────────────────────────
   const widgetHtml = `
-    <div id="tc-fab">💬</div>
+    <div id="tc-fab">💬<div class="fab-badge">0</div></div>
     <div id="telegram-chat-widget" class="theme-eyestaff">
 
       <!-- VISTA: LISTA DE CONVERSACIONES -->
@@ -262,15 +278,19 @@
             <div class="tc-header-name" id="tc-chat-name">—</div>
             <div class="tc-header-sub">vía Telegram · EYE STAFF</div>
           </div>
+          <button class="tc-icon-btn" id="tc-delete-chat-btn" title="Borrar chat" style="color:#ef4444; display:none; margin-right:20px;">🗑️</button>
           <button class="tc-icon-btn" id="tc-close-chat-btn" title="Cerrar">✕</button>
         </div>
         <div id="tc-messages">
           <div class="tc-empty">Selecciona un empleado para chatear</div>
         </div>
         <div id="tc-footer">
+          <button id="tc-attach-img-btn" class="tc-icon-btn" style="font-size:18px;" title="Adjuntar imagen">📎</button>
           <input id="tc-msg-input" type="text" placeholder="Escribe un mensaje..." />
+          <button id="tc-voice-note-btn" class="tc-icon-btn" style="font-size:18px;" title="Mantener presionado para grabar">🎤</button>
           <button id="tc-send-btn">➤</button>
         </div>
+        <input type="file" id="tc-file-input" accept="image/*" style="display:none;" />
       </div>
 
       <!-- MODAL: NUEVA CONVERSACIÓN -->
@@ -293,11 +313,12 @@
 
   // ─── ESTADO ───────────────────────────────────────────────────────────────
   let allUsers = [];
-  let conversations = []; // { userId, name, lastMsg, lastTime }
+  let conversations = []; // { userId, name, lastMsg, lastTime, unreadCount }
   let currentRecipientId = null;
   let currentRecipientName = null;
   let lastMsgId = 0;
   let pollInterval = null;
+  let globalUnreadCount = 0;
 
   // ─── ELEMENTOS ────────────────────────────────────────────────────────────
   const fab           = document.getElementById('tc-fab');
@@ -317,6 +338,10 @@
   const modalClose    = document.getElementById('tc-modal-close-btn');
   const modalSearch   = document.getElementById('tc-modal-search');
   const userListModal = document.getElementById('tc-user-list-modal');
+  const deleteBtn     = document.getElementById('tc-delete-chat-btn');
+  const attachImgBtn  = document.getElementById('tc-attach-img-btn');
+  const voiceNoteBtn  = document.getElementById('tc-voice-note-btn');
+  const fileInput     = document.getElementById('tc-file-input');
 
   function initials(name) {
     return name.split(' ').slice(0,2).map(p => p[0]).join('').toUpperCase();
@@ -326,6 +351,46 @@
     if (!iso) return '';
     const d = new Date(iso);
     return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function playTelegramSendSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if(!ctx) return;
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+    } catch(e){}
+  }
+
+  function playTelegramReceiveSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if(!ctx) return;
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+      
+      const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(900, ctx.currentTime + 0.1);
+      gain2.gain.setValueAtTime(0, ctx.currentTime + 0.1);
+      gain2.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.12);
+      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc2.start(ctx.currentTime + 0.1); osc2.stop(ctx.currentTime + 0.2);
+    } catch(e){}
   }
 
   // ─── ABRIR / CERRAR ───────────────────────────────────────────────────────
@@ -339,6 +404,7 @@
   function closeWidget() {
     widget.classList.remove('open', 'in-chat');
     clearInterval(pollInterval);
+    if (typeof inactivityTimer !== 'undefined' && inactivityTimer) clearTimeout(inactivityTimer);
     setTimeout(() => fab.style.display = 'flex', 300);
   }
 
@@ -352,7 +418,10 @@
 
   // ─── CARGAR USUARIOS ──────────────────────────────────────────────────────
   function loadUsers() {
-    fetch('/api/telegram/users')
+    const token = localStorage.getItem('token');
+    fetch('/api/chat/users', {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
       .then(r => r.json())
       .then(data => {
         if (data && data.users) {
@@ -376,10 +445,13 @@
       list.forEach(c => {
         const item = document.createElement('div');
         item.className = 'tc-conv-item';
+        const badgeHtml = c.unreadCount ? `<span class="unread-badge">${c.unreadCount}</span>` : '';
+        const userObj = allUsers.find(u => u.id == c.userId);
+        const onlineClass = (userObj && userObj.is_online) ? ' tc-online-avatar' : '';
         item.innerHTML = `
-          <div class="tc-conv-avatar">${initials(c.name)}</div>
+          <div class="tc-conv-avatar${onlineClass}" style="background:${getColorForEyeId(c.eyeId)}">${initials(c.name)}</div>
           <div class="tc-conv-info">
-            <div class="tc-conv-name">${c.name}</div>
+            <div class="tc-conv-name" style="color:${getColorForEyeId(c.eyeId)}">${c.name} ${badgeHtml}</div>
             <div class="tc-conv-preview">${c.lastMsg || 'Toca para chatear'}</div>
           </div>
           <div class="tc-conv-time">${c.lastTime || ''}</div>
@@ -390,13 +462,23 @@
     }
   }
 
-  function addOrUpdateConversation(userId, name, lastMsg, lastTime) {
+  function getColorForEyeId(eyeId) {
+    if (eyeId === 'ORO') return '#fbbf24';
+    if (eyeId === 'PLATA') return '#a855f7';
+    if (eyeId === 'BRONCE') return '#d97706';
+    if (eyeId === 'LOGÍSTICA' || eyeId === 'LOGISTICA') return '#f8fafc';
+    return '#1e40af';
+  }
+
+  function addOrUpdateConversation(userId, name, lastMsg, lastTime, eyeId, unreadCount = 0) {
     const existing = conversations.find(c => c.userId === userId);
     if (existing) {
-      existing.lastMsg = lastMsg;
-      existing.lastTime = lastTime;
+      if (lastMsg) existing.lastMsg = lastMsg;
+      if (lastTime) existing.lastTime = lastTime;
+      if (eyeId) existing.eyeId = eyeId;
+      existing.unreadCount = unreadCount;
     } else {
-      conversations.push({ userId, name, lastMsg, lastTime });
+      conversations.push({ userId, name, lastMsg, lastTime, eyeId, unreadCount });
     }
   }
 
@@ -408,8 +490,27 @@
     currentRecipientName = name;
     chatName.textContent = name;
     chatAvatar.textContent = initials(name);
+    
+    const u = allUsers.find(x => x.id == userId);
+    if (u) {
+      chatName.style.color = getColorForEyeId(u.eye_id);
+      if (u.is_online) chatAvatar.classList.add('tc-online-avatar');
+      else chatAvatar.classList.remove('tc-online-avatar');
+    } else {
+      chatName.style.color = '#f1f5f9';
+      chatAvatar.classList.remove('tc-online-avatar');
+    }
+
     messagesDiv.innerHTML = '<div class="tc-empty">Cargando...</div>';
     widget.classList.add('in-chat');
+    deleteBtn.style.display = 'block';
+    
+    const existing = conversations.find(c => c.userId === userId);
+    if (existing) {
+      existing.unreadCount = 0;
+      renderConvList();
+    }
+    
     loadMessages();
     clearInterval(pollInterval);
     pollInterval = setInterval(loadMessages, 4000);
@@ -420,7 +521,7 @@
   function loadMessages() {
     if (!currentRecipientId) return;
     const token = localStorage.getItem('token');
-    fetch(`/api/telegram/messages?userId=${currentRecipientId}`, {
+    fetch(`/api/chat/messages?user_id=${currentRecipientId}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(r => r.json())
@@ -437,11 +538,28 @@
   }
 
   function renderMessage(msg) {
-    const isOut = !msg.is_incoming;
+    const isOut = msg.is_incoming === 0;
     const div = document.createElement('div');
     div.className = `tc-msg ${isOut ? 'tc-msg-out' : 'tc-msg-in'}`;
-    const t = msg.sent_at ? timeStr(msg.sent_at) : '';
-    div.innerHTML = `<div>${msg.text || ''}</div>${t ? `<div class="tc-msg-time">${t}</div>` : ''}`;
+    const t = msg.created_at ? timeStr(msg.created_at) : '';
+    
+    let inner = '';
+    if (msg.attachment_url) {
+      if (msg.attachment_type === 'image') {
+        inner += `<div style="margin-bottom:5px;"><img src="${msg.attachment_url}" style="max-width:100%; border-radius:8px; cursor:pointer;" onclick="window.open('${msg.attachment_url}')"/></div>`;
+      } else if (msg.attachment_type === 'audio') {
+        inner += `<div style="margin-bottom:5px;"><audio controls src="${msg.attachment_url}" style="max-width:100%; height:30px;"></audio></div>`;
+      }
+    }
+    
+    if (msg.message || msg.text) {
+      inner += `<div>${msg.message || msg.text}</div>`;
+    }
+    if (t) {
+      inner += `<div class="tc-msg-time">${t}</div>`;
+    }
+    
+    div.innerHTML = inner;
     messagesDiv.appendChild(div);
   }
 
@@ -453,19 +571,20 @@
 
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch('/api/telegram/send-direct', {
+      const res = await fetch('/api/chat/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': token ? `Bearer ${token}` : ''
         },
-        body: JSON.stringify({ targetUserId: Number(currentRecipientId), message: text })
+        body: JSON.stringify({ recipient_id: Number(currentRecipientId), message: text })
       });
       const result = await res.json();
       if (result.success) {
+        playTelegramSendSound();
         // Mostrar mensaje localmente
         if (messagesDiv.querySelector('.tc-empty')) messagesDiv.innerHTML = '';
-        renderMessage({ text, is_incoming: false, sent_at: new Date().toISOString() });
+        renderMessage({ message: text, is_incoming: 0, created_at: new Date().toISOString() });
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
         addOrUpdateConversation(currentRecipientId, currentRecipientName, text, timeStr(new Date().toISOString()));
         renderConvList();
@@ -494,13 +613,14 @@
     filtered.forEach(u => {
       const item = document.createElement('div');
       item.className = 'tc-user-item';
+      const onlineClass = u.is_online ? ' tc-online-avatar' : '';
       item.innerHTML = `
-        <div class="tc-user-item-avatar">${initials(u.name)}</div>
-        <div class="tc-user-item-name">${u.name}</div>
+        <div class="tc-user-item-avatar${onlineClass}" style="background:${getColorForEyeId(u.eye_id)}">${initials(u.name)}</div>
+        <div class="tc-user-item-name" style="color:${getColorForEyeId(u.eye_id)}">${u.name}</div>
       `;
       item.onclick = () => {
         modal.classList.remove('visible');
-        addOrUpdateConversation(u.id, u.name, null, null);
+        addOrUpdateConversation(u.id, u.name, null, null, u.eye_id);
         renderConvList();
         openChat(u.id, u.name);
       };
@@ -515,17 +635,36 @@
 
   // Cargar historial de mensajes para poblar conversaciones desde el SSE
   function connectSSE() {
-    const sse = new EventSource(`/api/telegram/stream?last_id=${lastMsgId}`);
+    const token = localStorage.getItem('token');
+    const sse = new EventSource(`/api/chat/stream?last_id=${lastMsgId}&token=${token || ''}`);
     sse.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
         if (msg.id > lastMsgId) {
           lastMsgId = msg.id;
-          if (msg.is_incoming) {
-            addOrUpdateConversation(msg.sender_id, msg.sender_name, msg.text, timeStr(new Date().toISOString()));
+          if (msg.is_incoming === 1) {
+            const u = allUsers.find(x => x.id == msg.sender_id);
+            const isChatOpen = currentRecipientId && String(msg.sender_id) === String(currentRecipientId);
+            
+            // Increment unread count if chat is not open
+            let newUnreadCount = 1;
+            const existing = conversations.find(c => c.userId === msg.sender_id);
+            if (existing && !isChatOpen) {
+              newUnreadCount = (existing.unreadCount || 0) + 1;
+            } else if (isChatOpen) {
+              newUnreadCount = 0;
+            }
+            
+            addOrUpdateConversation(msg.sender_id, msg.sender_name, msg.message || 'Adjunto', timeStr(msg.created_at || new Date().toISOString()), u ? u.eye_id : null, newUnreadCount);
             renderConvList();
+            
+            if (!isChatOpen) {
+              playTelegramReceiveSound();
+              pollGlobalUnread(); // Trigger a poll to update global FAB badge
+            }
+
             // Si la conversación está abierta, añadir el mensaje
-            if (currentRecipientId && String(msg.sender_id) === String(currentRecipientId)) {
+            if (isChatOpen) {
               if (messagesDiv.querySelector('.tc-empty')) messagesDiv.innerHTML = '';
               renderMessage(msg);
               messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -537,5 +676,147 @@
     sse.onerror = () => { sse.close(); setTimeout(connectSSE, 5000); };
   }
   connectSSE();
+  
+  async function pollGlobalUnread() {
+    try {
+      const res = await fetch('/api/chat/conversations', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }});
+      const data = await res.json();
+      allUsers = data.allUsers || data.users || [];
+      
+      let currentUnread = 0;
+      (data.users || []).forEach(u => {
+        currentUnread += (u.unread_count || 0);
+        if (u.unread_count > 0) {
+            addOrUpdateConversation(u.id, u.name, null, null, u.eye_id, u.unread_count);
+        }
+      });
+      
+      const fabBadges = document.querySelectorAll('.fab-badge');
+      fabBadges.forEach(fabBadge => {
+        if (currentUnread > 0) {
+          fabBadge.innerText = currentUnread;
+          fabBadge.style.display = 'block';
+        } else {
+          fabBadge.style.display = 'none';
+        }
+      });
+      
+      if (currentUnread > globalUnreadCount) {
+        if (!widget.classList.contains('open')) {
+          playTelegramReceiveSound();
+        }
+      }
+      globalUnreadCount = currentUnread;
+      renderConvList();
+      
+    } catch(e) {}
+  }
+
+  pollGlobalUnread();
+  setInterval(pollGlobalUnread, 10000);
+
+  // ─── ACCIONES EXTRAS ─────────────────────────────────────────────────────────
+
+  deleteBtn.onclick = async () => {
+    if (!currentRecipientId) return;
+    if (!confirm(`¿Estás seguro de borrar el historial con ${currentRecipientName}?`)) return;
+    
+    try {
+      const res = await fetch('/api/chat/messages', {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient_id: Number(currentRecipientId) })
+      });
+      if (res.ok) {
+        messagesDiv.innerHTML = '<div class="tc-empty">Historial borrado.</div>';
+        conversations = conversations.filter(c => c.userId !== currentRecipientId);
+        renderConvList();
+      }
+    } catch(e) {}
+  };
+
+  attachImgBtn.onclick = () => fileInput.click();
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    fileInput.value = '';
+    await uploadAndSend(file, 'image');
+  };
+
+  let mediaRecorder;
+  let audioChunks = [];
+
+  voiceNoteBtn.onmousedown = async () => {
+    if (!currentRecipientId) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const file = new File([audioBlob], 'voice.webm', { type: 'audio/webm' });
+        await uploadAndSend(file, 'audio');
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      voiceNoteBtn.style.color = '#ef4444'; 
+    } catch(e) {}
+  };
+
+  voiceNoteBtn.onmouseup = () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      voiceNoteBtn.style.color = '';
+    }
+  };
+  voiceNoteBtn.ontouchstart = (e) => { e.preventDefault(); voiceNoteBtn.onmousedown(); };
+  voiceNoteBtn.ontouchend = (e) => { e.preventDefault(); voiceNoteBtn.onmouseup(); };
+
+  async function uploadAndSend(file, type) {
+    if (!currentRecipientId) return;
+    msgInput.placeholder = 'Subiendo...';
+    msgInput.disabled = true;
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/chat/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+        body: formData
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.url) {
+        const payload = { message: '', attachment_url: data.url, attachment_type: type, recipient_id: Number(currentRecipientId) };
+        await fetch('/api/chat/messages', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (messagesDiv.querySelector('.tc-empty')) messagesDiv.innerHTML = '';
+        playTelegramSendSound();
+        renderMessage({ message: '', attachment_url: data.url, attachment_type: type, is_incoming: 0, created_at: new Date().toISOString() });
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+    } catch(e) {} finally {
+      msgInput.placeholder = 'Escribe un mensaje...';
+      msgInput.disabled = false;
+    }
+  }
+
+  // Close chat when clicking on empty areas (non-interactive elements)
+  widget.addEventListener('click', (e) => {
+    const isInteractive = e.target.closest('button, input, .tc-conv-item, .tc-user-item, .tc-msg, label, audio, img');
+    if (!isInteractive) {
+      // Prevent closing if clicking on scrollbars
+      if (e.target.clientWidth && e.offsetX > e.target.clientWidth) return;
+      if (e.target.clientHeight && e.offsetY > e.target.clientHeight) return;
+      closeWidget();
+    }
+  });
+
+
 
 })();
