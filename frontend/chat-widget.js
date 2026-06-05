@@ -339,7 +339,20 @@
     chatList.innerHTML = '';
     groups.forEach(g => {
       const div = document.createElement('div');
-      div.className = 'chat-item'; div.innerText = g.name;
+      div.className = 'chat-item'; 
+      div.innerText = g.name;
+      
+      const gName = g.name.toUpperCase();
+      if (gName === 'GLOBAL EYE STAFF') {
+        div.style.background = '#10b981';
+        div.style.color = '#fff';
+        div.style.fontWeight = 'bold';
+      } else if (gName === 'ORO, PLATA Y BRONCE') {
+        div.style.background = '#f59e0b';
+        div.style.color = '#fff';
+        div.style.fontWeight = 'bold';
+      }
+      
       div.onclick = () => openChat({ type: 'group', id: g.id, name: g.name });
       if (activeChat && activeChat.type === 'group' && activeChat.id === g.id) div.classList.add('active');
       chatList.appendChild(div);

@@ -12,17 +12,18 @@ async function sendBackup() {
     const payload = {
         from: "EYE STAFF <onboarding@resend.dev>",
         to: ["ncarrillok@gmail.com"],
-        subject: "Backup Completo V2.7.4 - 05/06/2026",
+        subject: "Backup Completo V2.7.5 - 05/06/2026",
         html: `
             <h2>Resumen del Backup</h2>
-            <p>Se ha realizado un backup de la versión <strong>V2.7.4</strong> del sistema EYE STAFF.</p>
+            <p>Se ha realizado un backup de la versión <strong>V2.7.5</strong> del sistema EYE STAFF.</p>
             <p><strong>Fecha:</strong> 05/06/2026</p>
             <p><strong>Cambios incluidos:</strong></p>
             <ul>
                 <li>Unificación del chat interno y el chat externo.</li>
                 <li>Indicador verde intermitente en avatares de usuarios conectados.</li>
-                <li>Botones de creación rápida de grupos (Global Staff y Líderes) en el Chat.</li>
-                <li>Mejoras visuales y corrección de la API de conversaciones.</li>
+                <li>Tooltip flotante (hover/tap) para ver la lista de personal conectado.</li>
+                <li>Botones de creación rápida de grupos y colores personalizados en lista.</li>
+                <li>Fix crítico de guardado de grupos en Cloudflare D1.</li>
             </ul>
             <ul>
                 <li><strong>frontend/index.html</strong> (Dashboard unificado)</li>
@@ -33,15 +34,15 @@ async function sendBackup() {
         `,
         attachments: [
             {
-                filename: "backup_v2.7.4_index.html",
+                filename: "backup_v2.7.5_index.html",
                 content: htmlBase64
             },
             {
-                filename: "backup_v2.7.4_index.ts.txt",
+                filename: "backup_v2.7.5_index.ts.txt",
                 content: tsBase64
             },
             {
-                filename: "backup_v2.7.4_chat-widget.txt",
+                filename: "backup_v2.7.5_chat-widget.txt",
                 content: chatBase64
             }
         ]

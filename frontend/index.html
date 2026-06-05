@@ -108,6 +108,47 @@
             text-transform: uppercase;
         }
 
+        .footer-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .footer-tooltip .tooltiptext {
+            visibility: hidden;
+            width: max-content;
+            max-width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 999999;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        .footer-tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .footer-tooltip:hover .tooltiptext, .footer-tooltip:active .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
         /* --- SCROLLBARS --- */
         * { scrollbar-width: thin; scrollbar-color: var(--surface2) transparent; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -1584,9 +1625,14 @@
         const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
         const userIconUrl = '/user_icon.png';
         const onlineCount = typeof window.getOnlineChatUsersCount === 'function' ? window.getOnlineChatUsersCount() : 0;
+        const onlineUsers = typeof window.getOnlineChatUsers === 'function' ? window.getOnlineChatUsers() : [];
+        const cu = JSON.parse(localStorage.getItem('user') || '{}');
+        const onlineNames = onlineUsers.filter(u => u.id !== cu.id).map(u => '🟢 ' + u.name).join('\n');
+        const tooltipText = onlineCount > 0 ? `Conectados Ahora:\n${onlineNames}` : 'Nadie más conectado';
+
         const animationStyle = onlineCount > 0 ? 'animation: blinkUserIcon 2s ease-in-out infinite alternate;' : '';
-        const onlineText = onlineCount > 0 ? ` | <span style="color:var(--success); font-weight:900;">${onlineCount} ONLINE</span>` : '';
-        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}${onlineText}</span> <img src="${userIconUrl}" style="width:18px; height:18px; margin-left:8px; cursor:pointer; ${animationStyle}" title="Personal Conectado en el Chat" onclick="document.getElementById('internal-chat-fab').click()"></span>`;
+        const onlineText = onlineCount > 0 ? ` | <span class="footer-tooltip" style="color:var(--success); font-weight:900; cursor:pointer;" onclick="document.getElementById('internal-chat-fab').click()">${onlineCount} ONLINE<span class="tooltiptext">${tooltipText}</span></span>` : '';
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}${onlineText}</span> <span class="footer-tooltip" style="margin-left:8px; display:inline-flex;"><img src="${userIconUrl}" style="width:18px; height:18px; cursor:pointer; ${animationStyle}" onclick="document.getElementById('internal-chat-fab').click()"><span class="tooltiptext">${tooltipText}</span></span></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
         });
