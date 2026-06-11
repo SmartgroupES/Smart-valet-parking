@@ -20,10 +20,12 @@
     "hono": "^4.12.14",
     "jose": "^6.2.2",
     "jsdom": "^29.1.1",
+    "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.2.1",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^2.4.5",
     "postal-mime": "^2.7.4",
+    "puppeteer": "^25.1.0",
     "stripe": "^22.0.2",
     "xlsx": "^0.18.5"
   }

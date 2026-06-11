@@ -20,11 +20,6 @@ export interface Env {
   OFFICE_GROUP_ID?: string;
   TELEGRAM_BOT_TOKEN?: string;
   AI: any;
-  WHATSAPP_BOT_URL?: string;
-  WHATSAPP_BOT_API_KEY?: string;
-  BREVO_API_KEY?: string;
-  DEVELOPMENT_API_KEY?: string;
-  IS_STAGING?: string;
 }
 
 const app = new Hono<{ Bindings: Env; Variables: { user: any } }>();
@@ -48,11 +43,10 @@ async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]
         'permisos': 'permisos',
         'plantilla_rrhh': 'plantilla_rrhh',
         'actualizacion_datos': 'actualizacion_datos',
-        'credenciales': 'credenciales',
         'cierre_html': 'cierre_html'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html'];
+    const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'cierre_html'];
     if (!validFields.includes(field)) return [];
 
     const subs = await env.DB.prepare(`
@@ -207,6 +201,19 @@ async function initDatabase(db: D1Database) {
   try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_ve INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_mod INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE budgets ADD COLUMN is_deleted INTEGER DEFAULT 0').run(); } catch (e) { }
+
+  // Detalles de Guardia Diurna/Nocturna
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS guardia_details (
+      session_id INTEGER PRIMARY KEY,
+      transport TEXT,
+      desayunos INTEGER DEFAULT 0,
+      almuerzos INTEGER DEFAULT 0,
+      cenas INTEGER DEFAULT 0,
+      materials TEXT,
+      FOREIGN KEY(session_id) REFERENCES sessions(id)
+    )
+  `).run();
 
   // Tabla de Mensajería Interna (Chat)
   try {
@@ -428,6 +435,7 @@ app.post('/api/verify-pin', async (c) => {
 // GESTIÓN DE SESIONES (EVENTOS)
 // ===============================
 app.get('/api/sessions/active', async (c) => {
+  await initDatabase(c.env.DB);
   const sessionsRes = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("planning", "active") ORDER BY id ASC').all();
   const sessions = (sessionsRes.results || []) as any[];
 
@@ -681,7 +689,7 @@ app.put('/api/presupuestos/:id', async (c) => {
       if (c.env.RESEND_API_KEY) {
         const mailPayload = {
           from: 'EYE STAFF <onboarding@resend.dev>',
-          to: [c.env.DIRECTOR_EMAIL as string],
+          to: [env.DIRECTOR_EMAIL],
           subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
           html: `
                     <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
@@ -795,7 +803,7 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
 
     const mailPayload = {
       from: 'EYE STAFF <onboarding@resend.dev>',
-      to: [c.env.DIRECTOR_EMAIL as string],
+      to: [env.DIRECTOR_EMAIL],
       subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
       html: htmlBody
     };
@@ -1607,7 +1615,7 @@ app.post('/api/staff/update-status', async (c) => {
 
 app.post('/api/reports/test-request', async (c) => {
   try {
-    const { type } = await c.req.json();
+    const { type, session_id } = await c.req.json();
     const env = c.env;
     const adminEmail = env.DIRECTOR_EMAIL ;
 
@@ -1686,7 +1694,7 @@ app.post('/api/reports/test-request', async (c) => {
     } else if (type === 'permissions-matrix') {
       const allUsers = await env.DB.prepare("SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC").all();
       const users = (allUsers.results || []) as any[];
-      const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+      const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
       // Obtener los permisos guardados
       const permRowsRes = await env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
@@ -1875,110 +1883,23 @@ app.post('/api/reports/test-request', async (c) => {
     `;
       await sendEmail(env, adminEmail, `🔔 PRUEBA DE CONVOCATORIA — EVENTO DEMO`, demoHtml, undefined, undefined, 'convocatoria');
       return c.json({ success: true, message: `Simulación de convocatoria enviada a ${adminEmail}` });
-    } else if (type === 'pdf' || type === 'xlsx') {
-      // Buscar la última sesión en la base de datos para simular el reporte de cierre
-      const latestSession = await env.DB.prepare('SELECT id FROM sessions ORDER BY id DESC LIMIT 1').first<any>();
-      if (!latestSession) {
-        return c.json({ error: 'No hay eventos en la base de datos para simular un reporte de cierre.' }, 400);
+    } else if (type === 'pdf' || type === 'xlsx' || type === 'cierre_html') {
+      let targetSessionId = session_id;
+      if (!targetSessionId) {
+        const latestSession = await env.DB.prepare('SELECT id FROM sessions ORDER BY id DESC LIMIT 1').first<any>();
+        if (!latestSession) {
+          return c.json({ error: 'No hay eventos en la base de datos.' }, 400);
+        }
+        targetSessionId = latestSession.id;
       }
       try {
-        await sendEventClosingReport(env, latestSession.id);
-        return c.json({ success: true, message: `Reporte de cierre simulado para el evento ID ${latestSession.id} enviado a ${adminEmail}` });
+        await sendEventClosingReport(env, targetSessionId);
+        return c.json({ success: true, message: `Reporte enviado para el evento ID ${targetSessionId}` });
       } catch (e: any) {
         console.error('Error in sendEventClosingReport test:', e);
         return c.json({ error: `Error al generar el reporte de prueba: ${e.message || e}` }, 500);
       }
-  } else if (type === 'credenciales') {
-    const { channel } = await c.req.json();
-    const sendEmailFlag = channel === 'email' || channel === 'ambos' || !channel;
-    const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
-    
-    const subsRes = await env.DB.prepare(`
-      SELECT u.id, u.name, u.email, u.phone, u.pin_hash FROM user_report_subscriptions rs
-      JOIN users u ON rs.user_id = u.id
-      WHERE rs.credenciales = 1 AND u.is_active = 1
-    `).all();
-    const subs = subsRes.results || [];
-    
-    if (subs.length === 0) return c.json({ error: 'No hay usuarios en la matriz con check de credenciales' }, 400);
-
-    let sentCount = 0;
-    let errors = 0;
-    let lastBotError = '';
-
-    for (const user of subs) {
-      let sentAny = false;
-      const firstName = (user.name as string).split(' ')[0];
-      const htmlBody = `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0; padding:0; background:#0b0f19; font-family:'Helvetica Neue',Arial,sans-serif;">
-  <div style="max-width:520px; margin:40px auto; background:#131929; border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,0.08);">
-    <div style="background:linear-gradient(135deg,#1a1f35 0%,#0f172a 100%); padding:40px 40px 30px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06);">
-      <h1 style="margin:0; color:#ffffff; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">EYE STAFF</h1>
-    </div>
-    <div style="padding:35px 40px;">
-      <p style="color:#94a3b8; font-size:0.95rem; margin:0 0 25px;">Hola <strong style="color:#fff;">${firstName}</strong>, aquí están tus credenciales de acceso a la plataforma:</p>
-      <div style="background:#0f172a; border-radius:14px; border:1px solid rgba(234,179,8,0.25); padding:25px; margin-bottom:25px;">
-        <div style="margin-bottom:18px;">
-          <div style="font-size:0.65rem; color:#64748b; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🌐 URL de Acceso</div>
-          <div style="font-size:1rem; color:#eab308; font-weight:700;">https://eye-staff.app</div>
-        </div>
-        <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:18px; margin-bottom:18px;">
-          <div style="font-size:0.65rem; color:#64748b; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">👤 Nombre de Usuario</div>
-          <div style="font-size:1.1rem; color:#ffffff; font-weight:900; letter-spacing:1px;">${user.name}</div>
-        </div>
-        <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:18px;">
-          <div style="font-size:0.65rem; color:#64748b; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🔑 Contraseña (PIN)</div>
-          <div style="font-size:1.3rem; color:#eab308; font-weight:900; letter-spacing:3px; font-family:monospace;">${user.pin_hash}</div>
-        </div>
-      </div>
-      <p style="color:#94a3b8; font-size:0.8rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px;">Cómo ingresar:</p>
-      <div>
-        <div style="display:flex; align-items:flex-start; gap:14px; padding:12px 0;">
-          <div style="color:#cbd5e1; font-size:0.9rem; padding-top:3px;">Ingresa tu contraseña y pulsa <strong style="color:#fff;">ENTRAR</strong>. ¡Listo!</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-
-      if (sendEmailFlag && user.email) {
-        try {
-          await sendEmail(env, [user.email as string], '🔐 Credenciales de Acceso - EYE STAFF', htmlBody);
-          sentAny = true;
-        } catch(e) {
-          console.error(e);
-          if (!sendWaFlag) errors++;
-        }
-      } else if (sendEmailFlag && !user.email) {
-        if (!sendWaFlag) errors++;
-      }
-
-      if (sendWaFlag && user.phone) {
-        const waMessage = `Hola *${firstName}* 👋🏼\n\nAquí están tus credenciales de acceso a la plataforma *EYE STAFF*:\n\n🌐 URL: https://eye-staff.app\n👤 Usuario: *${user.name}*\n🔑 Contraseña (PIN): *${user.pin_hash}*\n\n🔒 _Mantén tu contraseña segura. Si deseas cambiarla, contacta al administrador._`;
-        const res = await sendWhatsAppMessage(env, user.phone as string, waMessage);
-        if (res.ok) {
-          sentAny = true;
-        } else {
-          if (res.error) lastBotError = res.error;
-          if (!sendEmailFlag) errors++;
-        }
-      } else if (sendWaFlag && !user.phone) {
-        if (!sendEmailFlag) errors++;
-      }
-
-      if (sentAny) sentCount++;
-    }
-
-    if (sentCount === 0) {
-      const errSuffix = lastBotError ? ` Error de WhatsApp: ${lastBotError}` : '';
-      return c.json({ error: 'No se pudo enviar ninguna solicitud.' + errSuffix }, 500);
-    }
-    return c.json({ success: true, message: `Enviado a ${sentCount} empleados (${errors} errores)` });
-  } else if (type === 'bbdd_eventos') {
+    } else if (type === 'bbdd_eventos') {
       const events = await env.DB.prepare('SELECT id, session_id, event_type, closed_at, total_vehicles, total_staff FROM event_reports ORDER BY closed_at DESC LIMIT 100').all();
       let excelData = [['ID', 'Session ID', 'Tipo', 'Fecha (Cierre)', 'Vehículos', 'Staff']];
       for (const e of (events.results || [])) {
@@ -2059,8 +1980,7 @@ app.post('/api/reports/send-credentials', async (c) => {
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0; padding:0; background:#0b0f19; font-family:'Helvetica Neue',Arial,sans-serif;">
   <div style="max-width:520px; margin:40px auto; background:#131929; border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,0.08);">
-    <div style="background:linear-gradient(135deg,#1a1f35 0%,#0f172a 100%); padding:40px 40px 30px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:2.5rem; margin-bottom:10px;">👑</div>
+    <div style="background:linear-gradient(135deg,#1a1f35 0%,#0f172a 100%); padding:20px 30px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06);">
       <h1 style="margin:0; color:#ffffff; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">EYE STAFF</h1>
       <p style="margin:6px 0 0; color:#64748b; font-size:0.75rem; letter-spacing:3px; text-transform:uppercase;">Plataforma Integral de Operaciones</p>
     </div>
@@ -2105,8 +2025,9 @@ app.post('/api/reports/send-credentials', async (c) => {
   </div>
 </body>
 </html>`;
-    await sendEmail(c.env, c.env.DIRECTOR_EMAIL, `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
-    return c.json({ success: true });
+    const targetEmail = user.email ? user.email : 'eyestaff.ncarrillo@gmail.com';
+    await sendEmail(c.env, targetEmail, `🔑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
+    return c.json({ success: true, email: targetEmail });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
   }
@@ -2158,7 +2079,7 @@ app.post('/api/sessions/close', async (c) => {
 
   let dbUser: any = null;
   if (currentUserId === 1) {
-    dbUser = { name: 'ADMIN', pin_hash: 'corifede1416' };
+    dbUser = { name: 'NELSON CARRILLO', pin_hash: 'corifede1416' };
   } else {
     dbUser = await c.env.DB.prepare('SELECT pin_hash, name FROM users WHERE id = ?').bind(currentUserId).first<any>();
   }
@@ -2453,9 +2374,6 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     }
 
     const attachments: any[] = [];
-    if (excelBase64) {
-      attachments.push({ filename: `Reporte_${safeName}.xlsx`, content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    }
     if (pdfBase64) {
       attachments.push({ filename: `Reporte_${safeName}.pdf`, content: pdfBase64, content_type: 'application/pdf' });
     }
@@ -2749,7 +2667,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
     ['Evento:', session.name], ['Tipo:', (session.type || 'Valet Parking').toUpperCase()],
     ['Ubicación:', session.address || 'N/A'], ['Contacto:', session.contact_name || 'N/A'],
     ['Inicio:', formatFull24h(eventStart)], ['Fin:', formatFull24h(eventEnd)],
-    ['Duración:', `${durationMins} minutos`], ['Total Vehículos:', String(vehicles.length)],
+    ['Duración:', fmtMins(durationMins)], ['Total Vehículos:', String(vehicles.length)],
     ['Entregados:', String(delivered)], ['Personal:', String(staffWithAttendance.length)],
   ];
   for (const [label, value] of infoItems) {
@@ -2806,7 +2724,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   y -= 22;
 
   const colsS = [140, 80, 50, 50, 60, 70, 70];
-  const headS = ['NOMBRE', 'ROL', 'ENTRADA', 'SALIDA', 'DESC.(min)', 'JORNADA(min)', 'VEH. ATENDIDOS'];
+  const headS = ['NOMBRE', 'ROL', 'ENTRADA', 'SALIDA', 'DESCANSO', 'JORNADA', 'VEH. ATENDIDOS'];
   xCol = margin;
   page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 14, color: rgb(0.92, 0.93, 0.94) });
   for (let ci = 0; ci < headS.length; ci++) {
@@ -2821,7 +2739,7 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
       page.drawRectangle({ x: margin, y: y - 2, width: pageW - 2 * margin, height: 12, color: rgb(0.97, 0.98, 0.99) });
     }
     const s = staffWithAttendance[i];
-    const srow = [s.name.substring(0, 22), s.role.substring(0, 12), s.entry_time, s.exit_time, String(s.break_mins), String(s.total_mins), String(s.vehicles_attended)];
+    const srow = [s.name.substring(0, 22), s.role.substring(0, 12), s.entry_time, s.exit_time, fmtMins(s.break_mins), fmtMins(s.total_mins), String(s.vehicles_attended)];
     xCol = margin;
     for (let ci = 0; ci < srow.length; ci++) {
       page.drawText(srow[ci], { x: xCol + 2, y: y + 1, size: 6, font });
@@ -2840,9 +2758,9 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
 
   const execLines = [
     `El evento "${session.name}" se desarrolló en ${session.address || 'la ubicación acordada'}.`,
-    `Inicio: ${formatFull24h(eventStart)}  |  Fin: ${formatFull24h(eventEnd)}  |  Duración total: ${durationMins} minutos.`,
+    `Inicio: ${formatFull24h(eventStart)}  |  Fin: ${formatFull24h(eventEnd)}  |  Duración total: ${fmtMins(durationMins)}.`,
     `Se recibieron ${vehicles.length} vehículos, de los cuales ${delivered} fueron entregados (${inCustody} en custodia al cierre).`,
-    `El tiempo promedio de estancia por vehículo fue de ${avgStayMins} minutos.`,
+    `El tiempo promedio de estancia por vehículo fue de ${fmtMins(avgStayMins)}.`,
     `El equipo operativo estuvo compuesto por ${staffWithAttendance.length} persona(s).`,
     ``,
     `Este reporte ha sido generado automáticamente por EYE STAFF v2.4.41 al cierre del evento.`,
@@ -2880,22 +2798,31 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   const html = buildClosingEmailHtml(session, vehicles, staffWithAttendance, summaryData);
   const xlsxBase64 = uint8ArrayToBase64(new Uint8Array(xlsxBuffer));
   const attachments = [
-    { filename: `Reporte_${safeName}.xlsx`, content: xlsxBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
     { filename: `Reporte_${safeName}.pdf`, content: pdfBase64, content_type: 'application/pdf' },
   ];
-  const adminEmail = env.DIRECTOR_EMAIL ;
-
   const dossierSubs = await getSubscribedEmails(env, 'dossier');
   const excelSubs = await getSubscribedEmails(env, 'excel');
-  const ccList = [...new Set([...dossierSubs, ...excelSubs])];
-
-  await sendEmail(env, adminEmail, `EYE STAFF: Reporte Final — ${session.name}`, html, attachments, ccList);
+  const cierreSubs = await getSubscribedEmails(env, 'cierre_html');
+  const ccList = [...new Set([...dossierSubs, ...excelSubs, ...cierreSubs])];
+  
+  if (ccList.length > 0) {
+      await sendEmail(env, ccList, `EYE STAFF: Reporte Final — ${session.name}`, html, attachments);
+  }
 
   return { summaryData, vehicles, staffWithAttendance };
 }
 
 function fmtTime(d: Date): string {
   return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+}
+
+function fmtMins(mins: number | string): string {
+  const n = typeof mins === 'string' ? parseFloat(mins) : mins;
+  if (isNaN(n)) return '0m';
+  const h = Math.floor(n / 60);
+  const m = Math.floor(n % 60);
+  if (h === 0) return `${m}m`;
+  return `${h}h ${m}m`;
 }
 
 function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summary: any): string {
@@ -2907,7 +2834,7 @@ function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summ
     <div style="padding:24px;">
       <h2 style="margin-top:0;">${session.name}</h2>
       <p><b>Inicio:</b> ${formatFull24h(new Date(session.started_at))} &nbsp;|&nbsp; <b>Fin:</b> ${formatFull24h(new Date(session.ended_at || Date.now()))}</p>
-      <p><b>Duración:</b> ${summary.duration_mins} min &nbsp;|&nbsp; <b>Ubicación:</b> ${summary.location}</p>
+      <p><b>Duración:</b> ${fmtMins(summary.duration_mins)} &nbsp;|&nbsp; <b>Ubicación:</b> ${summary.location}</p>
       <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;">VEHÍCULOS (${vehicles.length})</h3>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <tr style="background:#f1f5f9;"><th style="border:1px solid #ddd;padding:6px;">PLACA</th><th style="border:1px solid #ddd;padding:6px;">MARCA/COLOR</th><th style="border:1px solid #ddd;padding:6px;">PROPIETARIO</th><th style="border:1px solid #ddd;padding:6px;">ENTRADA</th><th style="border:1px solid #ddd;padding:6px;">SALIDA</th><th style="border:1px solid #ddd;padding:6px;">ESTADO</th></tr>
@@ -2916,14 +2843,14 @@ function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summ
       <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;margin-top:24px;">PERSONAL (${staff.length})</h3>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <tr style="background:#f1f5f9;"><th style="border:1px solid #ddd;padding:6px;">NOMBRE</th><th style="border:1px solid #ddd;padding:6px;">ROL</th><th style="border:1px solid #ddd;padding:6px;">ENTRADA</th><th style="border:1px solid #ddd;padding:6px;">SALIDA</th><th style="border:1px solid #ddd;padding:6px;">DESCANSO</th><th style="border:1px solid #ddd;padding:6px;">JORNADA</th><th style="border:1px solid #ddd;padding:6px;">VEH.</th></tr>
-        ${staff.map((s: any) => `<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${s.name}</td><td style="border:1px solid #ddd;padding:6px;">${s.role}</td><td style="border:1px solid #ddd;padding:6px;">${s.entry_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.exit_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.break_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.total_mins}min</td><td style="border:1px solid #ddd;padding:6px;">${s.vehicles_attended}</td></tr>`).join('')}
+        ${staff.map((s: any) => `<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${s.name}</td><td style="border:1px solid #ddd;padding:6px;">${s.role}</td><td style="border:1px solid #ddd;padding:6px;">${s.entry_time}</td><td style="border:1px solid #ddd;padding:6px;">${s.exit_time}</td><td style="border:1px solid #ddd;padding:6px;">${fmtMins(s.break_mins)}</td><td style="border:1px solid #ddd;padding:6px;">${fmtMins(s.total_mins)}</td><td style="border:1px solid #ddd;padding:6px;">${s.vehicles_attended}</td></tr>`).join('')}
       </table>
       <div style="background:#f8fafc;border-left:4px solid #ef4444;padding:16px;margin-top:24px;border-radius:4px;">
         <h3 style="margin-top:0;color:#ef4444;">RESUMEN EJECUTIVO</h3>
-        <p>Se recibieron <b>${summary.total_vehicles}</b> vehículos, de los cuales <b>${summary.total_delivered}</b> fueron entregados y <b>${summary.total_in_custody}</b> permanecieron en custodia al momento del cierre. El tiempo promedio de estancia fue de <b>${summary.avg_stay_mins} minutos</b>. El equipo estuvo integrado por <b>${summary.total_staff}</b> persona(s). Duración total del evento: <b>${summary.duration_mins} minutos</b>.</p>
+        <p>Se recibieron <b>${summary.total_vehicles}</b> vehículos, de los cuales <b>${summary.total_delivered}</b> fueron entregados y <b>${summary.total_in_custody}</b> permanecieron en custodia al momento del cierre. El tiempo promedio de estancia fue de <b>${fmtMins(summary.avg_stay_mins)}</b>. El equipo estuvo integrado por <b>${summary.total_staff}</b> persona(s). Duración total del evento: <b>${fmtMins(summary.duration_mins)}</b>.</p>
       </div>
     </div>
-    <div style="background:#0b0f19;padding:12px;text-align:center;font-size:10px;color:#94a3b8;">EYE STAFF 2026 · eye-staff.app · Reporte adjunto en PDF y Excel</div>
+    <div style="background:#0b0f19;padding:12px;text-align:center;font-size:10px;color:#94a3b8;">EYE STAFF 2026 · eye-staff.app · Reporte adjunto en PDF</div>
   </div>`;
 }
 
@@ -3018,12 +2945,12 @@ function wrapInCorporateTemplate(content: string) {
   `;
 }
 
-async function sendEmail(env: Env, to: string | string[] | undefined, subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string) {
+async function sendEmail(env: Env, to: string | string[], subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string) {
   if (!env.BREVO_API_KEY) {
       throw new Error('BREVO_API_KEY no configurado en este entorno.');
   }
   try {
-    let toArray = (Array.isArray(to) ? to : [to]).filter(e => e && typeof e === 'string' && e.trim() !== '') as string[];
+    let toArray = (Array.isArray(to) ? to : [to]).filter(e => e && typeof e === 'string' && e.trim() !== '');
     let ccArray = cc || [];
 
     if (reportId) {
@@ -4162,7 +4089,7 @@ app.post('/api/staff/login', async (c) => {
       return cleanDBName === cleanInput || cleanCedula === inputName.trim();
     });
 
-    if (dbUser && dbUser.pin_hash === lowerPass) {
+    if (dbUser && dbUser.pin_hash && dbUser.pin_hash.toLowerCase() === lowerPass) {
       let finalRole = dbUser.role || 'valet';
       const isActuallyDirector = finalRole === 'director' ||
         inputName.includes('nelson') ||
@@ -4198,7 +4125,7 @@ app.post('/api/staff/login', async (c) => {
         .run();
 
       // Verificación de concurrencia de sesiones
-      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "ADMIN", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
+      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "NELSON CARRILLO", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
       const cleanNameCheck = stripAccents(dbUser.name || '').toUpperCase();
       const canHaveMultipleSessions = allowedMultipleSessions.includes(cleanNameCheck);
 
@@ -4220,7 +4147,7 @@ app.post('/api/staff/login', async (c) => {
       if (!permRow) {
         const isSuperadmin = finalRole === 'director';
         const isSupervisor = finalRole === 'supervisor';
-        const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+        const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
         const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
         permissions = {
           valet_ve: 1,
@@ -4256,7 +4183,7 @@ app.post('/api/staff/login', async (c) => {
 
     // 3. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
     const isEmergencyPass = lowerPass === 'corifede1416';
-    const isDirectorName = inputName === 'admin' || inputName === 'nicolas' ||
+    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' ||
       inputName === 'billy' || inputName === 'ramos' ||
       inputName === 'admin';
 
@@ -4404,7 +4331,8 @@ app.get('/api/staff/list', async (c) => {
 app.get('/api/staff', async (c) => {
   const staff = await c.env.DB.prepare('SELECT * FROM users ORDER BY name ASC').all();
   const sessions = await c.env.DB.prepare('SELECT id, name FROM sessions WHERE status != "closed"').all();
-  return c.json({ staff: staff.results, sessions: sessions.results });
+  const closed_sessions = await c.env.DB.prepare('SELECT id, name, type, ended_at FROM sessions WHERE status = "closed" ORDER BY ended_at DESC LIMIT 100').all();
+  return c.json({ staff: staff.results, sessions: sessions.results, closed_sessions: closed_sessions.results });
 });
 
 // POST /api/staff/location — llamado desde el bot de WhatsApp al recibir una ubicación
@@ -4521,6 +4449,24 @@ app.post('/api/reports/subscriptions', async (c) => {
   }
 });
 
+async function generateSecurePin(name: string, cedula: string): Promise<string> {
+    if (!cedula || cedula.trim() === '') return cedula;
+    const secret = "EYESTAFF_2026_SECURE_PIN";
+    const data = new TextEncoder().encode(name.toUpperCase().trim() + cedula.trim() + secret);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    
+    const l1Code = (hashArray[0] % 26) + 65; 
+    const letter1 = String.fromCharCode(l1Code);
+    
+    const l2Code = (hashArray[hashArray.length - 1] % 26) + 65;
+    const letter2 = String.fromCharCode(l2Code);
+    
+    return `${letter1}${cedula.trim()}${letter2}`;
+}
+
+
+
 app.post('/api/staff', async (c) => {
   const current = c.get('user');
   // Si no hay usuario en el contexto (debido al bypass de seguridad), permitimos la acción por ahora
@@ -4528,8 +4474,14 @@ app.post('/api/staff', async (c) => {
     return c.json({ error: 'No autorizado' }, 403);
   }
 
-  const { name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, carnet, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer } = await c.req.json();
+  const payload = await c.req.json();
+  const { name, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, carnet, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer } = payload;
+  let { pin_hash } = payload;
   if (!name || !pin_hash || !role) return c.json({ error: 'Faltan datos' }, 400);
+
+  if (!pin_hash || pin_hash === cedula) {
+      pin_hash = await generateSecurePin(name, cedula);
+  }
 
   let carnetKey = null;
   if (carnet) {
@@ -4641,7 +4593,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
   // Fetch current administrator record
   let adminUser: any = null;
   if (current.id === 1) {
-    adminUser = { name: 'ADMIN', pin_hash: 'corifede1416' };
+    adminUser = { name: 'NELSON CARRILLO', pin_hash: 'corifede1416' };
   } else {
     adminUser = await c.env.DB.prepare('SELECT name, pin_hash FROM users WHERE id = ?').bind(current.id).first();
   }
@@ -4892,10 +4844,59 @@ app.get('/api/admin/vehicles', async (c) => {
 
 app.delete('/api/admin/vehicles/:plate', async (c) => {
   const plate = c.req.param('plate');
-  // Borrar fotos asociadas (opcionalmente podríamos borrarlas de R2, pero por ahora solo de la DB para evitar huérfanos)
   await c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE plate = ?)').bind(plate).run();
   await c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE plate = ?)').bind(plate).run();
   await c.env.DB.prepare('DELETE FROM vehicles WHERE plate = ?').bind(plate).run();
+  return c.json({ success: true });
+});
+
+app.delete('/api/event-reports/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const report = await c.env.DB.prepare('SELECT session_id FROM event_reports WHERE id = ?').bind(id).first<any>();
+    
+    if (report && report.session_id) {
+      // 1. Delete dependents of vehicles in this session
+      await c.env.DB.prepare('DELETE FROM messages WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(report.session_id).run();
+      await c.env.DB.prepare('DELETE FROM metrics WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(report.session_id).run();
+      await c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(report.session_id).run();
+      await c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(report.session_id).run();
+      
+      // 2. Delete vehicles and attendance
+      await c.env.DB.prepare('DELETE FROM vehicles WHERE session_id = ?').bind(report.session_id).run();
+      await c.env.DB.prepare('DELETE FROM staff_attendance WHERE session_id = ?').bind(report.session_id).run();
+      
+      // 3. Delete other session dependents
+      await c.env.DB.prepare('DELETE FROM chat_messages WHERE session_id = ?').bind(report.session_id).run();
+      await c.env.DB.prepare('DELETE FROM guardia_details WHERE session_id = ?').bind(report.session_id).run();
+      try {
+        await c.env.DB.prepare('DELETE FROM access_control_guests WHERE session_id = ?').bind(report.session_id).run();
+      } catch (e) {}
+      try {
+        await c.env.DB.prepare('DELETE FROM payroll_submissions WHERE session_id = ?').bind(report.session_id).run();
+      } catch (e) {}
+      
+      // 4. Delete session
+      await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(report.session_id).run();
+    }
+    
+    await c.env.DB.prepare('DELETE FROM event_reports WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting event report:', error);
+    return c.json({ error: 'Error interno: ' + error.message }, 500);
+  }
+});
+
+app.post('/api/admin/clients/delete', async (c) => {
+  const body = await c.req.json();
+  const name = body.owner_name;
+  if (!name) return c.json({ error: 'Nombre requerido' }, 400);
+  const n = name.toUpperCase().trim();
+  
+  // Safe delete: Nullify owner in vehicles, delete from valet_clients
+  await c.env.DB.prepare('UPDATE vehicles SET owner_name = NULL, owner_phone = NULL WHERE UPPER(TRIM(owner_name)) = ?').bind(n).run();
+  await c.env.DB.prepare('DELETE FROM valet_clients WHERE UPPER(TRIM(name)) = ?').bind(n).run();
   return c.json({ success: true });
 });
 
@@ -5051,7 +5052,7 @@ app.get('/api/my-permissions', async (c) => {
   if (!permRow) {
     const isSuperadmin = user.role === 'director';
     const isSupervisor = user.role === 'supervisor';
-    const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+    const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
     const isVIP = allowedCfoNames.some(n => (user.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
     permissions = {
       valet_ve: 1,
@@ -5090,7 +5091,7 @@ app.get('/api/admin/user-permissions', async (c) => {
   const permRows = permRowsRes.results || [];
   const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
 
-  const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+  const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
   const permissions = staff.map((u: any) => {
     const permRow = permMap.get(u.id);
@@ -5176,7 +5177,7 @@ app.post('/api/admin/user-permissions', async (c) => {
 
   const isSuperadmin = targetUser.role === 'director';
   const isSupervisor = targetUser.role === 'supervisor';
-  const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+  const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
   const isVIP = allowedCfoNames.some(n => (targetUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
 
   const d_valet_ve = 1;
@@ -5244,10 +5245,9 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         bbdd_excel: subRow.bbdd_excel,
         nominas: subRow.nominas,
         permisos: subRow.permisos,
-        plantilla_rrhh: subRow.plantilla_rrhh || 0,
-        credenciales: subRow.credenciales || 0,
-        actualizacion_datos: subRow.actualizacion_datos || 0,
-        cierre_html: subRow.cierre_html || 0
+        plantilla_rrhh: subRow.plantilla_rrhh,
+        actualizacion_datos: subRow.actualizacion_datos,
+        cierre_html: subRow.cierre_html
       };
     } else {
       return {
@@ -5261,7 +5261,6 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         nominas: 0,
         permisos: 0,
         plantilla_rrhh: 0,
-        credenciales: 0,
         actualizacion_datos: 0,
         cierre_html: 0
       };
@@ -5278,7 +5277,7 @@ app.post('/api/admin/report-subscriptions', async (c) => {
   const { user_id, field, value } = await c.req.json();
   if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html'];
+  const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'cierre_html'];
   if (!validFields.includes(field)) {
     return c.json({ error: 'Campo inválido' }, 400);
   }
@@ -5288,8 +5287,8 @@ app.post('/api/admin/report-subscriptions', async (c) => {
 
   await c.env.DB.prepare(`
     INSERT OR IGNORE INTO user_report_subscriptions 
-    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, credenciales, cierre_html) 
-    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, cierre_html) 
+    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   `).bind(user_id).run();
 
   const intVal = value ? 1 : 0;
@@ -5304,39 +5303,31 @@ app.post('/api/admin/send-update-requests', async (c) => {
   const user = c.get('user');
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
-  const { type, userIds, channel } = await c.req.json();
-  const sendEmailFlag = channel === 'email' || channel === 'ambos' || !channel;
-  const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
-
-  let targetUsers: {id: number, email: string, name: string, phone: string}[] = [];
+  const { type, userIds } = await c.req.json();
+  let targetEmails: {id: number, email: string, name: string}[] = [];
 
   if (type === 'matrix') {
     const subs = await c.env.DB.prepare(`
-      SELECT u.id, u.email, u.name, u.phone FROM user_report_subscriptions rs
+      SELECT u.id, u.email, u.name FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.actualizacion_datos = 1 AND u.is_active = 1
+      WHERE rs.actualizacion_datos = 1 AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
     `).all();
-    targetUsers = subs.results as any;
+    targetEmails = subs.results as any;
   } else if (userIds && Array.isArray(userIds) && userIds.length > 0) {
     const placeholders = userIds.map(() => '?').join(',');
     const subs = await c.env.DB.prepare(`
-      SELECT id, email, name, phone FROM users 
-      WHERE id IN (${placeholders}) AND is_active = 1
+      SELECT id, email, name FROM users 
+      WHERE id IN (${placeholders}) AND email IS NOT NULL AND email != '' AND is_active = 1
     `).bind(...userIds).all();
-    targetUsers = subs.results as any;
+    targetEmails = subs.results as any;
   }
 
-  if (targetUsers.length === 0) {
-    return c.json({ error: 'No se encontraron empleados.' }, 400);
+  if (targetEmails.length === 0) {
+    return c.json({ error: 'No se encontraron empleados con email válido.' }, 400);
   }
 
   let sentCount = 0;
-  let errors = 0;
-  let sentNames: string[] = [];
-  let lastBotError = '';
-
-  for (const emp of targetUsers) {
-    let sentAny = false;
+  for (const emp of targetEmails) {
     const token = crypto.randomUUID();
     await c.env.DB.prepare(`
       INSERT INTO employee_data_updates (token, user_id, status)
@@ -5344,59 +5335,34 @@ app.post('/api/admin/send-update-requests', async (c) => {
     `).bind(token, emp.id).run();
 
     const link = `https://eye-staff.app/#actualizar-datos?token=${token}`;
-    const firstName = emp.name.split(' ')[0];
+    const html = `
+      <div style="text-align: center;">
+        <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${emp.name},</h2>
+        <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
+          El departamento de Recursos Humanos de EYE STAFF requiere que actualices o verifiques tus datos personales.
+        </p>
+        <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          📋 ACTUALIZAR MIS DATOS
+        </a>
+        <p style="margin-top: 30px; font-size: 12px; color: #94a3b8;">
+          Este enlace es único y personal. Por favor no lo compartas con nadie.
+        </p>
+      </div>
+    `;
 
-    if (sendEmailFlag && emp.email) {
-      const html = `
-        <div style="text-align: center;">
-          <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${emp.name},</h2>
-          <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
-            El departamento de Recursos Humanos de EYE STAFF requiere que actualices o verifiques tus datos personales.
-          </p>
-          <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-            📋 ACTUALIZAR MIS DATOS
-          </a>
-          <p style="margin-top: 30px; font-size: 12px; color: #94a3b8;">
-            Este enlace es único y personal. Por favor no lo compartas con nadie.
-          </p>
-        </div>
-      `;
-      try {
-        await sendEmail(c.env, emp.email, '⚠️ Acción Requerida: Actualización de Datos', html);
-        sentAny = true;
-      } catch (e) {
-        console.error(`Failed to send email to ${emp.email}`, e);
-        if (!sendWaFlag) errors++;
-      }
-    } else if (sendEmailFlag && !emp.email) {
-      if (!sendWaFlag) errors++;
-    }
-
-    if (sendWaFlag && emp.phone) {
-      const waMessage = `Hola *${firstName}* 👋🏼\n\nEl departamento de Recursos Humanos de *EYE STAFF* requiere que actualices o verifiques tus datos personales (foto, cuenta bancaria, etc).\n\nIngresa al siguiente enlace único y seguro para hacerlo:\n\n🔗 ${link}\n\n_⚠️ Este enlace es personal, por favor no lo compartas con nadie._`;
-      const res = await sendWhatsAppMessage(c.env, emp.phone, waMessage);
-      if (res.ok) {
-        sentAny = true;
-      } else {
-        if (res.error) lastBotError = res.error;
-        if (!sendEmailFlag) errors++;
-      }
-    } else if (sendWaFlag && !emp.phone) {
-      if (!sendEmailFlag) errors++;
-    }
-
-    if (sentAny) {
+    try {
+      await sendEmail(c.env, emp.email, '⚠️ Acción Requerida: Actualización de Datos', html);
       sentCount++;
-      sentNames.push(emp.name);
+    } catch (e) {
+      console.error(`Failed to send email to ${emp.email}`, e);
     }
   }
 
   if (sentCount === 0) {
-    const errSuffix = lastBotError ? ` Error de WhatsApp: ${lastBotError}` : '';
-    return c.json({ error: 'No se pudo enviar ninguna solicitud.' + errSuffix }, 500);
+    return c.json({ error: 'No se pudo enviar ningún correo. Verifica la configuración de Brevo.' }, 500);
   }
 
-  return c.json({ success: true, sent: sentCount, total: targetUsers.length, recipients: sentNames, errors });
+  return c.json({ success: true, sent: sentCount, total: targetEmails.length });
 });
 
 app.get('/api/admin/pending-updates', async (c) => {
@@ -5421,7 +5387,7 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
   const id = c.req.param('id');
   const { pin, modifiedData } = await c.req.json();
 
-  if (!pin || pin.trim().toLowerCase() !== user.pin_hash) return c.json({ error: 'PIN incorrecto' }, 403);
+  if (pin !== user.pin) return c.json({ error: 'PIN incorrecto' }, 403);
 
   const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE id = ?').bind(id).first<any>();
   if (!update || update.status !== 'pending_review') return c.json({ error: 'Solicitud inválida' }, 400);
@@ -8015,66 +7981,6 @@ app.post('/api/public/update-data/:token', async (c) => {
   return c.json({ success: true });
 });
 
-
-export function sanitizeWhatsAppNumber(phone: string): string | null {
-  if (!phone) return null;
-  let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
-  if (!/^\d+$/.test(cleaned)) return null;
-  if (cleaned.length === 11 && cleaned.startsWith('0')) {
-    cleaned = '58' + cleaned.substring(1);
-  } else if (cleaned.length === 10 && (cleaned.startsWith('4') || cleaned.startsWith('2'))) {
-    cleaned = '58' + cleaned;
-  }
-  return cleaned;
-}
-
-export async function sendWhatsAppMessage(env: Env, phone: string, message: string): Promise<{ok: boolean, error?: string}> {
-  const botUrl = env.WHATSAPP_BOT_URL;
-  const botApiKey = env.WHATSAPP_BOT_API_KEY;
-  if (!botUrl || !botApiKey) return { ok: false, error: 'Credenciales del bot no configuradas' };
-
-  const cleanedPhone = sanitizeWhatsAppNumber(phone);
-  if (!cleanedPhone) return { ok: false, error: 'Número de teléfono inválido' };
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-    const botRes = await fetch(botUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${botApiKey}`,
-        'Bypass-Tunnel-Reminder': 'true'
-      },
-      body: JSON.stringify({
-        to: cleanedPhone + '@s.whatsapp.net',
-        message: message
-      }),
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-
-    if (!botRes.ok) {
-      const errorText = await botRes.text();
-      console.error(`WhatsApp Bot error for ${cleanedPhone}: status=${botRes.status}, body=${errorText}`);
-      try {
-        const errObj = JSON.parse(errorText);
-        return { ok: false, error: errObj.error || 'Error del bot de WhatsApp' };
-      } catch (e) {
-        return { ok: false, error: 'Error del bot de WhatsApp' };
-      }
-    }
-    return { ok: true };
-  } catch (e: any) {
-    console.error('Error enviando a WhatsApp Bot:', e);
-    if (e.name === 'AbortError') {
-      return { ok: false, error: 'El bot de WhatsApp está iniciando (timeout). Intente nuevamente en 1 minuto.' };
-    }
-    return { ok: false, error: e.message || 'Error de conexión con el bot' };
-  }
-}
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {

@@ -3,47 +3,46 @@ const fs = require('fs');
 async function sendBackup() {
     const htmlContent = fs.readFileSync('frontend/index.html', 'utf8');
     const tsContent = fs.readFileSync('src/index.ts', 'utf8');
-    const chatContent = fs.readFileSync('frontend/chat-widget.js', 'utf8');
+    const sqlContent = fs.readFileSync('backup_v2.7.10.sql', 'utf8');
 
     const htmlBase64 = Buffer.from(htmlContent).toString('base64');
     const tsBase64 = Buffer.from(tsContent).toString('base64');
-    const chatBase64 = Buffer.from(chatContent).toString('base64');
+    const sqlBase64 = Buffer.from(sqlContent).toString('base64');
 
     const payload = {
         from: "EYE STAFF <onboarding@resend.dev>",
         to: ["ncarrillok@gmail.com"],
-        subject: "Backup Completo V2.7.5 - 05/06/2026",
+        subject: "Backup Completo V2.7.10 - 10/06/2026",
         html: `
             <h2>Resumen del Backup</h2>
-            <p>Se ha realizado un backup de la versión <strong>V2.7.5</strong> del sistema EYE STAFF.</p>
-            <p><strong>Fecha:</strong> 05/06/2026</p>
+            <p>Se ha realizado un backup de la versión <strong>V2.7.10</strong> del sistema EYE STAFF.</p>
+            <p><strong>Fecha:</strong> 10/06/2026</p>
             <p><strong>Cambios incluidos:</strong></p>
             <ul>
-                <li>Unificación del chat interno y el chat externo.</li>
-                <li>Indicador verde intermitente en avatares de usuarios conectados.</li>
-                <li>Tooltip flotante (hover/tap) para ver la lista de personal conectado.</li>
-                <li>Botones de creación rápida de grupos y colores personalizados en lista.</li>
-                <li>Fix crítico de guardado de grupos en Cloudflare D1.</li>
+                <li>Ajuste del botón de CHAT a UBICACIÓN con nuevo ícono.</li>
+                <li>Actualización del algoritmo de ordenación de personal (Activos > Coche > EYE ID > Nombre alfabético).</li>
+                <li>Inactivos ubicados al final de la matriz respetando su propio ordenamiento interno.</li>
+                <li>Fix de renderizado de la Ficha de Empleado para priorizar foto actualizada.</li>
             </ul>
             <ul>
-                <li><strong>frontend/index.html</strong> (Dashboard unificado)</li>
-                <li><strong>src/index.ts</strong> (Backend Cloudflare Worker)</li>
-                <li><strong>frontend/chat-widget.js</strong> (Módulo de Chat)</li>
+                <li><strong>frontend/index.html</strong></li>
+                <li><strong>src/index.ts</strong></li>
+                <li><strong>backup_v2.7.10.sql</strong> (Base de datos D1 exportada)</li>
             </ul>
             <p>Se adjuntan los archivos fuente completos correspondientes a este backup.</p>
         `,
         attachments: [
             {
-                filename: "backup_v2.7.5_index.html",
+                filename: "backup_v2.7.10_index.html",
                 content: htmlBase64
             },
             {
-                filename: "backup_v2.7.5_index.ts.txt",
+                filename: "backup_v2.7.10_index.ts.txt",
                 content: tsBase64
             },
             {
-                filename: "backup_v2.7.5_chat-widget.txt",
-                content: chatBase64
+                filename: "backup_v2.7.10_valet-db.sql",
+                content: sqlBase64
             }
         ]
     };

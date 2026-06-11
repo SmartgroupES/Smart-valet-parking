@@ -153,6 +153,27 @@
                 background-color: #b91c1c;
                 box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
             }
+        .share-btn {
+            background: rgba(234, 179, 8, 0.1);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            animation: pulse-yellow 2s infinite;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes pulse-yellow {
+            0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
         }
     </style>
 </head>
@@ -164,13 +185,18 @@
     </div>
 
     <div class="container" id="form-container">
-
-
         <div class="header">
             <div class="logo-text">
                 <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
             </div>
             <div class="subtitle">CAPTACIÓN DE PERSONAL</div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="share-btn" onclick="shareForm()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                COMPARTIR
+            </button>
         </div>
 
         <div class="card">
@@ -243,6 +269,22 @@
         const imgDisplay = document.getElementById('img-display');
         let photoBase64 = null;
 
+        async function shareForm() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Únete a EYE STAFF',
+                        text: 'Postúlate ahora para formar parte del equipo de EYE STAFF.',
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    console.log('Error al compartir', err);
+                }
+            } else {
+                alert('La función de compartir no está soportada en tu navegador actual. Copia este enlace: ' + window.location.href);
+            }
+        }
+
         photoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -289,15 +331,16 @@
                     document.getElementById('form-container').style.display = 'none';
                     document.getElementById('success-container').style.display = 'block';
 
-                    // Start success screen 10s countdown to auto-close
-                    let countdownVal = 10;
+                    // Start success screen 5s countdown to redirect
+                    let countdownVal = 5;
                     const cEl = document.getElementById('success-countdown');
+                    if (cEl) cEl.textContent = countdownVal;
                     const interval = setInterval(() => {
                         countdownVal--;
                         if (cEl) cEl.textContent = countdownVal;
                         if (countdownVal <= 0) {
                             clearInterval(interval);
-                            window.close();
+                            window.location.href = 'https://www.instagram.com/grupoeyestaff/';
                         }
                     }, 1000);
                 } else {

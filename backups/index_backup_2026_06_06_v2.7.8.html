@@ -6,11 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>EYE STAFF</title>
-    <script>
-        if (window.location.hostname.includes('staging') || window.location.hostname.includes('localhost')) {
-            document.title = 'EYE STAFF - DESARROLLO -';
-        }
-    </script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0f19">
     <meta name="description" content="Plataforma integral de operaciones para EYE STAFF — Valet Parking, Eventos, RRHH y más.">
@@ -469,7 +464,7 @@
         }
 
         /* --- TOAST --- */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 100000; }
+        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 2000; }
         .toast {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -971,7 +966,7 @@
                 </div>
 
                 <div id="btn-telegram-link" onclick="linkTelegram()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(40,168,233,0.1); border:1px solid rgba(40,168,233,0.3); padding:6px 12px; border-radius:8px; color:#28A8E9; font-size:0.65rem; font-weight:800; margin-right:5px;" title="VINCULAR CON TELEGRAM">
-                    <span>UBICACIÓN</span><i>📍</i>
+                    <span>CHAT</span><i>💬</i>
                 </div>
 
                 <div onclick="logout()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:6px 12px; border-radius:8px; color:var(--danger); font-size:0.65rem; font-weight:800;" title="CAMBIAR USUARIO">
@@ -1059,7 +1054,7 @@
             </div>
 
             <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                EYE STAFF — PLATAFORMA INTEGRAL v2.7.10
+                EYE STAFF — PLATAFORMA INTEGRAL v2.7.8
             </div>
         </div>
     </main>
@@ -1649,20 +1644,10 @@
         const tooltipText = displayCount > 1 ? `Conectados Ahora:\n${onlineNames}` : 'Ver Personal Conectado';
 
         const onlineText = ` | <span class="footer-tooltip" style="color:var(--success); font-weight:900; cursor:pointer;" onclick="enterModule('liveloc')">${displayCount}<span class="tooltiptext">${tooltipText}</span></span>`;
-        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.10 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.8 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
         });
-
-        // Garantizar footer en TODAS las vistas: si el <main> no tiene .footer-info, crearlo al final
-        const mainEl = document.querySelector('main');
-        if (mainEl && !mainEl.querySelector('.footer-info')) {
-            const autoFooter = document.createElement('div');
-            autoFooter.className = 'footer-info auto-footer';
-            autoFooter.style.cssText = 'margin-top:50px; text-align:center; color:var(--muted); padding-bottom:50px;';
-            autoFooter.innerHTML = footerHTML;
-            mainEl.appendChild(autoFooter);
-        }
     }
 
     function getElapsedTime(start) {
@@ -1692,9 +1677,6 @@
         }
 
         window.currentModule = module;
-
-        // Limpiar auto-footers previos al cambiar de vista
-        document.querySelectorAll('.auto-footer').forEach(el => el.remove());
 
         const view = document.getElementById('current-view');
         const btn = document.getElementById('btn-back-portal');
@@ -1930,40 +1912,92 @@
         if (offset === 'today') {
             window.currentHomeMonthDate = new Date();
         } else {
-            window.currentHomeMonthDate.setDate(window.currentHomeMonthDate.getDate() + (offset * 7));
+            window.currentHomeMonthDate.setMonth(window.currentHomeMonthDate.getMonth() + offset);
         }
-        const view = document.getElementById('current-view');
-        if (view) renderHome(view);
+        renderHome();
     };
 
     function generateMonthlyCalendarHTML() {
-        // Semana de referencia (lunes de la semana en curso por defecto)
         const viewDate = new Date(window.currentHomeMonthDate);
-        viewDate.setHours(0,0,0,0);
-
-        // Calcular el lunes de la semana que contiene viewDate
-        const wd = viewDate.getDay();
-        const diffToMonday = wd === 0 ? -6 : 1 - wd;
-        const monday = new Date(viewDate);
-        monday.setDate(viewDate.getDate() + diffToMonday);
-        monday.setHours(0,0,0,0);
-
+        viewDate.setDate(1);
+        
+        const monthName = viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+        
         const actualToday = new Date();
         actualToday.setHours(0,0,0,0);
-
-        const weekDayNames = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
-
-        // Nombre del mes para el encabezado
-        const monthName = monday.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
-
+        const displayMonth = viewDate.getMonth();
+        const displayYear = viewDate.getFullYear();
+        const isCurrentCalendarMonth = displayMonth === actualToday.getMonth() && displayYear === actualToday.getFullYear();
+        
+        let startOfGrid;
+        let numWeeksToRender = 6;
+        
+        if (isCurrentCalendarMonth) {
+            const currentWeekMonday = new Date(actualToday);
+            const wd = currentWeekMonday.getDay();
+            const diffDay = currentWeekMonday.getDate() - wd + (wd === 0 ? -6 : 1);
+            currentWeekMonday.setDate(diffDay);
+            currentWeekMonday.setHours(0,0,0,0);
+            
+            startOfGrid = new Date(currentWeekMonday);
+            startOfGrid.setDate(startOfGrid.getDate() - 7); // week -1
+            numWeeksToRender = 3;
+        } else {
+            const currentDay = viewDate.getDay();
+            const diff = viewDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+            startOfGrid = new Date(viewDate.setDate(diff));
+            startOfGrid.setHours(0,0,0,0);
+        }
+        
+        const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
         const isDirector = isUserAdminOrStaff(user);
 
-        let combinedSessions = [...(window.allSessions || [])].filter(s => {
+        const allSessionsRaw = window.allSessions || [];
+        const allSessions = allSessionsRaw.filter(s => {
             if (isDirector) return true;
             return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
         });
+
+        function getEventColor(s) {
+            if (s.is_budget) return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--muted)', grayscale: true };
+            const t = (s.type || '').toLowerCase();
+            if (t.includes('valet')) return { bg: 'rgba(239, 68, 68, 0.15)', border: 'var(--brand-red)', text: '#ef4444' };
+            if (t.includes('boda')) return { bg: 'rgba(245, 158, 11, 0.15)', border: 'var(--warning)', text: '#f59e0b' };
+            if (t.includes('corp')) return { bg: 'rgba(99, 102, 241, 0.15)', border: 'var(--accent)', text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16, 185, 129, 0.15)', border: 'var(--brand-green)', text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        let html = `
+        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">CALENDARIO DE EVENTOS</h3>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">⬅️</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:0.8rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">➡️</button>
+                </div>
+            </div>
+            
+            <div id="calendario-mensual-content" style="display:flex; flex-direction:column; width:100%;">
+            <div style="font-size:0.8rem; color:var(--accent); font-weight:900; background:rgba(99, 102, 241, 0.1); padding:8px 15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                ${monthName}
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px; margin-bottom:5px;">
+                ${weekDays.map(d => `<div style="text-align:center; font-size:0.7rem; font-weight:900; color:var(--muted);">${d}</div>`).join('')}
+            </div>
+            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:5px;">
+        `;
+        
+        const currentDateIterator = new Date(startOfGrid);
+        
+        let combinedSessions = [...(window.allSessions || [])];
         if (window._globalBudgets) {
             const futureBudgets = window._globalBudgets.filter(b => {
                 if (b.estatus !== 'APROBADO') return false;
@@ -1977,89 +2011,83 @@
                 type: (b.form && b.form.tipoEvento) || 'SERVICIO',
                 status: 'planning',
                 is_budget: true,
-                budget_id: b.id
+                budget_id: b.id,
+                budget_timestamp: b.timestamp
             }));
             combinedSessions.push(...futureBudgets);
         }
 
-        function getEventColor(s) {
-            if (s.is_budget) return { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', text: 'var(--muted)' };
-            const t = (s.type || '').toLowerCase();
-            if (t.includes('valet'))  return { bg: 'rgba(239,68,68,0.15)',   border: '#ef4444',  text: '#ef4444' };
-            if (t.includes('boda'))   return { bg: 'rgba(245,158,11,0.15)',  border: '#f59e0b',  text: '#f59e0b' };
-            if (t.includes('corp'))   return { bg: 'rgba(99,102,241,0.15)',  border: '#818cf8',  text: '#818cf8' };
-            if (t.includes('cumple')) return { bg: 'rgba(16,185,129,0.15)', border: '#10b981',  text: '#10b981' };
-            if (t.includes('conciert')) return { bg: 'rgba(168,85,247,0.15)', border: '#a855f7', text: '#c084fc' };
-            return { bg: 'rgba(255,255,255,0.05)', border: 'var(--muted)', text: 'var(--text)' };
-        }
-
-        // Construir filas de días
-        let daysHtml = '';
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(monday);
-            day.setDate(monday.getDate() + i);
-            const isToday = day.getTime() === actualToday.getTime();
-            const dayLabel = weekDayNames[i];
-            const dayNum = day.getDate();
-            const dateStr = day.toISOString().split('T')[0];
-
-            const sessionsThisDay = combinedSessions.filter(s => {
-                if (s.status === 'budgeted') return false;
-                const rawDate = s.started_at || s.created_at;
-                let sDate;
-                if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
-                    const parts = rawDate.split('-');
-                    sDate = new Date(parts[0], parts[1]-1, parts[2]);
-                } else {
-                    sDate = new Date(rawDate);
-                }
-                sDate.setHours(0,0,0,0);
-                return sDate.getTime() === day.getTime();
-            });
-
-            const rowBg    = isToday ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.02)';
-            const rowBorder = isToday ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.05)';
-
-            let eventsHtml = '';
-            if (sessionsThisDay.length > 0) {
-                eventsHtml = sessionsThisDay.map(s => {
-                    const c = getEventColor(s);
-                    const isClosed = s.status === 'closed' || s.status === 'concluded';
-                    const time = s.event_start_time ? `<span style="font-size:0.55rem; color:var(--muted); margin-left:6px;">${s.event_start_time}</span>` : '';
-                    return `<div onclick="showDayDetails('${day.toISOString()}')" style="cursor:pointer; background:${c.bg}; border-left:3px solid ${c.border}; color:${c.text}; font-size:0.7rem; padding:6px 10px; border-radius:6px; display:flex; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                        <span style="font-weight:900; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' ✓' : ''}</span>
-                        ${time}
-                    </div>`;
-                }).join('');
+        for (let week = 0; week < numWeeksToRender; week++) {
+            if (!isCurrentCalendarMonth && week >= 4 && currentDateIterator.getMonth() !== displayMonth) {
+                break;
             }
 
-            daysHtml += `
-            <div style="background:${rowBg}; border:${rowBorder}; border-radius:12px; padding:10px 14px; display:flex; flex-direction:column; gap:6px;">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <span style="font-size:0.75rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--muted)'}; text-transform:uppercase; letter-spacing:1px;">${dayLabel} ${dayNum}</span>
-                    ${isToday ? '<span style="font-size:0.5rem; background:var(--accent); color:#fff; padding:2px 7px; border-radius:10px; font-weight:900; letter-spacing:1px;">HOY</span>' : ''}
-                </div>
-                ${eventsHtml || '<span style="font-size:0.65rem; color:rgba(255,255,255,0.15); padding-left:2px;">Sin eventos</span>'}
-            </div>`;
+            html += `<div class="calendar-week-row" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px;">`;
+
+            for (let day = 0; day < 7; day++) {
+                const isToday = currentDateIterator.getTime() === actualToday.getTime();
+                const isCurrentMonth = currentDateIterator.getMonth() === displayMonth;
+                const dateStr = currentDateIterator.getDate();
+                
+                const sessionsThisDay = combinedSessions.filter(s => {
+                    if (s.status === 'budgeted') return false;
+                    const rawDate = s.started_at || s.created_at;
+                    let sDate;
+                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                        const parts = rawDate.split('-');
+                        sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    } else {
+                        sDate = new Date(rawDate);
+                    }
+                    sDate.setHours(0,0,0,0);
+                    return sDate.getTime() === currentDateIterator.getTime();
+                });
+                
+                let bg = isCurrentMonth ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.005)';
+                let border = isCurrentMonth ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(255,255,255,0.01)';
+                if (isToday) {
+                    bg = 'rgba(99, 102, 241, 0.05)';
+                    border = '1px solid var(--accent)';
+                }
+                
+                let eventsHtml = '';
+                if (sessionsThisDay.length > 0) {
+                    eventsHtml = sessionsThisDay.map(s => {
+                        const colorSet = getEventColor(s);
+                        const isClosed = s.status === 'closed' || s.status === 'concluded';
+                        return `
+                            <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="cursor:pointer; background:${colorSet.bg}; border-left:3px solid ${colorSet.border}; color:${colorSet.text}; font-size:0.6rem; padding:4px; border-radius:4px; margin-bottom:4px; display:flex; flex-direction:column; gap:2px; transition:0.2s; filter:${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:${isCurrentMonth ? (colorSet.grayscale ? '0.85' : '1') : '0.5'}; text-align:left; overflow:hidden;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${colorSet.bg}';">
+                                <div style="font-weight:900; font-size:0.6rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' (FIN)' : ''}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    eventsHtml = `<div style="min-height:20px;"></div>`;
+                }
+
+                html += `
+                    <div class="calendar-day-cell" style="background:${bg}; border:${border}; border-radius:6px; padding:4px; display:flex; flex-direction:column; min-height:80px; overflow:hidden;">
+                        <div style="text-align:right; margin-bottom:4px; position:relative;">
+                            <span style="font-size:0.7rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:${isCurrentMonth ? '1' : '0.4'};"><span style="display:none;">${weekDays[(currentDateIterator.getDay() + 6) % 7]}</span>${dateStr}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; flex:1; overflow-y:auto; scrollbar-width:none;">
+                            ${eventsHtml}
+                        </div>
+                    </div>
+                `;
+                
+                currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+            }
+            html += `</div>`; // Close week row
         }
 
-        return `
-        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; margin-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-                <h3 style="margin:0; color:var(--accent); font-size:1rem; font-weight:900;">📅 CALENDARIO SEMANAL</h3>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">←</button>
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:0.75rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">→</button>
-                </div>
-            </div>
-            <div style="font-size:0.75rem; color:var(--accent); font-weight:900; background:rgba(99,102,241,0.1); padding:7px 14px; border-radius:10px; text-align:center; margin-bottom:14px;">${monthName}</div>
-            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:8px;">
-                ${daysHtml}
+
+        html += `</div>
             </div>
         </div>`;
+        
+        return html;
     }
-
 
         async function saveListaEvento() {
         const baseName = document.getElementById('lista-nombre').value;
@@ -2629,7 +2657,7 @@
     function checkVipAccess(user) {
         if (!user || !user.name) return false;
         const allowedVipNames = [
-            "ADMIN",
+            "NELSON CARRILLO",
             "JOSÉ GREGORIO RAMOS",
             "NICOLÁS BETANCOURT",
             "BILLY GONZÁLEZ",
@@ -2808,7 +2836,7 @@
                                                         </tr>
                                                     `).join('');
                                                 }
-                                                return '<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px; width:100%;">NO HAY EVENTOS ACTIVOS</td></tr>';
+                                                return '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS ACTIVOS</td></tr>';
                                             })()}
                                         </tbody>
                                     </table>
@@ -3461,10 +3489,17 @@
                         </p>
                     </div>
 
-                    <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
-                        <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                            ⬅ VOLVER
-                        </button>
+                    <div style="margin: 30px auto 40px auto; max-width: 500px;">
+                        <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px; text-align:left;">OPERACIONES</h2>
+                        <div class="menu-grid" style="margin-top:0; gap:12px; display:grid; grid-template-columns: 1fr;">
+                            <div class="menu-item" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:15px; display:flex; flex-direction:row; align-items:center; gap:15px; cursor:pointer; border-radius:18px;">
+                                <i style="font-size:1.8rem; display:block;">📄</i>
+                                <div class="menu-item-content" style="text-align:left;">
+                                    <span class="menu-item-title" style="font-size:1rem; font-weight:900; color:#fff; display:block;">FORMATOS</span>
+                                    <span class="menu-item-desc" style="font-size:0.6rem; color:var(--muted); display:block; margin-top:2px;">DOCUMENTACIÓN</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -4152,6 +4187,7 @@
                     <div onclick="selectStaffResult(${u.id}, '${u.name}')" style="padding:15px; border-bottom:1px solid var(--border); cursor:pointer; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); transition: background 0.2s;">
                         <div style="flex:1">
                             <b style="color:#fff;">${u.name}</b>
+                            <div style="color:var(--muted); font-size:0.6rem; text-transform:uppercase;">${u.role}</div>
                         </div>
                         <div style="text-align:right;">
                             ${statusTag}
@@ -4502,8 +4538,7 @@
                                                                     SUPERVISOR
                                                                 </span>
                                                             ` : ''}
-                                                            <span onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#25D366;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
-                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#28A8E9; margin-left:6px;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">📩</span>
+                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="cursor:pointer; font-size:0.75rem; opacity:0.8; transition:0.2s; color:#28A8E9;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
                                                         </div>
                                                     </div>
                                                     <div style="text-align:right; flex-shrink:0;">
@@ -4529,7 +4564,7 @@
                 <div style="display: flex; justify-content: center; margin-top: 40px;">
                     ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.10</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.8</div>
             `;
 
             el.innerHTML = html;
@@ -5985,13 +6020,13 @@
             const data = await res.json();
             if (!res.ok) {
                 toast(data.error || 'Error en la solicitud', 'error');
-                return { success: false, error: data.error };
+                return null;
             }
             return data;
         } catch (e) {
             console.error('API Fetch Error:', e);
             toast('Error de conexión con el servidor', 'error');
-            return { success: false, error: e.message };
+            return null;
         }
     }
 
@@ -6881,7 +6916,7 @@
             let reports = data?.reports || [];
 
             // Filtro local exclusivo para NELSON CARRILLO
-            if (user && user.name && user.name.toUpperCase() === 'ADMIN') {
+            if (user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO') {
                 const hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
                 reports = reports.filter(r => !hiddenIds.includes(r.id));
             }
@@ -6958,7 +6993,7 @@
                                     <span>🗑️</span> BORRAR
                                 </button>
                                 ` : ''}
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                ${user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO' ? `
                                 <button onclick="hideEventReportNelson(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
                                     <span>👀</span> OCULTAR
                                 </button>
@@ -7095,7 +7130,7 @@
                                 <button class="btn btn-secondary btn-sm" onclick="toggleClientHistory(${idx})" style="padding:6px 12px; border-radius:8px; font-size:0.7rem;">
                                     DETALLE EVENTOS ↓
                                 </button>
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                ${user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO' ? `
                                 <button class="btn btn-danger btn-sm" onclick="deleteClient('${encodeURIComponent(c.owner_name)}')" style="padding:6px 12px; border-radius:8px; font-size:0.7rem; margin-left:5px; background:var(--accent2); color:white; border:none; cursor:pointer;">
                                     🗑️ BORRAR
                                 </button>
@@ -7160,7 +7195,7 @@
         }
     };
 
-    window.solicitarPruebaEspecifica = async function(type, sessionId = null, skipConfirm = false, channel = 'email') {
+    window.solicitarPruebaEspecifica = async function(type, sessionId = null, skipConfirm = false) {
         let title = '';
         if (type === 'convocation') title = 'NOTIFICACIÓN DE CONVOCATORIA';
         else if (type === 'birthday') title = 'REPORTE MENSUAL DE CUMPLEAÑEROS';
@@ -7172,57 +7207,25 @@
         else if (type === 'vehiculos') title = 'BASE DE DATOS DE VEHÍCULOS';
         else if (type === 'personal') title = 'MATRIZ COMPLETA DE PERSONAL';
         else if (type === 'cierre_pago') title = 'CIERRE DE CICLO DE PAGO';
-        else if (type === 'credenciales') title = 'CREDENCIALES DE ACCESO';
-        if (type === 'cierre_html') title = sessionId ? `REPORTE DE CIERRE DEL EVENTO #${sessionId}` : 'REPORTE DE CIERRE DE JORNADA (HTML)';
-        if (type === 'plantilla_rrhh') title = 'PLANTILLA DE RECURSOS HUMANOS';
-
         let dest = 'eyestaff.ncarrillo@gmail.com';
-        
-        let reportTypeMap = {
-            'cierre_html': 'cierre_html',
-            'plantilla_rrhh': 'plantilla',
-            'permissions-matrix': 'permisos',
-            'cierre_pago': 'nominas',
-            'birthday': 'cumpleanos',
-            'pdf': 'dossier',
-            'xlsx': 'excel',
-            'nominas': 'nominas',
-            'bbdd_eventos': 'excel',
-            'vehiculos': 'excel',
-            'convocation': 'convocatoria',
-            'credenciales': 'credenciales'
-        };
-
-        let matrixId = reportTypeMap[type];
-
-        if (matrixId) {
-             const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="' + matrixId + '"]:checked');
-             let names = [];
-             cbs.forEach(cb => {
-                 const tr = cb.closest('tr');
-                 if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
-             });
-             if (names.length === 0) {
-                 alert('⚠️ No hay ningún empleado suscrito para recibir este reporte en la matriz.');
-                 return;
-             }
-             dest = names.join(', ');
+        if (type === 'cierre_html') {
+             title = sessionId ? `REPORTE DE CIERRE DEL EVENTO #${sessionId}` : 'REPORTE DE CIERRE DE JORNADA (HTML)';
+             dest = 'los destinatarios suscritos en la matriz';
         }
         
         if (!skipConfirm) {
-            let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
-            if (!confirm(`¿Desea solicitar el envío de: "${title}"?\n\nVía: ${chLabel}\n\nDestino: ${dest}`)) return;
+            if (!confirm(`¿Desea solicitar el envío de: "${title}"?\n\nDestino: ${dest}`)) return;
         }
         
         showLoading('ENVIANDO PRUEBA...');
         try {
             const res = await apiFetch('/api/reports/test-request', {
                 method: 'POST',
-                body: JSON.stringify({ type, session_id: sessionId, channel })
+                body: JSON.stringify({ type, session_id: sessionId })
             });
             if (res && res.success) {
                 toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-                alert(`📧 REPORTE DESPACHADO\n\nEl reporte "${title}" ha sido enviado con éxito.\n\nDetalles: ${res.message}\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
+                alert(`📧 REPORTE DESPACHADO\n\nEl reporte "${title}" ha sido enviado con éxito.\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
             } else {
                 throw new Error((res && res.error) || 'Error de servidor (Revise el toast para más detalles)');
             }
@@ -7266,33 +7269,18 @@
         }
     }
 
-    window.sendDataUpdateRequests = async function(type, channel = 'email') {
-        let dest = 'los empleados';
-        const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="actualizacion_datos"]:checked');
-        let names = [];
-        cbs.forEach(cb => {
-            const tr = cb.closest('tr');
-            if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
-        });
-        if (names.length === 0) {
-            alert('⚠️ No hay ningún empleado suscrito para recibir actualización de datos en la matriz.');
-            return;
-        }
-        dest = names.join(', ');
-
-        let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
-        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a:\n\n${dest}?\n\nVía: ${chLabel}`)) return;
+    window.sendDataUpdateRequests = async function(type) {
+        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a todos los empleados suscritos en la matriz?`)) return;
         
         showLoading('ENVIANDO SOLICITUDES...');
         try {
             const res = await apiFetch('/api/admin/send-update-requests', {
                 method: 'POST',
-                body: JSON.stringify({ type, channel })
+                body: JSON.stringify({ type })
             });
             if (res && res.success) {
                 toast(`✅ ${res.sent} CORREOS ENVIADOS`, 'success');
-                const list = res.recipients && res.recipients.length > 0 ? `\n\nDestinatarios:\n- ${res.recipients.join('\n- ')}` : '';
-                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.${list}`);
+                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.`);
             } else {
                 throw new Error((res && res.error) || 'Error de servidor');
             }
@@ -7439,11 +7427,15 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Consola / Descarga</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Base de Datos Histórica</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="renderEventReports(document.getElementById('current-view'))" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase;">
                             📊 VER EVENTOS CERRADOS
                         </button>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('bbdd_eventos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase; margin-top:8px;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR BBDD POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7461,8 +7453,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML)</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('convocation')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(245, 158, 11, 0.12); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR CONVOCATORIA
                         </button>
                     </div>
                 </div>
@@ -7480,8 +7476,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF adjunto</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('birthday')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(14, 165, 233, 0.12); color:#0ea5e9; border:1px solid rgba(14, 165, 233, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR CUMPLEAÑOS
                         </button>
                     </div>
                 </div>
@@ -7499,8 +7499,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF, R2 Cloud</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('pdf')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(239, 68, 68, 0.12); color:var(--brand-red); border:1px solid rgba(239, 68, 68, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR DOSSIER PDF
                         </button>
                     </div>
                 </div>
@@ -7518,8 +7522,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">XLSX, R2 Cloud</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('xlsx')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:var(--success); border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR REPORTE EXCEL
                         </button>
                     </div>
                 </div>
@@ -7537,8 +7545,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel Consolidado</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('nominas')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(168, 85, 247, 0.12); color:#a855f7; border:1px solid rgba(168, 85, 247, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR NÓMINAS POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7556,8 +7568,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">CSV / Excel</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('vehiculos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR VEHÍCULOS POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7576,17 +7592,21 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="display:flex; gap:5px; width:100%;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ EMAIL
-                            </button>
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
-                                🟢 WAPP
-                            </button>
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
-                                📨 AMBOS
-                            </button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formato: <b style="color:white;">Email HTML</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Administrador</b></span>
                         </div>
+                        <div style="position:relative; width:100%;">
+                            <div id="credentials-custom-select" onclick="const dd=document.getElementById('credentials-dropdown'); dd.style.display=dd.style.display==='none'?'block':'none';" style="width:100%; background:var(--surface); border:1px solid var(--border); color:#fff; border-radius:10px; padding:10px; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                                <span id="credentials-select-label" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90%;">Seleccionar empleado(s)...</span>
+                                <span>▼</span>
+                            </div>
+                            <div id="credentials-dropdown" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#000000; border:1px solid var(--border); border-radius:10px; max-height:220px; overflow-y:auto; z-index:99; margin-top:5px; padding:5px; box-shadow:0 4px 15px rgba(0,0,0,0.8);">
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" onclick="sendCredentialsEmail()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
+                            📧 ENVIAR CREDENCIALES POR EMAIL
+                        </button>
                     </div>
                 </div>
 
@@ -7603,8 +7623,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML) / Histórico</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('cierre_pago')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(59, 130, 246, 0.12); color:#3b82f6; border:1px solid rgba(59, 130, 246, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR CORREO DE CIERRE
                         </button>
                     </div>
                 </div>
@@ -7622,13 +7646,17 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="downloadPermissionsMatrixExcel()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
                             📊 DESCARGAR MATRIZ EXCEL
                         </button>
                         <div style="text-align:center; margin-top: 4px;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
-                            </button>
+                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="color:#6366f1; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+                                ✉️ Enviar por correo electrónico
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -7646,13 +7674,17 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="downloadRRHHTemplate()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
                             📥 DESCARGAR PLANTILLA EXCEL
                         </button>
                         <div style="text-align:center; margin-top: 4px;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
-                            </button>
+                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="color:#10b981; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+                                ✉️ Enviar por correo electrónico
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -7670,17 +7702,13 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="display:flex; gap:5px; width:100%;">
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ EMAIL
-                            </button>
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
-                                🟢 WAPP
-                            </button>
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
-                                📨 AMBOS
-                            </button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Formulario Web</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
                         </div>
+                        <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
                     </div>
                 </div>
 
@@ -7746,33 +7774,7 @@
                 window._selectedCreds = [];
                 dd.innerHTML = '';
                 document.getElementById('credentials-select-label').textContent = 'Seleccionar empleado(s)...';
-                const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
-                const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
-                users.sort((a, b) => {
-                    const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
-                    const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
-                    if (activeA !== activeB) return activeB - activeA;
-
-                    const valA = (a.eye_id || '').toString().toUpperCase();
-                    const valB = (b.eye_id || '').toString().toUpperCase();
-                    const prioA = eyePriority[valA] || 99;
-                    const prioB = eyePriority[valB] || 99;
-                    if (prioA !== prioB) return prioA - prioB;
-
-                    const getRolePrio = (u) => {
-                        const pAdmin = (u.profile_admin || '').toString().toUpperCase();
-                        const pOpera = (u.profile_opera || '').toString().toUpperCase();
-                        const prioAdmin = rolePriority[pAdmin] || 99;
-                        const prioOpera = rolePriority[pOpera] || 99;
-                        return Math.min(prioAdmin, prioOpera);
-                    };
-
-                    const rPrioA = getRolePrio(a);
-                    const rPrioB = getRolePrio(b);
-                    if (rPrioA !== rPrioB) return rPrioA - rPrioB;
-
-                    return a.name.localeCompare(b.name);
-                });
+                users.sort((a, b) => a.name.localeCompare(b.name));
                 users.forEach(u => {
                     const label = document.createElement('label');
                     label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:8px; cursor:pointer; font-size:0.75rem; color:#fff; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; margin:0;';
@@ -7960,7 +7962,19 @@
     async function renderAdminGeneral(el) {
         el.innerHTML = `
 
-            <!-- HISTORIAL DE EVENTOS CERRADOS ELIMINADO -->
+            <div class="card" style="padding:20px;">
+                <div onclick="window.toggleAdminSessionsSection()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
+                    <h3 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">HISTORIAL DE EVENTOS CERRADOS</h3>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span id="admin-sessions-toggle-text" style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px; opacity:0.8;">MOSTRAR HISTORIAL</span>
+                        <div id="admin-sessions-toggle-arrow" style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); display:grid; place-items:center; font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
+                    </div>
+                </div>
+                
+                <div id="admin-sessions-content" style="display:none; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                    <div id="admin-session-list" class="grid" style="grid-template-columns: 1fr; gap:10px;"></div>
+                </div>
+            </div>
             <div id="admin-detail-container" style="margin-top:30px;"></div>
         `;
         loadAdminSessions();
@@ -8509,7 +8523,7 @@
             res.logs.forEach((l, i) => {
                 if (!l.displayUser) {
                     let match = res.logs.slice(i + 1).find(other => other.device === l.device && other.displayUser);
-                    l.displayUser = match ? match.displayUser : 'ADMIN';
+                    l.displayUser = match ? match.displayUser : 'NELSON CARRILLO';
                 }
             });
 
@@ -8658,7 +8672,6 @@
                                         <option value="PLATA">PLATA</option>
                                         <option value="BRONCE">BRONCE</option>
                                         <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
@@ -8668,7 +8681,6 @@
                                         <option value="DIRECTOR">DIRECTOR</option>
                                         <option value="COORDINADOR">COORDINADOR</option>
                                         <option value="EMPLEADO">EMPLEADO</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
@@ -8679,7 +8691,6 @@
                                         <option value="COORDINADOR">COORDINADOR</option>
                                         <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
                                         <option value="LOGÍSTICA">LOGISTICA</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                             </div>
@@ -8723,7 +8734,7 @@
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-account" placeholder="EJ: 0134..."></div>
                                 <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
-                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-account').disabled = this.checked; if(this.checked) { document.getElementById('staff-account').value = ''; }">
+                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-bank').disabled = this.checked; document.getElementById('staff-account').disabled = this.checked; if(this.checked) { document.getElementById('staff-bank').value = ''; document.getElementById('staff-account').value = ''; }">
                                     <label for="staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
                                 </div>
                             </div>
@@ -8757,7 +8768,7 @@
 
             <!-- 2. INDICADORES Y LISTA -->
             <div style="margin-bottom:40px;">
-                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:10px; margin-bottom:25px;">
+                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:25px;">
                     <!-- Se llena con updateStaffStats() -->
                 </div>
 
@@ -8766,13 +8777,10 @@
                         <label>🔍 BUSCAR POR NOMBRE...</label>
                         <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
                     </div>
-                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="downloadStaffMatrixExcel()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
-                        <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
-                    </div>
+                    <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
                 </div>
 
-                <div id="staff-list-container" style="display:block; overflow-x:auto; overflow-y:auto; max-height:65vh; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
+                <div id="staff-list-container" style="display:block; overflow-x:auto; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
                     <div style="text-align:center; padding:20px;">Cargando matriz de personal...</div>
                 </div>
             </div>
@@ -8790,7 +8798,20 @@
 
 
 
-            <!-- 3. IMPORTACIÓN (ELIMINADA) -->
+            <!-- 3. IMPORTACIÓN (AL FINAL) -->
+            <div class="card" style="margin-bottom:30px; opacity:0.9; background:rgba(255,255,255,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">IMPORTACIÓN / ACTUALIZACIÓN RRHH</h2>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-sm btn-primary" onclick="downloadRRHHTemplate()" style="font-size:0.7rem;">📥 DESCARGAR PLANTILLA RRHH</button>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:10px;">FORMATO EXCEL (.XLSX) REQUERIDO. EL SISTEMA ACTUALIZARÁ POR PIN O CREARÁ NUEVOS.</p>
+                <div style="display:flex; gap:10px;">
+                    <input type="file" id="staff-csv-file" accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="flex:1; padding:10px; background:var(--surface2); border-radius:8px; font-size:0.8rem;">
+                    <button class="btn btn-secondary" onclick="importStaffCSV()" style="padding:0 20px; font-weight:800;">IMPORTAR</button>
+                </div>
+            </div>
 
         `;
         loadStaffList();
@@ -8801,53 +8822,33 @@
     let availableSessions = [];
     let showInactive = false;
     window.showAllStaff = false;
-    window.cardFilter = 'all';
-
-    window.setCardFilter = function(filterValue) {
-        if (window.cardFilter === filterValue) {
-            window.cardFilter = 'all'; // Toggle off if clicked again
-        } else {
-            window.cardFilter = filterValue;
-            window.showAllStaff = true;
-            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
-            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
-        }
-        updateStaffStats(); // To update active styles if needed, though not strictly required
-        renderFilteredStaff();
-    };
 
     function toggleStaffList() {
         window.showAllStaff = !window.showAllStaff;
         const btn = document.querySelector('button[onclick="toggleStaffList()"]');
         if (btn) {
-            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (PRINCIPALES)" : "📊 MOSTRAR MATRIZ COMPLETA";
+            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (MUESTRA)" : "📊 MOSTRAR MATRIZ COMPLETA";
         }
         renderFilteredStaff();
     }
 
     function updateStaffStats() {
-        const adminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN');
-        const nonAdminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() !== 'ADMIN');
-
         const stats = {
-            total: nonAdminStaff.length,
-            active: nonAdminStaff.filter(u => u.is_active !== 0).length,
-            inactive: nonAdminStaff.filter(u => u.is_active === 0).length,
-            adminCount: adminStaff.length,
-            profiles: {}
+            total: fullStaffData.length,
+            active: fullStaffData.filter(u => u.is_active !== 0).length,
+            inactive: fullStaffData.filter(u => u.is_active === 0).length,
+            eyeId: {}
         };
         
-        nonAdminStaff.forEach(u => {
-            const prof = (u.profile_opera || 'SIN ASIGNAR').toUpperCase();
-            stats.profiles[prof] = (stats.profiles[prof] || 0) + 1;
+        fullStaffData.forEach(u => {
+            const id = (u.eye_id || 'S/A').toUpperCase();
+            stats.eyeId[id] = (stats.eyeId[id] || 0) + 1;
         });
 
         const container = document.getElementById('staff-stats-container');
         if (!container) return;
 
-        const baseCardStyle = `flex: 1; min-width:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px 2px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px); min-height:55px; text-align:center; cursor:pointer; transition:0.2s; overflow:hidden;`;
-        
-        const getStyle = (filter) => window.cardFilter === filter ? baseCardStyle + 'box-shadow: 0 0 15px rgba(255,255,255,0.2); transform:scale(1.02);' : baseCardStyle + 'opacity:0.9;';
+        const cardStyle = `background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);`;
 
         const currentUser = JSON.parse(localStorage.getItem('user'));
         const isAuthorizedPinQuery = (currentUser && (
@@ -8859,40 +8860,35 @@
         let pinQueryCardHtml = '';
         if (isAuthorizedPinQuery) {
             pinQueryCardHtml = `
-                <div style="${baseCardStyle} border-top:3px solid var(--warning);" onclick="openPinVerificationModal()">
-                    <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">AUTORIZACIONES</div>
-                    <div style="font-size:0.7rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:2px; height:100%; min-height:20px;">
-                        🔑 PIN
+                <div style="${cardStyle} border-top:3px solid var(--warning); cursor:pointer;" onclick="openPinVerificationModal()">
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">AUTORIZACIONES</div>
+                    <div style="font-size:1.05rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:5px; height:100%; min-height:42px;">
+                        🔑 CONSULTA PIN
                     </div>
                 </div>
             `;
         }
 
         container.innerHTML = `
-            <div style="${getStyle('all')}" onclick="setCardFilter('all')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">TOTAL PERSONAL</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.total}</div>
+            <div style="${cardStyle}">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL PERSONAL</div>
+                <div style="font-size:1.8rem; font-weight:900; color:#fff;">${stats.total}</div>
             </div>
-            <div style="${getStyle('active')} border-top:3px solid var(--success);" onclick="setCardFilter('active')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--success);">${stats.active}</div>
+            <div style="${cardStyle} border-top:3px solid var(--success);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">ACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--success);">${stats.active}</div>
             </div>
-            <div style="${getStyle('inactive')} border-top:3px solid var(--danger);" onclick="setCardFilter('inactive')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">INACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
+            <div style="${cardStyle} border-top:3px solid var(--danger);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">INACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
             </div>
-            <div style="${getStyle('admin')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('admin')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ADMIN</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.adminCount}</div>
-            </div>
-            <div style="${baseCardStyle} border-top:3px solid var(--accent); cursor:default; flex: 2.2; min-width: 160px; padding:4px;">
-                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; margin-bottom: 2px; white-space:nowrap;">PERFIL OPERATIVO</div>
-                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:2px 4px; font-size:0.55rem; font-weight:700; width:100%;">
-                    <span style="color:#FFD700; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,215,0,0.05); ${window.cardFilter==='JEFE DE GRUPO'?'background:rgba(255,215,0,0.2); outline:1px solid #FFD700;':''}" onclick="setCardFilter('JEFE DE GRUPO')">JG: ${stats.profiles['JEFE DE GRUPO'] || 0}</span>
-                    <span style="color:#E5E4E2; cursor:pointer; padding:2px; border-radius:4px; background:rgba(229,228,226,0.05); ${window.cardFilter==='SUPERVISOR'?'background:rgba(229,228,226,0.2); outline:1px solid #E5E4E2;':''}" onclick="setCardFilter('SUPERVISOR')">SUP: ${stats.profiles['SUPERVISOR'] || 0}</span>
-                    <span style="color:#CD7F32; cursor:pointer; padding:2px; border-radius:4px; background:rgba(205,127,50,0.05); ${window.cardFilter==='COORDINADOR'?'background:rgba(205,127,50,0.2); outline:1px solid #CD7F32;':''}" onclick="setCardFilter('COORDINADOR')">COORD: ${stats.profiles['COORDINADOR'] || 0}</span>
-                    <span style="color:#fff; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,255,255,0.05); ${window.cardFilter==='COORDINADOR AUXILIAR'?'background:rgba(255,255,255,0.2); outline:1px solid #fff;':''}" onclick="setCardFilter('COORDINADOR AUXILIAR')">CAUX: ${stats.profiles['COORDINADOR AUXILIAR'] || 0}</span>
-                    <span style="color:#8B5CF6; cursor:pointer; padding:2px; border-radius:4px; background:rgba(139,92,246,0.05); ${window.cardFilter==='LOGÍSTICA'?'background:rgba(139,92,246,0.2); outline:1px solid #8B5CF6;':''}" onclick="setCardFilter('LOGÍSTICA')">LOG: ${stats.profiles['LOGÍSTICA'] || 0}</span>
+            <div style="${cardStyle} border-top:3px solid var(--accent);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">RANGOS EYE ID</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px 10px; margin-top:5px; font-size:0.65rem; font-weight:700;">
+                    <span style="color:#FFD700;">ORO: ${stats.eyeId['ORO'] || 0}</span>
+                    <span style="color:#E5E4E2;">PLATA: ${stats.eyeId['PLATA'] || 0}</span>
+                    <span style="color:#CD7F32;">BRONCE: ${stats.eyeId['BRONCE'] || 0}</span>
+                    <span style="color:#fff;">LOG: ${stats.eyeId['LOGÍSTICA'] || 0}</span>
                 </div>
             </div>
             ${pinQueryCardHtml}
@@ -8930,13 +8926,12 @@
                 { id: 'convocatoria', name: 'Convocatoria' },
                 { id: 'cumpleanos', name: 'Cumpleaños' },
                 { id: 'dossier', name: 'Dossier PDF' },
-                { id: 'excel', name: 'BBDD Eventos Cerrados' },
+                { id: 'excel', name: 'BBDD Excel' },
                 { id: 'nominas', name: 'Nóminas' },
                 { id: 'permisos', name: 'Permisos' },
                 { id: 'plantilla', name: 'Plantilla RRHH' },
                 { id: 'actualizacion_datos', name: 'Actualización Datos' },
-                { id: 'cierre_html', name: 'Cierre Evento' },
-                { id: 'credenciales', name: 'Cred. Acceso' }
+                { id: 'cierre_html', name: 'Cierre Evento' }
             ];
             
             let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;"><th style="padding:10px 5px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:120px;">EMPLEADO</th>';
@@ -8976,8 +8971,7 @@
                             'permisos': 'permisos',
                             'plantilla_rrhh': 'plantilla',
                             'actualizacion_datos': 'actualizacion_datos',
-                            'cierre_html': 'cierre_html',
-                            'credenciales': 'credenciales'
+                            'cierre_html': 'cierre_html'
                         };
                         for (const [dbField, uiField] of Object.entries(fieldMap)) {
                             const checkbox = document.querySelector(`.report-matrix-checkbox[data-user="${sub.user_id}"][data-report="${uiField}"]`);
@@ -9015,85 +9009,42 @@
         const query = document.getElementById('staff-search-input').value.toLowerCase();
         let list = [...fullStaffData]; // Copia para no mutar original
 
+        // Prioridades de EYE_ID
         const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
-        const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
 
+        // 1. Ordenar por EYE_ID (Prioridad) y luego por Nombre
         list.sort((a, b) => {
-            // 1. Activos primero
-            const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
-            const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
-            if (activeA !== activeB) return activeB - activeA;
-
-            // 2. Prioridad EYE_ID
             const valA = (a.eye_id || '').toString().toUpperCase();
             const valB = (b.eye_id || '').toString().toUpperCase();
+            
             const prioA = eyePriority[valA] || 99;
             const prioB = eyePriority[valB] || 99;
+
             if (prioA !== prioB) return prioA - prioB;
-
-            // 3. Prioridad de Rol
-            const getRolePrio = (u) => {
-                const pAdmin = (u.profile_admin || '').toString().toUpperCase();
-                const pOpera = (u.profile_opera || '').toString().toUpperCase();
-                const prioAdmin = rolePriority[pAdmin] || 99;
-                const prioOpera = rolePriority[pOpera] || 99;
-                return Math.min(prioAdmin, prioOpera);
-            };
-
-            const rPrioA = getRolePrio(a);
-            const rPrioB = getRolePrio(b);
-            if (rPrioA !== rPrioB) return rPrioA - rPrioB;
-
-            // 4. Ordenar alfabéticamente
-            return a.name.localeCompare(b.name);
+            
+            // Si tienen la misma prioridad (o no están en la lista), ordenar por nombre
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
         });
-
-        // Filtrar permanentemente el perfil INVITADO_ELIMINADO
-        list = list.filter(u => !u.name.toUpperCase().includes('INVITADO_ELIMINADO'));
 
         // 2. Filtrar por texto
         if (query) {
             list = list.filter(u => u.name.toLowerCase().includes(query) || (u.eye_id && u.eye_id.toLowerCase().includes(query)));
         }
 
-        // 3. Filtrar por tarjeta (cardFilter)
-        if (window.cardFilter && window.cardFilter !== 'all') {
-            if (window.cardFilter === 'active') {
-                list = list.filter(u => u.is_active !== 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'inactive') {
-                list = list.filter(u => u.is_active === 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'admin') {
-                list = list.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN' || (u.profile_admin || '').toUpperCase() === 'ADMIN' || (u.profile_opera || '').toUpperCase() === 'ADMIN');
+        const totalFiltered = list.length;
+        if (!window.showAllStaff && !query) {
+            // Dejar solo el empleado "INVITADO" o "VISITANTE" de muestra cuando la tabla está colapsada
+            const invitado = list.find(u => u.name.toUpperCase().includes('INVITADO') || u.name.toUpperCase().includes('VISITANTE'));
+            if (invitado) {
+                list = [invitado];
             } else {
-                // Perfil operativo (JEFE DE GRUPO, SUPERVISOR, etc.)
-                list = list.filter(u => (u.profile_opera || '').toUpperCase() === window.cardFilter && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+                list = list.slice(0, 1);
             }
         }
-
-        // Ocultar inactivos por defecto en toda la matriz a menos que se seleccione explícitamente la tarjeta de INACTIVOS
-        if (window.cardFilter !== 'inactive') {
-            list = list.filter(u => u.is_active !== 0);
-        }
-
-        const totalFiltered = list.length;
-        if (!window.showAllStaff && !query && window.cardFilter === 'all') {
-            list = list.filter(u => {
-                const eyeId = (u.eye_id || '').toUpperCase();
-                const profileOpera = (u.profile_opera || '').toUpperCase();
-                
-                if (eyeId === 'ORO' || eyeId === 'PLATA' || eyeId === 'BRONCE') {
-                    return true;
-                }
-                
-                if (eyeId === 'LOGÍSTICA' && profileOpera === 'COORDINADOR AUXILIAR') {
-                    return true;
-                }
-                
-                return false;
-            });
-        }
-        
-        window.currentFilteredStaff = list;
 
         const container = document.getElementById('staff-list-container');
         if (!container) return;
@@ -9109,13 +9060,12 @@
             <table style="width:100%; border-collapse: collapse; font-size:0.8rem; text-align:left;">
                 <thead>
                     <tr style="background:var(--surface2); color:var(--muted); border-bottom:1px solid var(--border);">
-                        <th style="padding:12px 4px; position:sticky; top:0; background:var(--surface2); z-index:10; width:40px; text-align:center;">🚘</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">NOMBRE</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">EYE ID</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">PERFIL OPERATIVO</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">ESTADO</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">CÉDULA</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">TELÉFONO</th>
+                        <th style="padding:12px;">NOMBRE</th>
+                        <th style="padding:12px;">EYE ID</th>
+                        <th style="padding:12px;">PERFIL ADMINISTRATIVO</th>
+                        <th style="padding:12px;">ESTADO</th>
+                        <th style="padding:12px;">CÉDULA</th>
+                        <th style="padding:12px;">TELÉFONO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -9128,13 +9078,10 @@
                         
                         return `
                         <tr style="border-bottom:1px solid var(--border); ${u.is_active === 0 ? 'opacity:0.7; background:rgba(239,68,68,0.02);' : ''}">
-                            <td style="padding:4px; text-align:center; vertical-align:middle; width:40px;">
-                                <span onclick="updateStaffField(${u.id}, 'is_chofer', ${u.is_chofer ? 0 : 1})" title="${u.is_chofer ? 'Quitar Chofer' : 'Asignar Chofer'}" style="font-size:1.1rem; cursor:pointer; opacity:${u.is_chofer ? '1' : '0.1'}; transition:0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='${u.is_chofer ? '1' : '0.1'}'; this.style.transform='scale(1)'">🚗</span>
+                            <td style="padding:4px 12px; cursor:pointer;" onclick="openStaffEditModal(${u.id})">
+                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>${u.is_chofer ? ' <span title="Chofer Autorizado" style="font-size:0.9rem; margin-left:5px; cursor:help;">🚗</span>' : ''}
                             </td>
-                            <td style="padding:4px 12px; cursor:pointer; white-space:nowrap;" onclick="openStaffEditModal(${u.id})">
-                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
-                            </td>
-                            <td style="padding:4px 8px; min-width:105px;">
+                            <td style="padding:4px 8px;">
                                 <select class="table-control" style="font-weight:900; color:${color}; font-size:0.72rem; padding:4px 4px;" 
                                     onchange="updateStaffField(${u.id}, 'eye_id', this.value); setTimeout(() => loadStaffList(), 500);">
                                     <option value="" ${u.eye_id === '' ? 'selected' : ''}>---</option>
@@ -9142,26 +9089,23 @@
                                     <option value="PLATA" ${eyeId === 'PLATA' ? 'selected' : ''}>PLATA</option>
                                     <option value="BRONCE" ${eyeId === 'BRONCE' ? 'selected' : ''}>BRONCE</option>
                                     <option value="LOGÍSTICA" ${eyeId === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
-                                    <option value="ADMIN" ${eyeId === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
                                 </select>
                             </td>
-                            <td style="padding:4px 8px; min-width: 125px;">
-                                <select class="table-control" style="font-weight:700; color:var(--muted); font-size:0.7rem; padding:4px 0px;" 
-                                    onchange="updateStaffField(${u.id}, 'profile_opera', this.value)">
-                                    <option value="" ${!u.profile_opera ? 'selected' : ''}>SIN ASIGNAR</option>
-                                    <option value="JEFE DE GRUPO" ${u.profile_opera === 'JEFE DE GRUPO' ? 'selected' : ''}>JEFE DE GRUPO</option>
-                                    <option value="SUPERVISOR" ${u.profile_opera === 'SUPERVISOR' ? 'selected' : ''}>SUPERVISOR</option>
-                                    <option value="COORDINADOR" ${u.profile_opera === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
-                                    <option value="COORDINADOR AUXILIAR" ${u.profile_opera === 'COORDINADOR AUXILIAR' ? 'selected' : ''}>COORDINADOR AUX</option>
-                                    <option value="LOGÍSTICA" ${u.profile_opera === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
-                                    <option value="ADMIN" ${u.profile_opera === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                            <td style="padding:4px 12px;">
+                                <select class="table-control" style="font-weight:700; color:var(--muted);" 
+                                    onchange="updateStaffField(${u.id}, 'profile_admin', this.value)">
+                                    <option value="" ${!u.profile_admin ? 'selected' : ''}>SIN ASIGNAR</option>
+                                    <option value="NO APLICA" ${u.profile_admin === 'NO APLICA' ? 'selected' : ''}>NO APLICA</option>
+                                    <option value="DIRECTOR" ${u.profile_admin === 'DIRECTOR' ? 'selected' : ''}>DIRECTOR</option>
+                                    <option value="COORDINADOR" ${u.profile_admin === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
+                                    <option value="EMPLEADO" ${u.profile_admin === 'EMPLEADO' ? 'selected' : ''}>EMPLEADO</option>
                                 </select>
                             </td>
-                            <td style="padding:4px 12px; width:70px;">
-                                <select class="table-control" style="font-weight:900; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'}; width:100%; text-align:center;" 
+                            <td style="padding:4px 12px;">
+                                <select class="table-control" style="font-weight:900; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'};" 
                                     onchange="updateStaffStatus(${u.id}, this.value === '0')">
-                                    <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACT</option>
-                                    <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INA</option>
+                                    <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACTIVO</option>
+                                    <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INACTIVO</option>
                                 </select>
                             </td>
                             <td style="padding:4px 12px;">
@@ -9172,11 +9116,8 @@
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <input type="text" class="table-control" value="${formatPhone(u.phone)}" style="font-weight:700; flex:1;"
                                         onchange="updateStaffField(${u.id}, 'phone', this.value)">
-                                    <button class="btn btn-sm" onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#25D366; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                         💬
-                                    </button>
-                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                        📩
                                     </button>
                                 </div>
                             </td>
@@ -9187,7 +9128,7 @@
             </table>
             ${!window.showAllStaff && !query ? `
                 <div style="padding:15px; text-align:center; color:var(--muted); font-size:0.75rem; border-top:1px solid var(--border); font-weight:700; background:rgba(255,255,255,0.01);">
-                    💡 MOSTRANDO PERSONAL PRINCIPAL (ORO, PLATA, BRONCE Y COORD. AUXILIARES). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
+                    💡 MOSTRANDO EL EMPLEADO DE MUESTRA (INVITADO / VISITANTE). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
                 </div>
             ` : ''}
         `;
@@ -9223,69 +9164,12 @@
         });
         if (res && res.success) {
             toast('CAMBIO GUARDADO', 'success');
-            if (field === 'eye_id' || field === 'is_chofer') {
+            if (field === 'eye_id') {
                 await loadStaffList();
                 document.getElementById('staff-list-container').style.display = 'block';
             }
         }
     }
-
-    window.downloadStaffMatrixExcel = function() {
-        if (!window.currentFilteredStaff || window.currentFilteredStaff.length === 0) {
-            toast('NO HAY DATOS PARA DESCARGAR', 'warning');
-            return;
-        }
-
-        showLoading('GENERANDO EXCEL...');
-        try {
-            let excelData = [
-                ['CHOFER', 'NOMBRE', 'EYE ID', 'PERFIL OPERATIVO', 'PERFIL ADMIN', 'ESTADO', 'CÉDULA', 'TELÉFONO']
-            ];
-
-            window.currentFilteredStaff.forEach(u => {
-                excelData.push([
-                    u.is_chofer ? 'SÍ' : 'NO',
-                    u.name || '',
-                    u.eye_id || '',
-                    u.profile_opera || '',
-                    u.profile_admin || '',
-                    (u.is_active === 1 || u.is_active === true) ? 'ACTIVO' : 'INACTIVO',
-                    u.cedula || '',
-                    u.phone || ''
-                ]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
-            const colWidths = [
-                { wch: 8 },  // CHOFER
-                { wch: 30 }, // NOMBRE
-                { wch: 15 }, // EYE ID
-                { wch: 25 }, // PERFIL OPERATIVO
-                { wch: 15 }, // PERFIL ADMIN
-                { wch: 10 }, // ESTADO
-                { wch: 15 }, // CÉDULA
-                { wch: 15 }  // TELÉFONO
-            ];
-            ws['!cols'] = colWidths;
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Matriz Personal");
-
-            let fileName = 'matriz_personal';
-            if (window.cardFilter && window.cardFilter !== 'all') fileName += '_' + window.cardFilter.toLowerCase().replace(/ /g, '_');
-            const searchInput = document.getElementById('staff-search-input');
-            if (searchInput && searchInput.value) fileName += '_filtro_' + searchInput.value.toLowerCase().replace(/ /g, '_');
-            fileName += '.xlsx';
-
-            XLSX.writeFile(wb, fileName);
-            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
-        } catch (e) {
-            console.error(e);
-            toast('❌ ERROR AL GENERAR EXCEL', 'error');
-        } finally {
-            hideLoading();
-        }
-    };
 
     // --- MODAL EDICIÓN FICHA ---
     async function openStaffEditModal(id) {
@@ -9309,7 +9193,7 @@
         document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
         document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
         document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
-        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.carnet_url);
 
         // Calcular edad
         const age = calculateAge(u.birth_date);
@@ -9505,8 +9389,8 @@
 
         const carnetFile = document.getElementById('staff-carnet').files[0];
 
-        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || (!pagoMovil && !bankAccount) || !carnetFile) {
-            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !carnetFile || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (INCLUYENDO FECHA NAC., FOTO Y DATOS DE EMERGENCIA)', 'warning');
         }
         
         if (!pin) return toast('ERROR: PIN NO GENERADO', 'danger');
@@ -9620,17 +9504,14 @@
             res.forEach(update => {
                 const d = JSON.parse(update.proposed_data || '{}');
                 html += `
-                    <details style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px;">
-                        <summary style="margin:0; color:white; font-size:1.15rem; font-weight:900; cursor:pointer; outline:none; display:flex; justify-content:space-between; align-items:center;">
-                            <span>${update.user_name}</span>
-                            <span style="font-size:0.7rem; color:var(--accent); background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">VER DETALLES ▼</span>
-                        </summary>
-                        <div style="display:flex; justify-content:space-between; align-items:start; margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1);">
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px; display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
                             <div style="flex:1; padding-right:10px;">
-                                <div style="font-size:0.95rem; color:var(--muted); line-height:1.5;">
+                                <h4 style="margin:0; color:white; font-size:1.15rem;">${update.user_name} (Cédula: ${update.user_cedula || 'N/A'})</h4>
+                                <div style="font-size:0.95rem; color:var(--muted); margin-top:8px; line-height:1.5;">
                                     <b style="color:#fff;">Cédula:</b> ${update.user_cedula || 'N/A'}<br>
                                     <b style="color:#fff;">Teléfono:</b> ${d.phone || 'N/A'}<br>
-                                    <b style="color:#fff;">Banco:</b> ${d.pago_movil ? 'PAGO MÓVIL - ' + (d.bank_name || 'N/A') : (d.bank_name || 'N/A')}<br>
+                                    <b style="color:#fff;">Banco:</b> ${d.pago_movil ? 'PAGO MÓVIL' : (d.bank_name || 'N/A')}<br>
                                     <b style="color:#fff;">Cuenta:</b> ${d.pago_movil ? 'N/A' : (d.bank_account || 'N/A')}<br>
                                     <b style="color:#fff;">Dirección:</b> ${d.address || 'N/A'}<br>
                                     <b style="color:#fff;">Emergencia:</b> ${d.emergency_contact || 'N/A'}<br>
@@ -9644,12 +9525,12 @@
                                     : `<img src="/logo-eye-staff.jpeg" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--border);">`}
                             </div>
                         </div>
-                        <div style="display:flex; gap:5px; margin-top:15px;">
+                        <div style="display:flex; gap:5px; margin-top:auto; padding-top:15px;">
                             <button class="btn btn-sm" onclick="approveUpdate(${update.id})" style="flex:1; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">APROBAR</button>
                             <button class="btn btn-sm" onclick='modifyPendingUpdate(${update.id}, ${JSON.stringify(d).replace(/'/g, "\\'")})' style="flex:1; background:#f59e0b; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">MODIFICAR</button>
                             <button class="btn btn-sm" onclick="rejectUpdate(${update.id})" style="flex:1; background:#ef4444; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">RECHAZAR</button>
                         </div>
-                    </details>
+                    </div>
                 `;
             });
             container.innerHTML = html + '</div>';
@@ -9870,7 +9751,7 @@
                             u.phone || '', 
                             u.address || '', 
                             u.sector || '', 
-                            u.pago_movil ? 'PAGO MÓVIL - ' + (u.bank_name || '') : (u.bank_name || ''),
+                            u.pago_movil ? 'PAGO MÓVIL' : (u.bank_name || ''),
                             u.pago_movil ? 'N/A' : (u.bank_account || ''),
                             u.emergency_contact || '',
                             u.emergency_phone || '',
@@ -10876,20 +10757,130 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     function renderAccessControlPresentation(el) {
         if (!el) return;
         el.innerHTML = `
-            <div id="access-control-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
-                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
-                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS</h1>
+            <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 30px;">
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS DIGITAL 🚧</h1>
                 </div>
-                <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(168, 85, 247, 0.05); border:1px solid #a855f7; padding:35px; border-radius:24px;">
-                    <i style="font-size:3rem; display:block; margin-bottom:15px;">🚧</i>
-                    <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN EVENTO ASIGNADO</h2>
-                    <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
-                        No tiene ningún evento de control de accesos asignado actualmente o planificado.
+
+                <div style="border: 1px solid rgba(168, 85, 247, 0.3); border-top: 3px solid #a855f7; border-radius: 12px; margin-bottom: 40px; background: rgba(168, 85, 247, 0.03); padding: 25px; box-shadow: 0 -10px 20px rgba(168,85,247,0.1); text-align:center;">
+                    <p style="color:var(--muted); font-size:0.95rem; text-align:center; line-height:1.6; max-width:850px; margin:0 auto; text-transform:uppercase;">
+                        Nuestro sistema de control de acceso integral equilibra la <b style="color:var(--text);">seguridad técnica</b>, la <b style="color:var(--text);">fluidez del ingreso</b> y la <b style="color:var(--text);">recolección de datos estratégica</b> para transformar el flujo de personas en métricas accionables.
                     </p>
+                    <button class="btn" style="background:#a855f7; color:white; margin-top:20px; font-weight:900; letter-spacing:1px;" onclick="enterModule('eventos')">VER EVENTOS PROGRAMADOS</button>
                 </div>
-                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom:40px;">
+                    <!-- ARQUITECTURA -->
+                    <div class="stat-card" style="padding: 25px;">
+                        <div class="stat-label" style="color:#a855f7; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">ARQUITECTURA DE ACCESO</div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👥 PARA INVITADOS / VIP</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>QR Dinámico vía Telegram/Email</li>
+                                    <li>Check-in rápido vía Tablets</li>
+                                    <li>Brazaletes con NFC/RFID o Térmicos</li>
+                                </ul>
+                            </div>
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👷 PARA STAFF / PROVEEDORES</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>Acreditación Digital con Docs Legales</li>
+                                    <li>Control de Horarios y Montajes</li>
+                                    <li>Diferenciación de Zonas Restringidas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DASHBOARD -->
+                    <div class="stat-card" style="padding: 25px;">
+                        <div class="stat-label" style="color:#22c55e; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">DASHBOARD EN TIEMPO REAL</div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Show-up Rate</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--%</div>
+                                </div>
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aforo Actual</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--/--</div>
+                                </div>
+                            </div>
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">📊 KPIs ESTRATÉGICOS</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>Curva de Afluencia Horaria</li>
+                                    <li>Índice de Recurrencia (Loyalty)</li>
+                                    <li>Tiempo de Permanencia Promedio</li>
+                                    <li>Alertas VVIP e Incidencias</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="margin-bottom:40px; padding: 25px;">
+                    <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">FLUJO OPERATIVO "LLAVE EN MANO"</div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left; text-transform:uppercase;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--border);">
+                                    <th style="padding:15px 10px; font-weight:900;">ETAPA</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ACCIÓN DIGITAL</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ELEMENTO FÍSICO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">PRE-EVENTO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Registro landing y base de datos</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Envío de QR digital</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">INGRESO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Escaneo y validación ID</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Colocación brazalete</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">DURANTE</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Monitoreo zonas de calor/VIP</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Uso para consumos (NFC)</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding:15px 10px; font-weight:900;">POST-EVENTO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Cierre asistencia y encuestas</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Dashboard final KPIs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:25px; margin-bottom:60px;">
+                    <div class="stat-card" style="border-left:4px solid var(--accent); padding: 25px;">
+                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">HARDWARE Y LOGÍSTICA</div>
+                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                            <li><b style="color:var(--text);">Handhelds Industriales</b> de alto rendimiento</li>
+                            <li><b style="color:var(--text);">Infraestructura Física:</b> Unifilas y tótems</li>
+                            <li><b style="color:var(--text);">Conectividad:</b> Wi-Fi Móvil o Starlink</li>
+                            <li><b style="color:var(--text);">Modo Offline:</b> Escaneo sin internet</li>
+                        </ul>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning); padding: 25px;">
+                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">PERFILES DE STAFF</div>
+                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                            <li>Hostess / Recepción VIP Bilingüe</li>
+                            <li>Validadores de Alto Volumen (Scanners)</li>
+                            <li>Gestores de Acreditación Staff</li>
+                            <li>Supervisores de Flujo (Lead Staff)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-bottom:40px;">
                     <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                        ⬅ VOLVER
+                        ⬅ VOLVER AL HOME
                     </button>
                 </div>
             </div>
@@ -10909,11 +10900,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
                         No tiene ninguna guardia asignada actualmente o planificada.
                     </p>
-                </div>
-                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
-                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                        ⬅ VOLVER
-                    </button>
                 </div>
             </div>
         `;
@@ -11245,7 +11231,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const consolidated = {};
         res.submissions.filter(s => s.status === 'approved').forEach(s => {
             if (!consolidated[s.staff_name]) {
-                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.pago_movil ? 'PAGO MÓVIL - ' + (s.bank_name || 'N/A') : (s.bank_name || 'N/A'), account: s.pago_movil ? 'N/A' : (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
+                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.pago_movil ? 'PAGO MÓVIL' : (s.bank_name || 'N/A'), account: s.pago_movil ? 'N/A' : (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
             }
             const amt = s.amount || 0;
             consolidated[s.staff_name].total += amt;
@@ -11841,7 +11827,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             dateHeader += ` (${sessions.length})`;
         }
         
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         let eventsHtml = sessions.length > 0 ? sessions.map(s => {
             const isClosed = s.status === 'closed' || s.status === 'concluded';
             const isActive = s.status === 'active';
@@ -11849,7 +11834,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
-                    ${currentUser.name === 'ADMIN' ? `<button onclick="deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div style="grid-column:span 2; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
@@ -11927,25 +11911,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
 
         wrapper.appendChild(detailOverlay);
     }
-
-    window.deleteEventFromCalendar = async function(id) {
-        if (!confirm('⚠️ ¿ESTÁ SEGURO DE ELIMINAR ESTE EVENTO POR COMPLETO? Esta acción es irreversible.')) return;
-        showLoading('ELIMINANDO EVENTO...');
-        try {
-            const res = await apiFetch(`/api/sessions/${id}`, { method: 'DELETE' });
-            if (res && res.success) {
-                toast('🗑️ EVENTO ELIMINADO', 'success');
-                document.getElementById('calendar-detail-overlay')?.remove();
-                await checkActiveSession();
-                const view = document.getElementById('current-view');
-                if (view) renderListas(view);
-            } else throw new Error(res.error || 'Error');
-        } catch (e) {
-            toast('❌ ERROR: ' + e.message, 'error');
-        } finally {
-            hideLoading();
-        }
-    };
 
     window.confirmEventFromCalendar = async function(id) {
         if (!confirm('¿DESEA INICIAR LA OPERACIÓN DE ESTE EVENTO AHORA MISMO?')) return;
@@ -12292,6 +12257,33 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             </div>
                         </div>
 
+                        <!-- SECCIÓN EQUIPOS / ACTIVOS -->
+                        <div class="vehicle-card" id="equipos-activos-card" style="padding:12px; border-radius:15px; background:rgba(168, 85, 247, 0.05); border:1px solid rgba(168, 85, 247, 0.2);">
+                            <h3 style="font-size:0.75rem; color:#a855f7; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('equipos-content'); const icon = document.getElementById('equipos-icon'); if(content.style.display==='none'){content.style.display='flex'; icon.textContent='▲';}else{content.style.display='none'; icon.textContent='▼';}">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <input type="checkbox" id="cb-assets" onchange="if(window.toggleMapLayer) window.toggleMapLayer('assets', this.checked)" style="accent-color:#a855f7; width:14px; height:14px; cursor:pointer;" onclick="event.stopPropagation()">
+                                    <span>📻 EQUIPOS Y ACTIVOS</span>
+                                </div>
+                                <div>
+                                    <span style="font-size:0.6rem; background:#a855f7; color:white; padding:2px 8px; border-radius:10px; margin-right:5px;">${locations.assets.length}</span>
+                                    <span id="equipos-icon">▼</span>
+                                </div>
+                            </h3>
+                            <div id="equipos-content" style="display:none; flex-direction:column; gap:6px; max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${locations.assets.map(a => `
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div>
+                                            <div style="font-size:0.75rem; font-weight:900; color:#fff;">${a.name.toUpperCase()}</div>
+                                            <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${a.type} • BATERÍA: <span style="color:var(--success)">85%</span></div>
+                                        </div>
+                                        <button class="btn btn-sm" style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#a855f7;" onclick="centerMapOn(${a.latitude}, ${a.longitude})">VER</button>
+                                    </div>
+                                `).join('') || '<div style="font-size:0.6rem; color:var(--muted); text-align:center;">SIN EQUIPOS REGISTRADOS</div>'}
+                            </div>
+                            <button class="btn" style="width:100%; margin-top:15px; font-size:0.65rem; padding:10px; border-radius:10px; background:rgba(168, 85, 247, 0.2); border:1px solid #a855f7; color:#fff;" onclick="showAddAssetForm()">+ REGISTRAR EQUIPO</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -12328,7 +12320,19 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     window.assetsMarkersLayer.addLayer(marker);
                 });
 
-
+                // Agregar markers de Assets (Violetas)
+                locations.assets.forEach(a => {
+                    const marker = L.circleMarker([a.latitude, a.longitude], {
+                        radius: 8,
+                        fillColor: "#a855f7",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                    marker.bindPopup(`<b>${a.name.toUpperCase()}</b><br>${a.type}`);
+                    window.assetsMarkersLayer.addLayer(marker);
+                });
 
                 /*
                 if (locations.staff.length > 0 || locations.assets.length > 0) {
@@ -12342,6 +12346,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     let targetLayer = null;
                     if (layerName === 'liveLoc') targetLayer = window.liveLocLayer;
                     if (layerName === 'home') targetLayer = window.homeMarkersLayer;
+                    if (layerName === 'assets') targetLayer = window.assetsMarkersLayer;
                     
                     if (targetLayer) {
                         if (show) {
@@ -12355,6 +12360,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     const visibleLayers = [];
                     if (window.leafletMap.hasLayer(window.liveLocLayer)) visibleLayers.push(window.liveLocLayer);
                     if (window.leafletMap.hasLayer(window.homeMarkersLayer)) visibleLayers.push(window.homeMarkersLayer);
+                    if (window.leafletMap.hasLayer(window.assetsMarkersLayer)) visibleLayers.push(window.assetsMarkersLayer);
 
                     let bounds = new L.LatLngBounds();
                     let hasVisible = false;
@@ -12374,18 +12380,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         // Vista por defecto Caracas
                         window.leafletMap.setView([10.4806, -66.9036], 11);
                     }
-                };
-
-                // Helper: activa domicilios cuando ambas condiciones se cumplen
-                // (live-locations resuelto Y domDiv en DOM)
-                window._homeLayerShouldActivate = null; // null=pendiente, true=activar, false=no activar
-                window.tryActivateHomeLayer = function() {
-                    if (window._homeLayerShouldActivate !== true) return;
-                    const cbHome = document.getElementById('cb-home');
-                    if (!cbHome) return; // domDiv aún no está en el DOM
-                    window._homeLayerShouldActivate = false;
-                    cbHome.checked = true;
-                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
                 };
 
                 // ── DOMICILIOS: Geocodificar direcciones del personal ──
@@ -12447,37 +12441,12 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 const cbLive = document.getElementById('cb-liveloc');
                                 if (cbLive) { cbLive.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('liveLoc', true); }
                             } else {
-                                // No hay ubicaciones en vivo -> activar domicilios cuando el panel esté en el DOM
-                                window._homeLayerShouldActivate = true;
-                                window.tryActivateHomeLayer();
-                            }
-                        } else {
-                            // ── CAMBIO DINÁMICO DURANTE POLLING ──
-                            const prev = window._prevLiveCount || 0;
-                            if (prev === 0 && locs.length > 0) {
-                                // Apareció ubicación en vivo: activar live, desactivar domicilios
-                                const cbLive = document.getElementById('cb-liveloc');
+                                // No hay ubicaciones en vivo -> Activar "Equipos y Activos" y "Domicilios"
+                                const cbAssets = document.getElementById('cb-assets');
+                                if (cbAssets) { cbAssets.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('assets', true); }
+                                
                                 const cbHome = document.getElementById('cb-home');
-                                if (cbHome && cbHome.checked) {
-                                    cbHome.checked = false;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('home', false);
-                                }
-                                if (cbLive && !cbLive.checked) {
-                                    cbLive.checked = true;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', true);
-                                }
-                            } else if (prev > 0 && locs.length === 0) {
-                                // Desapareció la última ubicación en vivo: desactivar live, activar domicilios
-                                const cbLive = document.getElementById('cb-liveloc');
-                                const cbHome = document.getElementById('cb-home');
-                                if (cbLive && cbLive.checked) {
-                                    cbLive.checked = false;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', false);
-                                }
-                                if (cbHome && !cbHome.checked) {
-                                    cbHome.checked = true;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
-                                }
+                                if (cbHome) { cbHome.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('home', true); }
                             }
                         }
 
@@ -12832,9 +12801,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         }
                         sidePanel.appendChild(domDiv);
 
-                        // Intentar activar domicilios si live-locations ya resolvió sin vivos
-                        window.tryActivateHomeLayer();
-
                         // Inicializar el filtro de búsqueda interactivo en tiempo real
                         const searchInput = domDiv.querySelector('#staff-home-search');
                         searchInput.addEventListener('input', (e) => {
@@ -12901,20 +12867,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         }
                     }
 
-                    // Ajustar vista del mapa a los domicilios si no hay ubicaciones en vivo
+                    // Ajustar los límites del mapa desactivado para preservar la vista inicial
                     setTimeout(() => {
-                        const hasLiveLoc = window._prevLiveCount && window._prevLiveCount > 0;
-                        if (!hasLiveLoc && window.homeMarkersLayer) {
-                            const bounds = new L.LatLngBounds();
-                            let hasMarkers = false;
-                            window.homeMarkersLayer.eachLayer(m => {
-                                if (m.getLatLng) { bounds.extend(m.getLatLng()); hasMarkers = true; }
-                            });
-                            if (hasMarkers && window.leafletMap) {
-                                window.leafletMap.flyToBounds(bounds.pad(0.15), { duration: 1.2 });
-                            }
-                        }
-                    }, 800);
+                        // Código de fitbounds de domicilios eliminado a petición del usuario
+                    }, 1200);
 
                     // Ocultar o actualizar indicador si todo está en caché
                     setTimeout(() => {
@@ -12987,14 +12943,14 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         document.getElementById('edit-staff-bank').value = u.bank_name || '';
         document.getElementById('edit-staff-account').value = u.bank_account || '';
         document.getElementById('edit-staff-pago-movil').checked = !!u.pago_movil;
-        // document.getElementById('edit-staff-bank').disabled is no longer manipulated based on pago_movil
+        document.getElementById('edit-staff-bank').disabled = !!u.pago_movil;
         document.getElementById('edit-staff-account').disabled = !!u.pago_movil;
         document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
         document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
         document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
 
         document.getElementById('edit-staff-chofer').checked = !!u.is_chofer;
-        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.carnet_url);
 
         // Calcular edad
         const age = calculateAge(u.birth_date);
@@ -13042,8 +12998,8 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const ePhone = document.getElementById('edit-staff-e-phone').value.trim();
         const allergies = document.getElementById('edit-staff-allergies').value.trim();
 
-        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || (!pagoMovil && !bankAccount)) {
-            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (EXCEPTO FOTO)', 'warning');
         }
 
         const updates = {
@@ -13198,32 +13154,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
         toast('✅ Abriendo Telegram con ' + name, 'success');
-    };
-
-    window.openWhatsappDirectMessage = function(phone, userName) {
-        if (!phone) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin teléfono',
-                    text: `⚠️ ${userName} no tiene un número de teléfono registrado.`
-                });
-            } else {
-                alert(`⚠️ ${userName} no tiene un número de teléfono registrado.`);
-            }
-            return;
-        }
-        let cleanPhone = phone.replace(/[^\d+]/g, '');
-        if (cleanPhone.startsWith('+')) {
-            cleanPhone = cleanPhone.substring(1);
-        } else if (cleanPhone.startsWith('0')) {
-            cleanPhone = '58' + cleanPhone.substring(1);
-        } else if (cleanPhone.length <= 10) {
-            cleanPhone = '58' + cleanPhone;
-        }
-        
-        const url = `whatsapp://send?phone=${cleanPhone}`;
-        window.location.href = url;
     };
 
     window.openTelegramDirectMessage = async function(userId, userName, hasTelegram) {
@@ -13508,7 +13438,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 <option value="PLATA">PLATA</option>
                                 <option value="BRONCE">BRONCE</option>
                                 <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
                         <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
@@ -13517,7 +13446,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 <option value="DIRECTOR">DIRECTOR</option>
                                 <option value="COORDINADOR">COORDINADOR</option>
                                 <option value="EMPLEADO">EMPLEADO</option>
-                                <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
                     </div>
@@ -13530,7 +13458,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 <option value="COORDINADOR">COORDINADOR</option>
                                 <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
                                 <option value="LOGÍSTICA">LOGISTICA</option>
-                                <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
                         <div class="field" style="margin-bottom:0;"><label>ESTADO <span style="color:var(--danger);">*</span></label>
@@ -13591,15 +13518,15 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         </div>
                         <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-account"></div>
                         <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
-                            <input type="checkbox" id="edit-staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('edit-staff-account').disabled = this.checked; if(this.checked) { document.getElementById('edit-staff-account').value = ''; }">
+                            <input type="checkbox" id="edit-staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('edit-staff-bank').disabled = this.checked; document.getElementById('edit-staff-account').disabled = this.checked; if(this.checked) { document.getElementById('edit-staff-bank').value = ''; document.getElementById('edit-staff-account').value = ''; }">
                             <label for="edit-staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
                         </div>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>FAMILIAR</label><input type="text" id="edit-staff-e-contact" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR</label><input type="text" id="edit-staff-e-phone" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>ALERGIAS</label><input type="text" id="edit-staff-allergies" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-e-contact" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-e-phone" style="font-size:0.75rem;"></div>
+                        <div class="field" style="margin-bottom:0;"><label>ALERGIAS <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-allergies" style="font-size:0.75rem;"></div>
                     </div>
 
 
@@ -14024,15 +13951,14 @@ window.renderHistorialPresupuestos = async function() {
         if(tableData.length === 0) return '';
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : null;
-        const isNelson = user && user.name && user.name.toUpperCase() === 'ADMIN';
+        const isNelson = user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO';
         const gridCols = isNelson 
             ? '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px 70px'
             : '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px';
-        const minW = isNelson ? '780px' : '700px';
             
         let tHtml = `<h4 style="color:${titleColor}; margin-top:25px; margin-bottom:10px; font-weight:900; padding-left:5px; font-size: 0.9rem; text-transform: uppercase;">${title} (${tableData.length})</h4>`;
         tHtml += `<div style="border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.1); margin-bottom:20px; overflow-x:auto;">
-            <div style="display:grid; grid-template-columns: ${gridCols}; gap:6px; background:var(--surface2); padding:10px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.6rem; letter-spacing:0px; min-width:${minW};">
+            <div style="display:grid; grid-template-columns: ${gridCols}; gap:6px; background:var(--surface2); padding:10px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.6rem; letter-spacing:0px; width:100%;">
                 <div>ID</div>
                 <div>CONTACTO</div>
                 <div>EMPRESA</div>
@@ -14044,8 +13970,7 @@ window.renderHistorialPresupuestos = async function() {
                 ${isNelson ? '<div></div>' : ''}
             </div>`;
         
-        tHtml += `<div style="height: 250px; overflow-y: auto; overflow-x: auto;">
-        <div style="min-width:${minW};">`;
+        tHtml += `<div style="height: 250px; overflow-y: auto; overflow-x: hidden;">`;
         
         tHtml += tableData.map((d, index) => {
             const status = d.estatus || 'GENERADO';
@@ -14093,7 +14018,7 @@ window.renderHistorialPresupuestos = async function() {
             }
             return htmlRow;
         }).join('');
-        tHtml += `</div></div></div>`;
+        tHtml += `</div></div>`;
         return tHtml;
     };
 
@@ -15038,6 +14963,10 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                                 <div style="margin-top:10px;"><img src="${user.photo_url ? '/api/photos/' + user.photo_url : 'logo-eye-staff.jpeg'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>
                             </div>
 
+                            <div>
+                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FECHA DE NACIMIENTO</label>
+                                <input type="date" id="upd-birth" value="${formatDate(user.birth_date)}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
+                            </div>
 
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO</label>
@@ -15136,7 +15065,7 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                 btn.innerText = 'PROCESANDO...';
 
                 const payload = {
-
+                    birth_date: document.getElementById('upd-birth').value,
                     phone: document.getElementById('upd-phone').value,
                     address: document.getElementById('upd-address').value,
                     sector: document.getElementById('upd-sector').value,

@@ -2629,7 +2629,7 @@
     function checkVipAccess(user) {
         if (!user || !user.name) return false;
         const allowedVipNames = [
-            "ADMIN",
+            "NELSON CARRILLO",
             "JOSÉ GREGORIO RAMOS",
             "NICOLÁS BETANCOURT",
             "BILLY GONZÁLEZ",
@@ -4502,8 +4502,7 @@
                                                                     SUPERVISOR
                                                                 </span>
                                                             ` : ''}
-                                                            <span onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#25D366;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
-                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#28A8E9; margin-left:6px;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">📩</span>
+                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="cursor:pointer; font-size:0.75rem; opacity:0.8; transition:0.2s; color:#28A8E9;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
                                                         </div>
                                                     </div>
                                                     <div style="text-align:right; flex-shrink:0;">
@@ -6881,7 +6880,7 @@
             let reports = data?.reports || [];
 
             // Filtro local exclusivo para NELSON CARRILLO
-            if (user && user.name && user.name.toUpperCase() === 'ADMIN') {
+            if (user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO') {
                 const hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
                 reports = reports.filter(r => !hiddenIds.includes(r.id));
             }
@@ -6958,7 +6957,7 @@
                                     <span>🗑️</span> BORRAR
                                 </button>
                                 ` : ''}
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                ${user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO' ? `
                                 <button onclick="hideEventReportNelson(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
                                     <span>👀</span> OCULTAR
                                 </button>
@@ -7095,7 +7094,7 @@
                                 <button class="btn btn-secondary btn-sm" onclick="toggleClientHistory(${idx})" style="padding:6px 12px; border-radius:8px; font-size:0.7rem;">
                                     DETALLE EVENTOS ↓
                                 </button>
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                ${user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO' ? `
                                 <button class="btn btn-danger btn-sm" onclick="deleteClient('${encodeURIComponent(c.owner_name)}')" style="padding:6px 12px; border-radius:8px; font-size:0.7rem; margin-left:5px; background:var(--accent2); color:white; border:none; cursor:pointer;">
                                     🗑️ BORRAR
                                 </button>
@@ -8509,7 +8508,7 @@
             res.logs.forEach((l, i) => {
                 if (!l.displayUser) {
                     let match = res.logs.slice(i + 1).find(other => other.device === l.device && other.displayUser);
-                    l.displayUser = match ? match.displayUser : 'ADMIN';
+                    l.displayUser = match ? match.displayUser : 'NELSON CARRILLO';
                 }
             });
 
@@ -8757,7 +8756,7 @@
 
             <!-- 2. INDICADORES Y LISTA -->
             <div style="margin-bottom:40px;">
-                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:10px; margin-bottom:25px;">
+                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:25px;">
                     <!-- Se llena con updateStaffStats() -->
                 </div>
 
@@ -8766,10 +8765,7 @@
                         <label>🔍 BUSCAR POR NOMBRE...</label>
                         <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
                     </div>
-                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="downloadStaffMatrixExcel()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
-                        <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
-                    </div>
+                    <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
                 </div>
 
                 <div id="staff-list-container" style="display:block; overflow-x:auto; overflow-y:auto; max-height:65vh; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
@@ -8801,53 +8797,33 @@
     let availableSessions = [];
     let showInactive = false;
     window.showAllStaff = false;
-    window.cardFilter = 'all';
-
-    window.setCardFilter = function(filterValue) {
-        if (window.cardFilter === filterValue) {
-            window.cardFilter = 'all'; // Toggle off if clicked again
-        } else {
-            window.cardFilter = filterValue;
-            window.showAllStaff = true;
-            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
-            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
-        }
-        updateStaffStats(); // To update active styles if needed, though not strictly required
-        renderFilteredStaff();
-    };
 
     function toggleStaffList() {
         window.showAllStaff = !window.showAllStaff;
         const btn = document.querySelector('button[onclick="toggleStaffList()"]');
         if (btn) {
-            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (PRINCIPALES)" : "📊 MOSTRAR MATRIZ COMPLETA";
+            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (MUESTRA)" : "📊 MOSTRAR MATRIZ COMPLETA";
         }
         renderFilteredStaff();
     }
 
     function updateStaffStats() {
-        const adminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN');
-        const nonAdminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() !== 'ADMIN');
-
         const stats = {
-            total: nonAdminStaff.length,
-            active: nonAdminStaff.filter(u => u.is_active !== 0).length,
-            inactive: nonAdminStaff.filter(u => u.is_active === 0).length,
-            adminCount: adminStaff.length,
-            profiles: {}
+            total: fullStaffData.length,
+            active: fullStaffData.filter(u => u.is_active !== 0).length,
+            inactive: fullStaffData.filter(u => u.is_active === 0).length,
+            eyeId: {}
         };
         
-        nonAdminStaff.forEach(u => {
-            const prof = (u.profile_opera || 'SIN ASIGNAR').toUpperCase();
-            stats.profiles[prof] = (stats.profiles[prof] || 0) + 1;
+        fullStaffData.forEach(u => {
+            const id = (u.eye_id || 'S/A').toUpperCase();
+            stats.eyeId[id] = (stats.eyeId[id] || 0) + 1;
         });
 
         const container = document.getElementById('staff-stats-container');
         if (!container) return;
 
-        const baseCardStyle = `flex: 1; min-width:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px 2px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px); min-height:55px; text-align:center; cursor:pointer; transition:0.2s; overflow:hidden;`;
-        
-        const getStyle = (filter) => window.cardFilter === filter ? baseCardStyle + 'box-shadow: 0 0 15px rgba(255,255,255,0.2); transform:scale(1.02);' : baseCardStyle + 'opacity:0.9;';
+        const cardStyle = `background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);`;
 
         const currentUser = JSON.parse(localStorage.getItem('user'));
         const isAuthorizedPinQuery = (currentUser && (
@@ -8859,40 +8835,35 @@
         let pinQueryCardHtml = '';
         if (isAuthorizedPinQuery) {
             pinQueryCardHtml = `
-                <div style="${baseCardStyle} border-top:3px solid var(--warning);" onclick="openPinVerificationModal()">
-                    <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">AUTORIZACIONES</div>
-                    <div style="font-size:0.7rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:2px; height:100%; min-height:20px;">
-                        🔑 PIN
+                <div style="${cardStyle} border-top:3px solid var(--warning); cursor:pointer;" onclick="openPinVerificationModal()">
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">AUTORIZACIONES</div>
+                    <div style="font-size:1.05rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:5px; height:100%; min-height:42px;">
+                        🔑 CONSULTA PIN
                     </div>
                 </div>
             `;
         }
 
         container.innerHTML = `
-            <div style="${getStyle('all')}" onclick="setCardFilter('all')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">TOTAL PERSONAL</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.total}</div>
+            <div style="${cardStyle}">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL PERSONAL</div>
+                <div style="font-size:1.8rem; font-weight:900; color:#fff;">${stats.total}</div>
             </div>
-            <div style="${getStyle('active')} border-top:3px solid var(--success);" onclick="setCardFilter('active')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--success);">${stats.active}</div>
+            <div style="${cardStyle} border-top:3px solid var(--success);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">ACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--success);">${stats.active}</div>
             </div>
-            <div style="${getStyle('inactive')} border-top:3px solid var(--danger);" onclick="setCardFilter('inactive')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">INACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
+            <div style="${cardStyle} border-top:3px solid var(--danger);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">INACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
             </div>
-            <div style="${getStyle('admin')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('admin')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ADMIN</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.adminCount}</div>
-            </div>
-            <div style="${baseCardStyle} border-top:3px solid var(--accent); cursor:default; flex: 2.2; min-width: 160px; padding:4px;">
-                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; margin-bottom: 2px; white-space:nowrap;">PERFIL OPERATIVO</div>
-                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:2px 4px; font-size:0.55rem; font-weight:700; width:100%;">
-                    <span style="color:#FFD700; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,215,0,0.05); ${window.cardFilter==='JEFE DE GRUPO'?'background:rgba(255,215,0,0.2); outline:1px solid #FFD700;':''}" onclick="setCardFilter('JEFE DE GRUPO')">JG: ${stats.profiles['JEFE DE GRUPO'] || 0}</span>
-                    <span style="color:#E5E4E2; cursor:pointer; padding:2px; border-radius:4px; background:rgba(229,228,226,0.05); ${window.cardFilter==='SUPERVISOR'?'background:rgba(229,228,226,0.2); outline:1px solid #E5E4E2;':''}" onclick="setCardFilter('SUPERVISOR')">SUP: ${stats.profiles['SUPERVISOR'] || 0}</span>
-                    <span style="color:#CD7F32; cursor:pointer; padding:2px; border-radius:4px; background:rgba(205,127,50,0.05); ${window.cardFilter==='COORDINADOR'?'background:rgba(205,127,50,0.2); outline:1px solid #CD7F32;':''}" onclick="setCardFilter('COORDINADOR')">COORD: ${stats.profiles['COORDINADOR'] || 0}</span>
-                    <span style="color:#fff; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,255,255,0.05); ${window.cardFilter==='COORDINADOR AUXILIAR'?'background:rgba(255,255,255,0.2); outline:1px solid #fff;':''}" onclick="setCardFilter('COORDINADOR AUXILIAR')">CAUX: ${stats.profiles['COORDINADOR AUXILIAR'] || 0}</span>
-                    <span style="color:#8B5CF6; cursor:pointer; padding:2px; border-radius:4px; background:rgba(139,92,246,0.05); ${window.cardFilter==='LOGÍSTICA'?'background:rgba(139,92,246,0.2); outline:1px solid #8B5CF6;':''}" onclick="setCardFilter('LOGÍSTICA')">LOG: ${stats.profiles['LOGÍSTICA'] || 0}</span>
+            <div style="${cardStyle} border-top:3px solid var(--accent);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">RANGOS EYE ID</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px 10px; margin-top:5px; font-size:0.65rem; font-weight:700;">
+                    <span style="color:#FFD700;">ORO: ${stats.eyeId['ORO'] || 0}</span>
+                    <span style="color:#E5E4E2;">PLATA: ${stats.eyeId['PLATA'] || 0}</span>
+                    <span style="color:#CD7F32;">BRONCE: ${stats.eyeId['BRONCE'] || 0}</span>
+                    <span style="color:#fff;">LOG: ${stats.eyeId['LOGÍSTICA'] || 0}</span>
                 </div>
             </div>
             ${pinQueryCardHtml}
@@ -9056,44 +9027,16 @@
             list = list.filter(u => u.name.toLowerCase().includes(query) || (u.eye_id && u.eye_id.toLowerCase().includes(query)));
         }
 
-        // 3. Filtrar por tarjeta (cardFilter)
-        if (window.cardFilter && window.cardFilter !== 'all') {
-            if (window.cardFilter === 'active') {
-                list = list.filter(u => u.is_active !== 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'inactive') {
-                list = list.filter(u => u.is_active === 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'admin') {
-                list = list.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN' || (u.profile_admin || '').toUpperCase() === 'ADMIN' || (u.profile_opera || '').toUpperCase() === 'ADMIN');
+        const totalFiltered = list.length;
+        if (!window.showAllStaff && !query) {
+            // Dejar a DANIELA SESCUN de muestra cuando la tabla está colapsada
+            const nelson = list.find(u => u.name.toUpperCase().includes('DANIELA SESCUN'));
+            if (nelson) {
+                list = [nelson];
             } else {
-                // Perfil operativo (JEFE DE GRUPO, SUPERVISOR, etc.)
-                list = list.filter(u => (u.profile_opera || '').toUpperCase() === window.cardFilter && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+                list = list.slice(0, 1);
             }
         }
-
-        // Ocultar inactivos por defecto en toda la matriz a menos que se seleccione explícitamente la tarjeta de INACTIVOS
-        if (window.cardFilter !== 'inactive') {
-            list = list.filter(u => u.is_active !== 0);
-        }
-
-        const totalFiltered = list.length;
-        if (!window.showAllStaff && !query && window.cardFilter === 'all') {
-            list = list.filter(u => {
-                const eyeId = (u.eye_id || '').toUpperCase();
-                const profileOpera = (u.profile_opera || '').toUpperCase();
-                
-                if (eyeId === 'ORO' || eyeId === 'PLATA' || eyeId === 'BRONCE') {
-                    return true;
-                }
-                
-                if (eyeId === 'LOGÍSTICA' && profileOpera === 'COORDINADOR AUXILIAR') {
-                    return true;
-                }
-                
-                return false;
-            });
-        }
-        
-        window.currentFilteredStaff = list;
 
         const container = document.getElementById('staff-list-container');
         if (!container) return;
@@ -9109,7 +9052,6 @@
             <table style="width:100%; border-collapse: collapse; font-size:0.8rem; text-align:left;">
                 <thead>
                     <tr style="background:var(--surface2); color:var(--muted); border-bottom:1px solid var(--border);">
-                        <th style="padding:12px 4px; position:sticky; top:0; background:var(--surface2); z-index:10; width:40px; text-align:center;">🚘</th>
                         <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">NOMBRE</th>
                         <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">EYE ID</th>
                         <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">PERFIL OPERATIVO</th>
@@ -9128,11 +9070,8 @@
                         
                         return `
                         <tr style="border-bottom:1px solid var(--border); ${u.is_active === 0 ? 'opacity:0.7; background:rgba(239,68,68,0.02);' : ''}">
-                            <td style="padding:4px; text-align:center; vertical-align:middle; width:40px;">
-                                <span onclick="updateStaffField(${u.id}, 'is_chofer', ${u.is_chofer ? 0 : 1})" title="${u.is_chofer ? 'Quitar Chofer' : 'Asignar Chofer'}" style="font-size:1.1rem; cursor:pointer; opacity:${u.is_chofer ? '1' : '0.1'}; transition:0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='${u.is_chofer ? '1' : '0.1'}'; this.style.transform='scale(1)'">🚗</span>
-                            </td>
                             <td style="padding:4px 12px; cursor:pointer; white-space:nowrap;" onclick="openStaffEditModal(${u.id})">
-                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
+                                ${u.is_chofer ? '<span title="Chofer Autorizado" style="font-size:0.9rem; margin-right:5px; cursor:help;">🚗</span>' : ''}<span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
                             </td>
                             <td style="padding:4px 8px; min-width:105px;">
                                 <select class="table-control" style="font-weight:900; color:${color}; font-size:0.72rem; padding:4px 4px;" 
@@ -9172,11 +9111,8 @@
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <input type="text" class="table-control" value="${formatPhone(u.phone)}" style="font-weight:700; flex:1;"
                                         onchange="updateStaffField(${u.id}, 'phone', this.value)">
-                                    <button class="btn btn-sm" onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#25D366; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                         💬
-                                    </button>
-                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                        📩
                                     </button>
                                 </div>
                             </td>
@@ -9187,7 +9123,7 @@
             </table>
             ${!window.showAllStaff && !query ? `
                 <div style="padding:15px; text-align:center; color:var(--muted); font-size:0.75rem; border-top:1px solid var(--border); font-weight:700; background:rgba(255,255,255,0.01);">
-                    💡 MOSTRANDO PERSONAL PRINCIPAL (ORO, PLATA, BRONCE Y COORD. AUXILIARES). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
+                    💡 MOSTRANDO EL EMPLEADO DE MUESTRA (INVITADO / VISITANTE). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
                 </div>
             ` : ''}
         `;
@@ -9223,69 +9159,12 @@
         });
         if (res && res.success) {
             toast('CAMBIO GUARDADO', 'success');
-            if (field === 'eye_id' || field === 'is_chofer') {
+            if (field === 'eye_id') {
                 await loadStaffList();
                 document.getElementById('staff-list-container').style.display = 'block';
             }
         }
     }
-
-    window.downloadStaffMatrixExcel = function() {
-        if (!window.currentFilteredStaff || window.currentFilteredStaff.length === 0) {
-            toast('NO HAY DATOS PARA DESCARGAR', 'warning');
-            return;
-        }
-
-        showLoading('GENERANDO EXCEL...');
-        try {
-            let excelData = [
-                ['CHOFER', 'NOMBRE', 'EYE ID', 'PERFIL OPERATIVO', 'PERFIL ADMIN', 'ESTADO', 'CÉDULA', 'TELÉFONO']
-            ];
-
-            window.currentFilteredStaff.forEach(u => {
-                excelData.push([
-                    u.is_chofer ? 'SÍ' : 'NO',
-                    u.name || '',
-                    u.eye_id || '',
-                    u.profile_opera || '',
-                    u.profile_admin || '',
-                    (u.is_active === 1 || u.is_active === true) ? 'ACTIVO' : 'INACTIVO',
-                    u.cedula || '',
-                    u.phone || ''
-                ]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
-            const colWidths = [
-                { wch: 8 },  // CHOFER
-                { wch: 30 }, // NOMBRE
-                { wch: 15 }, // EYE ID
-                { wch: 25 }, // PERFIL OPERATIVO
-                { wch: 15 }, // PERFIL ADMIN
-                { wch: 10 }, // ESTADO
-                { wch: 15 }, // CÉDULA
-                { wch: 15 }  // TELÉFONO
-            ];
-            ws['!cols'] = colWidths;
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Matriz Personal");
-
-            let fileName = 'matriz_personal';
-            if (window.cardFilter && window.cardFilter !== 'all') fileName += '_' + window.cardFilter.toLowerCase().replace(/ /g, '_');
-            const searchInput = document.getElementById('staff-search-input');
-            if (searchInput && searchInput.value) fileName += '_filtro_' + searchInput.value.toLowerCase().replace(/ /g, '_');
-            fileName += '.xlsx';
-
-            XLSX.writeFile(wb, fileName);
-            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
-        } catch (e) {
-            console.error(e);
-            toast('❌ ERROR AL GENERAR EXCEL', 'error');
-        } finally {
-            hideLoading();
-        }
-    };
 
     // --- MODAL EDICIÓN FICHA ---
     async function openStaffEditModal(id) {
@@ -11849,7 +11728,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
-                    ${currentUser.name === 'ADMIN' ? `<button onclick="deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
+                    ${currentUser.name === 'NELSON CARRILLO' ? `<button onclick="deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div style="grid-column:span 2; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
@@ -13200,32 +13079,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         toast('✅ Abriendo Telegram con ' + name, 'success');
     };
 
-    window.openWhatsappDirectMessage = function(phone, userName) {
-        if (!phone) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin teléfono',
-                    text: `⚠️ ${userName} no tiene un número de teléfono registrado.`
-                });
-            } else {
-                alert(`⚠️ ${userName} no tiene un número de teléfono registrado.`);
-            }
-            return;
-        }
-        let cleanPhone = phone.replace(/[^\d+]/g, '');
-        if (cleanPhone.startsWith('+')) {
-            cleanPhone = cleanPhone.substring(1);
-        } else if (cleanPhone.startsWith('0')) {
-            cleanPhone = '58' + cleanPhone.substring(1);
-        } else if (cleanPhone.length <= 10) {
-            cleanPhone = '58' + cleanPhone;
-        }
-        
-        const url = `whatsapp://send?phone=${cleanPhone}`;
-        window.location.href = url;
-    };
-
     window.openTelegramDirectMessage = async function(userId, userName, hasTelegram) {
         if (!hasTelegram || hasTelegram === 'false' || hasTelegram === 'null' || hasTelegram === '0') {
             Swal.fire({
@@ -14024,7 +13877,7 @@ window.renderHistorialPresupuestos = async function() {
         if(tableData.length === 0) return '';
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : null;
-        const isNelson = user && user.name && user.name.toUpperCase() === 'ADMIN';
+        const isNelson = user && user.name && user.name.toUpperCase() === 'NELSON CARRILLO';
         const gridCols = isNelson 
             ? '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px 70px'
             : '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px';

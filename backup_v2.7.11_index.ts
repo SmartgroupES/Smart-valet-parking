@@ -1686,7 +1686,7 @@ app.post('/api/reports/test-request', async (c) => {
     } else if (type === 'permissions-matrix') {
       const allUsers = await env.DB.prepare("SELECT id, name, role FROM users WHERE is_active = 1 ORDER BY name ASC").all();
       const users = (allUsers.results || []) as any[];
-      const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+      const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
       // Obtener los permisos guardados
       const permRowsRes = await env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
@@ -2158,7 +2158,7 @@ app.post('/api/sessions/close', async (c) => {
 
   let dbUser: any = null;
   if (currentUserId === 1) {
-    dbUser = { name: 'ADMIN', pin_hash: 'corifede1416' };
+    dbUser = { name: 'NELSON CARRILLO', pin_hash: 'corifede1416' };
   } else {
     dbUser = await c.env.DB.prepare('SELECT pin_hash, name FROM users WHERE id = ?').bind(currentUserId).first<any>();
   }
@@ -4198,7 +4198,7 @@ app.post('/api/staff/login', async (c) => {
         .run();
 
       // Verificación de concurrencia de sesiones
-      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "ADMIN", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
+      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "NELSON CARRILLO", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
       const cleanNameCheck = stripAccents(dbUser.name || '').toUpperCase();
       const canHaveMultipleSessions = allowedMultipleSessions.includes(cleanNameCheck);
 
@@ -4220,7 +4220,7 @@ app.post('/api/staff/login', async (c) => {
       if (!permRow) {
         const isSuperadmin = finalRole === 'director';
         const isSupervisor = finalRole === 'supervisor';
-        const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+        const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
         const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
         permissions = {
           valet_ve: 1,
@@ -4256,7 +4256,7 @@ app.post('/api/staff/login', async (c) => {
 
     // 3. Verificación de Emergencia (Bypass con clave maestra — credenciales EXACTAS)
     const isEmergencyPass = lowerPass === 'corifede1416';
-    const isDirectorName = inputName === 'admin' || inputName === 'nicolas' ||
+    const isDirectorName = inputName === 'nelson carrillo' || inputName === 'nicolas' ||
       inputName === 'billy' || inputName === 'ramos' ||
       inputName === 'admin';
 
@@ -4641,7 +4641,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
   // Fetch current administrator record
   let adminUser: any = null;
   if (current.id === 1) {
-    adminUser = { name: 'ADMIN', pin_hash: 'corifede1416' };
+    adminUser = { name: 'NELSON CARRILLO', pin_hash: 'corifede1416' };
   } else {
     adminUser = await c.env.DB.prepare('SELECT name, pin_hash FROM users WHERE id = ?').bind(current.id).first();
   }
@@ -5051,7 +5051,7 @@ app.get('/api/my-permissions', async (c) => {
   if (!permRow) {
     const isSuperadmin = user.role === 'director';
     const isSupervisor = user.role === 'supervisor';
-    const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+    const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
     const isVIP = allowedCfoNames.some(n => (user.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
     permissions = {
       valet_ve: 1,
@@ -5090,7 +5090,7 @@ app.get('/api/admin/user-permissions', async (c) => {
   const permRows = permRowsRes.results || [];
   const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
 
-  const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+  const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
   const permissions = staff.map((u: any) => {
     const permRow = permMap.get(u.id);
@@ -5176,7 +5176,7 @@ app.post('/api/admin/user-permissions', async (c) => {
 
   const isSuperadmin = targetUser.role === 'director';
   const isSupervisor = targetUser.role === 'supervisor';
-  const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
+  const allowedCfoNames = ["NELSON CARRILLO", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
   const isVIP = allowedCfoNames.some(n => (targetUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
 
   const d_valet_ve = 1;
@@ -5244,7 +5244,6 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         bbdd_excel: subRow.bbdd_excel,
         nominas: subRow.nominas,
         permisos: subRow.permisos,
-        plantilla_rrhh: subRow.plantilla_rrhh || 0,
         credenciales: subRow.credenciales || 0,
         actualizacion_datos: subRow.actualizacion_datos || 0,
         cierre_html: subRow.cierre_html || 0
@@ -5260,7 +5259,6 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         bbdd_excel: 0,
         nominas: 0,
         permisos: 0,
-        plantilla_rrhh: 0,
         credenciales: 0,
         actualizacion_datos: 0,
         cierre_html: 0
@@ -5421,7 +5419,7 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
   const id = c.req.param('id');
   const { pin, modifiedData } = await c.req.json();
 
-  if (!pin || pin.trim().toLowerCase() !== user.pin_hash) return c.json({ error: 'PIN incorrecto' }, 403);
+  if (pin !== user.pin) return c.json({ error: 'PIN incorrecto' }, 403);
 
   const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE id = ?').bind(id).first<any>();
   if (!update || update.status !== 'pending_review') return c.json({ error: 'Solicitud inválida' }, 400);

@@ -244,6 +244,89 @@
     .tc-online-avatar {
       animation: tcBlinkGreen 2s infinite;
     }
+
+    /* ─── VISTA UBICACIÓN EN VIVO ─── */
+    #tc-view-location { display: none; flex-direction: column; height: 100%; }
+    #telegram-chat-widget.in-location #tc-view-list { display: none; }
+    #telegram-chat-widget.in-location #tc-view-location { display: flex; }
+
+    .tc-loc-body {
+      flex: 1; overflow-y: auto; padding: 20px 16px;
+      background: #020617;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .tc-loc-desc {
+      background: #0f172a; border: 1px solid #1e3a5f;
+      border-radius: 12px; padding: 14px 16px;
+      font-size: 12.5px; color: #94a3b8; line-height: 1.6;
+    }
+    .tc-loc-desc strong { color: #e2e8f0; }
+    .tc-loc-btn {
+      width: 100%; padding: 14px 16px;
+      border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .tc-loc-btn:hover { transform: scale(1.02); }
+    .tc-loc-btn:active { transform: scale(0.98); }
+    .tc-loc-btn-current {
+      background: linear-gradient(135deg, #0369a1, #0ea5e9);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(14,165,233,0.4);
+    }
+    .tc-loc-btn-live {
+      background: linear-gradient(135deg, #166534, #22c55e);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(34,197,94,0.4);
+    }
+    .tc-loc-btn-stop {
+      background: linear-gradient(135deg, #7f1d1d, #ef4444);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(239,68,68,0.4);
+    }
+    .tc-loc-status {
+      background: #0f172a; border: 1px solid #1e3a5f;
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 12px; color: #64748b;
+      display: none;
+    }
+    .tc-loc-status.visible { display: block; }
+    .tc-loc-pulse {
+      display: inline-block; width: 8px; height: 8px;
+      background: #22c55e; border-radius: 50%;
+      animation: tcLocPulse 1.2s infinite;
+      margin-right: 6px; vertical-align: middle;
+    }
+    @keyframes tcLocPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+    .tc-loc-pinned {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; background: #0a1628;
+      border-bottom: 2px solid #1e3a5f;
+      cursor: pointer; transition: background 0.15s;
+      position: relative;
+    }
+    .tc-loc-pinned:hover { background: #0f1f35; }
+    .tc-loc-pinned-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, #166534, #22c55e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .tc-loc-pinned-label {
+      flex: 1;
+    }
+    .tc-loc-pinned-label .tc-conv-name { color: #22c55e; }
+    .tc-loc-pinned-label .tc-conv-preview { font-size: 11px; color: #475569; margin-top: 2px; }
+    .tc-loc-pinned-badge {
+      background: #22c55e; color: #000; border-radius: 8px;
+      padding: 3px 8px; font-size: 10px; font-weight: 800;
+      letter-spacing: 0.5px; flex-shrink: 0;
+    }
   `;
   document.head.appendChild(style);
 
@@ -265,7 +348,63 @@
           <input id="tc-search" type="text" placeholder="🔍  Buscar conversación..." />
         </div>
         <div id="tc-conv-list">
+          <!-- Ítem fijo: Ubicación en Vivo -->
+          <div class="tc-loc-pinned" id="tc-loc-pinned-item">
+            <div class="tc-loc-pinned-avatar">📍</div>
+            <div class="tc-loc-pinned-label">
+              <div class="tc-conv-name">Ubicación en Vivo</div>
+              <div class="tc-conv-preview" id="tc-loc-pinned-preview">Comparte tu ubicación con los supervisores</div>
+            </div>
+            <div class="tc-loc-pinned-badge" id="tc-loc-pinned-badge" style="display:none;">EN VIVO</div>
+          </div>
           <div class="tc-empty">Cargando conversaciones...</div>
+        </div>
+      </div>
+
+      <!-- VISTA: UBICACIÓN EN VIVO -->
+      <div id="tc-view-location">
+        <div class="tc-header">
+          <button class="tc-icon-btn" id="tc-loc-back-btn" title="Volver">‹</button>
+          <div style="font-size:22px; flex-shrink:0;">📍</div>
+          <div style="flex:1">
+            <div class="tc-header-name" style="color:#22c55e;">Ubicación en Vivo</div>
+            <div class="tc-header-sub">Solo visible para supervisores</div>
+          </div>
+          <button class="tc-icon-btn" id="tc-loc-close-btn" title="Cerrar">✕</button>
+        </div>
+        <div class="tc-loc-body">
+          <div class="tc-loc-desc">
+            <strong>¿Cómo funciona?</strong><br>
+            Tu ubicación se enviará directamente a la sección de <strong>Geolocalización</strong>.
+            Solo los supervisores y directores con acceso a esa sección podrán verla.
+            Los demás empleados <strong>no pueden</strong> ver tu ubicación.
+          </div>
+
+          <button class="tc-loc-btn tc-loc-btn-current" id="tc-send-current-loc">
+            <span style="font-size:20px;">🔵</span>
+            <div>
+              <div>Enviar ubicación actual</div>
+              <div style="font-size:11px; font-weight:400; opacity:0.8;">Exacta a 10 metros · Una sola vez</div>
+            </div>
+          </button>
+
+          <button class="tc-loc-btn tc-loc-btn-live" id="tc-start-live-loc">
+            <span style="font-size:20px;">🟢</span>
+            <div>
+              <div>Compartir en tiempo real</div>
+              <div style="font-size:11px; font-weight:400; opacity:0.8;">Actualización continua mientras te mueves</div>
+            </div>
+          </button>
+
+          <button class="tc-loc-btn tc-loc-btn-stop" id="tc-stop-live-loc" style="display:none;">
+            <span style="font-size:20px;">🔴</span>
+            <div>
+              <div>Detener ubicación en vivo</div>
+              <div style="font-size:11px; font-weight:400; opacity:0.8;">Dejar de compartir posición</div>
+            </div>
+          </button>
+
+          <div class="tc-loc-status" id="tc-loc-status"></div>
         </div>
       </div>
 
@@ -319,29 +458,40 @@
   let lastMsgId = 0;
   let pollInterval = null;
   let globalUnreadCount = 0;
+  let liveLocInterval = null;  // interval para ubicación en tiempo real
 
   // ─── ELEMENTOS ────────────────────────────────────────────────────────────
-  const fab           = document.getElementById('tc-fab');
-  const widget        = document.getElementById('telegram-chat-widget');
-  const closeListBtn  = document.getElementById('tc-close-list-btn');
-  const closeChatBtn  = document.getElementById('tc-close-chat-btn');
-  const backBtn       = document.getElementById('tc-back-btn');
-  const newConvBtn    = document.getElementById('tc-new-conv-btn');
-  const convList      = document.getElementById('tc-conv-list');
-  const searchInput   = document.getElementById('tc-search');
-  const messagesDiv   = document.getElementById('tc-messages');
-  const msgInput      = document.getElementById('tc-msg-input');
-  const sendBtn       = document.getElementById('tc-send-btn');
-  const chatName      = document.getElementById('tc-chat-name');
-  const chatAvatar    = document.getElementById('tc-chat-avatar');
-  const modal         = document.getElementById('tc-new-conv-modal');
-  const modalClose    = document.getElementById('tc-modal-close-btn');
-  const modalSearch   = document.getElementById('tc-modal-search');
-  const userListModal = document.getElementById('tc-user-list-modal');
-  const deleteBtn     = document.getElementById('tc-delete-chat-btn');
-  const attachImgBtn  = document.getElementById('tc-attach-img-btn');
-  const voiceNoteBtn  = document.getElementById('tc-voice-note-btn');
-  const fileInput     = document.getElementById('tc-file-input');
+  const fab              = document.getElementById('tc-fab');
+  const widget           = document.getElementById('telegram-chat-widget');
+  const closeListBtn     = document.getElementById('tc-close-list-btn');
+  const closeChatBtn     = document.getElementById('tc-close-chat-btn');
+  const backBtn          = document.getElementById('tc-back-btn');
+  const newConvBtn       = document.getElementById('tc-new-conv-btn');
+  const convList         = document.getElementById('tc-conv-list');
+  const searchInput      = document.getElementById('tc-search');
+  const messagesDiv      = document.getElementById('tc-messages');
+  const msgInput         = document.getElementById('tc-msg-input');
+  const sendBtn          = document.getElementById('tc-send-btn');
+  const chatName         = document.getElementById('tc-chat-name');
+  const chatAvatar       = document.getElementById('tc-chat-avatar');
+  const modal            = document.getElementById('tc-new-conv-modal');
+  const modalClose       = document.getElementById('tc-modal-close-btn');
+  const modalSearch      = document.getElementById('tc-modal-search');
+  const userListModal    = document.getElementById('tc-user-list-modal');
+  const deleteBtn        = document.getElementById('tc-delete-chat-btn');
+  const attachImgBtn     = document.getElementById('tc-attach-img-btn');
+  const voiceNoteBtn     = document.getElementById('tc-voice-note-btn');
+  const fileInput        = document.getElementById('tc-file-input');
+  // Ubicación en Vivo
+  const locPinnedItem    = document.getElementById('tc-loc-pinned-item');
+  const locPinnedPreview = document.getElementById('tc-loc-pinned-preview');
+  const locPinnedBadge   = document.getElementById('tc-loc-pinned-badge');
+  const locBackBtn       = document.getElementById('tc-loc-back-btn');
+  const locCloseBtn      = document.getElementById('tc-loc-close-btn');
+  const sendCurrentLocBtn= document.getElementById('tc-send-current-loc');
+  const startLiveLocBtn  = document.getElementById('tc-start-live-loc');
+  const stopLiveLocBtn   = document.getElementById('tc-stop-live-loc');
+  const locStatus        = document.getElementById('tc-loc-status');
 
   function initials(name) {
     return name.split(' ').slice(0,2).map(p => p[0]).join('').toUpperCase();
@@ -402,7 +552,7 @@
   };
 
   function closeWidget() {
-    widget.classList.remove('open', 'in-chat');
+    widget.classList.remove('open', 'in-chat', 'in-location');
     clearInterval(pollInterval);
     if (typeof inactivityTimer !== 'undefined' && inactivityTimer) clearTimeout(inactivityTimer);
     setTimeout(() => fab.style.display = 'flex', 300);
@@ -414,6 +564,112 @@
   backBtn.onclick = () => {
     widget.classList.remove('in-chat');
     clearInterval(pollInterval);
+  };
+
+  // ─── PANEL UBICACIÓN EN VIVO ──────────────────────────────────────────────
+  function openLocationPanel() {
+    widget.classList.add('in-location');
+  }
+  function closeLocationPanel() {
+    widget.classList.remove('in-location');
+  }
+  locPinnedItem.onclick = openLocationPanel;
+  locBackBtn.onclick    = closeLocationPanel;
+  locCloseBtn.onclick   = closeWidget;
+
+  function setLocStatus(msg, pulse) {
+    locStatus.classList.add('visible');
+    locStatus.innerHTML = pulse
+      ? `<span class="tc-loc-pulse"></span>${msg}`
+      : msg;
+  }
+
+  function setLiveUIState(isLive) {
+    startLiveLocBtn.style.display = isLive ? 'none' : 'flex';
+    stopLiveLocBtn.style.display  = isLive ? 'flex' : 'none';
+    locPinnedBadge.style.display  = isLive ? 'inline-block' : 'none';
+    locPinnedPreview.textContent  = isLive
+      ? '🟢 Compartiendo en tiempo real...'
+      : 'Comparte tu ubicación con los supervisores';
+  }
+
+  // Enviar ubicación actual (una sola vez)
+  sendCurrentLocBtn.onclick = () => {
+    if (!navigator.geolocation) {
+      return setLocStatus('❌ Geolocalización no disponible en este dispositivo', false);
+    }
+    setLocStatus('Obteniendo posición...', true);
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/location/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            lat, lon, accuracy,
+            entity_id: (JSON.parse(atob(token.split('.')[1])) || {}).id,
+            entity_type: 'staff'
+          })
+        });
+        if (res.ok) {
+          setLocStatus('✅ Ubicación enviada correctamente', false);
+        } else {
+          setLocStatus('❌ Error al enviar ubicación', false);
+        }
+      } catch(e) {
+        setLocStatus('❌ Falló la petición', false);
+      }
+    }, (err) => {
+      setLocStatus('❌ No se pudo obtener tu ubicación: ' + err.message, false);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  // Compartir en tiempo real
+  startLiveLocBtn.onclick = () => {
+    if (!navigator.geolocation) {
+      return setLocStatus('❌ Geolocalización no disponible', false);
+    }
+    setLocStatus('Iniciando ubicación en tiempo real...', true);
+    const token = localStorage.getItem('token');
+
+    async function sendLive(pos) {
+      const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+      try {
+        await fetch('/api/location/live', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ lat, lon, accuracy })
+        });
+        setLocStatus('🟢 Compartiendo ubicación en vivo... (actualiza cada 15s)', true);
+      } catch(e) {}
+    }
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+      sendLive(pos);
+      setLiveUIState(true);
+      // Actualizar cada 15 segundos
+      liveLocInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(sendLive, ()=>{}, { enableHighAccuracy: true, timeout: 8000 });
+      }, 15000);
+    }, (err) => {
+      setLocStatus('❌ No se pudo obtener tu ubicación: ' + err.message, false);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  // Detener ubicación en vivo
+  stopLiveLocBtn.onclick = async () => {
+    clearInterval(liveLocInterval);
+    liveLocInterval = null;
+    try {
+      const token = localStorage.getItem('token');
+      await fetch('/api/location/live', {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+    } catch(e) {}
+    setLiveUIState(false);
+    setLocStatus('⏹ Ubicación en vivo detenida', false);
   };
 
   // ─── CARGAR USUARIOS ──────────────────────────────────────────────────────

@@ -1,1078 +1,4 @@
-<!-- Deploy TS: 2026-05-16T06:01:00Z -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <!-- <script src="https://office.kosak.es/legal.js"></script> -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EYE STAFF</title>
-    <script>
-        if (window.location.hostname.includes('staging') || window.location.hostname.includes('localhost')) {
-            document.title = 'EYE STAFF - DESARROLLO -';
-        }
-    </script>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b0f19">
-    <meta name="description" content="Plataforma integral de operaciones para EYE STAFF — Valet Parking, Eventos, RRHH y más.">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="EYE STAFF">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        @keyframes blinkChatHeader {
-            0% { background: rgba(40,168,233,0.1); border-color: rgba(40,168,233,0.3); color: #28A8E9; }
-            100% { background: #3b82f6; border-color: #3b82f6; color: #ffffff; box-shadow: 0 0 10px rgba(59,130,246,0.6); }
-        }
-        @keyframes blinkOpacity {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        @keyframes blinkUserIcon {
-            0% { filter: grayscale(0) brightness(1); opacity: 1; }
-            100% { filter: grayscale(1) brightness(0); opacity: 0; }
-        }
 
-        @keyframes btn-blink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(0.98); }
-        }
-        .btn-volver-ux {
-            background: var(--brand-green) !important;
-            color: white !important;
-            border: none !important;
-            font-weight: 900 !important;
-            animation: btn-blink 2s infinite !important;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4) !important;
-            margin: 10px auto !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: fit-content;
-            padding: 12px 30px !important;
-            border-radius: 30px !important;
-            font-size: 0.9rem !important;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        @keyframes marker-pulse {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: scale(2.2); opacity: 0; }
-        }
-        
-        .premium-leaflet-tooltip {
-            background: rgba(22, 27, 44, 0.95) !important;
-            border: 1px solid rgba(34, 197, 94, 0.3) !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
-            color: #fff !important;
-            font-family: 'Outfit', sans-serif !important;
-            padding: 10px 14px !important;
-            font-size: 0.7rem !important;
-            border-width: 1px !important;
-        }
-        .premium-leaflet-tooltip::before {
-            border-top-color: rgba(22, 27, 44, 0.95) !important;
-        }
-
-        :root {
-            --bg: #0a0a0a;
-            --accent: #6366f1;
-            --accent2: #f43f5e;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --brand-red: #ef4444;
-            --brand-green: #22c55e;
-            --brand-white: #ffffff;
-            --bg: #0b0f19;
-            --surface: #161b2c;
-            --surface2: #1e253c;
-            --border: rgba(255,255,255,0.08);
-            --text: #f1f5f9;
-            --muted: #94a3b8;
-            --font-main: 'Outfit', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-        }
-
-        .brand-eye { color: var(--brand-red); }
-        .brand-staff { color: var(--brand-white); }
-        .logo-text { font-weight: 800; letter-spacing: -0.5px; display: flex; gap: 6px; align-items: center; }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { 
-            margin: 0; background: var(--bg); color: var(--text); 
-            font-family: var(--font-main);
-            display: flex; flex-direction: column; min-height: 100vh;
-            text-transform: uppercase;
-        }
-
-        .footer-tooltip {
-            position: relative;
-            display: inline-block;
-        }
-        .footer-tooltip .tooltiptext {
-            visibility: hidden;
-            width: max-content;
-            max-width: 250px;
-            background-color: #1e293b;
-            color: #fff;
-            text-align: left;
-            border-radius: 6px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 999999;
-            bottom: 150%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-        .footer-tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #1e293b transparent transparent transparent;
-        }
-        .footer-tooltip:hover .tooltiptext, .footer-tooltip:active .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* --- SCROLLBARS --- */
-        * { scrollbar-width: thin; scrollbar-color: var(--surface2) transparent; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-        
-        /* --- SPLASH SCREEN --- */
-        #splash-screen {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: none; /* Cambiado a none para evitar bloqueos si hay error JS */
-            flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease-out;
-        }
-        .splash-logo { height: 200px; object-fit: contain; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
-
-        /* --- SCREEN SAVER & PATTERN LOCK --- */
-        #screensaver {
-            position: fixed; inset: 0; background: #000; z-index: 9000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
-        #pattern-container { margin-top: 50px; display: none; }
-        .pattern-grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 20px; }
-        .pattern-dot { width: 20px; height: 20px; background: #334155; border-radius: 50%; margin: 30px auto; cursor: pointer; position: relative; }
-        .pattern-dot.active { background: var(--danger); box-shadow: 0 0 15px var(--danger); }
-        .pattern-line { position: absolute; background: var(--danger); height: 4px; transform-origin: 0 50%; pointer-events: none; }
-
-        .login-btn:active { transform: scale(0.98); }
-        .login-wall {
-            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 40px 20px; text-align: center;
-        }
-        .login-card {
-            background: var(--surface); width: 100%; max-width: 400px;
-            padding: 40px; border-radius: 30px; border: 1px solid var(--border);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; gap: 20px;
-        }
-        .login-input {
-            background: var(--surface2); border: 1px solid var(--border);
-            padding: 18px; border-radius: 15px; color: #fff; font-size: 1.1rem;
-            width: 100%; text-align: center !important; font-weight: 800;
-        }
-        .login-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
-
-
-        input, select, textarea, button { text-transform: uppercase !important; text-align: left !important; }
-        ::placeholder { font-size: 0.8rem; opacity: 0.5; text-align: left; }
-
-        /* --- LAYOUT --- */
-        #app { display: flex; flex-direction: column; min-height: 100vh; width: 100%; max-width: none; }
-
-        header {
-            background: rgba(15, 23, 42, 0.85); /* Glassmorphism */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 12px 20px;
-            padding-top: max(12px, env(safe-area-inset-top));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            border-bottom: 1px solid var(--border);
-            z-index: 9000;
-            position: relative;
-        }
-
-        .logo { font-weight: 800; font-size: 1.4rem; color: var(--accent); letter-spacing: -0.5px; }
-        .logo span { color: #fff; }
-
-        .main-container { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-
-        /* --- TOP NAVIGATION --- */
-        .sidebar {
-            width: 100%;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            flex-direction: row;
-            padding: 0 5px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* iOS momentum scroll */
-            scrollbar-width: none; 
-        }
-        .sidebar::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            min-width: 70px;
-            cursor: pointer;
-            color: var(--muted);
-            transition: all 0.2s;
-            font-size: 0.65rem;
-            text-align: center;
-            gap: 4px;
-            white-space: nowrap;
-            border-bottom: 3px solid transparent;
-        }
-
-        .nav-item i { font-size: 1.3rem; font-style: normal; line-height: 1; }
-        .nav-item.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(59, 130, 246, 0.05); }
-        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.02); }
-
-        /* --- CONTENT --- */
-        main {
-            flex: 1;
-            padding: 20px; 
-            position: relative;
-            width: 90%;
-            max-width: 90%;
-            margin: 0 auto;
-            padding-bottom: calc(150px + env(safe-area-inset-bottom));
-        }
-
-        /* --- OVERLAYS --- */
-        #loading-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s; }
-        #loading-overlay.active { display: flex; }
-        .spinner { width: 50px; height: 50px; border: 3px solid var(--surface); border-top-color: var(--accent2); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-logo { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
-        .loading-logo span { color: var(--accent2); }
-
-        .photo-tooltip-trigger { position: relative; cursor: pointer; }
-        .photo-tooltip { 
-            position: absolute; bottom: 100%; left: 0; display: none; z-index: 1000;
-            background: var(--surface); padding: 5px; border-radius: 10px; 
-            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: translateY(-10px);
-        }
-        .photo-tooltip-trigger:hover .photo-tooltip { display: block; }
-
-        .view-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-        .view-title { font-size: 1.8rem; font-weight: 800; margin: 0; }
-
-        /* --- DAMAGE MAP --- */
-        .damage-canvas { width: 100%; max-width: 200px; margin: 0 auto; background: var(--surface2); border-radius: 12px; padding: 10px; border: 1px solid var(--border); position: relative; }
-        .damage-marks circle { cursor: pointer; }
-
-        /* --- PHOTO SLOTS --- */
-        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .photo-slot { 
-            background: var(--surface2); 
-            border: 2px dashed var(--border); 
-            border-radius: 15px; 
-            height: 120px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            position: relative; 
-            overflow: hidden; 
-            transition: all 0.2s ease;
-        }
-        .photo-slot:hover { transform: scale(1.02); border-color: var(--accent); }
-        .photo-slot.filled { border-style: solid; border-color: var(--success); box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1); }
-        .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
-        .photo-label { font-size: 0.6rem; color: var(--muted); margin-top: 4px; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        
-        .footer-info {
-            margin-top: 50px;
-            padding-bottom: 50px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
-        }
-
-        .chat-access-btn {
-            background: #25D366;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px auto;
-            width: fit-content;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
-        }
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr !important; }
-            .view-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .sidebar { padding: 5px 0; }
-        }
-        .stat-card {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-        }
-        .stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-        .stat-value { font-size: 2rem; font-weight: 800; margin-top: 5px; }
-
-        .vehicle-card {
-            background: var(--surface2);
-            border-radius: 18px;
-            padding: 12px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .vehicle-card:active { transform: scale(0.98); }
-        .plate-tag {
-            background: #fff;
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-family: var(--font-mono);
-            font-weight: 800;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            line-height: 1;
-        }
-
-        /* --- BUTTONS --- */
-        .btn {
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: var(--font-main);
-            display: grid;
-            place-items: center;
-            text-align: center;
-            line-height: 1.2;
-            transition: all 0.2s;
-        }
-        .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
-        .btn-secondary { background: var(--surface2); border: 1px solid var(--border); }
-        .btn-danger { background: var(--accent2); }
-        .btn-primary { background: var(--success); }
-
-        /* --- MODALS --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .modal-overlay.open { display: flex; }
-        .modal-content {
-            background: #111827; /* Fondo oscuro sólido para evitar transparencias extrañas */
-            width: 100%;
-            max-width: 500px;
-            border-radius: 28px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-        }
-        /* Estilo específico para el scrollbar del modal */
-        .modal-content::-webkit-scrollbar { width: 6px; }
-        .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .modal-content::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* --- PHOTO MODAL --- */
-        .photo-modal-content { max-width: 800px; padding: 0; background: transparent; border: none; box-shadow: none; overflow: visible; }
-        .photo-viewer-container { position: relative; width: 100%; border-radius: 24px; overflow: hidden; background: #000; border: 1px solid var(--border); }
-        .photo-viewer-img { width: 100%; display: block; max-height: 70vh; object-fit: contain; }
-        .photo-viewer-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 10px; pointer-events: none; }
-        .photo-nav-btn { background: rgba(0,0,0,0.5); color: #fff; border: none; width: 50px; height: 50px; border-radius: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; backdrop-filter: blur(5px); transition: all 0.2s; }
-        .photo-nav-btn:hover { background: var(--accent); }
-        .photo-close-btn { position: absolute; top: -50px; right: 0; background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; backdrop-filter: blur(10px); }
-
-        /* --- FORMS --- */
-        .field { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.9rem; }
-        input, select, textarea {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
-            color: #fff;
-            font-family: var(--font-main);
-        }
-
-        /* --- TOAST --- */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 100000; }
-        .toast {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 14px 24px;
-            border-radius: 12px;
-            margin-top: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } }
-
-        /* --- MENU INICIAL --- */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columnas en PC */
-            gap: 20px;
-            margin: 40px auto;
-            max-width: 1000px;
-            width: 100%;
-        }
-        .menu-item {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            padding: 16px 24px;
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-color: var(--accent); background: rgba(99, 102, 241, 0.05); }
-        .menu-item i { font-size: 2rem; font-style: normal; }
-        .menu-item-content { display: flex; flex-direction: column; gap: 4px; }
-        .menu-item-title { font-weight: 800; font-size: 1.1rem; color: #fff; }
-        .menu-item-desc { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
-        
-        /* Asegurar que el badge antiguo no se muestre */
-        .menu-badge { display: none !important; }
-
-
-        .back-nav {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px auto;
-            cursor: pointer;
-            color: #000;
-            font-weight: 800;
-            font-size: 0.8rem;
-            width: fit-content;
-            padding: 12px 30px;
-            background: #fff;
-            border-radius: 12px;
-            border: none;
-            text-align: center;
-        }
-        @keyframes flash-red-white {
-            0% { background-color: var(--accent2); color: white; }
-            50% { background-color: white; color: var(--accent2); }
-            100% { background-color: var(--accent2); color: white; }
-        }
-        .no-session-banner {
-            display: block;
-            padding: 12px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 1rem;
-            animation: flash-red-white 1.5s infinite;
-            letter-spacing: 2px;
-            margin: -10px auto 20px auto;
-            max-width: 1000px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        }
-
-
-        @keyframes pulse-red {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        .status-pulse-red {
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            animation: pulse-red 2s infinite;
-        }
-
-        @keyframes close-btn-blink {
-            0% { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
-            50% { background: rgba(239, 68, 68, 0.5); border-color: rgba(239, 68, 68, 0.95); color: #fff; box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
-            100% { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
-        }
-        .btn-close-titilante {
-            animation: close-btn-blink 1.2s infinite ease-in-out !important;
-        }
-
-        @keyframes checkout-btn-blink {
-            0% { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #22c55e; }
-            50% { background: rgba(34, 197, 94, 0.85); border-color: rgba(34, 197, 94, 1); color: #fff; box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
-            100% { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #22c55e; }
-        }
-        .btn-checkout-titilante {
-            animation: checkout-btn-blink 1.2s infinite ease-in-out !important;
-        }
-
-        .listas-calendar-wrapper-col {
-            grid-column: span 1;
-            animation: slideInUp 0.5s ease-out;
-            margin-top: 10px;
-            width: 100%;
-            min-width: 0;
-        }
-
-        .back-nav:active { background: rgba(255,255,255,0.08); }
-
-        @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: 1fr !important; /* Forzar vertical en móvil */
-                gap: 12px;
-            }
-            .staff-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .events-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .listas-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .listas-calendar-wrapper-col {
-                grid-column: span 1 !important;
-            }
-            .tracking-grid {
-                grid-template-columns: 1fr !important;
-                height: auto !important;
-                gap: 15px;
-            }
-            #map-container {
-                height: 400px !important;
-            }
-            .menu-item {
-                flex-direction: column;
-                padding: 18px 12px;
-                text-align: center;
-                gap: 12px;
-                border-radius: 20px;
-            }
-            .menu-item i { font-size: 2rem; }
-            .menu-item-title { font-size: 1rem; }
-            .menu-item-desc { font-size: 0.65rem; }
-        }
-
-        @media (min-width: 769px) {
-            .operations-grid-custom {
-                grid-template-columns: repeat(4, 1fr) !important;
-                max-width: 1000px;
-            }
-            .admin-grid-custom {
-                grid-template-columns: repeat(4, 1fr) !important;
-                max-width: 1250px;
-                margin-left: auto !important;
-                margin-right: auto !important;
-            }
-        }
-
-        .sidebar { 
-            padding: 0 5px;
-            }
-            .nav-item { 
-                padding: 12px 10px; 
-                font-size: 0.7rem; 
-                min-width: 80px;
-            }
-            .nav-item span { display: block; }
-            main { 
-                padding: 16px; 
-                padding-bottom: calc(100px + env(safe-area-inset-bottom)); 
-            }
-            .view-title { font-size: 1.5rem; }
-            .grid { grid-template-columns: 1fr; gap: 16px; }
-            .stat-value { font-size: 1.8rem; }
-            .vehicle-card { padding: 15px; border-radius: 16px; }
-            .plate-tag { padding: 4px 10px; font-size: 1rem; }
-        }
-        .menu-item.disabled {
-            opacity: 0.5;
-            filter: grayscale(1);
-            pointer-events: none;
-            cursor: not-allowed;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        @keyframes blink-red {
-            0%, 100% { background: #fef2f2; border-color: #ef4444; opacity: 1; }
-            50% { background: #fee2e2; border-color: transparent; opacity: 0.7; }
-        }
-        @keyframes pulse-green {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-        .status-pulse {
-            width: 8px; height: 8px; background: #22c55e; border-radius: 50%;
-            display: inline-block; margin-right: 8px;
-            animation: pulse-green 2s infinite;
-            vertical-align: middle;
-        }
-
-        .admin-card-bg {
-            background: rgba(204, 204, 204, 0.2) !important;
-        }
-        .admin-card-bg:hover {
-            background: rgba(204, 204, 204, 0.35) !important;
-        }
-
-        /* --- GLOBOS --- */
-        .admin-globo {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            background: var(--surface2);
-            color: var(--text);
-            cursor: pointer;
-            border: 1px solid var(--border);
-            transition: all 0.2s;
-        }
-        .admin-globo.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
-        }
-        .admin-globo:hover:not(.active) {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        /* Autocomplete Search Style */
-        .autocomplete-container { position: relative; width: 100%; }
-        .autocomplete-results { position: absolute; top: 100%; left: 0; right: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 0 0 10px 10px; z-index: 100; max-height: 200px; overflow-y: auto; display: none; }
-        .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .autocomplete-item:hover { background: var(--surface); color: var(--accent); }
-
-        /* --- ADDRESS TOOLTIP --- */
-        .address-tooltip-trigger { position: relative; display: inline-block; }
-        .address-tooltip {
-            position: absolute; bottom: 100%; left: 0; transform: translateY(-10px);
-            width: 300px; height: 200px; background: #111827; border: 1px solid var(--border);
-            padding: 5px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            z-index: 1000; display: none; pointer-events: none; overflow: hidden;
-        }
-        .address-tooltip-trigger:hover .address-tooltip { display: block; }
-        @media (max-width: 768px) {
-            .address-tooltip { width: 250px; height: 180px; left: -50px; }
-        }
-
-        /* --- TOOLTIP --- */
-        .staff-tooltip-trigger { position: relative; cursor: help; border-bottom: 1px dashed var(--muted); display: inline-block; }
-        .staff-tooltip {
-            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px);
-            background: #111827; border: 1px solid var(--border); padding: 15px; border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 1000; display: none; min-width: 220px;
-            pointer-events: none; backdrop-filter: blur(10px);
-        }
-        .staff-tooltip-trigger:hover .staff-tooltip { display: block; }
-        .tooltip-row { display: flex; justify-content: space-between; gap: 15px; font-size: 0.65rem; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 4px; }
-        .tooltip-row:last-child { border-bottom: none; }
-
-        .carnet-thumbnail {
-            width: 32px; height: 32px; border-radius: 6px; object-fit: contain;
-            cursor: pointer; border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: var(--surface2);
-        }
-        .carnet-thumbnail:hover { transform: scale(5); z-index: 5000; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border-color: var(--accent); }
-        .carnet-preview-container {
-            width: 100%; height: 310px; border-radius: 8px; border: 1px dashed var(--border);
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-            background: var(--surface2); position: relative; cursor: pointer;
-        }
-        
-        .search-results {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: var(--surface2); border: 1px solid var(--border);
-            z-index: 1000; max-height: 200px; overflow-y: auto;
-            border-radius: 12px; margin-top: 5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none;
-        }
-        .search-item {
-            padding: 12px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03);
-            font-size: 0.8rem; font-weight: 700; transition: 0.2s;
-        }
-        .search-item:hover { background: var(--accent); color: white; }
-        .staff-tag {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.05); padding: 6px 12px;
-            border-radius: 20px; font-size: 0.7rem; font-weight: 800;
-            border: 1px solid var(--border); margin: 3px;
-        }
-        .tag-remove { cursor: pointer; color: var(--brand-red); font-weight: 900; margin-left: 5px; }
-        
-        .carnet-preview-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .carnet-preview-container span { font-size: 0.6rem; color: var(--muted); font-weight: 800; }
-
-        /* --- EDITABLE TABLE CONTROLS --- */
-        .table-control {
-            background: transparent;
-            border: 1px solid transparent;
-            color: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            padding: 4px 8px;
-            width: 100%;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .table-control:hover {
-            border-color: rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.03);
-        }
-        .table-control:focus {
-            background: var(--surface2);
-            border-color: var(--accent);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-        select.table-control { cursor: pointer; -webkit-appearance: none; }
-        @keyframes blink-red {
-            0% { transform: scale(1); filter: drop-shadow(0 0 0px transparent); }
-            50% { transform: scale(1.3); filter: drop-shadow(0 0 8px #ff4d4d); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 0px transparent); }
-        }
-        .blink-red-icon {
-            display: inline-block;
-            animation: blink-red 0.8s infinite ease-in-out;
-        }
-        .events-grid {
-            display: grid !important;
-            grid-template-columns: 1fr !important;
-            gap: 25px !important;
-            align-items: stretch !important;
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-        }
-        @media (max-width: 768px) {
-            .events-grid {
-                grid-template-columns: 1fr !important;
-                gap: 16px !important;
-            }
-        }
-        .scheduled-staff-grid {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
-            gap: 12px !important;
-        }
-        .event-card-split {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        .event-card-left {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .event-card-right {
-            flex: 1;
-            min-width: 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 25px;
-        }
-        .staff-control-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        @media (min-width: 769px) {
-            .staff-control-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-</head>
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("Global JS Error Captured:", message, "at line", lineno);
-            setTimeout(() => {
-                const currentView = document.getElementById('current-view');
-                if (currentView && (!currentView.innerHTML || currentView.innerHTML.trim() === '' || (currentView.querySelector('#portal-view') && currentView.querySelector('#portal-view').innerHTML.trim() === ''))) {
-                    currentView.innerHTML = `
-                        <div style="padding:40px 20px; text-align:center; max-width:500px; margin:40px auto; background:rgba(239, 68, 68, 0.05); border:1px solid var(--danger); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-                            <i style="font-size:3rem; display:block; margin-bottom:15px;">⚠️</i>
-                            <h2 style="color:#fff; font-size:1.1rem; font-weight:900; margin-bottom:10px;">ERROR DE CARGA DE SEGURIDAD</h2>
-                            <p style="color:var(--muted); font-size:0.75rem; line-height:1.5; margin-bottom:20px;">
-                                Se produjo un error al inicializar el portal. Puedes intentar recargar la página o cerrar la sesión actual del empleado INVITADO para ingresar con tus credenciales.
-                            </p>
-                            <div style="display:flex; justify-content:center; gap:10px;">
-                                <button class="btn btn-secondary btn-sm" onclick="location.reload()" style="padding:8px 15px; border-radius:8px; font-weight:bold;">RECARGAR</button>
-                                <button class="btn btn-danger btn-sm" onclick="logout()" style="padding:8px 15px; border-radius:8px; font-weight:bold;">CERRAR SESIÓN 🚪</button>
-                            </div>
-                        </div>
-                    `;
-                }
-            }, 1000);
-        };
-    </script>
-
-    <!-- PANTALLA DE LOGIN (OCULTA POR AHORA) -->
-    <div id="login-view" style="display:none"></div>
-
-<div id="loading-overlay">
-    <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; text-align:center; display:block">
-        <div class="logo-text" style="font-size: 2.5rem; justify-content: center; margin-bottom: 20px;">
-            <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
-        </div>
-    </a>
-    <div class="spinner"></div>
-    <div id="loading-text" style="color:var(--muted); font-weight:600">Procesando...</div>
-</div>
-
-<div id="app">
-    <header>
-        <a href="https://www.instagram.com/grupoeyestaff/" target="_blank" style="text-decoration:none; display:block; position: relative; width: 110px; height: 28px;" id="main-logo-link">
-            <div id="logo-eye-staff" style="line-height:1; position: absolute; top:0; left:0; width: 100%; transition: opacity 0.6s ease-in-out; opacity: 1;">
-                <div class="logo-text" style="font-size: 1.2rem; flex-direction: column; align-items: flex-start; gap: 0;">
-                    <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
-                </div>
-            </div>
-            <div id="logo-desarrollo" style="position: absolute; top:0; left:0; width: 100%; height: 22px; background: white; color: black; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border-radius: 4px; letter-spacing: 1px; opacity: 0; transition: opacity 0.6s ease-in-out; display: none; margin-top: 2px;">
-                DESARROLLO
-            </div>
-        </a>
-        <script>
-            if (window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group.workers.dev')) {
-                const lEye = document.getElementById('logo-eye-staff');
-                const lDev = document.getElementById('logo-desarrollo');
-                lDev.style.display = 'flex';
-                let showDev = false;
-                setInterval(() => {
-                    showDev = !showDev;
-                    if (showDev) {
-                        lEye.style.opacity = '0';
-                        setTimeout(() => lDev.style.opacity = '1', 600);
-                    } else {
-                        lDev.style.opacity = '0';
-                        setTimeout(() => lEye.style.opacity = '1', 600);
-                    }
-                }, 3000);
-            }
-        </script>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <div id="user-profile-nav" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03); padding:4px 12px; border-radius:12px; border:1px solid var(--border);">
-                <div style="text-align:right;">
-                    <div id="nav-user-name" style="font-size:0.7rem; font-weight:900; color:white;">INVITADO</div>
-                    <div id="session-timer" style="display:none;">
-                        EXPIRA EN: <span id="timer-countdown">08:00:00</span>
-                    </div>
-                </div>
-                <script>
-                  (function() {
-                    let timeLeft = 28800;
-                    const timerEl = document.getElementById('timer-countdown');
-                    const interval = setInterval(async () => {
-                      timeLeft--;
-                      if (timeLeft <= 0) {
-                        clearInterval(interval);
-                        logout();
-                      }
-                      if (timeLeft === 600) {
-                        const extend = confirm('⚠️ LA SESIÓN EXPIRARÁ EN 10 MINUTOS. ¿DESEA EXTENDERLA 8 HORAS MÁS?');
-                        if (extend) {
-                            timeLeft = 28800;
-                            const res = await fetch('/api/auth/refresh', { method: 'POST', headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')} });
-                            const data = await res.json();
-                            if(data.token) localStorage.setItem('token', data.token);
-                        }
-                      }
-                    }, 1000);
-                  })();
-                </script>
-                <div id="btn-change-pin" onclick="openChangePinModal()" style="cursor:pointer; width:32px; height:32px; display:none; align-items:center; justify-content:center; background:var(--surface2); border-radius:8px; color:var(--warning); margin-right:5px;" title="PERSONALIZAR PIN">
-                    <i>🔑</i>
-                </div>
-
-                <div id="btn-telegram-link" onclick="linkTelegram()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(40,168,233,0.1); border:1px solid rgba(40,168,233,0.3); padding:6px 12px; border-radius:8px; color:#28A8E9; font-size:0.65rem; font-weight:800; margin-right:5px;" title="VINCULAR CON TELEGRAM">
-                    <span>UBICACIÓN</span><i>📍</i>
-                </div>
-
-                <div onclick="logout()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:6px 12px; border-radius:8px; color:var(--danger); font-size:0.65rem; font-weight:800;" title="CAMBIAR USUARIO">
-                    <span>SALIR</span><i>🚪</i>
-                </div>
-
-                <script>
-                    function linkTelegram() {
-                        const user = JSON.parse(localStorage.getItem('user') || '{}');
-                        if (!user.id) {
-                            alert("⚠️ Inicia sesión primero para vincular tu cuenta.");
-                            return;
-                        }
-                        if (user.id === 1 || user.id === 999) {
-                            alert("⚠️ Estás usando una cuenta de acceso especial (bypass). Para vincular tu Telegram, debes cerrar sesión e iniciar usando tu PIN personal.");
-                            return;
-                        }
-                        
-                        // REEMPLAZAR 'TU_BOT_USERNAME' CON EL USERNAME DEL BOT (sin el @)
-                        const isStaging = window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group.workers.dev');
-                        const botUsername = isStaging ? 'eye_staff_dev_bot' : 'eye_staff_bot';
-                        
-                        const telegramUrl = `https://t.me/${botUsername}?start=link_${user.id}`;
-                        window.open(telegramUrl, '_blank');
-                    }
-                </script>
-            </div>
-            <div id="btn-back-portal" class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="display:none; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,0.05);">
-                🏠 HOME
-            </div>
-
-        </div>
-    </header>
-
-
-    <div id="splash-screen">
-        <div class="logo-text" style="font-size: 3.5rem; flex-direction: column; align-items: center; gap: 0;">
-            <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
-        </div>
-    </div>
-
-    <div id="screensaver" onclick="hideScreenSaver()">
-        <div class="logo-text" style="font-size: 3.5rem; letter-spacing: -2px; flex-direction: column; align-items: center; gap: 0;">
-            <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
-        </div>
-        <div style="color:var(--danger); font-weight:800; margin-top:20px; font-size:0.7rem; opacity:0.8;">TOQUE PARA CONTINUAR</div>
-    </div>
-
-
-    <main id="current-view">
-        <div id="portal-view">
-            <!-- Se carga dinámicamente -->
-        </div>
-
-        <!-- VISTA 2: VALET PARKING (ESTE ES EL HOME-VIEW ORIGINAL) -->
-        <div id="home-view" style="display:none">
-            <div class="view-header" style="justify-content: center; text-align: center;">
-                <h1 class="view-title">MENÚ VALET PARKING</h1>
-            </div>
-            
-            <div class="menu-grid">
-                <div id="menu-checkin" class="menu-item" onclick="showTab('checkin')">
-                    <i>🚗</i>
-                    <div class="menu-item-content">
-                        <span class="menu-item-title">RECEPCIÓN</span>
-                        <span class="menu-item-desc">INGRESAR NUEVO VEHÍCULO</span>
-                    </div>
-                </div>
-                
-                <div id="menu-eventos" class="menu-item" onclick="showTab('eventos')">
-                    <i>📊</i>
-                    <div class="menu-item-content">
-                        <span class="menu-item-title">CUSTODIA</span>
-                        <span class="menu-item-desc">VEHÍCULOS EN RECINTO</span>
-                    </div>
-                </div>
-
-                <div class="menu-item" onclick="showTab('resumen')">
-                    <i>📋</i>
-                    <div class="menu-item-content">
-                        <span class="menu-item-title">RESUMEN</span>
-                        <span class="menu-item-desc">REPORTE Y CIERRE DE JORNADA</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                EYE STAFF — PLATAFORMA INTEGRAL v2.7.10
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- MODALS -->
-<div id="modal-container" class="modal-overlay" onclick="if(event.target===this) closeModal()">
-    <div class="modal-content" id="modal-body"></div>
-</div>
-
-<div id="toast-container"></div>
-
-<script>
     // Registro del Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1318,18 +244,6 @@
                 }
             }).catch(e => console.error('Error refreshing my-permissions:', e));
         }
-
-        window.filterMatrixRows = function(val) {
-            const query = val.toLowerCase().trim();
-            const rows = document.querySelectorAll('.matrix-row');
-            rows.forEach(r => {
-                if (r.getAttribute('data-name').includes(query)) {
-                    r.style.display = '';
-                } else {
-                    r.style.display = 'none';
-                }
-            });
-        };
 
         let user;
         try {
@@ -1649,20 +563,10 @@
         const tooltipText = displayCount > 1 ? `Conectados Ahora:\n${onlineNames}` : 'Ver Personal Conectado';
 
         const onlineText = ` | <span class="footer-tooltip" style="color:var(--success); font-weight:900; cursor:pointer;" onclick="enterModule('liveloc')">${displayCount}<span class="tooltiptext">${tooltipText}</span></span>`;
-        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.10 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span>EYE STAFF 2026 - v2.7.3 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
         });
-
-        // Garantizar footer en TODAS las vistas: si el <main> no tiene .footer-info, crearlo al final
-        const mainEl = document.querySelector('main');
-        if (mainEl && !mainEl.querySelector('.footer-info')) {
-            const autoFooter = document.createElement('div');
-            autoFooter.className = 'footer-info auto-footer';
-            autoFooter.style.cssText = 'margin-top:50px; text-align:center; color:var(--muted); padding-bottom:50px;';
-            autoFooter.innerHTML = footerHTML;
-            mainEl.appendChild(autoFooter);
-        }
     }
 
     function getElapsedTime(start) {
@@ -1692,9 +596,6 @@
         }
 
         window.currentModule = module;
-
-        // Limpiar auto-footers previos al cambiar de vista
-        document.querySelectorAll('.auto-footer').forEach(el => el.remove());
 
         const view = document.getElementById('current-view');
         const btn = document.getElementById('btn-back-portal');
@@ -1731,7 +632,7 @@
             if (module === 'accesos') renderAccessControl(view);
             else if (module === 'renta') renderRentaEquipos(view);
             else if (module === 'traslados') showToast('MÓDULO DE TRASLADOS PRÓXIMAMENTE');
-            else if (module === 'guardia') renderGuardia(view);
+            else if (module === 'guardia') showToast('MÓDULO DE GUARDIA PRÓXIMAMENTE');
             else if (module === 'custodia_portal') showToast('MÓDULO DE CUSTODIA PRÓXIMAMENTE');
             else if (module === 'vip_eye_staff') renderVipEyeStaff(view);
             else if (module === 'liveloc') renderGeolocalizacion(view);
@@ -1930,40 +831,92 @@
         if (offset === 'today') {
             window.currentHomeMonthDate = new Date();
         } else {
-            window.currentHomeMonthDate.setDate(window.currentHomeMonthDate.getDate() + (offset * 7));
+            window.currentHomeMonthDate.setMonth(window.currentHomeMonthDate.getMonth() + offset);
         }
-        const view = document.getElementById('current-view');
-        if (view) renderHome(view);
+        renderHome();
     };
 
     function generateMonthlyCalendarHTML() {
-        // Semana de referencia (lunes de la semana en curso por defecto)
         const viewDate = new Date(window.currentHomeMonthDate);
-        viewDate.setHours(0,0,0,0);
-
-        // Calcular el lunes de la semana que contiene viewDate
-        const wd = viewDate.getDay();
-        const diffToMonday = wd === 0 ? -6 : 1 - wd;
-        const monday = new Date(viewDate);
-        monday.setDate(viewDate.getDate() + diffToMonday);
-        monday.setHours(0,0,0,0);
-
+        viewDate.setDate(1);
+        
+        const monthName = viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+        
         const actualToday = new Date();
         actualToday.setHours(0,0,0,0);
-
-        const weekDayNames = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
-
-        // Nombre del mes para el encabezado
-        const monthName = monday.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
-
+        const displayMonth = viewDate.getMonth();
+        const displayYear = viewDate.getFullYear();
+        const isCurrentCalendarMonth = displayMonth === actualToday.getMonth() && displayYear === actualToday.getFullYear();
+        
+        let startOfGrid;
+        let numWeeksToRender = 6;
+        
+        if (isCurrentCalendarMonth) {
+            const currentWeekMonday = new Date(actualToday);
+            const wd = currentWeekMonday.getDay();
+            const diffDay = currentWeekMonday.getDate() - wd + (wd === 0 ? -6 : 1);
+            currentWeekMonday.setDate(diffDay);
+            currentWeekMonday.setHours(0,0,0,0);
+            
+            startOfGrid = new Date(currentWeekMonday);
+            startOfGrid.setDate(startOfGrid.getDate() - 7); // week -1
+            numWeeksToRender = 3;
+        } else {
+            const currentDay = viewDate.getDay();
+            const diff = viewDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+            startOfGrid = new Date(viewDate.setDate(diff));
+            startOfGrid.setHours(0,0,0,0);
+        }
+        
+        const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
         const isDirector = isUserAdminOrStaff(user);
 
-        let combinedSessions = [...(window.allSessions || [])].filter(s => {
+        const allSessionsRaw = window.allSessions || [];
+        const allSessions = allSessionsRaw.filter(s => {
             if (isDirector) return true;
             return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
         });
+
+        function getEventColor(s) {
+            if (s.is_budget) return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--muted)', grayscale: true };
+            const t = (s.type || '').toLowerCase();
+            if (t.includes('valet')) return { bg: 'rgba(239, 68, 68, 0.15)', border: 'var(--brand-red)', text: '#ef4444' };
+            if (t.includes('boda')) return { bg: 'rgba(245, 158, 11, 0.15)', border: 'var(--warning)', text: '#f59e0b' };
+            if (t.includes('corp')) return { bg: 'rgba(99, 102, 241, 0.15)', border: 'var(--accent)', text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16, 185, 129, 0.15)', border: 'var(--brand-green)', text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        let html = `
+        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">CALENDARIO DE EVENTOS</h3>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">⬅️</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:0.8rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">➡️</button>
+                </div>
+            </div>
+            
+            <div id="calendario-mensual-content" style="display:flex; flex-direction:column; width:100%;">
+            <div style="font-size:0.8rem; color:var(--accent); font-weight:900; background:rgba(99, 102, 241, 0.1); padding:8px 15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                ${monthName}
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px; margin-bottom:5px;">
+                ${weekDays.map(d => `<div style="text-align:center; font-size:0.7rem; font-weight:900; color:var(--muted);">${d}</div>`).join('')}
+            </div>
+            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:5px;">
+        `;
+        
+        const currentDateIterator = new Date(startOfGrid);
+        
+        let combinedSessions = [...(window.allSessions || [])];
         if (window._globalBudgets) {
             const futureBudgets = window._globalBudgets.filter(b => {
                 if (b.estatus !== 'APROBADO') return false;
@@ -1977,89 +930,83 @@
                 type: (b.form && b.form.tipoEvento) || 'SERVICIO',
                 status: 'planning',
                 is_budget: true,
-                budget_id: b.id
+                budget_id: b.id,
+                budget_timestamp: b.timestamp
             }));
             combinedSessions.push(...futureBudgets);
         }
 
-        function getEventColor(s) {
-            if (s.is_budget) return { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', text: 'var(--muted)' };
-            const t = (s.type || '').toLowerCase();
-            if (t.includes('valet'))  return { bg: 'rgba(239,68,68,0.15)',   border: '#ef4444',  text: '#ef4444' };
-            if (t.includes('boda'))   return { bg: 'rgba(245,158,11,0.15)',  border: '#f59e0b',  text: '#f59e0b' };
-            if (t.includes('corp'))   return { bg: 'rgba(99,102,241,0.15)',  border: '#818cf8',  text: '#818cf8' };
-            if (t.includes('cumple')) return { bg: 'rgba(16,185,129,0.15)', border: '#10b981',  text: '#10b981' };
-            if (t.includes('conciert')) return { bg: 'rgba(168,85,247,0.15)', border: '#a855f7', text: '#c084fc' };
-            return { bg: 'rgba(255,255,255,0.05)', border: 'var(--muted)', text: 'var(--text)' };
-        }
-
-        // Construir filas de días
-        let daysHtml = '';
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(monday);
-            day.setDate(monday.getDate() + i);
-            const isToday = day.getTime() === actualToday.getTime();
-            const dayLabel = weekDayNames[i];
-            const dayNum = day.getDate();
-            const dateStr = day.toISOString().split('T')[0];
-
-            const sessionsThisDay = combinedSessions.filter(s => {
-                if (s.status === 'budgeted') return false;
-                const rawDate = s.started_at || s.created_at;
-                let sDate;
-                if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
-                    const parts = rawDate.split('-');
-                    sDate = new Date(parts[0], parts[1]-1, parts[2]);
-                } else {
-                    sDate = new Date(rawDate);
-                }
-                sDate.setHours(0,0,0,0);
-                return sDate.getTime() === day.getTime();
-            });
-
-            const rowBg    = isToday ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.02)';
-            const rowBorder = isToday ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.05)';
-
-            let eventsHtml = '';
-            if (sessionsThisDay.length > 0) {
-                eventsHtml = sessionsThisDay.map(s => {
-                    const c = getEventColor(s);
-                    const isClosed = s.status === 'closed' || s.status === 'concluded';
-                    const time = s.event_start_time ? `<span style="font-size:0.55rem; color:var(--muted); margin-left:6px;">${s.event_start_time}</span>` : '';
-                    return `<div onclick="showDayDetails('${day.toISOString()}')" style="cursor:pointer; background:${c.bg}; border-left:3px solid ${c.border}; color:${c.text}; font-size:0.7rem; padding:6px 10px; border-radius:6px; display:flex; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                        <span style="font-weight:900; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' ✓' : ''}</span>
-                        ${time}
-                    </div>`;
-                }).join('');
+        for (let week = 0; week < numWeeksToRender; week++) {
+            if (!isCurrentCalendarMonth && week >= 4 && currentDateIterator.getMonth() !== displayMonth) {
+                break;
             }
 
-            daysHtml += `
-            <div style="background:${rowBg}; border:${rowBorder}; border-radius:12px; padding:10px 14px; display:flex; flex-direction:column; gap:6px;">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <span style="font-size:0.75rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--muted)'}; text-transform:uppercase; letter-spacing:1px;">${dayLabel} ${dayNum}</span>
-                    ${isToday ? '<span style="font-size:0.5rem; background:var(--accent); color:#fff; padding:2px 7px; border-radius:10px; font-weight:900; letter-spacing:1px;">HOY</span>' : ''}
-                </div>
-                ${eventsHtml || '<span style="font-size:0.65rem; color:rgba(255,255,255,0.15); padding-left:2px;">Sin eventos</span>'}
-            </div>`;
+            html += `<div class="calendar-week-row" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px;">`;
+
+            for (let day = 0; day < 7; day++) {
+                const isToday = currentDateIterator.getTime() === actualToday.getTime();
+                const isCurrentMonth = currentDateIterator.getMonth() === displayMonth;
+                const dateStr = currentDateIterator.getDate();
+                
+                const sessionsThisDay = combinedSessions.filter(s => {
+                    if (s.status === 'budgeted') return false;
+                    const rawDate = s.started_at || s.created_at;
+                    let sDate;
+                    if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                        const parts = rawDate.split('-');
+                        sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    } else {
+                        sDate = new Date(rawDate);
+                    }
+                    sDate.setHours(0,0,0,0);
+                    return sDate.getTime() === currentDateIterator.getTime();
+                });
+                
+                let bg = isCurrentMonth ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.005)';
+                let border = isCurrentMonth ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(255,255,255,0.01)';
+                if (isToday) {
+                    bg = 'rgba(99, 102, 241, 0.05)';
+                    border = '1px solid var(--accent)';
+                }
+                
+                let eventsHtml = '';
+                if (sessionsThisDay.length > 0) {
+                    eventsHtml = sessionsThisDay.map(s => {
+                        const colorSet = getEventColor(s);
+                        const isClosed = s.status === 'closed' || s.status === 'concluded';
+                        return `
+                            <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="cursor:pointer; background:${colorSet.bg}; border-left:3px solid ${colorSet.border}; color:${colorSet.text}; font-size:0.6rem; padding:4px; border-radius:4px; margin-bottom:4px; display:flex; flex-direction:column; gap:2px; transition:0.2s; filter:${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:${isCurrentMonth ? (colorSet.grayscale ? '0.85' : '1') : '0.5'}; text-align:left; overflow:hidden;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${colorSet.bg}';">
+                                <div style="font-weight:900; font-size:0.6rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' (FIN)' : ''}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    eventsHtml = `<div style="min-height:20px;"></div>`;
+                }
+
+                html += `
+                    <div class="calendar-day-cell" style="background:${bg}; border:${border}; border-radius:6px; padding:4px; display:flex; flex-direction:column; min-height:80px; overflow:hidden;">
+                        <div style="text-align:right; margin-bottom:4px; position:relative;">
+                            <span style="font-size:0.7rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:${isCurrentMonth ? '1' : '0.4'};"><span style="display:none;">${weekDays[(currentDateIterator.getDay() + 6) % 7]}</span>${dateStr}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; flex:1; overflow-y:auto; scrollbar-width:none;">
+                            ${eventsHtml}
+                        </div>
+                    </div>
+                `;
+                
+                currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+            }
+            html += `</div>`; // Close week row
         }
 
-        return `
-        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; margin-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-                <h3 style="margin:0; color:var(--accent); font-size:1rem; font-weight:900;">📅 CALENDARIO SEMANAL</h3>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">←</button>
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:0.75rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
-                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">→</button>
-                </div>
-            </div>
-            <div style="font-size:0.75rem; color:var(--accent); font-weight:900; background:rgba(99,102,241,0.1); padding:7px 14px; border-radius:10px; text-align:center; margin-bottom:14px;">${monthName}</div>
-            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:8px;">
-                ${daysHtml}
+
+        html += `</div>
             </div>
         </div>`;
+        
+        return html;
     }
-
 
         async function saveListaEvento() {
         const baseName = document.getElementById('lista-nombre').value;
@@ -2629,7 +1576,7 @@
     function checkVipAccess(user) {
         if (!user || !user.name) return false;
         const allowedVipNames = [
-            "ADMIN",
+            "NELSON CARRILLO",
             "JOSÉ GREGORIO RAMOS",
             "NICOLÁS BETANCOURT",
             "BILLY GONZÁLEZ",
@@ -2808,7 +1755,7 @@
                                                         </tr>
                                                     `).join('');
                                                 }
-                                                return '<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px; width:100%;">NO HAY EVENTOS ACTIVOS</td></tr>';
+                                                return '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS ACTIVOS</td></tr>';
                                             })()}
                                         </tbody>
                                     </table>
@@ -3002,7 +1949,7 @@
                         ` : ''}
                         ${canSeeGuardia ? `
                         <!-- GUARDIA DIURNA/NOCTURNA -->
-                        <div class="menu-item" onclick="enterModule('guardia')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
                             <i style="font-size:1.5rem">🌙</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
@@ -3461,10 +2408,17 @@
                         </p>
                     </div>
 
-                    <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
-                        <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                            ⬅ VOLVER
-                        </button>
+                    <div style="margin: 30px auto 40px auto; max-width: 500px;">
+                        <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px; text-align:left;">OPERACIONES</h2>
+                        <div class="menu-grid" style="margin-top:0; gap:12px; display:grid; grid-template-columns: 1fr;">
+                            <div class="menu-item" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:15px; display:flex; flex-direction:row; align-items:center; gap:15px; cursor:pointer; border-radius:18px;">
+                                <i style="font-size:1.8rem; display:block;">📄</i>
+                                <div class="menu-item-content" style="text-align:left;">
+                                    <span class="menu-item-title" style="font-size:1rem; font-weight:900; color:#fff; display:block;">FORMATOS</span>
+                                    <span class="menu-item-desc" style="font-size:0.6rem; color:var(--muted); display:block; margin-top:2px;">DOCUMENTACIÓN</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -3956,7 +2910,7 @@
             <div class="menu-grid operations-grid-custom" style="margin-top:20px; gap:12px;">
                 <!-- PRESUPUESTOS -->
                 ${hasCfoAccess ? `
-                <div class="menu-item admin-card-bg" onclick="renderPresupuestos(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7;">
+                <div class="menu-item admin-card-bg" onclick="renderPresupuestos(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">📊</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PRESUPUESTOS</span>
@@ -3966,7 +2920,7 @@
 
                 <!-- NÓMINA Y PAGOS -->
                 ${hasCfoAccess ? `
-                <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success);">
+                <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success); padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">💰</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
@@ -3975,7 +2929,7 @@
                 ` : ''}
 
                 <!-- CIERRES -->
-                <div class="menu-item admin-card-bg" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981;">
+                <div class="menu-item admin-card-bg" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">🔒</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES</span>
@@ -3990,7 +2944,7 @@
                         const user = JSON.parse(localStorage.getItem('user'));
                         if (user && user.is_superadmin) {
                             return `
-                            <div class="menu-item admin-card-bg" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger);">
+                            <div class="menu-item admin-card-bg" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger); padding: 24px; border-radius: 24px;">
                                 <i style="font-size:1.8rem">🛡️</i>
                                 <div class="menu-item-content">
                                     <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">AUDITORÍA Y PERMISOS</span>
@@ -4003,7 +2957,7 @@
                 })()}
 
                 <!-- PROYECTOS -->
-                <div class="menu-item admin-card-bg" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6;">
+                <div class="menu-item admin-card-bg" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">📁</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PROYECTOS</span>
@@ -4011,7 +2965,7 @@
                 </div>
 
                 <!-- PUBLICIDAD -->
-                <div class="menu-item admin-card-bg" onclick="renderMarketing(document.getElementById('current-view'))" style="border-top: 4px solid #d946ef;">
+                <div class="menu-item admin-card-bg" onclick="renderMarketing(document.getElementById('current-view'))" style="border-top: 4px solid #d946ef; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">📢</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PUBLICIDAD</span>
@@ -4019,7 +2973,7 @@
                 </div>
 
                 <!-- LEGAL -->
-                <div class="menu-item admin-card-bg" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316;">
+                <div class="menu-item admin-card-bg" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">⚖️</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">LEGAL</span>
@@ -4027,7 +2981,7 @@
                 </div>
 
                 <!-- GEOLOCALIZACIÓN -->
-                <div class="menu-item admin-card-bg" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7;">
+                <div class="menu-item admin-card-bg" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7; padding: 24px; border-radius: 24px;">
                     <i style="font-size:1.8rem">📍</i>
                     <div class="menu-item-content">
                         <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GEOLOCALIZACIÓN</span>
@@ -4152,6 +3106,7 @@
                     <div onclick="selectStaffResult(${u.id}, '${u.name}')" style="padding:15px; border-bottom:1px solid var(--border); cursor:pointer; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); transition: background 0.2s;">
                         <div style="flex:1">
                             <b style="color:#fff;">${u.name}</b>
+                            <div style="color:var(--muted); font-size:0.6rem; text-transform:uppercase;">${u.role}</div>
                         </div>
                         <div style="text-align:right;">
                             ${statusTag}
@@ -4502,8 +3457,7 @@
                                                                     SUPERVISOR
                                                                 </span>
                                                             ` : ''}
-                                                            <span onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#25D366;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
-                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#28A8E9; margin-left:6px;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">📩</span>
+                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="cursor:pointer; font-size:0.75rem; opacity:0.8; transition:0.2s; color:#28A8E9;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
                                                         </div>
                                                     </div>
                                                     <div style="text-align:right; flex-shrink:0;">
@@ -4529,7 +3483,7 @@
                 <div style="display: flex; justify-content: center; margin-top: 40px;">
                     ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.10</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.3</div>
             `;
 
             el.innerHTML = html;
@@ -4577,6 +3531,9 @@
             const el = document.getElementById('current-view');
 
             let html = `
+                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                </div>
                 <div class="view-header">
                     <h1 class="view-title">📅 DETALLE DE EVENTO PROGRAMADO</h1>
                 </div>
@@ -4686,9 +3643,6 @@
                     <!-- Pre-Event Access Control Container -->
                     <div id="pre-event-access-control-container"></div>
 
-                    <div style="margin-top:30px; margin-bottom:20px; display:flex; justify-content:center;">
-                        ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
-                    </div>
                 </div>
             `;
 
@@ -5985,13 +4939,13 @@
             const data = await res.json();
             if (!res.ok) {
                 toast(data.error || 'Error en la solicitud', 'error');
-                return { success: false, error: data.error };
+                return null;
             }
             return data;
         } catch (e) {
             console.error('API Fetch Error:', e);
             toast('Error de conexión con el servidor', 'error');
-            return { success: false, error: e.message };
+            return null;
         }
     }
 
@@ -6843,48 +5797,12 @@
         container.querySelector(`#tab-${tabId}`).style.display = 'block';
     }
 
-    window.deleteEventReport = async function(id) {
-        if (!confirm('¿Seguro que desea eliminar este reporte de evento permanentemente?')) return;
-        showLoading('BORRANDO REPORTE...');
-        try {
-            const res = await apiFetch(`/api/event-reports/${id}`, { method: 'DELETE' });
-            if (res && res.success) {
-                toast('✅ REPORTE ELIMINADO', 'success');
-                renderEventReports(document.getElementById('current-view'));
-            } else {
-                throw new Error(res?.error || 'Error al eliminar');
-            }
-        } catch(e) {
-            toast('❌ ' + e.message, 'error');
-        } finally {
-            hideLoading();
-        }
-    }
-
-    window.hideEventReportNelson = function(id) {
-        if (!confirm('¿Seguro que deseas quitar este evento de tu listado? (Seguirá guardado en la BBDD general)')) return;
-        let hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
-        if (!hiddenIds.includes(id)) {
-            hiddenIds.push(id);
-            localStorage.setItem('nelson_hidden_reports', JSON.stringify(hiddenIds));
-        }
-        toast('✅ EVENTO OCULTADO', 'success');
-        renderEventReports(document.getElementById('current-view'));
-    }
-
     async function renderEventReports(el, typeFilter = 'TODOS') {
         showLoading('CARGANDO REPORTES DE EVENTOS...');
         try {
             const url = typeFilter === 'TODOS' ? '/api/event-reports' : `/api/event-reports?type=${encodeURIComponent(typeFilter)}`;
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
             const data = await apiFetch(url);
-            let reports = data?.reports || [];
-
-            // Filtro local exclusivo para NELSON CARRILLO
-            if (user && user.name && user.name.toUpperCase() === 'ADMIN') {
-                const hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
-                reports = reports.filter(r => !hiddenIds.includes(r.id));
-            }
+            const reports = data?.reports || [];
 
             const types = ['TODOS', 'valet parking', 'control de accesos', 'alquiler de equipos', 'traslados', 'guardia diurna/nocturna', 'custodia'];
 
@@ -6953,16 +5871,6 @@
                                 <button onclick="openEmailReportModal(${r.id}, '${(r.session_name || '').replace(/'/g, "\\'")}', \`${r.sent_emails_history || '[]'}\`)" style="flex:1.2; text-align:center; padding:8px; background:rgba(14,165,233,0.1); color:#0ea5e9; border:1px solid rgba(14,165,233,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
                                     <span>✉️</span> EMAIL
                                 </button>
-                                ${user && user.is_superadmin ? `
-                                <button onclick="deleteEventReport(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
-                                    <span>🗑️</span> BORRAR
-                                </button>
-                                ` : ''}
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
-                                <button onclick="hideEventReportNelson(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
-                                    <span>👀</span> OCULTAR
-                                </button>
-                                ` : ''}
                             </div>
                         </div>
                     `;
@@ -7032,31 +5940,7 @@
         document.getElementById('cli-count').textContent = `${filtered.length} REGISTROS`;
     }
 
-    window.deleteClient = async function(encodedName) {
-        const name = decodeURIComponent(encodedName);
-        if (!confirm(`¿Eliminar al cliente "${name}" y todos sus registros asociados? Esta acción no se puede deshacer.`)) return;
-        showLoading('BORRANDO...');
-        try {
-            const res = await apiFetch(`/api/admin/clients/delete`, { 
-                method: 'POST',
-                body: JSON.stringify({ owner_name: name })
-            });
-            if (res && res.success) {
-                toast('✅ CLIENTE ELIMINADO', 'success');
-                // Refresh list using the current view
-                renderClientes(document.getElementById('current-view'));
-            } else {
-                alert('Error al eliminar cliente: ' + (res.error || 'Error desconocido'));
-            }
-        } catch (e) {
-            alert('Error de conexión.');
-        } finally {
-            hideLoading();
-        }
-    }
-
     function renderClientesTable(list) {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (!list || list.length === 0) return '<div style="text-align:center; padding:50px; opacity:0.5;">NO SE ENCONTRARON CLIENTES</div>';
         
         return `
@@ -7095,11 +5979,6 @@
                                 <button class="btn btn-secondary btn-sm" onclick="toggleClientHistory(${idx})" style="padding:6px 12px; border-radius:8px; font-size:0.7rem;">
                                     DETALLE EVENTOS ↓
                                 </button>
-                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
-                                <button class="btn btn-danger btn-sm" onclick="deleteClient('${encodeURIComponent(c.owner_name)}')" style="padding:6px 12px; border-radius:8px; font-size:0.7rem; margin-left:5px; background:var(--accent2); color:white; border:none; cursor:pointer;">
-                                    🗑️ BORRAR
-                                </button>
-                                ` : ''}
                             </td>
                         </tr>
                         <tr id="history-${idx}" style="display:none; background:rgba(0,0,0,0.2);">
@@ -7160,7 +6039,7 @@
         }
     };
 
-    window.solicitarPruebaEspecifica = async function(type, sessionId = null, skipConfirm = false, channel = 'email') {
+    window.solicitarPruebaEspecifica = async function(type) {
         let title = '';
         if (type === 'convocation') title = 'NOTIFICACIÓN DE CONVOCATORIA';
         else if (type === 'birthday') title = 'REPORTE MENSUAL DE CUMPLEAÑEROS';
@@ -7172,57 +6051,19 @@
         else if (type === 'vehiculos') title = 'BASE DE DATOS DE VEHÍCULOS';
         else if (type === 'personal') title = 'MATRIZ COMPLETA DE PERSONAL';
         else if (type === 'cierre_pago') title = 'CIERRE DE CICLO DE PAGO';
-        else if (type === 'credenciales') title = 'CREDENCIALES DE ACCESO';
-        if (type === 'cierre_html') title = sessionId ? `REPORTE DE CIERRE DEL EVENTO #${sessionId}` : 'REPORTE DE CIERRE DE JORNADA (HTML)';
-        if (type === 'plantilla_rrhh') title = 'PLANTILLA DE RECURSOS HUMANOS';
-
-        let dest = 'eyestaff.ncarrillo@gmail.com';
+        else if (type === 'cierre_html') title = 'REPORTE DE CIERRE DE JORNADA (HTML)';
         
-        let reportTypeMap = {
-            'cierre_html': 'cierre_html',
-            'plantilla_rrhh': 'plantilla',
-            'permissions-matrix': 'permisos',
-            'cierre_pago': 'nominas',
-            'birthday': 'cumpleanos',
-            'pdf': 'dossier',
-            'xlsx': 'excel',
-            'nominas': 'nominas',
-            'bbdd_eventos': 'excel',
-            'vehiculos': 'excel',
-            'convocation': 'convocatoria',
-            'credenciales': 'credenciales'
-        };
-
-        let matrixId = reportTypeMap[type];
-
-        if (matrixId) {
-             const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="' + matrixId + '"]:checked');
-             let names = [];
-             cbs.forEach(cb => {
-                 const tr = cb.closest('tr');
-                 if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
-             });
-             if (names.length === 0) {
-                 alert('⚠️ No hay ningún empleado suscrito para recibir este reporte en la matriz.');
-                 return;
-             }
-             dest = names.join(', ');
-        }
-        
-        if (!skipConfirm) {
-            let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
-            if (!confirm(`¿Desea solicitar el envío de: "${title}"?\n\nVía: ${chLabel}\n\nDestino: ${dest}`)) return;
-        }
+        if (!confirm(`¿Desea solicitar una prueba de: "${title}"?\n\nEl reporte de simulación se enviará a: eyestaff.ncarrillo@gmail.com`)) return;
         
         showLoading('ENVIANDO PRUEBA...');
         try {
             const res = await apiFetch('/api/reports/test-request', {
                 method: 'POST',
-                body: JSON.stringify({ type, session_id: sessionId, channel })
+                body: JSON.stringify({ type })
             });
             if (res && res.success) {
                 toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
-                alert(`📧 REPORTE DESPACHADO\n\nEl reporte "${title}" ha sido enviado con éxito.\n\nDetalles: ${res.message}\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
+                alert(`📧 PRUEBA DESPACHADA\n\nEl reporte de prueba para "${title}" ha sido enviado con éxito a eyestaff.ncarrillo@gmail.com.\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
             } else {
                 throw new Error((res && res.error) || 'Error de servidor (Revise el toast para más detalles)');
             }
@@ -7234,65 +6075,18 @@
         }
     };
 
-    window.solicitarReporteCierre = async function() {
-        const sel = document.getElementById('cierre-evento-select');
-        if (!sel || !sel.value) return alert('Por favor seleccione un evento.');
-        
-        try {
-            showLoading('VERIFICANDO DESTINATARIOS...');
-            const res = await apiFetch('/api/admin/report-subscriptions');
-            hideLoading();
-            
-            let subsList = [];
-            if (res && res.subscriptions) {
-                const subs = res.subscriptions.filter(s => s.cierre_html === 1 || s.bbdd_excel === 1 || s.dossier_pdf === 1);
-                subsList = subs.map(s => s.name);
-            }
-            
-            const eventName = sel.options[sel.selectedIndex].text;
-            let msg = `¿Desea enviar el REPORTE DE CIERRE del:\n"${eventName}"?\n\n`;
-            if (subsList.length === 0) {
-                msg += `Nadie está suscrito a este reporte en la matriz.\nNo se enviará el correo.`;
-            } else {
-                msg += `Destinatarios en matriz (${subsList.length}):\n${subsList.join(', ')}`;
-            }
-            
-            if (!confirm(msg)) return;
-            
-            solicitarPruebaEspecifica('cierre_html', sel.value, true);
-        } catch(e) {
-            hideLoading();
-            solicitarPruebaEspecifica('cierre_html', sel.value);
-        }
-    }
-
-    window.sendDataUpdateRequests = async function(type, channel = 'email') {
-        let dest = 'los empleados';
-        const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="actualizacion_datos"]:checked');
-        let names = [];
-        cbs.forEach(cb => {
-            const tr = cb.closest('tr');
-            if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
-        });
-        if (names.length === 0) {
-            alert('⚠️ No hay ningún empleado suscrito para recibir actualización de datos en la matriz.');
-            return;
-        }
-        dest = names.join(', ');
-
-        let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
-        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a:\n\n${dest}?\n\nVía: ${chLabel}`)) return;
+    window.sendDataUpdateRequests = async function(type) {
+        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a todos los empleados suscritos en la matriz?`)) return;
         
         showLoading('ENVIANDO SOLICITUDES...');
         try {
             const res = await apiFetch('/api/admin/send-update-requests', {
                 method: 'POST',
-                body: JSON.stringify({ type, channel })
+                body: JSON.stringify({ type })
             });
             if (res && res.success) {
                 toast(`✅ ${res.sent} CORREOS ENVIADOS`, 'success');
-                const list = res.recipients && res.recipients.length > 0 ? `\n\nDestinatarios:\n- ${res.recipients.join('\n- ')}` : '';
-                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.${list}`);
+                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.`);
             } else {
                 throw new Error((res && res.error) || 'Error de servidor');
             }
@@ -7412,14 +6206,9 @@
                         <div id="matrix-toggle-arrow" style="font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
                     </button>
                 </div>
-                <div id="matrix-content-wrapper" style="width:100%; display:none;">
-                    <div style="margin-bottom: 15px;">
-                        <input type="text" id="matrix-search-input" placeholder="🔍 Buscar empleado..." style="width:100%; padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; font-size:0.8rem; outline:none;" oninput="filterMatrixRows(this.value)">
-                    </div>
-                    <div style="width:100%; overflow-x:auto; overflow-y:auto; max-height:350px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent;">
-                        <table id="report-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.7rem; text-align:center;">
-                        </table>
-                    </div>
+                <div id="matrix-content-wrapper" style="width:100%; overflow-x:auto; overflow-y:auto; max-height:280px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent; display:none;">
+                    <table id="report-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:center; min-width:600px;">
+                    </table>
                 </div>
             </div>
 
@@ -7439,11 +6228,15 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Consola / Descarga</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Base de Datos Histórica</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="renderEventReports(document.getElementById('current-view'))" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase;">
                             📊 VER EVENTOS CERRADOS
                         </button>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('bbdd_eventos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase; margin-top:8px;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR BBDD POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7461,8 +6254,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML)</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('convocation')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(245, 158, 11, 0.12); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR CONVOCATORIA
                         </button>
                     </div>
                 </div>
@@ -7480,8 +6277,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF adjunto</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('birthday')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(14, 165, 233, 0.12); color:#0ea5e9; border:1px solid rgba(14, 165, 233, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR CUMPLEAÑOS
                         </button>
                     </div>
                 </div>
@@ -7499,8 +6300,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">PDF, R2 Cloud</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('pdf')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(239, 68, 68, 0.12); color:var(--brand-red); border:1px solid rgba(239, 68, 68, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR DOSSIER PDF
                         </button>
                     </div>
                 </div>
@@ -7518,8 +6323,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">XLSX, R2 Cloud</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('xlsx')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:var(--success); border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ PROBAR REPORTE EXCEL
                         </button>
                     </div>
                 </div>
@@ -7537,8 +6346,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel Consolidado</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('nominas')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(168, 85, 247, 0.12); color:#a855f7; border:1px solid rgba(168, 85, 247, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR NÓMINAS POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7556,8 +6369,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">CSV / Excel</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('vehiculos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR VEHÍCULOS POR EMAIL
                         </button>
                     </div>
                 </div>
@@ -7576,17 +6393,21 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="display:flex; gap:5px; width:100%;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ EMAIL
-                            </button>
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
-                                🟢 WAPP
-                            </button>
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
-                                📨 AMBOS
-                            </button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formato: <b style="color:white;">Email HTML</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Administrador</b></span>
                         </div>
+                        <div style="position:relative; width:100%;">
+                            <div id="credentials-custom-select" onclick="const dd=document.getElementById('credentials-dropdown'); dd.style.display=dd.style.display==='none'?'block':'none';" style="width:100%; background:var(--surface); border:1px solid var(--border); color:#fff; border-radius:10px; padding:10px; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                                <span id="credentials-select-label" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90%;">Seleccionar empleado(s)...</span>
+                                <span>▼</span>
+                            </div>
+                            <div id="credentials-dropdown" style="display:none; position:absolute; top:100%; left:0; width:100%; background:var(--background); border:1px solid var(--border); border-radius:10px; max-height:220px; overflow-y:auto; z-index:99; margin-top:5px; padding:5px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" onclick="sendCredentialsEmail()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
+                            📧 ENVIAR CREDENCIALES POR EMAIL
+                        </button>
                     </div>
                 </div>
 
@@ -7603,8 +6424,12 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email (HTML) / Histórico</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">eyestaff.ncarrillo@gmail.com</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('cierre_pago')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(59, 130, 246, 0.12); color:#3b82f6; border:1px solid rgba(59, 130, 246, 0.3); cursor:pointer; text-transform:uppercase;">
-                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            ✉️ ENVIAR CORREO DE CIERRE
                         </button>
                     </div>
                 </div>
@@ -7622,13 +6447,17 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="downloadPermissionsMatrixExcel()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
                             📊 DESCARGAR MATRIZ EXCEL
                         </button>
                         <div style="text-align:center; margin-top: 4px;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
-                            </button>
+                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="color:#6366f1; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+                                ✉️ Enviar por correo electrónico
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -7646,13 +6475,17 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Excel / Email</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email / Descarga</b></span>
+                        </div>
                         <button class="btn btn-sm" onclick="downloadRRHHTemplate()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
                             📥 DESCARGAR PLANTILLA EXCEL
                         </button>
                         <div style="text-align:center; margin-top: 4px;">
-                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
-                            </button>
+                            <a href="javascript:void(0)" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="color:#10b981; font-size:0.7rem; font-weight:700; text-decoration:underline;">
+                                ✉️ Enviar por correo electrónico
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -7670,17 +6503,13 @@
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="display:flex; gap:5px; width:100%;">
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ EMAIL
-                            </button>
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
-                                🟢 WAPP
-                            </button>
-                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
-                                📨 AMBOS
-                            </button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Formulario Web</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
                         </div>
+                        <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
                     </div>
                 </div>
 
@@ -7691,23 +6520,19 @@
                             <span style="font-size:1.5rem;">📧</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(20, 184, 166, 0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DE CIERRE</span>
                         </div>
-                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white; text-transform:uppercase;">Reporte de Cierre de Evento</h3>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Reporte de Cierre de Jornada (HTML)</h3>
                         <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
                             Cuerpo del correo electrónico generado automáticamente al cierre del evento con un resumen ejecutivo de las operaciones.
                         </p>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
-                        <div style="display:flex; justify-content:flex-end; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
-                            <span style="color:var(--muted); font-weight:700; text-align:right;">Destino: <b style="color:white;">Usuarios suscritos en matriz</b></span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700;">Formatos: <b style="color:white;">Email HTML</b></span>
+                            <span style="color:var(--muted); font-weight:700;">Destino: <b style="color:white;">Email</b></span>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:8px;">
-                            <select id="cierre-evento-select" style="width:100%; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; font-size:0.75rem; outline:none;">
-                                <option value="">Cargando eventos...</option>
-                            </select>
-                            <button class="btn btn-sm" onclick="solicitarReporteCierre()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
-                                ✉️ ENVIAR REPORTE DE ESTE EVENTO
-                            </button>
-                        </div>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('cierre_html')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ PROBAR REPORTE DE CIERRE
+                        </button>
                     </div>
                 </div>
 
@@ -7725,54 +6550,13 @@
         try {
             const res = await apiFetch('/api/staff');
             const users = (res.staff || []).filter(u => u.is_active !== 0);
-            const sessions = res.closed_sessions || [];
-            
-            const cierreSelect = document.getElementById('cierre-evento-select');
-            if (cierreSelect) {
-                if (sessions.length === 0) {
-                    cierreSelect.innerHTML = '<option value="">No hay eventos cerrados</option>';
-                } else {
-                    cierreSelect.innerHTML = sessions.map(s => {
-                        const dateStr = s.ended_at ? new Date(s.ended_at).toLocaleDateString('es-ES') : 'Fecha desconocida';
-                        const evtName = s.name ? s.name.toUpperCase() : `EVENTO ${s.id}`;
-                        const evtType = s.type ? s.type.toUpperCase() : 'N/A';
-                        return `<option value="${s.id}">${evtName} (${evtType}) - ${dateStr}</option>`;
-                    }).join('');
-                }
-            }
             
             const dd = document.getElementById('credentials-dropdown');
             if (dd) {
                 window._selectedCreds = [];
                 dd.innerHTML = '';
                 document.getElementById('credentials-select-label').textContent = 'Seleccionar empleado(s)...';
-                const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
-                const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
-                users.sort((a, b) => {
-                    const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
-                    const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
-                    if (activeA !== activeB) return activeB - activeA;
-
-                    const valA = (a.eye_id || '').toString().toUpperCase();
-                    const valB = (b.eye_id || '').toString().toUpperCase();
-                    const prioA = eyePriority[valA] || 99;
-                    const prioB = eyePriority[valB] || 99;
-                    if (prioA !== prioB) return prioA - prioB;
-
-                    const getRolePrio = (u) => {
-                        const pAdmin = (u.profile_admin || '').toString().toUpperCase();
-                        const pOpera = (u.profile_opera || '').toString().toUpperCase();
-                        const prioAdmin = rolePriority[pAdmin] || 99;
-                        const prioOpera = rolePriority[pOpera] || 99;
-                        return Math.min(prioAdmin, prioOpera);
-                    };
-
-                    const rPrioA = getRolePrio(a);
-                    const rPrioB = getRolePrio(b);
-                    if (rPrioA !== rPrioB) return rPrioA - rPrioB;
-
-                    return a.name.localeCompare(b.name);
-                });
+                users.sort((a, b) => a.name.localeCompare(b.name));
                 users.forEach(u => {
                     const label = document.createElement('label');
                     label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:8px; cursor:pointer; font-size:0.75rem; color:#fff; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; margin:0;';
@@ -7960,7 +6744,19 @@
     async function renderAdminGeneral(el) {
         el.innerHTML = `
 
-            <!-- HISTORIAL DE EVENTOS CERRADOS ELIMINADO -->
+            <div class="card" style="padding:20px;">
+                <div onclick="window.toggleAdminSessionsSection()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
+                    <h3 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">HISTORIAL DE EVENTOS CERRADOS</h3>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span id="admin-sessions-toggle-text" style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px; opacity:0.8;">MOSTRAR HISTORIAL</span>
+                        <div id="admin-sessions-toggle-arrow" style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); display:grid; place-items:center; font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
+                    </div>
+                </div>
+                
+                <div id="admin-sessions-content" style="display:none; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                    <div id="admin-session-list" class="grid" style="grid-template-columns: 1fr; gap:10px;"></div>
+                </div>
+            </div>
             <div id="admin-detail-container" style="margin-top:30px;"></div>
         `;
         loadAdminSessions();
@@ -8509,7 +7305,7 @@
             res.logs.forEach((l, i) => {
                 if (!l.displayUser) {
                     let match = res.logs.slice(i + 1).find(other => other.device === l.device && other.displayUser);
-                    l.displayUser = match ? match.displayUser : 'ADMIN';
+                    l.displayUser = match ? match.displayUser : 'NELSON CARRILLO';
                 }
             });
 
@@ -8658,7 +7454,6 @@
                                         <option value="PLATA">PLATA</option>
                                         <option value="BRONCE">BRONCE</option>
                                         <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
@@ -8668,7 +7463,6 @@
                                         <option value="DIRECTOR">DIRECTOR</option>
                                         <option value="COORDINADOR">COORDINADOR</option>
                                         <option value="EMPLEADO">EMPLEADO</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
@@ -8679,7 +7473,6 @@
                                         <option value="COORDINADOR">COORDINADOR</option>
                                         <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
                                         <option value="LOGÍSTICA">LOGISTICA</option>
-                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 </div>
                             </div>
@@ -8723,7 +7516,7 @@
                                 </div>
                                 <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-account" placeholder="EJ: 0134..."></div>
                                 <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
-                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-account').disabled = this.checked; if(this.checked) { document.getElementById('staff-account').value = ''; }">
+                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-bank').disabled = this.checked; document.getElementById('staff-account').disabled = this.checked; if(this.checked) { document.getElementById('staff-bank').value = ''; document.getElementById('staff-account').value = ''; }">
                                     <label for="staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
                                 </div>
                             </div>
@@ -8757,7 +7550,7 @@
 
             <!-- 2. INDICADORES Y LISTA -->
             <div style="margin-bottom:40px;">
-                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:10px; margin-bottom:25px;">
+                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:25px;">
                     <!-- Se llena con updateStaffStats() -->
                 </div>
 
@@ -8766,13 +7559,10 @@
                         <label>🔍 BUSCAR POR NOMBRE...</label>
                         <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
                     </div>
-                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="downloadStaffMatrixExcel()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
-                        <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
-                    </div>
+                    <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
                 </div>
 
-                <div id="staff-list-container" style="display:block; overflow-x:auto; overflow-y:auto; max-height:65vh; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
+                <div id="staff-list-container" style="display:block; overflow-x:auto; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
                     <div style="text-align:center; padding:20px;">Cargando matriz de personal...</div>
                 </div>
             </div>
@@ -8790,7 +7580,20 @@
 
 
 
-            <!-- 3. IMPORTACIÓN (ELIMINADA) -->
+            <!-- 3. IMPORTACIÓN (AL FINAL) -->
+            <div class="card" style="margin-bottom:30px; opacity:0.9; background:rgba(255,255,255,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff;">IMPORTACIÓN / ACTUALIZACIÓN RRHH</h2>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-sm btn-primary" onclick="downloadRRHHTemplate()" style="font-size:0.7rem;">📥 DESCARGAR PLANTILLA RRHH</button>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:10px;">FORMATO EXCEL (.XLSX) REQUERIDO. EL SISTEMA ACTUALIZARÁ POR PIN O CREARÁ NUEVOS.</p>
+                <div style="display:flex; gap:10px;">
+                    <input type="file" id="staff-csv-file" accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="flex:1; padding:10px; background:var(--surface2); border-radius:8px; font-size:0.8rem;">
+                    <button class="btn btn-secondary" onclick="importStaffCSV()" style="padding:0 20px; font-weight:800;">IMPORTAR</button>
+                </div>
+            </div>
 
         `;
         loadStaffList();
@@ -8801,53 +7604,33 @@
     let availableSessions = [];
     let showInactive = false;
     window.showAllStaff = false;
-    window.cardFilter = 'all';
-
-    window.setCardFilter = function(filterValue) {
-        if (window.cardFilter === filterValue) {
-            window.cardFilter = 'all'; // Toggle off if clicked again
-        } else {
-            window.cardFilter = filterValue;
-            window.showAllStaff = true;
-            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
-            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
-        }
-        updateStaffStats(); // To update active styles if needed, though not strictly required
-        renderFilteredStaff();
-    };
 
     function toggleStaffList() {
         window.showAllStaff = !window.showAllStaff;
         const btn = document.querySelector('button[onclick="toggleStaffList()"]');
         if (btn) {
-            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (PRINCIPALES)" : "📊 MOSTRAR MATRIZ COMPLETA";
+            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (MUESTRA)" : "📊 MOSTRAR MATRIZ COMPLETA";
         }
         renderFilteredStaff();
     }
 
     function updateStaffStats() {
-        const adminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN');
-        const nonAdminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() !== 'ADMIN');
-
         const stats = {
-            total: nonAdminStaff.length,
-            active: nonAdminStaff.filter(u => u.is_active !== 0).length,
-            inactive: nonAdminStaff.filter(u => u.is_active === 0).length,
-            adminCount: adminStaff.length,
-            profiles: {}
+            total: fullStaffData.length,
+            active: fullStaffData.filter(u => u.is_active !== 0).length,
+            inactive: fullStaffData.filter(u => u.is_active === 0).length,
+            eyeId: {}
         };
         
-        nonAdminStaff.forEach(u => {
-            const prof = (u.profile_opera || 'SIN ASIGNAR').toUpperCase();
-            stats.profiles[prof] = (stats.profiles[prof] || 0) + 1;
+        fullStaffData.forEach(u => {
+            const id = (u.eye_id || 'S/A').toUpperCase();
+            stats.eyeId[id] = (stats.eyeId[id] || 0) + 1;
         });
 
         const container = document.getElementById('staff-stats-container');
         if (!container) return;
 
-        const baseCardStyle = `flex: 1; min-width:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px 2px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px); min-height:55px; text-align:center; cursor:pointer; transition:0.2s; overflow:hidden;`;
-        
-        const getStyle = (filter) => window.cardFilter === filter ? baseCardStyle + 'box-shadow: 0 0 15px rgba(255,255,255,0.2); transform:scale(1.02);' : baseCardStyle + 'opacity:0.9;';
+        const cardStyle = `background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);`;
 
         const currentUser = JSON.parse(localStorage.getItem('user'));
         const isAuthorizedPinQuery = (currentUser && (
@@ -8859,40 +7642,35 @@
         let pinQueryCardHtml = '';
         if (isAuthorizedPinQuery) {
             pinQueryCardHtml = `
-                <div style="${baseCardStyle} border-top:3px solid var(--warning);" onclick="openPinVerificationModal()">
-                    <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">AUTORIZACIONES</div>
-                    <div style="font-size:0.7rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:2px; height:100%; min-height:20px;">
-                        🔑 PIN
+                <div style="${cardStyle} border-top:3px solid var(--warning); cursor:pointer;" onclick="openPinVerificationModal()">
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">AUTORIZACIONES</div>
+                    <div style="font-size:1.05rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:5px; height:100%; min-height:42px;">
+                        🔑 CONSULTA PIN
                     </div>
                 </div>
             `;
         }
 
         container.innerHTML = `
-            <div style="${getStyle('all')}" onclick="setCardFilter('all')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">TOTAL PERSONAL</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.total}</div>
+            <div style="${cardStyle}">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL PERSONAL</div>
+                <div style="font-size:1.8rem; font-weight:900; color:#fff;">${stats.total}</div>
             </div>
-            <div style="${getStyle('active')} border-top:3px solid var(--success);" onclick="setCardFilter('active')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--success);">${stats.active}</div>
+            <div style="${cardStyle} border-top:3px solid var(--success);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">ACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--success);">${stats.active}</div>
             </div>
-            <div style="${getStyle('inactive')} border-top:3px solid var(--danger);" onclick="setCardFilter('inactive')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">INACTIVOS</div>
-                <div style="font-size:1.1rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
+            <div style="${cardStyle} border-top:3px solid var(--danger);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">INACTIVOS</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
             </div>
-            <div style="${getStyle('admin')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('admin')">
-                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ADMIN</div>
-                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.adminCount}</div>
-            </div>
-            <div style="${baseCardStyle} border-top:3px solid var(--accent); cursor:default; flex: 2.2; min-width: 160px; padding:4px;">
-                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; margin-bottom: 2px; white-space:nowrap;">PERFIL OPERATIVO</div>
-                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:2px 4px; font-size:0.55rem; font-weight:700; width:100%;">
-                    <span style="color:#FFD700; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,215,0,0.05); ${window.cardFilter==='JEFE DE GRUPO'?'background:rgba(255,215,0,0.2); outline:1px solid #FFD700;':''}" onclick="setCardFilter('JEFE DE GRUPO')">JG: ${stats.profiles['JEFE DE GRUPO'] || 0}</span>
-                    <span style="color:#E5E4E2; cursor:pointer; padding:2px; border-radius:4px; background:rgba(229,228,226,0.05); ${window.cardFilter==='SUPERVISOR'?'background:rgba(229,228,226,0.2); outline:1px solid #E5E4E2;':''}" onclick="setCardFilter('SUPERVISOR')">SUP: ${stats.profiles['SUPERVISOR'] || 0}</span>
-                    <span style="color:#CD7F32; cursor:pointer; padding:2px; border-radius:4px; background:rgba(205,127,50,0.05); ${window.cardFilter==='COORDINADOR'?'background:rgba(205,127,50,0.2); outline:1px solid #CD7F32;':''}" onclick="setCardFilter('COORDINADOR')">COORD: ${stats.profiles['COORDINADOR'] || 0}</span>
-                    <span style="color:#fff; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,255,255,0.05); ${window.cardFilter==='COORDINADOR AUXILIAR'?'background:rgba(255,255,255,0.2); outline:1px solid #fff;':''}" onclick="setCardFilter('COORDINADOR AUXILIAR')">CAUX: ${stats.profiles['COORDINADOR AUXILIAR'] || 0}</span>
-                    <span style="color:#8B5CF6; cursor:pointer; padding:2px; border-radius:4px; background:rgba(139,92,246,0.05); ${window.cardFilter==='LOGÍSTICA'?'background:rgba(139,92,246,0.2); outline:1px solid #8B5CF6;':''}" onclick="setCardFilter('LOGÍSTICA')">LOG: ${stats.profiles['LOGÍSTICA'] || 0}</span>
+            <div style="${cardStyle} border-top:3px solid var(--accent);">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">RANGOS EYE ID</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px 10px; margin-top:5px; font-size:0.65rem; font-weight:700;">
+                    <span style="color:#FFD700;">ORO: ${stats.eyeId['ORO'] || 0}</span>
+                    <span style="color:#E5E4E2;">PLATA: ${stats.eyeId['PLATA'] || 0}</span>
+                    <span style="color:#CD7F32;">BRONCE: ${stats.eyeId['BRONCE'] || 0}</span>
+                    <span style="color:#fff;">LOG: ${stats.eyeId['LOGÍSTICA'] || 0}</span>
                 </div>
             </div>
             ${pinQueryCardHtml}
@@ -8904,19 +7682,6 @@
         if (res) {
             fullStaffData = res.staff || [];
             availableSessions = res.sessions || [];
-            
-            const cierreSelect = document.getElementById('cierre-evento-select');
-            if (cierreSelect) {
-                if (availableSessions.length === 0) {
-                    cierreSelect.innerHTML = '<option value="">No hay eventos cerrados</option>';
-                } else {
-                    cierreSelect.innerHTML = availableSessions.map(s => {
-                        const dateStr = s.end_time ? new Date(s.end_time).toLocaleString() : 'Fecha desconocida';
-                        return `<option value="${s.id}">ID: ${s.id} - ${s.type || 'Evento'} - ${dateStr}</option>`;
-                    }).join('');
-                }
-            }
-
             updateStaffStats();
             renderFilteredStaff();
         }
@@ -8930,31 +7695,24 @@
                 { id: 'convocatoria', name: 'Convocatoria' },
                 { id: 'cumpleanos', name: 'Cumpleaños' },
                 { id: 'dossier', name: 'Dossier PDF' },
-                { id: 'excel', name: 'BBDD Eventos Cerrados' },
+                { id: 'excel', name: 'BBDD Excel' },
                 { id: 'nominas', name: 'Nóminas' },
                 { id: 'permisos', name: 'Permisos' },
                 { id: 'plantilla', name: 'Plantilla RRHH' },
                 { id: 'actualizacion_datos', name: 'Actualización Datos' },
-                { id: 'cierre_html', name: 'Cierre Evento' },
-                { id: 'credenciales', name: 'Cred. Acceso' }
+                { id: 'cierre_html', name: 'Cierre HTML' }
             ];
             
-            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;"><th style="padding:10px 5px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:120px;">EMPLEADO</th>';
-            reports.forEach(r => {
-                const parts = r.name.split(' ');
-                const formattedName = parts.length > 1 ? parts.join('<br>') : r.name;
-                thead += `<th style="padding:10px 2px; position:sticky; top:0; background:#0f111a; z-index:9; box-shadow:0 1px 0 rgba(255,255,255,0.1); min-width:50px; line-height:1.2;">${formattedName}</th>`;
-            });
+            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.65rem; text-transform:uppercase;"><th style="padding:15px 10px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; box-shadow:0 1px 0 rgba(255,255,255,0.1);">EMPLEADO</th>';
+            reports.forEach(r => thead += `<th style="padding:15px 10px; position:sticky; top:0; background:#0f111a; z-index:9; box-shadow:0 1px 0 rgba(255,255,255,0.1);">${r.name}</th>`);
             thead += '</tr></thead>';
 
             let tbody = '<tbody>';
             users.forEach(u => {
-                const nameParts = u.name.toUpperCase().split(' ');
-                const displayName = nameParts.length > 2 ? `${nameParts[0]}<br>${nameParts[1]} ${nameParts[2]}` : (nameParts.length === 2 ? `${nameParts[0]}<br>${nameParts[1]}` : nameParts[0]);
-                tbody += `<tr class="matrix-row" data-name="${u.name.toLowerCase()}" style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
-                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:900; color:white; font-size:0.7rem; position:sticky; left:0; background:#0f111a; z-index:8; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:120px; line-height:1.2;">${displayName}</td>`;
+                tbody += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
+                tbody += `<td style="padding:12px 10px; text-align:left; font-weight:900; color:white; font-size:0.85rem; position:sticky; left:0; background:inherit;">${u.name.toUpperCase()}<div style="font-size:0.75rem; color:#a1a1aa; font-weight:600; text-transform:lowercase; margin-top:4px;">${u.email}</div></td>`;
                 reports.forEach(r => {
-                    tbody += `<td style="padding:8px 2px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:16px; height:16px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
+                    tbody += `<td style="padding:12px 10px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:18px; height:18px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
                 });
                 tbody += '</tr>';
             });
@@ -8975,9 +7733,7 @@
                             'nominas': 'nominas',
                             'permisos': 'permisos',
                             'plantilla_rrhh': 'plantilla',
-                            'actualizacion_datos': 'actualizacion_datos',
-                            'cierre_html': 'cierre_html',
-                            'credenciales': 'credenciales'
+                            'actualizacion_datos': 'actualizacion_datos'
                         };
                         for (const [dbField, uiField] of Object.entries(fieldMap)) {
                             const checkbox = document.querySelector(`.report-matrix-checkbox[data-user="${sub.user_id}"][data-report="${uiField}"]`);
@@ -9015,85 +7771,42 @@
         const query = document.getElementById('staff-search-input').value.toLowerCase();
         let list = [...fullStaffData]; // Copia para no mutar original
 
+        // Prioridades de EYE_ID
         const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
-        const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
 
+        // 1. Ordenar por EYE_ID (Prioridad) y luego por Nombre
         list.sort((a, b) => {
-            // 1. Activos primero
-            const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
-            const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
-            if (activeA !== activeB) return activeB - activeA;
-
-            // 2. Prioridad EYE_ID
             const valA = (a.eye_id || '').toString().toUpperCase();
             const valB = (b.eye_id || '').toString().toUpperCase();
+            
             const prioA = eyePriority[valA] || 99;
             const prioB = eyePriority[valB] || 99;
+
             if (prioA !== prioB) return prioA - prioB;
-
-            // 3. Prioridad de Rol
-            const getRolePrio = (u) => {
-                const pAdmin = (u.profile_admin || '').toString().toUpperCase();
-                const pOpera = (u.profile_opera || '').toString().toUpperCase();
-                const prioAdmin = rolePriority[pAdmin] || 99;
-                const prioOpera = rolePriority[pOpera] || 99;
-                return Math.min(prioAdmin, prioOpera);
-            };
-
-            const rPrioA = getRolePrio(a);
-            const rPrioB = getRolePrio(b);
-            if (rPrioA !== rPrioB) return rPrioA - rPrioB;
-
-            // 4. Ordenar alfabéticamente
-            return a.name.localeCompare(b.name);
+            
+            // Si tienen la misma prioridad (o no están en la lista), ordenar por nombre
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
         });
-
-        // Filtrar permanentemente el perfil INVITADO_ELIMINADO
-        list = list.filter(u => !u.name.toUpperCase().includes('INVITADO_ELIMINADO'));
 
         // 2. Filtrar por texto
         if (query) {
             list = list.filter(u => u.name.toLowerCase().includes(query) || (u.eye_id && u.eye_id.toLowerCase().includes(query)));
         }
 
-        // 3. Filtrar por tarjeta (cardFilter)
-        if (window.cardFilter && window.cardFilter !== 'all') {
-            if (window.cardFilter === 'active') {
-                list = list.filter(u => u.is_active !== 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'inactive') {
-                list = list.filter(u => u.is_active === 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
-            } else if (window.cardFilter === 'admin') {
-                list = list.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN' || (u.profile_admin || '').toUpperCase() === 'ADMIN' || (u.profile_opera || '').toUpperCase() === 'ADMIN');
+        const totalFiltered = list.length;
+        if (!window.showAllStaff && !query) {
+            // Dejar solo el empleado "INVITADO" o "VISITANTE" de muestra cuando la tabla está colapsada
+            const invitado = list.find(u => u.name.toUpperCase().includes('INVITADO') || u.name.toUpperCase().includes('VISITANTE'));
+            if (invitado) {
+                list = [invitado];
             } else {
-                // Perfil operativo (JEFE DE GRUPO, SUPERVISOR, etc.)
-                list = list.filter(u => (u.profile_opera || '').toUpperCase() === window.cardFilter && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+                list = list.slice(0, 1);
             }
         }
-
-        // Ocultar inactivos por defecto en toda la matriz a menos que se seleccione explícitamente la tarjeta de INACTIVOS
-        if (window.cardFilter !== 'inactive') {
-            list = list.filter(u => u.is_active !== 0);
-        }
-
-        const totalFiltered = list.length;
-        if (!window.showAllStaff && !query && window.cardFilter === 'all') {
-            list = list.filter(u => {
-                const eyeId = (u.eye_id || '').toUpperCase();
-                const profileOpera = (u.profile_opera || '').toUpperCase();
-                
-                if (eyeId === 'ORO' || eyeId === 'PLATA' || eyeId === 'BRONCE') {
-                    return true;
-                }
-                
-                if (eyeId === 'LOGÍSTICA' && profileOpera === 'COORDINADOR AUXILIAR') {
-                    return true;
-                }
-                
-                return false;
-            });
-        }
-        
-        window.currentFilteredStaff = list;
 
         const container = document.getElementById('staff-list-container');
         if (!container) return;
@@ -9109,13 +7822,12 @@
             <table style="width:100%; border-collapse: collapse; font-size:0.8rem; text-align:left;">
                 <thead>
                     <tr style="background:var(--surface2); color:var(--muted); border-bottom:1px solid var(--border);">
-                        <th style="padding:12px 4px; position:sticky; top:0; background:var(--surface2); z-index:10; width:40px; text-align:center;">🚘</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">NOMBRE</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">EYE ID</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">PERFIL OPERATIVO</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">ESTADO</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">CÉDULA</th>
-                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">TELÉFONO</th>
+                        <th style="padding:12px;">NOMBRE</th>
+                        <th style="padding:12px;">EYE ID</th>
+                        <th style="padding:12px;">PERFIL ADMINISTRATIVO</th>
+                        <th style="padding:12px;">ESTADO</th>
+                        <th style="padding:12px;">CÉDULA</th>
+                        <th style="padding:12px;">TELÉFONO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -9128,13 +7840,10 @@
                         
                         return `
                         <tr style="border-bottom:1px solid var(--border); ${u.is_active === 0 ? 'opacity:0.7; background:rgba(239,68,68,0.02);' : ''}">
-                            <td style="padding:4px; text-align:center; vertical-align:middle; width:40px;">
-                                <span onclick="updateStaffField(${u.id}, 'is_chofer', ${u.is_chofer ? 0 : 1})" title="${u.is_chofer ? 'Quitar Chofer' : 'Asignar Chofer'}" style="font-size:1.1rem; cursor:pointer; opacity:${u.is_chofer ? '1' : '0.1'}; transition:0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='${u.is_chofer ? '1' : '0.1'}'; this.style.transform='scale(1)'">🚗</span>
+                            <td style="padding:4px 12px; cursor:pointer;" onclick="openStaffEditModal(${u.id})">
+                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>${u.is_chofer ? ' <span title="Chofer Autorizado" style="font-size:0.9rem; margin-left:5px; cursor:help;">🚗</span>' : ''}
                             </td>
-                            <td style="padding:4px 12px; cursor:pointer; white-space:nowrap;" onclick="openStaffEditModal(${u.id})">
-                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
-                            </td>
-                            <td style="padding:4px 8px; min-width:105px;">
+                            <td style="padding:4px 8px;">
                                 <select class="table-control" style="font-weight:900; color:${color}; font-size:0.72rem; padding:4px 4px;" 
                                     onchange="updateStaffField(${u.id}, 'eye_id', this.value); setTimeout(() => loadStaffList(), 500);">
                                     <option value="" ${u.eye_id === '' ? 'selected' : ''}>---</option>
@@ -9142,26 +7851,23 @@
                                     <option value="PLATA" ${eyeId === 'PLATA' ? 'selected' : ''}>PLATA</option>
                                     <option value="BRONCE" ${eyeId === 'BRONCE' ? 'selected' : ''}>BRONCE</option>
                                     <option value="LOGÍSTICA" ${eyeId === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
-                                    <option value="ADMIN" ${eyeId === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
                                 </select>
                             </td>
-                            <td style="padding:4px 8px; min-width: 125px;">
-                                <select class="table-control" style="font-weight:700; color:var(--muted); font-size:0.7rem; padding:4px 0px;" 
-                                    onchange="updateStaffField(${u.id}, 'profile_opera', this.value)">
-                                    <option value="" ${!u.profile_opera ? 'selected' : ''}>SIN ASIGNAR</option>
-                                    <option value="JEFE DE GRUPO" ${u.profile_opera === 'JEFE DE GRUPO' ? 'selected' : ''}>JEFE DE GRUPO</option>
-                                    <option value="SUPERVISOR" ${u.profile_opera === 'SUPERVISOR' ? 'selected' : ''}>SUPERVISOR</option>
-                                    <option value="COORDINADOR" ${u.profile_opera === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
-                                    <option value="COORDINADOR AUXILIAR" ${u.profile_opera === 'COORDINADOR AUXILIAR' ? 'selected' : ''}>COORDINADOR AUX</option>
-                                    <option value="LOGÍSTICA" ${u.profile_opera === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
-                                    <option value="ADMIN" ${u.profile_opera === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                            <td style="padding:4px 12px;">
+                                <select class="table-control" style="font-weight:700; color:var(--muted);" 
+                                    onchange="updateStaffField(${u.id}, 'profile_admin', this.value)">
+                                    <option value="" ${!u.profile_admin ? 'selected' : ''}>SIN ASIGNAR</option>
+                                    <option value="NO APLICA" ${u.profile_admin === 'NO APLICA' ? 'selected' : ''}>NO APLICA</option>
+                                    <option value="DIRECTOR" ${u.profile_admin === 'DIRECTOR' ? 'selected' : ''}>DIRECTOR</option>
+                                    <option value="COORDINADOR" ${u.profile_admin === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
+                                    <option value="EMPLEADO" ${u.profile_admin === 'EMPLEADO' ? 'selected' : ''}>EMPLEADO</option>
                                 </select>
                             </td>
-                            <td style="padding:4px 12px; width:70px;">
-                                <select class="table-control" style="font-weight:900; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'}; width:100%; text-align:center;" 
+                            <td style="padding:4px 12px;">
+                                <select class="table-control" style="font-weight:900; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'};" 
                                     onchange="updateStaffStatus(${u.id}, this.value === '0')">
-                                    <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACT</option>
-                                    <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INA</option>
+                                    <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACTIVO</option>
+                                    <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INACTIVO</option>
                                 </select>
                             </td>
                             <td style="padding:4px 12px;">
@@ -9172,11 +7878,8 @@
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <input type="text" class="table-control" value="${formatPhone(u.phone)}" style="font-weight:700; flex:1;"
                                         onchange="updateStaffField(${u.id}, 'phone', this.value)">
-                                    <button class="btn btn-sm" onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#25D366; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Enviar Mensaje por Telegram" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                         💬
-                                    </button>
-                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                        📩
                                     </button>
                                 </div>
                             </td>
@@ -9187,7 +7890,7 @@
             </table>
             ${!window.showAllStaff && !query ? `
                 <div style="padding:15px; text-align:center; color:var(--muted); font-size:0.75rem; border-top:1px solid var(--border); font-weight:700; background:rgba(255,255,255,0.01);">
-                    💡 MOSTRANDO PERSONAL PRINCIPAL (ORO, PLATA, BRONCE Y COORD. AUXILIARES). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
+                    💡 MOSTRANDO EL EMPLEADO DE MUESTRA (INVITADO / VISITANTE). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
                 </div>
             ` : ''}
         `;
@@ -9223,69 +7926,12 @@
         });
         if (res && res.success) {
             toast('CAMBIO GUARDADO', 'success');
-            if (field === 'eye_id' || field === 'is_chofer') {
+            if (field === 'eye_id') {
                 await loadStaffList();
                 document.getElementById('staff-list-container').style.display = 'block';
             }
         }
     }
-
-    window.downloadStaffMatrixExcel = function() {
-        if (!window.currentFilteredStaff || window.currentFilteredStaff.length === 0) {
-            toast('NO HAY DATOS PARA DESCARGAR', 'warning');
-            return;
-        }
-
-        showLoading('GENERANDO EXCEL...');
-        try {
-            let excelData = [
-                ['CHOFER', 'NOMBRE', 'EYE ID', 'PERFIL OPERATIVO', 'PERFIL ADMIN', 'ESTADO', 'CÉDULA', 'TELÉFONO']
-            ];
-
-            window.currentFilteredStaff.forEach(u => {
-                excelData.push([
-                    u.is_chofer ? 'SÍ' : 'NO',
-                    u.name || '',
-                    u.eye_id || '',
-                    u.profile_opera || '',
-                    u.profile_admin || '',
-                    (u.is_active === 1 || u.is_active === true) ? 'ACTIVO' : 'INACTIVO',
-                    u.cedula || '',
-                    u.phone || ''
-                ]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
-            const colWidths = [
-                { wch: 8 },  // CHOFER
-                { wch: 30 }, // NOMBRE
-                { wch: 15 }, // EYE ID
-                { wch: 25 }, // PERFIL OPERATIVO
-                { wch: 15 }, // PERFIL ADMIN
-                { wch: 10 }, // ESTADO
-                { wch: 15 }, // CÉDULA
-                { wch: 15 }  // TELÉFONO
-            ];
-            ws['!cols'] = colWidths;
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Matriz Personal");
-
-            let fileName = 'matriz_personal';
-            if (window.cardFilter && window.cardFilter !== 'all') fileName += '_' + window.cardFilter.toLowerCase().replace(/ /g, '_');
-            const searchInput = document.getElementById('staff-search-input');
-            if (searchInput && searchInput.value) fileName += '_filtro_' + searchInput.value.toLowerCase().replace(/ /g, '_');
-            fileName += '.xlsx';
-
-            XLSX.writeFile(wb, fileName);
-            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
-        } catch (e) {
-            console.error(e);
-            toast('❌ ERROR AL GENERAR EXCEL', 'error');
-        } finally {
-            hideLoading();
-        }
-    };
 
     // --- MODAL EDICIÓN FICHA ---
     async function openStaffEditModal(id) {
@@ -9309,7 +7955,7 @@
         document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
         document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
         document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
-        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.carnet_url);
 
         // Calcular edad
         const age = calculateAge(u.birth_date);
@@ -9505,8 +8151,8 @@
 
         const carnetFile = document.getElementById('staff-carnet').files[0];
 
-        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || (!pagoMovil && !bankAccount) || !carnetFile) {
-            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !carnetFile || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (INCLUYENDO FECHA NAC., FOTO Y DATOS DE EMERGENCIA)', 'warning');
         }
         
         if (!pin) return toast('ERROR: PIN NO GENERADO', 'danger');
@@ -9620,17 +8266,14 @@
             res.forEach(update => {
                 const d = JSON.parse(update.proposed_data || '{}');
                 html += `
-                    <details style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px;">
-                        <summary style="margin:0; color:white; font-size:1.15rem; font-weight:900; cursor:pointer; outline:none; display:flex; justify-content:space-between; align-items:center;">
-                            <span>${update.user_name}</span>
-                            <span style="font-size:0.7rem; color:var(--accent); background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">VER DETALLES ▼</span>
-                        </summary>
-                        <div style="display:flex; justify-content:space-between; align-items:start; margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1);">
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px; display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
                             <div style="flex:1; padding-right:10px;">
-                                <div style="font-size:0.95rem; color:var(--muted); line-height:1.5;">
+                                <h4 style="margin:0; color:white; font-size:1.15rem;">${update.user_name} (Cédula: ${update.user_cedula || 'N/A'})</h4>
+                                <div style="font-size:0.95rem; color:var(--muted); margin-top:8px; line-height:1.5;">
                                     <b style="color:#fff;">Cédula:</b> ${update.user_cedula || 'N/A'}<br>
                                     <b style="color:#fff;">Teléfono:</b> ${d.phone || 'N/A'}<br>
-                                    <b style="color:#fff;">Banco:</b> ${d.pago_movil ? 'PAGO MÓVIL - ' + (d.bank_name || 'N/A') : (d.bank_name || 'N/A')}<br>
+                                    <b style="color:#fff;">Banco:</b> ${d.pago_movil ? 'PAGO MÓVIL' : (d.bank_name || 'N/A')}<br>
                                     <b style="color:#fff;">Cuenta:</b> ${d.pago_movil ? 'N/A' : (d.bank_account || 'N/A')}<br>
                                     <b style="color:#fff;">Dirección:</b> ${d.address || 'N/A'}<br>
                                     <b style="color:#fff;">Emergencia:</b> ${d.emergency_contact || 'N/A'}<br>
@@ -9644,12 +8287,12 @@
                                     : `<img src="/logo-eye-staff.jpeg" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--border);">`}
                             </div>
                         </div>
-                        <div style="display:flex; gap:5px; margin-top:15px;">
+                        <div style="display:flex; gap:5px; margin-top:auto; padding-top:15px;">
                             <button class="btn btn-sm" onclick="approveUpdate(${update.id})" style="flex:1; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">APROBAR</button>
                             <button class="btn btn-sm" onclick='modifyPendingUpdate(${update.id}, ${JSON.stringify(d).replace(/'/g, "\\'")})' style="flex:1; background:#f59e0b; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">MODIFICAR</button>
                             <button class="btn btn-sm" onclick="rejectUpdate(${update.id})" style="flex:1; background:#ef4444; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">RECHAZAR</button>
                         </div>
-                    </details>
+                    </div>
                 `;
             });
             container.innerHTML = html + '</div>';
@@ -9870,7 +8513,7 @@
                             u.phone || '', 
                             u.address || '', 
                             u.sector || '', 
-                            u.pago_movil ? 'PAGO MÓVIL - ' + (u.bank_name || '') : (u.bank_name || ''),
+                            u.pago_movil ? 'PAGO MÓVIL' : (u.bank_name || ''),
                             u.pago_movil ? 'N/A' : (u.bank_account || ''),
                             u.emergency_contact || '',
                             u.emergency_phone || '',
@@ -10876,237 +9519,134 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     function renderAccessControlPresentation(el) {
         if (!el) return;
         el.innerHTML = `
-            <div id="access-control-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
-                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
-                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS</h1>
+            <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 30px;">
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS DIGITAL 🚧</h1>
                 </div>
-                <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(168, 85, 247, 0.05); border:1px solid #a855f7; padding:35px; border-radius:24px;">
-                    <i style="font-size:3rem; display:block; margin-bottom:15px;">🚧</i>
-                    <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN EVENTO ASIGNADO</h2>
-                    <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
-                        No tiene ningún evento de control de accesos asignado actualmente o planificado.
+
+                <div style="border: 1px solid rgba(168, 85, 247, 0.3); border-top: 3px solid #a855f7; border-radius: 12px; margin-bottom: 40px; background: rgba(168, 85, 247, 0.03); padding: 25px; box-shadow: 0 -10px 20px rgba(168,85,247,0.1); text-align:center;">
+                    <p style="color:var(--muted); font-size:0.95rem; text-align:center; line-height:1.6; max-width:850px; margin:0 auto; text-transform:uppercase;">
+                        Nuestro sistema de control de acceso integral equilibra la <b style="color:var(--text);">seguridad técnica</b>, la <b style="color:var(--text);">fluidez del ingreso</b> y la <b style="color:var(--text);">recolección de datos estratégica</b> para transformar el flujo de personas en métricas accionables.
                     </p>
-                </div>
-                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
-                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                        ⬅ VOLVER
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-
-    function renderGuardiaPresentation(el) {
-        el.innerHTML = `
-            <div id="guardia-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
-                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
-                    <h1 class="view-title" style="color:#6366f1; font-size: 1.8rem; letter-spacing: 1px;">🌙 GUARDIA DIURNA/NOCTURNA</h1>
-                </div>
-                <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(99, 102, 241, 0.05); border:1px solid #6366f1; padding:35px; border-radius:24px;">
-                    <i style="font-size:3rem; display:block; margin-bottom:15px;">🌙</i>
-                    <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN GUARDIA ASIGNADA</h2>
-                    <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
-                        No tiene ninguna guardia asignada actualmente o planificada.
-                    </p>
-                </div>
-                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
-                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
-                        ⬅ VOLVER
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-    function renderGuardia(el) {
-        if (!el) return;
-        
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const isAdmin = isUserAdminOrStaff(user) || user.profile_admin === 'DIRECTOR' || user.profile_admin === 'COORDINADOR';
-
-        let filteredSessions = (window.allSessions || []).filter(s => {
-            const isGuardia = s.type && s.type.toLowerCase().includes('guardia');
-            if (!isGuardia) return false;
-            if (s.status !== 'active' && s.status !== 'planning') return false;
-            
-            if (isAdmin) return true;
-            return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
-        });
-
-        if (filteredSessions.length === 0) {
-            renderGuardiaPresentation(el);
-            return;
-        }
-
-        let session = null;
-        if (window.currentGuardiaSessionId) {
-            session = filteredSessions.find(s => s.id === window.currentGuardiaSessionId);
-        }
-        if (!session && filteredSessions.length > 0) {
-            session = filteredSessions[0];
-            window.currentGuardiaSessionId = session.id;
-        }
-
-        if (!session) {
-            session = filteredSessions[0];
-            window.currentGuardiaSessionId = session.id;
-        }
-
-        window.activeSession = session;
-
-        const headerHtml = `
-            <div id="guardia-view" style="animation: fadeIn 0.3s ease;">
-                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
-                    <h1 class="view-title" style="color:#6366f1; font-size: 1.8rem; letter-spacing: 1px;">🌙 GUARDIA DIURNA/NOCTURNA</h1>
+                    <button class="btn" style="background:#a855f7; color:white; margin-top:20px; font-weight:900; letter-spacing:1px;" onclick="enterModule('eventos')">VER EVENTOS PROGRAMADOS</button>
                 </div>
 
-                <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">GUARDIA SELECCIONADA</label>
-                        <select onchange="window.currentGuardiaSessionId = parseInt(this.value); renderGuardia(document.getElementById('current-view'));" 
-                            style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
-                            ${filteredSessions.map(s => 
-                                `<option value="${s.id}" ${session.id == s.id ? 'selected' : ''} style="color:${s.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
-                                    ${s.name.toUpperCase()} (${s.status === 'active' ? 'ACTIVO' : 'PLANIFICADO'})
-                                </option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                </div>
-                <div id="guardia-dashboard-container">
-                    <div style="padding: 20px; text-align:center; color:var(--muted);">Cargando detalles...</div>
-                </div>
-            </div>
-        `;
-
-        el.innerHTML = headerHtml;
-        renderGuardiaDashboard(document.getElementById('guardia-dashboard-container'), session);
-    }
-
-    async function renderGuardiaDashboard(el, session) {
-        if (!el || !session) return;
-        try {
-            const staffRes = await apiFetch('/api/staff');
-            const allStaff = staffRes?.staff || [];
-            const sessionStaffRaw = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
-            
-            const supervisors = sessionStaffRaw.filter(u => u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase()));
-            const employees = sessionStaffRaw.filter(u => !(u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase())));
-            
-            supervisors.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
-            employees.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
-            
-            const sessionStaff = [...supervisors, ...employees];
-
-            el.innerHTML = `
-                <div style="max-width:1200px; margin:0 auto; padding:0 15px;">
-                    <div class="stat-card" style="border-top:4px solid #6366f1; padding:25px; background: rgba(255, 255, 255, 0.02); border-radius:24px; position:relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:10px;">
-                            <div>
-                                <h2 style="margin:0; font-size:1.4rem; color:white; font-weight:900; letter-spacing:-0.5px;">${(session.type || 'EVENTO').toUpperCase()} - ${(session.name || '').toUpperCase()}</h2>
-                                <div style="font-size:0.8rem; color:#6366f1; font-weight:900; margin-top:10px; display:flex; align-items:flex-start; gap:8px; background:rgba(99,102,241,0.08); padding:10px 14px; border-radius:12px; border:1px solid rgba(99,102,241,0.2);">
-                                    <span style="font-size:1.1rem; margin-top:2px;">📅</span>
-                                    <span style="display:flex; flex-direction:column; gap:2px;">
-                                        <span style="color:white; font-size:0.85rem; font-weight:900;">${(() => {
-                                            try {
-                                                const d = new Date(session.started_at || session.created_at);
-                                                if (isNaN(d.getTime())) return 'S/F';
-                                                return d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-                                            } catch(e) {
-                                                return 'S/F';
-                                            }
-                                        })()}</span>
-                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:800; display:flex; gap:12px; margin-top:2px; flex-wrap:wrap;">
-                                            <span>📢 CONVOCATORIA: <b style="color:#6366f1;">${session.convocation_time || '00:00'} H</b></span>
-                                            <span>🚀 INICIO: <b style="color:white;">${session.event_start_time || '00:00'} H</b></span>
-                                        </span>
-                                    </span>
-                                </div>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:15px; width:100%;">
-                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
-                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">👤 CLIENTE / CONTACTO</span>
-                                        <span style="color:white; font-size:0.8rem; font-weight:700;">${(session.contact_name || session.client || 'NO ESPECIFICADO').toUpperCase()}</span>
-                                    </div>
-                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
-                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🏁 FINALIZACIÓN ESTIMADA</span>
-                                        <span style="color:white; font-size:0.8rem; font-weight:700;">
-                                            ${(() => {
-                                                try {
-                                                    if (!session.event_end_date) return 'NO ESPECIFICADA';
-                                                    const d = new Date(session.event_end_date + 'T00:00:00');
-                                                    if (isNaN(d.getTime())) return 'NO ESPECIFICADA';
-                                                    const datePart = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-                                                    const timePart = session.event_end_time ? ` - ${session.event_end_time} H` : '';
-                                                    return `${datePart}${timePart}`;
-                                                } catch(e) {
-                                                    return 'NO ESPECIFICADA';
-                                                }
-                                            })()}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:12px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
-                                    <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
-                                    ${session.address ? `
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
-                                            ${session.address.toUpperCase()} 🔗
-                                        </a>
-                                    ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
-                                </div>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom:40px;">
+                    <!-- ARQUITECTURA -->
+                    <div class="stat-card" style="padding: 25px;">
+                        <div class="stat-label" style="color:#a855f7; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">ARQUITECTURA DE ACCESO</div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👥 PARA INVITADOS / VIP</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>QR Dinámico vía Telegram/Email</li>
+                                    <li>Check-in rápido vía Tablets</li>
+                                    <li>Brazaletes con NFC/RFID o Térmicos</li>
+                                </ul>
+                            </div>
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">👷 PARA STAFF / PROVEEDORES</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>Acreditación Digital con Docs Legales</li>
+                                    <li>Control de Horarios y Montajes</li>
+                                    <li>Diferenciación de Zonas Restringidas</li>
+                                </ul>
                             </div>
                         </div>
- 
-                        <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:20px;">
-                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                                <i style="font-size:1.1rem; opacity:0.6;">📋</i>
-                                <span style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Control de Personal</span>
-                            </div>
-                            
-                            <div class="scheduled-staff-grid">
-                                ${(() => {
-                                    if (sessionStaff.length > 0) {
-                                        return sessionStaff.map(u => {
+                    </div>
 
-                                            const isSupervisor = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
-                                            const hasApiKey = !!u.callmebot_api_key;
-                                            return `
-                                                <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px;">
-                                                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
-                                                        <div style="font-size:0.82rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
-                                                            ${u.name.toUpperCase()}
-                                                            ${isSupervisor ? `
-                                                                <span style="font-size:0.55rem; background:rgba(99,102,241,0.12); color:#6366f1; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(99,102,241,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
-                                                                    SUPERVISOR
-                                                                </span>
-                                                            ` : ''}
-                                                        </div>
-                                                    </div>
-                                                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                                                        ${hasApiKey ? `
-                                                            <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
-                                                                📲 AUTO
-                                                            </button>
-                                                        ` : ''}
-                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
-                                                            💬
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }).join('');
-                                    }
-                                    return '<div style="font-size:0.65rem; color:var(--muted); font-style:italic; text-align:center; padding:20px;">SIN PERSONAL ASIGNADO</div>';
-                                })()}
+                    <!-- DASHBOARD -->
+                    <div class="stat-card" style="padding: 25px;">
+                        <div class="stat-label" style="color:#22c55e; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">DASHBOARD EN TIEMPO REAL</div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Show-up Rate</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--%</div>
+                                </div>
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aforo Actual</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">--/--</div>
+                                </div>
+                            </div>
+                            <div style="background:var(--surface2); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                                <h3 style="margin-top:0; color:#fff; font-size:0.95rem; text-transform:uppercase; letter-spacing: 1px;">📊 KPIs ESTRATÉGICOS</h3>
+                                <ul style="margin:12px 0 0 0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                                    <li>Curva de Afluencia Horaria</li>
+                                    <li>Índice de Recurrencia (Loyalty)</li>
+                                    <li>Tiempo de Permanencia Promedio</li>
+                                    <li>Alertas VVIP e Incidencias</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
-        } catch (e) {
-            console.error('Render Guardia Error:', e);
-            el.innerHTML = '<div style="color:var(--danger); padding:20px;">ERROR AL CARGAR DETALLES</div>';
-        }
+
+                <div class="stat-card" style="margin-bottom:40px; padding: 25px;">
+                    <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">FLUJO OPERATIVO "LLAVE EN MANO"</div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left; text-transform:uppercase;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--border);">
+                                    <th style="padding:15px 10px; font-weight:900;">ETAPA</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ACCIÓN DIGITAL</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ELEMENTO FÍSICO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">PRE-EVENTO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Registro landing y base de datos</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Envío de QR digital</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">INGRESO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Escaneo y validación ID</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Colocación brazalete</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px 10px; font-weight:900;">DURANTE</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Monitoreo zonas de calor/VIP</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Uso para consumos (NFC)</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding:15px 10px; font-weight:900;">POST-EVENTO</td>
+                                    <td style="padding:15px 10px; color:var(--muted);">Cierre asistencia y encuestas</td>
+                                    <td style="padding:15px 10px; color:#a855f7;">Dashboard final KPIs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:25px; margin-bottom:60px;">
+                    <div class="stat-card" style="border-left:4px solid var(--accent); padding: 25px;">
+                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">HARDWARE Y LOGÍSTICA</div>
+                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                            <li><b style="color:var(--text);">Handhelds Industriales</b> de alto rendimiento</li>
+                            <li><b style="color:var(--text);">Infraestructura Física:</b> Unifilas y tótems</li>
+                            <li><b style="color:var(--text);">Conectividad:</b> Wi-Fi Móvil o Starlink</li>
+                            <li><b style="color:var(--text);">Modo Offline:</b> Escaneo sin internet</li>
+                        </ul>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning); padding: 25px;">
+                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">PERFILES DE STAFF</div>
+                        <ul style="margin:0; padding-left:20px; font-size:0.75rem; color:var(--muted); line-height:1.8; text-transform:uppercase;">
+                            <li>Hostess / Recepción VIP Bilingüe</li>
+                            <li>Validadores de Alto Volumen (Scanners)</li>
+                            <li>Gestores de Acreditación Staff</li>
+                            <li>Supervisores de Flujo (Lead Staff)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-bottom:40px;">
+                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                        ⬅ VOLVER AL HOME
+                    </button>
+                </div>
+            </div>
+        `;
     }
 
     function renderRentaEquipos(el) {
@@ -11245,7 +9785,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const consolidated = {};
         res.submissions.filter(s => s.status === 'approved').forEach(s => {
             if (!consolidated[s.staff_name]) {
-                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.pago_movil ? 'PAGO MÓVIL - ' + (s.bank_name || 'N/A') : (s.bank_name || 'N/A'), account: s.pago_movil ? 'N/A' : (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
+                consolidated[s.staff_name] = { total: 0, events: 0, bank: s.pago_movil ? 'PAGO MÓVIL' : (s.bank_name || 'N/A'), account: s.pago_movil ? 'N/A' : (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
             }
             const amt = s.amount || 0;
             consolidated[s.staff_name].total += amt;
@@ -11841,7 +10381,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             dateHeader += ` (${sessions.length})`;
         }
         
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         let eventsHtml = sessions.length > 0 ? sessions.map(s => {
             const isClosed = s.status === 'closed' || s.status === 'concluded';
             const isActive = s.status === 'active';
@@ -11849,7 +10388,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
-                    ${currentUser.name === 'ADMIN' ? `<button onclick="deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div style="grid-column:span 2; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
@@ -11927,25 +10465,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
 
         wrapper.appendChild(detailOverlay);
     }
-
-    window.deleteEventFromCalendar = async function(id) {
-        if (!confirm('⚠️ ¿ESTÁ SEGURO DE ELIMINAR ESTE EVENTO POR COMPLETO? Esta acción es irreversible.')) return;
-        showLoading('ELIMINANDO EVENTO...');
-        try {
-            const res = await apiFetch(`/api/sessions/${id}`, { method: 'DELETE' });
-            if (res && res.success) {
-                toast('🗑️ EVENTO ELIMINADO', 'success');
-                document.getElementById('calendar-detail-overlay')?.remove();
-                await checkActiveSession();
-                const view = document.getElementById('current-view');
-                if (view) renderListas(view);
-            } else throw new Error(res.error || 'Error');
-        } catch (e) {
-            toast('❌ ERROR: ' + e.message, 'error');
-        } finally {
-            hideLoading();
-        }
-    };
 
     window.confirmEventFromCalendar = async function(id) {
         if (!confirm('¿DESEA INICIAR LA OPERACIÓN DE ESTE EVENTO AHORA MISMO?')) return;
@@ -12292,6 +10811,33 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             </div>
                         </div>
 
+                        <!-- SECCIÓN EQUIPOS / ACTIVOS -->
+                        <div class="vehicle-card" id="equipos-activos-card" style="padding:12px; border-radius:15px; background:rgba(168, 85, 247, 0.05); border:1px solid rgba(168, 85, 247, 0.2);">
+                            <h3 style="font-size:0.75rem; color:#a855f7; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('equipos-content'); const icon = document.getElementById('equipos-icon'); if(content.style.display==='none'){content.style.display='flex'; icon.textContent='▲';}else{content.style.display='none'; icon.textContent='▼';}">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <input type="checkbox" id="cb-assets" onchange="if(window.toggleMapLayer) window.toggleMapLayer('assets', this.checked)" style="accent-color:#a855f7; width:14px; height:14px; cursor:pointer;" onclick="event.stopPropagation()">
+                                    <span>📻 EQUIPOS Y ACTIVOS</span>
+                                </div>
+                                <div>
+                                    <span style="font-size:0.6rem; background:#a855f7; color:white; padding:2px 8px; border-radius:10px; margin-right:5px;">${locations.assets.length}</span>
+                                    <span id="equipos-icon">▼</span>
+                                </div>
+                            </h3>
+                            <div id="equipos-content" style="display:none; flex-direction:column; gap:6px; max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${locations.assets.map(a => `
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div>
+                                            <div style="font-size:0.75rem; font-weight:900; color:#fff;">${a.name.toUpperCase()}</div>
+                                            <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${a.type} • BATERÍA: <span style="color:var(--success)">85%</span></div>
+                                        </div>
+                                        <button class="btn btn-sm" style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#a855f7;" onclick="centerMapOn(${a.latitude}, ${a.longitude})">VER</button>
+                                    </div>
+                                `).join('') || '<div style="font-size:0.6rem; color:var(--muted); text-align:center;">SIN EQUIPOS REGISTRADOS</div>'}
+                            </div>
+                            <button class="btn" style="width:100%; margin-top:15px; font-size:0.65rem; padding:10px; border-radius:10px; background:rgba(168, 85, 247, 0.2); border:1px solid #a855f7; color:#fff;" onclick="showAddAssetForm()">+ REGISTRAR EQUIPO</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -12328,7 +10874,19 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     window.assetsMarkersLayer.addLayer(marker);
                 });
 
-
+                // Agregar markers de Assets (Violetas)
+                locations.assets.forEach(a => {
+                    const marker = L.circleMarker([a.latitude, a.longitude], {
+                        radius: 8,
+                        fillColor: "#a855f7",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                    marker.bindPopup(`<b>${a.name.toUpperCase()}</b><br>${a.type}`);
+                    window.assetsMarkersLayer.addLayer(marker);
+                });
 
                 /*
                 if (locations.staff.length > 0 || locations.assets.length > 0) {
@@ -12342,6 +10900,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     let targetLayer = null;
                     if (layerName === 'liveLoc') targetLayer = window.liveLocLayer;
                     if (layerName === 'home') targetLayer = window.homeMarkersLayer;
+                    if (layerName === 'assets') targetLayer = window.assetsMarkersLayer;
                     
                     if (targetLayer) {
                         if (show) {
@@ -12355,6 +10914,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     const visibleLayers = [];
                     if (window.leafletMap.hasLayer(window.liveLocLayer)) visibleLayers.push(window.liveLocLayer);
                     if (window.leafletMap.hasLayer(window.homeMarkersLayer)) visibleLayers.push(window.homeMarkersLayer);
+                    if (window.leafletMap.hasLayer(window.assetsMarkersLayer)) visibleLayers.push(window.assetsMarkersLayer);
 
                     let bounds = new L.LatLngBounds();
                     let hasVisible = false;
@@ -12374,18 +10934,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         // Vista por defecto Caracas
                         window.leafletMap.setView([10.4806, -66.9036], 11);
                     }
-                };
-
-                // Helper: activa domicilios cuando ambas condiciones se cumplen
-                // (live-locations resuelto Y domDiv en DOM)
-                window._homeLayerShouldActivate = null; // null=pendiente, true=activar, false=no activar
-                window.tryActivateHomeLayer = function() {
-                    if (window._homeLayerShouldActivate !== true) return;
-                    const cbHome = document.getElementById('cb-home');
-                    if (!cbHome) return; // domDiv aún no está en el DOM
-                    window._homeLayerShouldActivate = false;
-                    cbHome.checked = true;
-                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
                 };
 
                 // ── DOMICILIOS: Geocodificar direcciones del personal ──
@@ -12447,37 +10995,12 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                 const cbLive = document.getElementById('cb-liveloc');
                                 if (cbLive) { cbLive.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('liveLoc', true); }
                             } else {
-                                // No hay ubicaciones en vivo -> activar domicilios cuando el panel esté en el DOM
-                                window._homeLayerShouldActivate = true;
-                                window.tryActivateHomeLayer();
-                            }
-                        } else {
-                            // ── CAMBIO DINÁMICO DURANTE POLLING ──
-                            const prev = window._prevLiveCount || 0;
-                            if (prev === 0 && locs.length > 0) {
-                                // Apareció ubicación en vivo: activar live, desactivar domicilios
-                                const cbLive = document.getElementById('cb-liveloc');
+                                // No hay ubicaciones en vivo -> Activar "Equipos y Activos" y "Domicilios"
+                                const cbAssets = document.getElementById('cb-assets');
+                                if (cbAssets) { cbAssets.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('assets', true); }
+                                
                                 const cbHome = document.getElementById('cb-home');
-                                if (cbHome && cbHome.checked) {
-                                    cbHome.checked = false;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('home', false);
-                                }
-                                if (cbLive && !cbLive.checked) {
-                                    cbLive.checked = true;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', true);
-                                }
-                            } else if (prev > 0 && locs.length === 0) {
-                                // Desapareció la última ubicación en vivo: desactivar live, activar domicilios
-                                const cbLive = document.getElementById('cb-liveloc');
-                                const cbHome = document.getElementById('cb-home');
-                                if (cbLive && cbLive.checked) {
-                                    cbLive.checked = false;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', false);
-                                }
-                                if (cbHome && !cbHome.checked) {
-                                    cbHome.checked = true;
-                                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
-                                }
+                                if (cbHome) { cbHome.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('home', true); }
                             }
                         }
 
@@ -12832,9 +11355,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         }
                         sidePanel.appendChild(domDiv);
 
-                        // Intentar activar domicilios si live-locations ya resolvió sin vivos
-                        window.tryActivateHomeLayer();
-
                         // Inicializar el filtro de búsqueda interactivo en tiempo real
                         const searchInput = domDiv.querySelector('#staff-home-search');
                         searchInput.addEventListener('input', (e) => {
@@ -12901,20 +11421,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         }
                     }
 
-                    // Ajustar vista del mapa a los domicilios si no hay ubicaciones en vivo
+                    // Ajustar los límites del mapa desactivado para preservar la vista inicial
                     setTimeout(() => {
-                        const hasLiveLoc = window._prevLiveCount && window._prevLiveCount > 0;
-                        if (!hasLiveLoc && window.homeMarkersLayer) {
-                            const bounds = new L.LatLngBounds();
-                            let hasMarkers = false;
-                            window.homeMarkersLayer.eachLayer(m => {
-                                if (m.getLatLng) { bounds.extend(m.getLatLng()); hasMarkers = true; }
-                            });
-                            if (hasMarkers && window.leafletMap) {
-                                window.leafletMap.flyToBounds(bounds.pad(0.15), { duration: 1.2 });
-                            }
-                        }
-                    }, 800);
+                        // Código de fitbounds de domicilios eliminado a petición del usuario
+                    }, 1200);
 
                     // Ocultar o actualizar indicador si todo está en caché
                     setTimeout(() => {
@@ -12987,14 +11497,14 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         document.getElementById('edit-staff-bank').value = u.bank_name || '';
         document.getElementById('edit-staff-account').value = u.bank_account || '';
         document.getElementById('edit-staff-pago-movil').checked = !!u.pago_movil;
-        // document.getElementById('edit-staff-bank').disabled is no longer manipulated based on pago_movil
+        document.getElementById('edit-staff-bank').disabled = !!u.pago_movil;
         document.getElementById('edit-staff-account').disabled = !!u.pago_movil;
         document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
         document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
         document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
 
         document.getElementById('edit-staff-chofer').checked = !!u.is_chofer;
-        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.carnet_url);
 
         // Calcular edad
         const age = calculateAge(u.birth_date);
@@ -13042,8 +11552,8 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const ePhone = document.getElementById('edit-staff-e-phone').value.trim();
         const allergies = document.getElementById('edit-staff-allergies').value.trim();
 
-        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || (!pagoMovil && !bankAccount)) {
-            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || (!pagoMovil && (!bankName || !bankAccount)) || !eContact || !ePhone || !allergies) {
+            return toast('TODOS LOS CAMPOS SON OBLIGATORIOS (EXCEPTO FOTO)', 'warning');
         }
 
         const updates = {
@@ -13198,32 +11708,6 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
         toast('✅ Abriendo Telegram con ' + name, 'success');
-    };
-
-    window.openWhatsappDirectMessage = function(phone, userName) {
-        if (!phone) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin teléfono',
-                    text: `⚠️ ${userName} no tiene un número de teléfono registrado.`
-                });
-            } else {
-                alert(`⚠️ ${userName} no tiene un número de teléfono registrado.`);
-            }
-            return;
-        }
-        let cleanPhone = phone.replace(/[^\d+]/g, '');
-        if (cleanPhone.startsWith('+')) {
-            cleanPhone = cleanPhone.substring(1);
-        } else if (cleanPhone.startsWith('0')) {
-            cleanPhone = '58' + cleanPhone.substring(1);
-        } else if (cleanPhone.length <= 10) {
-            cleanPhone = '58' + cleanPhone;
-        }
-        
-        const url = `whatsapp://send?phone=${cleanPhone}`;
-        window.location.href = url;
     };
 
     window.openTelegramDirectMessage = async function(userId, userName, hasTelegram) {
@@ -13471,1732 +11955,3 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             }
         });
     }
-</script>
-
-    <!-- MODAL EDICIÓN FICHA EMPLEADO -->
-    <div id="staff-edit-modal" class="modal-overlay" style="display:none; z-index:10000; align-items:center; justify-content:center;">
-        <div class="modal-card" style="max-width:900px; width:95%; max-height:90vh; overflow-y:auto; padding:30px; background:var(--surface); border:1px solid var(--border);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">
-                <h2 style="margin:0; font-size:1.4rem; letter-spacing:1px; color:#fff; font-weight:900;">FICHA DE EMPLEADO</h2>
-                <button class="btn btn-sm btn-danger" onclick="closeStaffEditModal()" style="padding:5px 15px; font-weight:900;">CERRAR ×</button>
-            </div>
-            
-            <div style="display:flex; gap:30px; flex-wrap:wrap;">
-                <!-- FOTO -->
-                <div style="flex:1; min-width:250px; text-align:center; display: flex; flex-direction: column; align-items: center;">
-                    <div class="carnet-preview-container" onclick="document.getElementById('edit-staff-carnet').click()" style="width:100%; height:350px; margin-bottom:10px; border: 2px dashed rgba(255,255,255,0.1); border-radius:16px; overflow:hidden; background:rgba(0,0,0,0.2); cursor:pointer;">
-                        <img id="edit-carnet-img" src="/logo-eye-staff.jpeg" style="width:100%; height:100%; object-fit:contain;">
-                    </div>
-                    <input type="file" id="edit-staff-carnet" hidden accept="image/*" onchange="previewEditCarnet(this)">
-                    <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:15px;">TAP PARA CAMBIAR FOTO</p>
-                    
-                    <div id="edit-staff-age-calc-display" style="text-align: center; width: 100%; max-width: 280px; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; font-size: 0.85rem; font-weight: 800; color: var(--muted); letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                        <span id="edit-staff-age-icon" style="transition: all 0.3s; display: inline-block;">🎂</span> EDAD: <span id="edit-staff-age-val" style="color: var(--success); font-weight: 900; font-size: 1rem;">--</span> AÑOS
-                    </div>
-                </div>
-
-                <!-- DATOS -->
-                <div style="flex:2; min-width:300px;">
-                    <input type="hidden" id="edit-staff-id">
-                    
-                    <div class="field" style="margin-bottom:15px;"><label>NOMBRE COMPLETO <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-name" style="font-weight:800; color:#fff;"></div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>EYE ID <span style="color:var(--danger);">*</span></label>
-                            <select id="edit-staff-eye-id" style="font-weight:900;">
-                                <option value="ORO">ORO</option>
-                                <option value="PLATA">PLATA</option>
-                                <option value="BRONCE">BRONCE</option>
-                                <option value="LOGÍSTICA">LOGÍSTICA</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
-                        </div>
-                        <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
-                            <select id="edit-staff-profile-admin" style="font-weight:800;">
-                                <option value="NO APLICA">NO APLICA</option>
-                                <option value="DIRECTOR">DIRECTOR</option>
-                                <option value="COORDINADOR">COORDINADOR</option>
-                                <option value="EMPLEADO">EMPLEADO</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
-                            <select id="edit-staff-profile-opera" style="font-weight:800;">
-                                <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
-                                <option value="SUPERVISOR">SUPERVISOR</option>
-                                <option value="COORDINADOR">COORDINADOR</option>
-                                <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
-                                <option value="LOGÍSTICA">LOGISTICA</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
-                        </div>
-                        <div class="field" style="margin-bottom:0;"><label>ESTADO <span style="color:var(--danger);">*</span></label>
-                            <select id="edit-staff-active" style="font-weight:800;">
-                                <option value="1">ACTIVO</option>
-                                <option value="0">INACTIVO (DEPURADO)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>CÉDULA <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-cedula" style="font-weight:700;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>TELÉFONO <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-phone" style="font-weight:700;"></div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>CORREO ELECTRÓNICO <span style="color:var(--danger);">*</span></label><input type="email" id="edit-staff-email"></div>
-                        <div class="field" style="margin-bottom:0;"><label>FECHA NACIMIENTO <span style="color:var(--danger);">*</span></label><input type="date" id="edit-staff-birth-date" onchange="updateEditAgeDisplay(this.value)" oninput="updateEditAgeDisplay(this.value)" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;"></div>
-                    </div>
-                    
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-address"></div>
-                        <div class="field" style="margin-bottom:0;"><label>SECTOR <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-sector"></div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr 130px; gap:15px; margin-bottom:15px; align-items: end;">
-                        <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA <span style="color:var(--danger);">*</span></label>
-                            <select id="edit-staff-bank" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
-                                <option value="">Seleccione un banco...</option>
-                                <option value="BANCO DE VENEZUELA">Banco de Venezuela</option>
-                                <option value="BANCO DIGITAL DE LOS TRABAJADORES">Banco Digital de los Trabajadores (antes Bicentenario)</option>
-                                <option value="BANCO DEL TESORO">Banco del Tesoro</option>
-                                <option value="BANFANB">BANFANB</option>
-                                <option value="BANCO AGRÍCOLA DE VENEZUELA">Banco Agrícola de Venezuela</option>
-                                <option value="BANESCO">Banesco</option>
-                                <option value="MERCANTIL">Mercantil</option>
-                                <option value="BBVA PROVINCIAL">BBVA Provincial</option>
-                                <option value="BANCO NACIONAL DE CRÉDITO (BNC)">Banco Nacional de Crédito (BNC)</option>
-                                <option value="BANCARIBE">Bancaribe</option>
-                                <option value="BANCO EXTERIOR">Banco Exterior</option>
-                                <option value="BANCAMIGA">Bancamiga</option>
-                                <option value="BANPLUS">Banplus</option>
-                                <option value="BFC BANCO FONDO COMÚN">BFC Banco Fondo Común</option>
-                                <option value="BANCO PLAZA">Banco Plaza</option>
-                                <option value="100% BANCO">100% Banco</option>
-                                <option value="VENEZOLANO DE CRÉDITO">Venezolano de Crédito</option>
-                                <option value="BANCO ACTIVO">Banco Activo</option>
-                                <option value="BANCO CARONÍ">Banco Caroní</option>
-                                <option value="DELSUR">Delsur</option>
-                                <option value="BANCO SOFITASA">Banco Sofitasa</option>
-                                <option value="N58 BANCO DIGITAL">N58 Banco Digital</option>
-                                <option value="BANCRECER">Bancrecer</option>
-                                <option value="BANGENTE">Bangente</option>
-                                <option value="MI BANCO">Mi Banco</option>
-                                <option value="BANCO INTERNACIONAL DE DESARROLLO">Banco Internacional de Desarrollo</option>
-                                <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR">Instituto Municipal de Crédito Popular</option>
-                            </select>
-                        </div>
-                        <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA <span style="color:var(--danger);">*</span></label><input type="text" id="edit-staff-account"></div>
-                        <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
-                            <input type="checkbox" id="edit-staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('edit-staff-account').disabled = this.checked; if(this.checked) { document.getElementById('edit-staff-account').value = ''; }">
-                            <label for="edit-staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
-                        </div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
-                        <div class="field" style="margin-bottom:0;"><label>FAMILIAR</label><input type="text" id="edit-staff-e-contact" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR</label><input type="text" id="edit-staff-e-phone" style="font-size:0.75rem;"></div>
-                        <div class="field" style="margin-bottom:0;"><label>ALERGIAS</label><input type="text" id="edit-staff-allergies" style="font-size:0.75rem;"></div>
-                    </div>
-
-
-
-                    <div class="field" style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; gap:15px;">
-                        <input type="checkbox" id="edit-staff-chofer" style="width:20px; height:20px; cursor:pointer;">
-                        <div style="display:flex; flex-direction:column; gap:3px;">
-                            <label for="edit-staff-chofer" style="font-size:0.85rem; font-weight:900; color:#fff; cursor:pointer; margin:0;">CHOFER AUTORIZADO (VEHÍCULOS EYE STAFF)</label>
-                            <span style="font-size:0.65rem; color:var(--muted); font-weight:700;">Al estar marcado, sugerimos que el empleado comparta su ubicación durante los servicios.</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; gap:15px; width:100%; margin-top:10px;">
-                        <button class="btn" onclick="deleteCurrentStaff()" style="flex:1; height:55px; font-weight:900; font-size:0.9rem; border-radius:12px; letter-spacing:1px; background:rgba(239, 68, 68, 0.12); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3); cursor:pointer;">🗑️ ELIMINAR REGISTRO</button>
-                        <button class="btn btn-accent" onclick="saveStaffEdit()" style="flex:2; height:55px; font-weight:900; font-size:1.05rem; border-radius:12px; letter-spacing:1px;">GUARDAR CAMBIOS EN FICHA</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PERSONALIZAR PIN DE ACCESO -->
-    <div id="change-pin-modal" class="modal-overlay" style="display:none; z-index:10001; align-items:center; justify-content:center;">
-        <div class="modal-card" style="max-width:400px; width:95%; padding:30px; background:var(--surface); border:1px solid var(--border); border-radius: 18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">
-                <h2 style="margin:0; font-size:1.1rem; letter-spacing:1px; color:#fff; font-weight:900;">PERSONALIZAR PIN</h2>
-                <button class="btn btn-sm btn-danger" onclick="closeChangePinModal()" style="padding:5px 15px; font-weight:900;">×</button>
-            </div>
-            
-            <div style="display:flex; flex-direction:column; gap:15px;">
-                <div class="field">
-                    <label>PIN ACTUAL</label>
-                    <input type="password" id="pin-actual" placeholder="Ingresa PIN actual" style="font-weight:700; color:#fff; text-align:center; letter-spacing:8px; font-size:1.2rem; background: var(--surface2); height:45px; border-radius:8px; border:1px solid var(--border);">
-                </div>
-                <div class="field">
-                    <label>NUEVO PIN</label>
-                    <input type="password" id="pin-nuevo" placeholder="Ingresa nuevo PIN" style="font-weight:700; color:#fff; text-align:center; letter-spacing:8px; font-size:1.2rem; background: var(--surface2); height:45px; border-radius:8px; border:1px solid var(--border);">
-                </div>
-                <div class="field">
-                    <label>CONFIRMAR NUEVO PIN</label>
-                    <input type="password" id="pin-confirmar" placeholder="Confirma nuevo PIN" style="font-weight:700; color:#fff; text-align:center; letter-spacing:8px; font-size:1.2rem; background: var(--surface2); height:45px; border-radius:8px; border:1px solid var(--border);">
-                </div>
-                
-                <button class="btn btn-accent" onclick="saveNewPin()" style="width:100%; height:45px; font-weight:900; font-size:1rem; border-radius:10px; margin-top:10px;">ACTUALIZAR PIN</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE VERIFICACIÓN DE PIN PARA CONSULTA -->
-    <div id="pin-verification-modal" class="modal-overlay" style="display:none; z-index:10002; align-items:center; justify-content:center;">
-        <div class="modal-card" style="max-width:400px; width:95%; padding:30px; background:var(--surface); border:1px solid var(--border); border-radius: 18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px;">
-                <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff; font-weight:900;">🔐 SEGURIDAD: VERIFICACIÓN</h2>
-                <button class="btn btn-sm btn-danger" onclick="closePinVerificationModal()" style="padding:5px 15px; font-weight:900;">×</button>
-            </div>
-            <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px; text-align:center; line-height:1.4;">
-                Para acceder a la consola de consulta de Pines del personal, por favor ingresa tu clave personal de administrador de seguridad.
-            </p>
-            <div style="display:flex; flex-direction:column; gap:15px;">
-                <div class="field">
-                    <label>TU PIN DE ACCESO</label>
-                    <input type="password" id="verification-admin-pin" placeholder="Ingresa tu PIN" style="font-weight:700; color:#fff; text-align:center; letter-spacing:8px; font-size:1.2rem; background: var(--surface2); height:45px; border-radius:8px; border:1px solid var(--border);">
-                </div>
-                <button class="btn btn-warning" onclick="verifyAdminPinAndOpenConsole()" style="width:100%; height:45px; font-weight:900; font-size:1rem; border-radius:10px; margin-top:5px; color:#000;">VERIFICAR Y ACCEDER</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CONSOLA DE CONSULTA DE PINES -->
-    <div id="pin-query-console-modal" class="modal-overlay" style="display:none; z-index:10003; align-items:center; justify-content:center;">
-        <div class="modal-card" style="max-width:850px; width:95%; max-height:85vh; padding:30px; background:var(--surface); border:1px solid var(--border); border-radius: 18px; display:flex; flex-direction:column;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px; flex-shrink:0;">
-                <div>
-                    <h2 style="margin:0; font-size:1.2rem; letter-spacing:1px; color:#fff; font-weight:900;">🔑 CONSOLA DE SEGURIDAD: CONSULTA DE PINES</h2>
-                    <span style="font-size:0.7rem; color:var(--muted); font-weight:bold; text-transform:uppercase;">Solo Visualización en Pantalla • Acceso Auditado</span>
-                </div>
-                <button class="btn btn-sm btn-danger" onclick="closePinQueryConsoleModal()" style="padding:5px 15px; font-weight:900;">×</button>
-            </div>
-            
-            <!-- Buscador interno rápido -->
-            <div style="margin-bottom:15px; flex-shrink:0;">
-                <input type="text" id="pin-console-search" placeholder="🔍 Buscar por nombre o cédula..." oninput="filterPinConsoleGrid()" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 15px; font-weight:bold;">
-            </div>
-
-            <!-- Grilla/Contenedor de Datos -->
-            <div style="flex-grow:1; overflow-y:auto; border:1px solid var(--border); border-radius:10px; background:rgba(0,0,0,0.2);">
-                <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left;">
-                    <thead>
-                        <tr style="background:var(--surface2); color:var(--muted); font-weight:900; text-transform:uppercase; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1;">
-                            <th style="padding:12px 15px;">EMPLEADO</th>
-                            <th style="padding:12px 15px;">CÉDULA</th>
-                            <th style="padding:12px 15px;">EYE ID</th>
-                            <th style="padding:12px 15px;">PERFILES</th>
-                            <th style="padding:12px 15px; text-align:center;">ESTADO</th>
-                            <th style="padding:12px 15px; text-align:center; color:var(--warning);">PIN ACTIVO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pin-query-tbody">
-                        <!-- Filas inyectadas dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="margin-top:15px; text-align:center; font-size:0.65rem; color:var(--muted); font-weight:bold; flex-shrink:0; border-top:1px solid var(--border); padding-top:15px;">
-                Cualquier acceso o consulta de claves queda registrado con fecha, hora y firma del administrador en la bitácora de auditoría inmutable del sistema.
-            </div>
-        </div>
-    </div>
-<!-- LIBRERÍAS Y MÓDULO DE PRESUPUESTOS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-<script>
-const PRESUPUESTO_CATALOGO = [
-    { desc: "Personal de Guardia Nocturna", precio: 2000 },
-    { desc: "Coordinador de Area", precio: 4500 },
-    { desc: "Personal de Logística, Prevención y Control", precio: 2300 },
-    { desc: "Supervisor", precio: 5500 },
-    { desc: "Servicio de Alquiler de Radios de Comunicación UHF", precio: 1200 },
-    { desc: "Desayunos", precio: 550 },
-    { desc: "Almuerzos", precio: 600 },
-    { desc: "Cenas", precio: 600 },
-    { desc: "Viáticos para Comida e Hidratación", precio: 0 },
-    { desc: "Personal de Protocolo y Logística", precio: 0 },
-    { desc: "Personal de Montaje y Desmontaje", precio: 0 },
-    { desc: "Custodia de Artistas y Personalidades", precio: 0 },
-    { desc: "Personal de Vallet Parking", precio: 0 },
-    { desc: "Equipos de Vialidad", precio: 0 },
-    { desc: "Postes Separadores de Colas", precio: 0 },
-    { desc: "Toldos", precio: 0 },
-    { desc: "Baños Portátiles", precio: 0 },
-    { desc: "Alquiler de Extintores", precio: 0 },
-    { desc: "Sistema de Monitoreo Móvil hasta 8 cámaras", precio: 0 }
-];
-
-let itemsPresupuesto = [];
-
-function renderPresupuestos(el) {
-    itemsPresupuesto = []; // reset
-    el.innerHTML = `
-        <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
-            ${getVolverBtn('VOLVER A DIRECCIÓN EYE STAFF', 'renderVipEyeStaff(document.getElementById(\'current-view\'))')}
-        </div>
-        
-        <div style="display:flex; justify-content:center; margin-bottom:20px;">
-            <div style="display:flex; background:rgba(0,0,0,0.2); border-radius:12px; padding:5px;">
-                <button id="btn-tab-historial" onclick="switchPresupuestoTab('historial')" style="padding:10px 20px; font-weight:bold; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer; font-size:1rem; transition:0.3s;">HISTORIAL <span id="historial-tab-count" style="background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:0.7rem; vertical-align:middle; margin-left:5px;">0</span></button>
-                <button id="btn-tab-generador" onclick="switchPresupuestoTab('generador')" style="padding:10px 20px; font-weight:bold; border-radius:8px; border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:1rem; transition:0.3s;">PRESUPUESTO</button>
-            </div>
-        </div>
-        
-        <div id="tab-generador-content" style="display:none;">
-        <div class="card" style="max-width:900px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
-                <h3 id="generador-title" style="color:#a855f7; margin:0; font-weight:900;">NUEVO PRESUPUESTO</h3>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                <div class="field" style="grid-column: 1 / -1; display:flex; gap:15px; margin-bottom:5px;">
-                    <div style="flex:1;">
-                        <label>Nº PRESUPUESTO</label>
-                        <input type="text" id="pres-correlativo" readonly style="width:100%; height:42px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:0 10px; font-weight:900;">
-                    </div>
-                    <div style="flex:2;">
-                        <label>Presupuestado por:</label>
-                        <select id="pres-empresa-emisora" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;" onchange="window.fetchNextBudgetId()">
-                            <option value="EYE STAFF">EYE STAFF</option>
-                            <option value="RENTAEQUIPOS">RENTAEQUIPOS</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="field"><label>NOMBRE DE CLIENTE</label><input type="text" id="pres-atencion" placeholder="Ej. RAQUEL DAHER"></div>
-                <div class="field"><label>EMPRESA</label><input type="text" id="pres-empresa" placeholder="Ej. EMPORIO GROUP" list="lista-empresas" onchange="autoFillEmpresa()" onblur="autoFillEmpresa()">
-                    <datalist id="lista-empresas"></datalist>
-                </div>
-                <div class="field"><label>TELÉFONO</label><input type="text" id="pres-telefonos" placeholder="Teléfono"></div>
-                <div class="field"><label>E-MAIL</label><input type="email" id="pres-email" placeholder="Correo"></div>
-                
-                <div class="field" style="grid-column: 1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
-                    <div><label>NOMBRE DEL EVENTO</label><input type="text" id="pres-evento" placeholder="Ej. MIS DULCE 15"></div>
-                    <div><label>TIPO DE EVENTO</label>
-                        <select id="pres-tipo-evento" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;">
-                            <option value="VALET PARKING">VALET PARKING</option>
-                            <option value="CONTROL DE ACCESOS">CONTROL DE ACCESOS</option>
-                            <option value="ALQUILER DE EQUIPOS">ALQUILER DE EQUIPOS</option>
-                            <option value="TRASLADOS">TRASLADOS</option>
-                            <option value="GUARDIA DIURNA/NOCTURNA">GUARDIA DIURNA/NOCTURNA</option>
-                            <option value="CUSTODIA">CUSTODIA</option>
-                        </select>
-                    </div>
-                    <div><label>Nº DE ASISTENTES</label><input type="text" id="pres-personas" placeholder="Aforo"></div>
-                </div>
-
-                <div class="field" style="grid-column: 1 / -1;">
-                    <label>DIRECCIÓN DEL EVENTO</label>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="text" id="pres-direccion" placeholder="Ej. Quinta La Esmeralda, Campo Alegre" style="flex:1;" oninput="updatePresupuestoMap()">
-                    </div>
-                    <div style="margin-top:10px; height:200px; border-radius:12px; overflow:hidden; border:1px solid var(--border);">
-                        <iframe id="pres-map-iframe" width="100%" height="100%" frameborder="0" style="border:0; filter: grayscale(0.5) contrast(1.2) opacity(0.8);" src="https://www.google.com/maps?q=Caracas&output=embed" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <div class="field"><label>LUGAR DEL EVENTO</label><input type="text" id="pres-lugar" placeholder="Ej. CCCT"></div>
-                <div class="field"><label>CIUDAD</label><input type="text" id="pres-ciudad" placeholder="Ej. CARACAS"></div>
-
-                <div class="field" style="grid-column: 1 / -1;">
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <div style="flex:1"><label>FECHA DEL EVENTO</label><input type="date" id="pres-fecha" onchange="syncFechaFinYCalc()" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px;"></div>
-                        <div style="flex:1"><label>HORA DE INICIO</label><input type="text" id="pres-inicio" placeholder="HH:MM" maxlength="5" oninput="if(this.value.length === 2 && !this.value.includes(':')) this.value += ':'" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px; text-align:center;"></div>
-                    </div>
-                </div>
-                
-                <div class="field" style="grid-column: 1 / -1;">
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <div style="flex:1"><label>FECHA TENTATIVA CULMINACIÓN</label><input type="date" id="pres-fecha-fin" onchange="calcPresupuestoDias()" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px;"></div>
-                        <div style="flex:1"><label>HORA CULMINACIÓN</label><input type="text" id="pres-fin-hora" placeholder="HH:MM" maxlength="5" oninput="if(this.value.length === 2 && !this.value.includes(':')) this.value += ':'" style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0 10px; color:#fff; width:100%; height:42px; text-align:center;"></div>
-                    </div>
-                </div>
-
-                <div class="field"><label>CANTIDAD DE DÍAS (AUTOCALCULADO)</label><input type="number" id="pres-dias" value="1" readonly style="background:rgba(255,255,255,0.05); cursor:not-allowed;"></div>
-                <div class="field"><label>% IVA</label><input type="number" id="pres-iva" value="12" onchange="calcularTotales()"></div>
-            </div>
-
-            <h3 style="color:#a855f7; margin-bottom:15px; font-weight:900; margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
-                LÍNEAS DE SERVICIO
-                <button type="button" class="btn" onclick="addPresupuestoItem()" style="font-size:0.8rem; padding:8px 15px; background:var(--success); color:white;">+ AGREGAR SERVICIO</button>
-            </h3>
-            
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:left; color:#fff;">
-                    <thead>
-                        <tr style="border-bottom:2px solid var(--border); color:var(--muted);">
-                            <th style="padding:10px;">CANT.</th>
-                            <th style="padding:10px; width:40%;">DESCRIPCIÓN</th>
-                            <th style="padding:10px;">PRECIO U.</th>
-                            <th style="padding:10px;">DÍAS</th>
-                            <th style="padding:10px;">TOTAL</th>
-                            <th style="padding:10px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="pres-items-body">
-                    </tbody>
-                    <tfoot>
-                        <tr style="border-top:2px solid var(--border); font-weight:900;">
-                            <td colspan="4" style="text-align:right; padding:15px 10px;">SUBTOTAL:</td>
-                            <td id="pres-subtotal" style="padding:15px 10px;">0.00</td>
-                            <td></td>
-                        </tr>
-                        <tr style="font-weight:900;">
-                            <td colspan="4" style="text-align:right; padding:5px 10px;">IVA:</td>
-                            <td id="pres-total-iva" style="padding:5px 10px;">0.00</td>
-                            <td></td>
-                        </tr>
-                        <tr style="font-weight:900; font-size:1.1rem; color:var(--success);">
-                            <td colspan="4" style="text-align:right; padding:15px 10px;">TOTAL A PAGAR:</td>
-                            <td id="pres-gran-total" style="padding:15px 10px;">0.00</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <div style="margin-top:30px;">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <button class="btn" onclick="abrirModalGuardar()" style="flex:1; height:60px; font-size:1.2rem; font-weight:900; background:var(--surface2); border:1px solid var(--accent); color:white; border-radius:12px;">💾 GUARDAR PRESUPUESTO</button>
-                    <button id="btn-iniciar-presupuesto" class="btn" onclick="if(window.currentEditingPresupuestoId) window.location.href='/?view=listas&action=create_session_from_budget&budget_id='+window.currentEditingPresupuestoId" style="display:none; flex:1; height:60px; font-size:1.2rem; font-weight:900; background:#22c55e; border:none; color:white; border-radius:12px; box-shadow:0 0 15px rgba(34,197,94,0.4);">▶ INICIAR EVENTO</button>
-                </div>
-
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <div id="tab-historial-content" style="display:block;">
-        <div class="card" style="width:100%; max-width:1200px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:20px 30px; border-radius:24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="color:#a855f7; margin:0; font-weight:900;">HISTORIAL DE PRESUPUESTOS <span id="historial-count" style="background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:0.8rem; vertical-align:middle; margin-left:10px;">0</span></h3>
-            </div>
-            
-            <div id="historial-container" style="display:block; margin-top:20px;">
-                <input type="text" id="historial-search" oninput="renderHistorialPresupuestos()" placeholder="Buscar por fecha, cliente, evento o número correlativo..." style="width:100%; padding:12px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; margin-bottom:15px;">
-                <div id="historial-list" style="max-height:600px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
-                </div>
-            </div>
-        </div>
-    `;
-    
-    setTimeout(() => {
-        if(window.loadEmpresasToDatalist) window.loadEmpresasToDatalist();
-        if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-    }, 100);
-
-    window.currentEditingPresupuestoId = null;
-    window.currentEditingPresupuestoTimestamp = null;
-
-    // Auto-add an empty row
-    addPresupuestoItem();
-    if (window.fetchNextBudgetId) window.fetchNextBudgetId();
-}
-
-window.toggleReportSubscription = async function(checkboxElement, userId, reportId) {
-    checkboxElement.disabled = true; // Disable during request
-    const originalState = checkboxElement.checked;
-    
-    try {
-        let fieldMap = {
-            'convocatoria': 'convocatoria',
-            'cumpleanos': 'cumpleanos',
-            'dossier': 'dossier_pdf',
-            'excel': 'bbdd_excel',
-            'nominas': 'nominas',
-            'permisos': 'permisos',
-            'plantilla': 'plantilla_rrhh',
-            'actualizacion_datos': 'actualizacion_datos'
-        };
-        const res = await apiFetch('/api/admin/report-subscriptions', {
-            method: 'POST',
-            body: JSON.stringify({
-                user_id: userId,
-                field: fieldMap[reportId] || reportId,
-                value: originalState
-            })
-        });
-        
-        if (res && res.success) {
-            toast('Suscripción actualizada', 'success');
-        } else {
-            throw new Error(res?.error || 'Error al actualizar');
-        }
-    } catch (e) {
-        console.error('Error toggle subscription:', e);
-        toast('❌ ' + e.message, 'error');
-        checkboxElement.checked = !originalState; // Revert visually
-    } finally {
-        checkboxElement.disabled = false;
-    }
-};
-
-window.switchPresupuestoTab = function(tab) {
-    const btnGen = document.getElementById('btn-tab-generador');
-    const btnHist = document.getElementById('btn-tab-historial');
-    const contentGen = document.getElementById('tab-generador-content');
-    const contentHist = document.getElementById('tab-historial-content');
-    
-    if (tab === 'generador') {
-        btnGen.style.background = 'var(--accent)';
-        btnGen.style.color = 'white';
-        btnHist.style.background = 'transparent';
-        btnHist.style.color = 'var(--muted)';
-        contentGen.style.display = 'block';
-        contentHist.style.display = 'none';
-    } else {
-        btnHist.style.background = 'var(--accent)';
-        btnHist.style.color = 'white';
-        btnGen.style.background = 'transparent';
-        btnGen.style.color = 'var(--muted)';
-        contentHist.style.display = 'block';
-        contentGen.style.display = 'none';
-        if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-    }
-}
-
-window._globalBudgets = [];
-
-window.eliminarPresupuestoFront = async function(e, id) {
-    e.stopPropagation();
-    if (!confirm(`¿Estás seguro de que deseas eliminar el presupuesto #${id}? No se mostrará más aquí.`)) return;
-
-    try {
-        const res = await apiFetch(`/api/presupuestos/${id}`, {
-            method: 'DELETE'
-        });
-        if (res && res.success) {
-            toast('Presupuesto eliminado de la vista', 'success');
-            if (window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-        } else {
-            toast(res?.error || 'Error al eliminar', 'error');
-        }
-    } catch (err) {
-        toast('Error de conexión', 'error');
-    }
-};
-
-window.renderHistorialPresupuestos = async function() {
-    const listEl = document.getElementById('historial-list');
-    const countEl = document.getElementById('historial-count');
-    const tabCountEl = document.getElementById('historial-tab-count');
-    const searchVal = (document.getElementById('historial-search') ? document.getElementById('historial-search').value.toLowerCase() : '');
-    
-    if(!listEl || !countEl) return;
-    
-    try {
-        const res = await apiFetch('/api/presupuestos');
-        if (!res.success) throw new Error(res.error || 'Error fetching');
-        
-        let data = res.budgets || [];
-        data = data.map(d => ({
-            ...d,
-            form: typeof d.form_data === 'string' ? JSON.parse(d.form_data) : d.form_data,
-            items: typeof d.items_data === 'string' ? JSON.parse(d.items_data) : d.items_data
-        }));
-        
-        window._globalBudgets = data;
-        const totalPendientes = data.filter(d => (d.estatus || 'GENERADO') !== 'APROBADO').length;
-        countEl.textContent = totalPendientes;
-        if(tabCountEl) tabCountEl.textContent = totalPendientes;
-    
-    if(searchVal) {
-        data = data.filter(d => 
-            (d.id && d.id.toLowerCase().includes(searchVal)) || 
-            (d.empresa && d.empresa.toLowerCase().includes(searchVal)) ||
-            (d.evento && d.evento.toLowerCase().includes(searchVal)) ||
-            (d.fecha && d.fecha.toLowerCase().includes(searchVal))
-        );
-    }
-    
-    // Sort all budgets by correlativo desc (de mayor a menor)
-    data.sort((a, b) => parseInt(String(b.id || '').replace(/\\D/g, '') || 0) - parseInt(String(a.id || '').replace(/\\D/g, '') || 0));
-    
-    let html = '';
-    
-    const renderTable = (tableData, title, titleColor) => {
-        if(tableData.length === 0) return '';
-        const userStr = localStorage.getItem('user');
-        const user = userStr ? JSON.parse(userStr) : null;
-        const isNelson = user && user.name && user.name.toUpperCase() === 'ADMIN';
-        const gridCols = isNelson 
-            ? '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px 70px'
-            : '45px minmax(90px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) 70px 70px 95px';
-        const minW = isNelson ? '780px' : '700px';
-            
-        let tHtml = `<h4 style="color:${titleColor}; margin-top:25px; margin-bottom:10px; font-weight:900; padding-left:5px; font-size: 0.9rem; text-transform: uppercase;">${title} (${tableData.length})</h4>`;
-        tHtml += `<div style="border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.1); margin-bottom:20px; overflow-x:auto;">
-            <div style="display:grid; grid-template-columns: ${gridCols}; gap:6px; background:var(--surface2); padding:10px; border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; font-weight:900; color:var(--muted); font-size:0.6rem; letter-spacing:0px; min-width:${minW};">
-                <div>ID</div>
-                <div>CONTACTO</div>
-                <div>EMPRESA</div>
-                <div style="text-align:center;">TIPO DE EVENTO</div>
-                <div>EVENTO</div>
-                <div>FECHA</div>
-                <div>TOTAL</div>
-                <div>ESTATUS</div>
-                ${isNelson ? '<div></div>' : ''}
-            </div>`;
-        
-        tHtml += `<div style="height: 250px; overflow-y: auto; overflow-x: auto;">
-        <div style="min-width:${minW};">`;
-        
-        tHtml += tableData.map((d, index) => {
-            const status = d.estatus || 'GENERADO';
-            const isLast = index === tableData.length - 1;
-            const tipo = (d.form && d.form.tipoEvento) ? d.form.tipoEvento : 'VALET PARKING';
-            
-            let displayFecha = d.fecha;
-            if (!displayFecha || displayFecha === 'N/A') {
-                displayFecha = (d.form && d.form.fecha) ? d.form.fecha : 'N/A';
-            }
-            
-            let htmlRow = `
-                <div style="display:grid; grid-template-columns: ${gridCols}; gap:6px; padding:10px; border-bottom:${isLast ? 'none' : '1px solid var(--border)'}; align-items:center; transition:background 0.2s; font-size:0.65rem; width:100%;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
-                    <div style="cursor:pointer;" onclick="cargarPresupuestoDesdeHistorial('${d.id}', ${d.timestamp})">
-                        <span style="font-weight:900; color:var(--brand-white); border-bottom:1px dashed var(--accent);">#${d.id}</span>
-                    </div>
-                    <div style="font-weight:bold; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.2;" title="${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}">${(d.form && d.form.atencion) ? d.form.atencion : 'N/A'}</div>
-                    <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="${d.empresa}">${d.empresa}</div>
-                    <div style="color:var(--warning); font-size:0.55rem; font-weight:800; text-align:center; display:flex; align-items:center; justify-content:center; white-space:normal; line-height:1.2; height:100%;" title="${tipo}">${tipo}</div>
-                    <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted);" title="${d.evento}">${d.evento}</div>
-                    <div style="color:var(--muted); font-weight:700; white-space:nowrap;">${displayFecha}</div>
-                    <div style="font-weight:900; color:var(--success); white-space:nowrap;">${d.monto}</div>
-                    <div>
-                        <select class="table-control" onclick="event.stopPropagation()" onchange="cambiarEstatusPresupuesto(event, '${d.id}', ${d.timestamp})" style="font-weight:700; color:${status === 'APROBADO' ? 'var(--success)' : 'var(--muted)'}; font-size:0.65rem; padding:6px 4px; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid ${status === 'APROBADO' ? 'var(--success)' : 'var(--border)'}; width:100%; outline:none; cursor:pointer;">
-                            <option value="ENVIADO" ${status==='ENVIADO'?'selected':''} style="color:var(--muted)">ENVIADO</option>
-                            <option value="MODIFICADO Y ENVIADO" ${status==='MODIFICADO Y ENVIADO'?'selected':''} style="color:var(--muted)">MOD Y ENVIADO</option>
-                            <option value="APROBADO" ${status==='APROBADO'?'selected':''} style="color:var(--success)">APROBADO</option>
-                            <option value="NO APROBADO" ${status==='NO APROBADO'?'selected':''} style="color:var(--danger)">NO APROBADO</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-            if (isNelson) {
-                // Add the delete button column
-                let deleteHtml = `
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <button onclick="event.stopPropagation(); deletePresupuesto('${d.id}')" class="btn btn-danger btn-sm" style="padding:6px 12px; font-size:0.65rem; font-weight:bold; border-radius:6px; background:var(--danger); color:white; border:none; cursor:pointer;">
-                            🗑️ BORRAR
-                        </button>
-                    </div>
-                </div>
-            `;
-                // Replace the closing </div> of the grid row with the delete button and a new closing </div>
-                return htmlRow.replace(/<\/div>\s*$/, deleteHtml);
-            }
-            return htmlRow;
-        }).join('');
-        tHtml += `</div></div></div>`;
-        return tHtml;
-    };
-
-    if (data.length > 0) {
-        const pendientes = data.filter(d => (d.estatus || 'GENERADO') !== 'APROBADO');
-        const aprobados = data.filter(d => (d.estatus || 'GENERADO') === 'APROBADO');
-        
-        html += renderTable(pendientes, 'En Proceso / Pendientes', 'var(--warning)');
-        html += renderTable(aprobados, 'Presupuestos Aprobados (Archivo)', 'var(--success)');
-    } else {
-        html = '<div style="color:var(--muted); text-align:center; padding:20px;">No se encontraron presupuestos.</div>';
-    }
-    
-    listEl.innerHTML = html;
-    
-    } catch(e) {
-        console.error('Error fetching budgets:', e);
-        listEl.innerHTML = '<div style="color:var(--danger); text-align:center;">Error cargando historial de presupuestos.</div>';
-    }
-}
-
-window.deletePresupuesto = async function(id) {
-    if (!confirm(`¿Está seguro que desea eliminar permanentemente el presupuesto ${id}? Esta acción no se puede deshacer.`)) return;
-    showLoading('ELIMINANDO PRESUPUESTO...');
-    try {
-        const res = await apiFetch(`/api/presupuestos/${id}`, { method: 'DELETE' });
-        if (res && res.success) {
-            toast('✅ PRESUPUESTO ELIMINADO', 'success');
-            // Refresh historial
-            document.getElementById('btn-historial-presupuestos').click();
-        } else {
-            alert('Error al eliminar presupuesto: ' + (res.error || 'Desconocido'));
-        }
-    } catch (e) {
-        alert('Error de conexión.');
-    } finally {
-        hideLoading();
-    }
-}
-
-window.cambiarEstatusPresupuesto = async function(e, id, timestamp) {
-    e.stopPropagation();
-    const d = window._globalBudgets.find(x => x.id === id);
-    if (!d) return;
-
-    const nuevoEstatus = e.target.value;
-    const estatusAnterior = d.estatus;
-    
-    // Revertir visualmente mientras se valida
-    e.target.value = estatusAnterior;
-
-    // Mostrar modal de PIN
-    window._pendingStatusChange = { selectEl: e.target, budgetObj: d, nuevoEstatus, estatusAnterior };
-    document.getElementById('modal-pin-estatus').style.display = 'flex';
-    document.getElementById('pin-estatus-input').value = '';
-    document.getElementById('pin-estatus-input').focus();
-    document.getElementById('pin-estatus-label').textContent = `Confirmar cambio a "${nuevoEstatus}"`;
-};
-
-window.confirmarCambioEstatusConPin = async function() {
-    const pin = document.getElementById('pin-estatus-input').value.trim();
-    if (!pin) return toast('Debe ingresar su clave', 'error');
-
-    const { selectEl, budgetObj, nuevoEstatus, estatusAnterior } = window._pendingStatusChange || {};
-    if (!budgetObj) return;
-
-    const resPin = await apiFetch('/api/verify-pin', { method: 'POST', body: JSON.stringify({ pin }) });
-    if (!resPin || !resPin.success) {
-        toast('Clave incorrecta. Cambio de estatus cancelado.', 'error');
-        document.getElementById('modal-pin-estatus').style.display = 'none';
-        return;
-    }
-
-    // PIN correcto: aplicar cambio
-    document.getElementById('modal-pin-estatus').style.display = 'none';
-    budgetObj.estatus = nuevoEstatus;
-    selectEl.value = nuevoEstatus;
-
-    if (nuevoEstatus === 'APROBADO') {
-        selectEl.style.color = 'var(--success)';
-        selectEl.style.borderColor = 'var(--success)';
-    } else {
-        selectEl.style.color = 'var(--muted)';
-        selectEl.style.borderColor = 'var(--border)';
-    }
-
-    const res = await apiFetch('/api/presupuestos/' + budgetObj.id, {
-        method: 'PUT',
-        body: JSON.stringify(budgetObj)
-    });
-    if (res.success) {
-        toast('Estatus actualizado a ' + nuevoEstatus, 'success');
-    } else {
-        budgetObj.estatus = estatusAnterior;
-        selectEl.value = estatusAnterior;
-        toast('Error al actualizar estatus: ' + res.error, 'error');
-        if (window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-    }
-};
-
-window.cancelarCambioEstatus = function() {
-    document.getElementById('modal-pin-estatus').style.display = 'none';
-    const { selectEl, estatusAnterior } = window._pendingStatusChange || {};
-    if (selectEl) selectEl.value = estatusAnterior;
-};
-
-
-window.generarDesdeHistorial = async function(e, id, tipo) {
-    e.stopPropagation();
-    const d = window._globalBudgets.find(x => x.id === id);
-    if (!d) return;
-    
-    await cargarPresupuestoDesdeHistorial(id, d.timestamp);
-    await accionPresupuesto(tipo);
-    switchPresupuestoTab('historial');
-    if (window.renderPresupuestos) window.renderPresupuestos(document.getElementById('current-view'));
-}
-
-window.cargarPresupuestoDesdeHistorial = function(id, timestamp) {
-    const data = window._globalBudgets || [];
-    const d = data.find(x => x.id === id);
-    if(!d) return toast('Error al cargar presupuesto', 'error');
-
-    const f = d.form || {};
-    
-    document.getElementById('pres-empresa-emisora').value = f.empresaEmisora || 'EYE STAFF';
-    if(document.getElementById('pres-correlativo')) document.getElementById('pres-correlativo').value = id;
-    document.getElementById('pres-empresa').value = f.emp || d.empresa || '';
-    document.getElementById('pres-atencion').value = f.atencion || '';
-    document.getElementById('pres-telefonos').value = f.telefonos || '';
-    document.getElementById('pres-email').value = f.email || '';
-    document.getElementById('pres-tipo-evento').value = f.tipoEvento || 'PRESUPUESTO';
-    document.getElementById('pres-evento').value = f.evento || d.evento || '';
-    document.getElementById('pres-personas').value = f.personas || '';
-    document.getElementById('pres-direccion').value = f.direccion || '';
-    document.getElementById('pres-lugar').value = f.lugar || '';
-    document.getElementById('pres-ciudad').value = f.ciudad || '';
-    
-    // Si la versión antigua tenía convocatoria, ignorarla o mostrarla en consola
-    
-    document.getElementById('pres-inicio').value = f.inicio || '';
-    document.getElementById('pres-fecha').value = f.fecha || d.fecha || '';
-    document.getElementById('pres-fecha-fin').value = f.fecha_fin || '';
-    document.getElementById('pres-fin-hora').value = f.fin_hora || '';
-    
-    // Cargar items
-    itemsPresupuesto = d.items || [];
-    renderPresupuestoItems();
-    
-    window.currentEditingPresupuestoId = d.id;
-    window.currentEditingPresupuestoTimestamp = d.timestamp;
-    document.getElementById('generador-title').innerHTML = `MODIFICANDO PRESUPUESTO #${d.id}`;
-    
-    // Si está aprobado y no es sesión, mostrar botón INICIAR EVENTO
-    const isApproved = d.estatus === 'APROBADO';
-    const isAlreadySession = (window.allSessions || []).some(sess => sess.budget_id == d.id);
-    if (document.getElementById('btn-iniciar-presupuesto')) {
-        document.getElementById('btn-iniciar-presupuesto').style.display = (isApproved && !isAlreadySession) ? 'block' : 'none';
-    }
-    
-    // Cambiar a la pestaña de generador para ver el presupuesto
-    switchPresupuestoTab('generador');
-    
-    // Auto-scroll hacia arriba
-    document.getElementById('current-view').scrollIntoView({ behavior: 'smooth' });
-    toast('Presupuesto cargado exitosamente', 'success');
-}
-
-window.fetchNextBudgetId = async function() {
-    if (window.currentEditingPresupuestoId) return;
-    const empresa = document.getElementById('pres-empresa-emisora').value;
-    try {
-        const res = await apiFetch(`/api/presupuestos/next-id?empresa=${encodeURIComponent(empresa)}`);
-        if (res && res.success && document.getElementById('pres-correlativo')) {
-            document.getElementById('pres-correlativo').value = res.nextId;
-        }
-    } catch(e) {
-        console.error('Error fetching next ID:', e);
-    }
-};
-
-window.nuevoPresupuesto = function() {
-    window.currentEditingPresupuestoId = null;
-    window.currentEditingPresupuestoTimestamp = null;
-    document.getElementById('generador-title').innerHTML = 'NUEVO PRESUPUESTO';
-    if (document.getElementById('btn-iniciar-presupuesto')) document.getElementById('btn-iniciar-presupuesto').style.display = 'none';
-    
-    const fields = ['pres-empresa', 'pres-atencion', 'pres-telefonos', 'pres-email', 'pres-evento', 'pres-personas', 'pres-direccion', 'pres-lugar', 'pres-ciudad', 'pres-fecha', 'pres-inicio', 'pres-fecha-fin', 'pres-fin-hora'];
-    fields.forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).value = '';
-    });
-    
-    itemsPresupuesto = [];
-    renderPresupuestoItems();
-    addPresupuestoItem();
-    window.fetchNextBudgetId();
-    toast('Formulario limpiado para nuevo presupuesto', 'info');
-}
-
-window.loadEmpresasToDatalist = function() {
-    const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
-    const dl = document.getElementById('lista-empresas');
-    if(dl) {
-        dl.innerHTML = Object.keys(data).map(k => `<option value="${k}">`).join('');
-    }
-}
-window.autoFillEmpresa = function() {
-    const val = document.getElementById('pres-empresa').value.trim().toUpperCase();
-    const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
-    if (data[val]) {
-        document.getElementById('pres-atencion').value = data[val].atencion || '';
-        document.getElementById('pres-telefonos').value = data[val].telefonos || '';
-        document.getElementById('pres-email').value = data[val].email || '';
-    }
-}
-window.saveEmpresaData = function() {
-    const val = document.getElementById('pres-empresa').value.trim().toUpperCase();
-    if(val) {
-        const data = JSON.parse(localStorage.getItem('saved_empresas') || '{}');
-        data[val] = {
-            atencion: document.getElementById('pres-atencion').value,
-            telefonos: document.getElementById('pres-telefonos').value,
-            email: document.getElementById('pres-email').value
-        };
-        localStorage.setItem('saved_empresas', JSON.stringify(data));
-    }
-}
-window.calcPresupuestoDias = function() {
-    const f1 = document.getElementById('pres-fecha').value;
-    const f2 = document.getElementById('pres-fecha-fin').value;
-    if (f1 && f2) {
-        const d1 = new Date(f1);
-        const d2 = new Date(f2);
-        let diffTime = d2.getTime() - d1.getTime();
-        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive days
-        if (diffDays <= 0) diffDays = 1;
-        document.getElementById('pres-dias').value = diffDays;
-        
-        itemsPresupuesto.forEach(item => {
-            item.dias = diffDays;
-            item.total = Number(item.cant) * Number(item.precio) * Number(item.dias);
-        });
-        renderPresupuestoItems();
-    }
-}
-
-function addPresupuestoItem() {
-    const id = Date.now().toString() + Math.floor(Math.random()*1000);
-    itemsPresupuesto.push({
-        id, cant: 1, desc: '', precio: 0, dias: document.getElementById('pres-dias').value || 1, total: 0
-    });
-    renderPresupuestoItems();
-}
-
-function removePresupuestoItem(id) {
-    itemsPresupuesto = itemsPresupuesto.filter(i => i.id !== id);
-    renderPresupuestoItems();
-}
-
-function updatePresupuestoItem(id, field, value) {
-    const item = itemsPresupuesto.find(i => i.id === id);
-    if (!item) return;
-    
-    if (field === 'desc_select') {
-        const cat = PRESUPUESTO_CATALOGO.find(c => c.desc === value);
-        item.desc = value;
-        if (cat && cat.precio > 0) item.precio = cat.precio;
-    } else {
-        item[field] = value;
-    }
-    
-    item.total = Number(item.cant) * Number(item.precio) * Number(item.dias);
-    renderPresupuestoItems();
-}
-
-function renderPresupuestoItems() {
-    const tbody = document.getElementById('pres-items-body');
-    if (!tbody) return;
-    
-    let optionsHtml = '<option value="">-- Catálogo / Escribir Manual --</option>';
-    PRESUPUESTO_CATALOGO.forEach(c => {
-        optionsHtml += `<option value="${c.desc}">${c.desc} ${c.precio > 0 ? '($'+c.precio+')' : ''}</option>`;
-    });
-
-    tbody.innerHTML = itemsPresupuesto.map(item => `
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px;"><input type="number" value="${item.cant}" onchange="updatePresupuestoItem('${item.id}', 'cant', this.value)" style="width:60px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
-            <td style="padding:10px; display:flex; flex-direction:column; gap:5px;">
-                <select onchange="updatePresupuestoItem('${item.id}', 'desc_select', this.value)" style="padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;">
-                    ${optionsHtml.replace(`value="${item.desc}"`, `value="${item.desc}" selected`)}
-                </select>
-                <input type="text" value="${item.desc}" placeholder="Escribir descripción manual..." onchange="updatePresupuestoItem('${item.id}', 'desc', this.value)" style="padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;">
-            </td>
-            <td style="padding:10px;"><input type="number" value="${item.precio}" onchange="updatePresupuestoItem('${item.id}', 'precio', this.value)" style="width:80px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
-            <td style="padding:10px;"><input type="number" value="${item.dias}" onchange="updatePresupuestoItem('${item.id}', 'dias', this.value)" style="width:60px; padding:8px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:6px;"></td>
-            <td style="padding:10px; font-weight:900;">${item.total.toFixed(2)}</td>
-            <td style="padding:10px;">
-                <button class="btn" onclick="removePresupuestoItem('${item.id}')" style="background:var(--danger); color:white; padding:5px 10px; border-radius:6px;">X</button>
-            </td>
-        </tr>
-    `).join('');
-
-    calcularTotales();
-}
-
-function calcularTotales() {
-    const ivaPerc = Number(document.getElementById('pres-iva').value || 12);
-    let subtotal = 0;
-    itemsPresupuesto.forEach(i => subtotal += Number(i.total));
-    const iva = subtotal * (ivaPerc / 100);
-    const total = subtotal + iva;
-
-    document.getElementById('pres-subtotal').textContent = subtotal.toFixed(2);
-    document.getElementById('pres-total-iva').textContent = iva.toFixed(2);
-    document.getElementById('pres-gran-total').textContent = total.toFixed(2);
-}
-
-async function guardarDatosPresupuesto(actionName) {
-    if(window.saveEmpresaData) window.saveEmpresaData();
-    
-    const emp = document.getElementById('pres-empresa').value || 'N/A';
-    const tel = document.getElementById('pres-telefonos').value || '';
-    const email = document.getElementById('pres-email').value || '';
-    const tipoEvento = document.getElementById('pres-tipo-evento').value || 'PRESUPUESTO';
-    const evento = document.getElementById('pres-evento').value || 'N/A';
-    const fInicio = document.getElementById('pres-fecha').value || 'N/A';
-    const total = document.getElementById('pres-gran-total').textContent;
-
-    let isEditing = window.currentEditingPresupuestoId ? true : false;
-    let newStatus = actionName === 'guardar' ? 'GENERADO' : (isEditing ? 'MODIFICADO Y ENVIADO' : 'ENVIADO');
-    
-    if (isEditing && actionName === 'guardar') {
-        const oldEntry = (window._globalBudgets || []).find(x => x.id === window.currentEditingPresupuestoId);
-        if (oldEntry) newStatus = oldEntry.estatus || 'MODIFICADO';
-    }
-
-    const payload = {
-        empresa: emp,
-        evento: evento,
-        fecha: fInicio,
-        monto: total,
-        timestamp: window.currentEditingPresupuestoTimestamp || new Date().getTime(),
-        action: actionName,
-        estatus: newStatus,
-        form: {
-            empresaEmisora: document.getElementById('pres-empresa-emisora').value,
-            emp,
-            atencion: document.getElementById('pres-atencion').value,
-            telefonos: tel,
-            email: email,
-            tipoEvento: tipoEvento,
-            evento: evento,
-            personas: document.getElementById('pres-personas').value,
-            direccion: document.getElementById('pres-direccion').value,
-            lugar: document.getElementById('pres-lugar').value,
-            ciudad: document.getElementById('pres-ciudad').value,
-            fecha: fInicio,
-            inicio: document.getElementById('pres-inicio').value,
-            fecha_fin: document.getElementById('pres-fecha-fin').value,
-            fin_hora: document.getElementById('pres-fin-hora').value
-        },
-        items: JSON.parse(JSON.stringify(itemsPresupuesto))
-    };
-    
-    let correlativo = window.currentEditingPresupuestoId;
-    
-    if (isEditing) {
-        await apiFetch('/api/presupuestos/' + correlativo, {
-            method: 'PUT',
-            body: JSON.stringify(payload)
-        });
-    } else {
-        const res = await apiFetch('/api/presupuestos', {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        if (res.success && res.id) {
-            correlativo = res.id;
-            window.currentEditingPresupuestoId = correlativo;
-            window.currentEditingPresupuestoTimestamp = payload.timestamp;
-            document.getElementById('generador-title').innerHTML = `MODIFICANDO PRESUPUESTO #${correlativo}`;
-        }
-    }
-    
-    if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-    
-    // Guardar en BBDD de Clientes del Sistema
-    if (emp && emp !== 'N/A') {
-        apiFetch('/api/presupuestos/client', {
-            method: 'POST',
-            body: JSON.stringify({ name: emp, phone: tel, email: email, event_type: tipoEvento })
-        }).catch(e => console.warn('Error saving client to db', e));
-    }
-
-    return { correlativo, emp, evento, fInicio, empresaEmisora: document.getElementById('pres-empresa-emisora').value };
-}
-
-function obtenerNombresSeguros(evento, fInicio) {
-    let safeEvento = (evento && evento !== 'N/A') ? evento.toUpperCase() : 'EVENTO';
-    let safeFecha = (fInicio && fInicio !== 'N/A') ? fInicio.toUpperCase() : 'FECHA';
-    safeEvento = safeEvento.replace(/[^A-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-    safeFecha = safeFecha.replace(/[^A-Z0-9-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-    return { safeEvento, safeFecha };
-}
-
-window.limpiarGeneradorPresupuesto = function() {
-    if(confirm('¿Está seguro de eliminar los datos y limpiar todo el formulario del presupuesto?')) {
-        renderPresupuestos(document.getElementById('current-view'));
-    }
-}
-
-async function accionPresupuesto(tipo) {
-    if (itemsPresupuesto.length === 0) return toast('Debe agregar al menos un servicio', 'error');
-    
-    const requiredFields = [
-        { id: 'pres-atencion', name: 'NOMBRE DE CLIENTE' },
-        { id: 'pres-telefonos', name: 'TELÉFONO' },
-        { id: 'pres-email', name: 'E-MAIL' },
-        { id: 'pres-tipo-evento', name: 'TIPO DE EVENTO' },
-        { id: 'pres-direccion', name: 'DIRECCIÓN DEL EVENTO' },
-        { id: 'pres-fecha', name: 'FECHA DEL EVENTO' },
-        { id: 'pres-inicio', name: 'HORA DE INICIO' },
-        { id: 'pres-fecha-fin', name: 'FECHA TENTATIVA CULMINACIÓN' },
-        { id: 'pres-fin-hora', name: 'HORA CULMINACIÓN' }
-    ];
-
-    for (const field of requiredFields) {
-        const el = document.getElementById(field.id);
-        if (!el || !el.value || el.value.trim() === '') {
-            return toast(`El campo "${field.name}" es obligatorio`, 'error');
-        }
-    }
-    
-    const datos = await guardarDatosPresupuesto(tipo);
-    const { correlativo, evento, fInicio, empresaEmisora } = datos;
-    const { safeEvento, safeFecha } = obtenerNombresSeguros(evento, fInicio);
-    const nombreArchivo = `PRESUPUESTO_${correlativo}_${safeEvento}_${safeFecha}`;
-
-    if (tipo === 'pdf') {
-        await generarPDFPresupuesto(nombreArchivo);
-    } else if (tipo === 'excel') {
-        generarExcelPresupuesto(nombreArchivo);
-    } else if (tipo === 'email') {
-        await enviarEmailPresupuesto(nombreArchivo, evento, empresaEmisora);
-    } else if (tipo === 'guardar') {
-        toast('Presupuesto guardado en el historial', 'success');
-    }
-    
-    switchPresupuestoTab('historial');
-}
-
-function generarExcelPresupuesto(nombreArchivo) {
-    toast('Generando Excel...', 'info');
-    let csv = "CANT.;DESCRIPCION;PRECIO U.;DIAS;TOTAL\\n";
-    itemsPresupuesto.forEach(i => {
-        csv += `${i.cant};${i.desc};${i.precio};${i.dias};${i.total.toFixed(2)}\\n`;
-    });
-    
-    // Totales
-    const subtotal = document.getElementById('pres-subtotal').textContent;
-    const iva = document.getElementById('pres-total-iva').textContent;
-    const total = document.getElementById('pres-gran-total').textContent;
-    csv += `\\n;;SUBTOTAL;;${subtotal}\\n`;
-    csv += `;;IVA;;${iva}\\n`;
-    csv += `;;TOTAL A PAGAR;;${total}\\n`;
-
-    const blob = new Blob(["\\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", nombreArchivo + ".csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast('Excel descargado', 'success');
-}
-
-async function enviarEmailPresupuesto(nombreArchivo, evento, empresaEmisora) {
-    const email = document.getElementById('pres-email').value;
-    if(!email) return toast('Debe colocar el E-Mail del cliente para enviar', 'error');
-    
-    toast('Generando PDF y preparando envío...', 'info');
-    try {
-        const base64Data = await generarPDFPresupuesto(nombreArchivo, 'base64');
-        if (!base64Data) throw new Error('Falló la conversión del PDF a Base64');
-
-        const res = await apiFetch('/api/presupuestos/send-email', {
-            method: 'POST',
-            body: JSON.stringify({
-                to: email,
-                subject: `Presupuesto de Servicios - ${evento}`,
-                pdfData: base64Data,
-                filename: `${nombreArchivo}.pdf`,
-                senderName: empresaEmisora === 'RENTAEQUIPOS' ? 'RENTAEQUIPOS' : 'EYE STAFF'
-            })
-        });
-        
-        if (!res) return; // Error ya notificado en apiFetch
-
-        if (res.success) {
-            toast('Email enviado exitosamente', 'success');
-        } else {
-            const errMsg = res.error?.message || (typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
-            toast('Error al enviar email: ' + errMsg, 'error');
-        }
-    } catch(e) {
-        console.error(e);
-        toast('Error crítico: ' + e.message, 'error');
-    }
-}
-
-async function generarPDFPresupuesto(nombreArchivo, action = 'download') {
-    toast('Generando PDF...', 'info');
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Configuración
-    const primaryColor = [40, 40, 40];
-    const secondaryColor = [100, 100, 100];
-    
-    try {
-        const emisora = document.getElementById('pres-empresa-emisora') ? document.getElementById('pres-empresa-emisora').value : 'EYE STAFF';
-        const img = new Image();
-        if (emisora === 'RENTAEQUIPOS') {
-            img.src = '/rentaequipos.jpeg';
-        } else {
-            img.src = '/eyestaff.jpeg';
-        }
-        await new Promise((resolve) => {
-            img.onload = resolve;
-            img.onerror = resolve; 
-        });
-        const ratio = img.width && img.height ? img.width / img.height : (40/15);
-        const newWidth = 15 * ratio;
-        doc.addImage(img, 'JPEG', 14, 10, newWidth, 15);
-    } catch(e) {}
-
-    // Título / Cabecera
-    doc.setFontSize(22);
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    const emisoraTexto = (document.getElementById('pres-empresa-emisora') ? document.getElementById('pres-empresa-emisora').value : 'EYE STAFF');
-    doc.text("PRESUPUESTO DE SERVICIOS", 60, 20); // Movido a la derecha por el logo
-    
-    doc.setFontSize(10);
-    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.text("Generado por: " + (emisoraTexto === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'), 60, 28);
-    doc.text("Fecha: " + new Date().toLocaleDateString(), 60, 34);
-
-    // Datos del Cliente y Evento
-    const emp = document.getElementById('pres-empresa').value || 'N/A';
-    const aten = document.getElementById('pres-atencion').value || 'N/A';
-    const tel = document.getElementById('pres-telefonos').value || 'N/A';
-    const email = document.getElementById('pres-email').value || 'N/A';
-    
-    const evento = document.getElementById('pres-evento').value || 'N/A';
-    const personas = document.getElementById('pres-personas').value || 'N/A';
-    const direccion = document.getElementById('pres-direccion').value || 'N/A';
-    const lugar = document.getElementById('pres-lugar').value || 'N/A';
-    const ciudad = document.getElementById('pres-ciudad').value || 'N/A';
-    
-    const fInicio = document.getElementById('pres-fecha').value || 'N/A';
-    const convEl = document.getElementById('pres-convocatoria');
-    const hConv = convEl ? (convEl.value || 'N/A') : 'N/A';
-    const hIni = document.getElementById('pres-inicio').value || 'N/A';
-    
-    const fFin = document.getElementById('pres-fecha-fin').value || 'N/A';
-    const hFin = document.getElementById('pres-fin-hora').value || 'N/A';
-
-    if(window.saveEmpresaData) window.saveEmpresaData(); // Guardar datos para proxima vez
-
-    doc.autoTable({
-        startY: 45,
-        theme: 'grid',
-        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
-        body: [
-            ['Empresa:', emp, 'Evento:', evento],
-            ['Atención a:', aten, 'Aforo:', personas + ' pax'],
-            ['Teléfono:', tel, 'Dirección:', direccion],
-            ['E-Mail:', email, 'Lugar/Ciudad:', lugar + ' / ' + ciudad],
-            ['Fecha Inicio:', fInicio + ' (Conv: ' + hConv + ' | Ini: ' + hIni + ')', 'Fecha Fin:', fFin + ' (Culm: ' + hFin + ')']
-        ]
-    });
-
-    // Líneas de Detalles
-    const tableData = itemsPresupuesto.map(i => [
-        i.cant, 
-        i.desc, 
-        Number(i.precio).toFixed(2), 
-        i.dias, 
-        Number(i.total).toFixed(2)
-    ]);
-
-    doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 15,
-        head: [['Cant.', 'Descripción', 'Precio U.', 'Días', 'Total']],
-        body: tableData,
-        theme: 'striped',
-        headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255], fontStyle: 'bold' },
-        columnStyles: {
-            0: { halign: 'center', cellWidth: 20 },
-            1: { cellWidth: 80 },
-            2: { halign: 'right', cellWidth: 30 },
-            3: { halign: 'center', cellWidth: 20 },
-            4: { halign: 'right', cellWidth: 30 }
-        }
-    });
-
-    // Totales
-    const ivaPerc = Number(document.getElementById('pres-iva').value || 12);
-    const subtotal = document.getElementById('pres-subtotal').textContent;
-    const iva = document.getElementById('pres-total-iva').textContent;
-    const total = document.getElementById('pres-gran-total').textContent;
-
-    const finalY = doc.lastAutoTable.finalY + 10;
-    
-    doc.autoTable({
-        startY: finalY,
-        theme: 'plain',
-        body: [
-            ['', '', 'SUBTOTAL:', subtotal],
-            ['', '', `IVA (${ivaPerc}%):`, iva],
-            ['', '', 'TOTAL A PAGAR:', total]
-        ],
-        columnStyles: {
-            0: { cellWidth: 80 },
-            1: { cellWidth: 30 },
-            2: { halign: 'right', fontStyle: 'bold', cellWidth: 40 },
-            3: { halign: 'right', fontStyle: 'bold', cellWidth: 30 }
-        }
-    });
-
-    // Pie de página
-    doc.setFontSize(9);
-    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.text("Este presupuesto es válido por 15 días.", 14, doc.lastAutoTable.finalY + 20);
-    
-    // Guardar o retornar PDF
-    if (action === 'download') {
-        doc.save(`${nombreArchivo}.pdf`);
-        toast('PDF Descargado exitosamente', 'success');
-    } else if (action === 'base64') {
-        try {
-            const dataUri = doc.output('datauristring');
-            if (dataUri && dataUri.includes('base64,')) {
-                return dataUri.split('base64,')[1];
-            } else if (dataUri && dataUri.includes(',')) {
-                return dataUri.split(',')[1];
-            }
-            return btoa(doc.output());
-        } catch(err) {
-            console.error('Error doc.output:', err);
-            return btoa(doc.output());
-        }
-    }
-}
-
-window.migrarPresupuestosLocales = async function() {
-    let data = JSON.parse(localStorage.getItem('historial_presupuestos') || '[]');
-    if (data && data.length > 0) {
-        console.log('Migrando ' + data.length + ' presupuestos a la nube...');
-        try {
-            const res = await apiFetch('/api/presupuestos', {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            if (res.success) {
-                localStorage.removeItem('historial_presupuestos');
-                console.log('Migración exitosa');
-                if(window.renderHistorialPresupuestos) window.renderHistorialPresupuestos();
-            }
-        } catch(e) {
-            console.error('Migración fallida', e);
-        }
-    }
-};
-
-setTimeout(() => {
-    window.migrarPresupuestosLocales();
-}, 2000);
-
-window.cargarPresupuestoEnLista = function(budgetId) {
-    const b = (window._globalBudgets || []).find(x => x.id == budgetId);
-    if (!b) return toast('Presupuesto no encontrado', 'error');
-
-    const form = b.form || {};
-
-    const calcConvocatoria = (horaInicio) => {
-        if (!horaInicio) return '';
-        const [h, m] = horaInicio.split(':').map(Number);
-        const total = h * 60 + m - 120;
-        const hh = Math.floor(((total % 1440) + 1440) % 1440 / 60);
-        const mm = ((total % 1440) + 1440) % 1440 % 60;
-        return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-    };
-
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== null && val !== '') el.value = val; };
-
-    setVal('lista-presupuesto', b.id);
-    setVal('lista-nombre', b.evento);
-    setVal('lista-fecha', b.fecha);
-    setVal('lista-contacto', form.atencion);
-    setVal('lista-telefono', form.telefonos);
-    setVal('lista-direccion', form.direccion);
-    setVal('lista-hora-inicio', form.inicio);
-    setVal('lista-hora-fin', form.fin_hora);
-    setVal('lista-fecha-fin', form.fecha_fin || b.fecha);
-    const convCalc = calcConvocatoria(form.inicio);
-    setVal('lista-hora-convocatoria', convCalc || form.convocatoria);
-
-    const typeSelect = document.getElementById('lista-tipo');
-    const tVal = (form.tipoEvento || '').toLowerCase();
-    if (typeSelect && tVal) {
-        for(let opt of typeSelect.options) {
-            if (opt.value.toLowerCase() === tVal) { typeSelect.value = opt.value; break; }
-        }
-    }
-
-    // Expandir el panel de datos del evento
-    const content = document.getElementById('datos-evento-content');
-    if (content) {
-        content.style.display = 'block';
-        const icon = document.getElementById('datos-evento-icon');
-        if (icon) icon.innerText = '▼';
-    }
-
-    document.getElementById('current-view')?.scrollIntoView({ behavior: 'smooth' });
-    toast('✅ DATOS CARGADOS — Revise, complete y asigne el personal', 'success');
-};
-
-window.abrirModalGuardar = function() {
-
-    document.getElementById('modal-guardar-presupuesto').style.display = 'flex';
-};
-
-window.cerrarModalGuardar = function() {
-    document.getElementById('modal-guardar-presupuesto').style.display = 'none';
-};
-
-window.confirmarGuardarPresupuesto = async function(tipo) {
-    cerrarModalGuardar();
-    if(tipo === 'guardar') {
-        toast('Guardando presupuesto...', 'info');
-    }
-    await accionPresupuesto(tipo);
-};
-
-</script>
-
-<div id="modal-guardar-presupuesto" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:var(--surface); padding:30px; border-radius:16px; width:90%; max-width:400px; text-align:center; border:1px solid var(--accent); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-        <h3 style="margin-top:0; color:var(--brand-white); font-weight:900; font-size:1.4rem;">¿Qué desea hacer?</h3>
-        <p style="color:var(--muted); margin-bottom:25px; font-size:0.95rem;">Seleccione si desea solo guardar el presupuesto en el historial o enviarlo también al cliente.</p>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <button onclick="confirmarGuardarPresupuesto('guardar')" class="btn" style="padding:15px; font-size:1.1rem; font-weight:900; background:var(--surface2); color:white; border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">💾 SOLO GUARDAR</button>
-            <button onclick="confirmarGuardarPresupuesto('email')" class="btn" style="padding:15px; font-size:1.1rem; font-weight:900; background:#3b82f6; color:white; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 15px rgba(59,130,246,0.3);">📧 ENVIAR POR EMAIL Y GUARDAR</button>
-            <button onclick="cerrarModalGuardar()" class="btn" style="padding:10px; font-size:0.95rem; background:transparent; color:var(--muted); border:none; margin-top:5px; cursor:pointer; text-decoration:underline;">Cancelar</button>
-        </div>
-    </div>
-</div>
-
-    <script src="chat-widget.js"></script>
-</body>
-
-<!-- MODAL PIN CAMBIO ESTATUS -->
-<div id="modal-pin-estatus" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; justify-content:center; align-items:center;">
-    <div style="background:var(--surface); padding:30px; border-radius:16px; width:90%; max-width:380px; text-align:center; border:1px solid #ef4444; box-shadow:0 10px 30px rgba(239,68,68,0.3);">
-        <div style="font-size:2rem; margin-bottom:10px">🔒</div>
-        <h3 style="margin:0 0 5px; color:white; font-weight:900;">Validación requerida</h3>
-        <p id="pin-estatus-label" style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;">Ingrese su clave para continuar</p>
-        <input id="pin-estatus-input" type="password" placeholder="Ingrese su clave personal" class="input-field" style="width:100%; text-align:center; font-size:1.2rem; letter-spacing:4px; margin-bottom:15px; box-sizing:border-box;" onkeydown="if(event.key==='Enter') confirmarCambioEstatusConPin()">
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <button onclick="confirmarCambioEstatusConPin()" class="btn" style="padding:14px; font-size:1rem; font-weight:900; background:#22c55e; color:white; border:none; border-radius:12px; cursor:pointer;">CONFIRMAR CAMBIO</button>
-            <button onclick="cancelarCambioEstatus()" class="btn" style="padding:10px; background:transparent; color:var(--muted); border:none; cursor:pointer; text-decoration:underline; font-size:0.9rem;">Cancelar</button>
-        </div>
-    </div>
-</div>
-
-</html>
-
-<!-- INICIO PANEL ENVÍOS MASIVOS -->
-<div id="bulk-reports-modal" class="modal-overlay" style="display:none; z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center;">
-    <div style="background: var(--surface2, #1e1e2d); border: 1px solid var(--border, #2d2d3f); border-radius: 12px; padding: 20px; color: #fff; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1.2rem;">Envío Masivo de Reportes</h3>
-            <span id="bulk-counter" style="font-size: 0.8rem; color: var(--muted);">0 seleccionados</span>
-        </div>
-        
-        <input type="text" id="bulk-search" placeholder="Buscar empleado por nombre o cédula..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: #fff; margin-bottom: 15px; box-sizing: border-box;">
-        
-        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
-            <button type="button" id="bulk-select-all" class="btn btn-secondary btn-sm" style="background: #374151; white-space: nowrap;">Seleccionar Todos</button>
-            <select id="bulk-report-type" style="padding: 10px; border-radius: 8px; background: var(--surface); color: #fff; border: 1px solid var(--border); flex-grow: 1;">
-                <option value="TICKET_DIGITAL_VALET">Ticket Digital Valet</option>
-                <option value="REPORTE_MPI">Reporte MPI</option>
-            </select>
-        </div>
-
-        <div id="bulk-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;">
-            <!-- Carga dinámica -->
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('bulk-reports-modal').style.display='none'" style="flex:1;">Cerrar</button>
-            <button type="button" id="bulk-submit-btn" style="flex:2; background: #4f46e5; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">Enviar Reportes</button>
-        </div>
-        
-        <div id="bulk-logs" style="margin-top: 15px; font-size: 0.75rem; color: #9ca3af; white-space: pre-wrap; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none;"></div>
-    </div>
-</div>
-
-<script>
-    let bulkEmployees = [];
-
-    async function openBulkReportsPanel() {
-        document.getElementById('bulk-reports-modal').style.display = 'flex';
-        document.getElementById('bulk-grid').innerHTML = '<div style="text-align:center; grid-column: 1/-1; padding: 20px;">Cargando personal...</div>';
-        try {
-            const res = await apiFetch('/api/staff');
-            if (res && res.staff) {
-                bulkEmployees = res.staff;
-                renderBulkGrid(bulkEmployees);
-            }
-        } catch (e) {
-            console.error(e);
-            document.getElementById('bulk-grid').innerHTML = 'Error cargando empleados';
-        }
-    }
-
-    function renderBulkGrid(data) {
-        const grid = document.getElementById('bulk-grid');
-        grid.innerHTML = '';
-        data.forEach(emp => {
-            if (emp.status === 'inactivo' || !emp.email) return;
-            const card = document.createElement('div');
-            card.style.cssText = 'background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;';
-            card.innerHTML = `
-                <input type="checkbox" class="bulk-checkbox" value="${emp.id}">
-                <div>
-                    <div style="font-weight: bold; font-size: 0.85rem;">${emp.name}</div>
-                    <div style="font-size: 0.65rem; color: #9ca3af;">${emp.email || 'Sin correo'}</div>
-                </div>
-            `;
-            card.addEventListener('click', (e) => {
-                if(e.target.tagName !== 'INPUT') {
-                    const cb = card.querySelector('input');
-                    cb.checked = !cb.checked;
-                    updateBulkCounter();
-                }
-            });
-            card.querySelector('input').addEventListener('change', updateBulkCounter);
-            grid.appendChild(card);
-        });
-        updateBulkCounter();
-    }
-
-    function updateBulkCounter() {
-        const selected = document.querySelectorAll('.bulk-checkbox:checked').length;
-        document.getElementById('bulk-counter').innerText = selected + ' seleccionados';
-        document.getElementById('bulk-submit-btn').disabled = selected === 0;
-        document.getElementById('bulk-submit-btn').style.opacity = selected === 0 ? '0.5' : '1';
-    }
-
-    document.getElementById('bulk-search').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        renderBulkGrid(bulkEmployees.filter(emp => (emp.name && emp.name.toLowerCase().includes(term))));
-    });
-
-    document.getElementById('bulk-select-all').addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.bulk-checkbox');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        updateBulkCounter();
-    });
-
-    document.getElementById('bulk-submit-btn').addEventListener('click', async () => {
-        const checkboxes = document.querySelectorAll('.bulk-checkbox:checked');
-        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-        if(selectedIds.length === 0) return;
-        
-        const btn = document.getElementById('bulk-submit-btn');
-        const logs = document.getElementById('bulk-logs');
-        btn.disabled = true;
-        btn.innerText = 'Enviando...';
-        logs.style.display = 'block';
-        logs.innerText = 'Iniciando envío...\n';
-
-        try {
-            const res = await apiFetch('/api/send-bulk-reports', {
-                method: 'POST',
-                body: JSON.stringify({ employeeIds: selectedIds, reportType: document.getElementById('bulk-report-type').value })
-            });
-            
-            if(res && res.success) {
-                logs.innerText += 'Completado.\\nÉxitos: ' + res.successCount + '\\nFallos: ' + res.failureCount + '\\n';
-                if(res.failures && res.failures.length > 0) logs.innerText += JSON.stringify(res.failures, null, 2);
-                toast('Envío masivo completado', 'success');
-            }
-        } catch(err) {
-            logs.innerText += 'Error crítico: ' + err.message;
-        } finally {
-            btn.disabled = false;
-            btn.innerText = 'Enviar Reportes';
-        }
-    });
-
-    // ==========================================
-    // FORMULARIO PÚBLICO: ACTUALIZACIÓN DE DATOS
-    // ==========================================
-    window.renderDataUpdateForm = async function(token) {
-        document.body.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19;"><h2>Cargando...</h2></div>';
-        try {
-            const res = await fetch('/api/public/update-data/' + token);
-            const data = await res.json();
-            if (!res.ok || !data.success) {
-                document.body.innerHTML = `
-                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19; font-family:'Outfit', sans-serif;">
-                        <h1 style="font-size:3rem;">❌</h1>
-                        <h2 style="margin-top:10px;">${data.error || 'Error al cargar'}</h2>
-                        <p style="color:var(--muted); margin-top:10px;">Este enlace puede ser inválido o ya fue utilizado.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const user = data.user;
-            const formatDate = (d) => d ? d.split('T')[0] : '';
-
-            document.body.innerHTML = `
-                <div style="background:#0b0f19; min-height:100vh; font-family:'Outfit', sans-serif; color:white; padding:20px;">
-                    <div style="max-width:600px; margin:0 auto; background:var(--surface); border-radius:20px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-                        <div style="text-align:center; margin-bottom:30px;">
-                            <img src="logo-eye-staff.jpeg" style="height:50px; margin-bottom:15px;">
-                            <h2>Actualización de Datos</h2>
-                            <p style="color:var(--muted); font-size:0.9rem;">Por favor revisa y actualiza tu información personal.</p>
-                        </div>
-                        
-                        <form id="update-data-form" style="display:flex; flex-direction:column; gap:15px;">
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FOTO DE PERFIL</label>
-                                <input type="file" id="upd-photo" accept="image/*" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                                <div style="margin-top:10px;"><img src="${user.photo_url ? '/api/photos/' + user.photo_url : 'logo-eye-staff.jpeg'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>
-                            </div>
-
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO</label>
-                                <input type="text" id="upd-phone" value="${user.phone || ''}" placeholder="+346..." required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">DIRECCIÓN (Código Postal, Calle, Ciudad)</label>
-                                <textarea id="upd-address" rows="2" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">${user.address || ''}</textarea>
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">SECTOR</label>
-                                <input type="text" id="upd-sector" value="${user.sector || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ENTIDAD BANCARIA</label>
-                                <select id="upd-bank" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#0f111a; color:white;">
-                                    <option value="">Seleccione un banco...</option>
-                                    <option value="BANCO DE VENEZUELA" ${user.bank_name === 'BANCO DE VENEZUELA' ? 'selected' : ''}>Banco de Venezuela</option>
-                                    <option value="BANCO DIGITAL DE LOS TRABAJADORES" ${user.bank_name === 'BANCO DIGITAL DE LOS TRABAJADORES' ? 'selected' : ''}>Banco Digital de los Trabajadores (antes Bicentenario)</option>
-                                    <option value="BANCO DEL TESORO" ${user.bank_name === 'BANCO DEL TESORO' ? 'selected' : ''}>Banco del Tesoro</option>
-                                    <option value="BANFANB" ${user.bank_name === 'BANFANB' ? 'selected' : ''}>BANFANB</option>
-                                    <option value="BANCO AGRÍCOLA DE VENEZUELA" ${user.bank_name === 'BANCO AGRÍCOLA DE VENEZUELA' ? 'selected' : ''}>Banco Agrícola de Venezuela</option>
-                                    <option value="BANESCO" ${user.bank_name === 'BANESCO' ? 'selected' : ''}>Banesco</option>
-                                    <option value="MERCANTIL" ${user.bank_name === 'MERCANTIL' ? 'selected' : ''}>Mercantil</option>
-                                    <option value="BBVA PROVINCIAL" ${user.bank_name === 'BBVA PROVINCIAL' ? 'selected' : ''}>BBVA Provincial</option>
-                                    <option value="BANCO NACIONAL DE CRÉDITO (BNC)" ${user.bank_name === 'BANCO NACIONAL DE CRÉDITO (BNC)' ? 'selected' : ''}>Banco Nacional de Crédito (BNC)</option>
-                                    <option value="BANCARIBE" ${user.bank_name === 'BANCARIBE' ? 'selected' : ''}>Bancaribe</option>
-                                    <option value="BANCO EXTERIOR" ${user.bank_name === 'BANCO EXTERIOR' ? 'selected' : ''}>Banco Exterior</option>
-                                    <option value="BANCAMIGA" ${user.bank_name === 'BANCAMIGA' ? 'selected' : ''}>Bancamiga</option>
-                                    <option value="BANPLUS" ${user.bank_name === 'BANPLUS' ? 'selected' : ''}>Banplus</option>
-                                    <option value="BFC BANCO FONDO COMÚN" ${user.bank_name === 'BFC BANCO FONDO COMÚN' ? 'selected' : ''}>BFC Banco Fondo Común</option>
-                                    <option value="BANCO PLAZA" ${user.bank_name === 'BANCO PLAZA' ? 'selected' : ''}>Banco Plaza</option>
-                                    <option value="100% BANCO" ${user.bank_name === '100% BANCO' ? 'selected' : ''}>100% Banco</option>
-                                    <option value="VENEZOLANO DE CRÉDITO" ${user.bank_name === 'VENEZOLANO DE CRÉDITO' ? 'selected' : ''}>Venezolano de Crédito</option>
-                                    <option value="BANCO ACTIVO" ${user.bank_name === 'BANCO ACTIVO' ? 'selected' : ''}>Banco Activo</option>
-                                    <option value="BANCO CARONÍ" ${user.bank_name === 'BANCO CARONÍ' ? 'selected' : ''}>Banco Caroní</option>
-                                    <option value="DELSUR" ${user.bank_name === 'DELSUR' ? 'selected' : ''}>Delsur</option>
-                                    <option value="BANCO SOFITASA" ${user.bank_name === 'BANCO SOFITASA' ? 'selected' : ''}>Banco Sofitasa</option>
-                                    <option value="N58 BANCO DIGITAL" ${user.bank_name === 'N58 BANCO DIGITAL' ? 'selected' : ''}>N58 Banco Digital</option>
-                                    <option value="BANCRECER" ${user.bank_name === 'BANCRECER' ? 'selected' : ''}>Bancrecer</option>
-                                    <option value="BANGENTE" ${user.bank_name === 'BANGENTE' ? 'selected' : ''}>Bangente</option>
-                                    <option value="MI BANCO" ${user.bank_name === 'MI BANCO' ? 'selected' : ''}>Mi Banco</option>
-                                    <option value="BANCO INTERNACIONAL DE DESARROLLO" ${user.bank_name === 'BANCO INTERNACIONAL DE DESARROLLO' ? 'selected' : ''}>Banco Internacional de Desarrollo</option>
-                                    <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR" ${user.bank_name === 'INSTITUTO MUNICIPAL DE CRÉDITO POPULAR' ? 'selected' : ''}>Instituto Municipal de Crédito Popular</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">NÚMERO DE CUENTA</label>
-                                <input type="text" id="upd-account" value="${user.bank_account || ''}" placeholder="0000 0000 0000 0000 0000" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-                            
-                            <div style="margin-top: 15px; display: flex; align-items: center;">
-                                <input type="checkbox" id="upd-pago-movil" ${user.pago_movil ? 'checked' : ''} style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('upd-bank').disabled = this.checked; document.getElementById('upd-account').disabled = this.checked; if(this.checked) { document.getElementById('upd-bank').value = ''; document.getElementById('upd-account').value = ''; document.getElementById('upd-bank').removeAttribute('required'); document.getElementById('upd-account').removeAttribute('required'); } else { document.getElementById('upd-bank').setAttribute('required', 'true'); document.getElementById('upd-account').setAttribute('required', 'true'); }">
-                                <label for="upd-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold; color: white;">QUIERO MI PAGO EN PAGO MÓVIL</label>
-                            </div>
-                            <div id="upd-pago-movil-init" data-checked="${user.pago_movil ? '1' : '0'}" style="display:none;"></div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">CONTACTO DE EMERGENCIA (Nombre y Parentesco)</label>
-                                <input type="text" id="upd-emer-name" value="${user.emergency_contact || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">TELÉFONO DE EMERGENCIA</label>
-                                <input type="text" id="upd-emer-phone" value="${user.emergency_phone || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-
-                            <div>
-                                <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">ALERGIAS O CONDICIONES MÉDICAS (Escribir "Ninguna" si no aplica)</label>
-                                <input type="text" id="upd-allergies" value="${user.is_allergic || ''}" required style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                            </div>
-
-                            <button type="submit" id="upd-submit" style="margin-top:20px; width:100%; padding:15px; border-radius:10px; background:#3b82f6; color:white; font-size:1rem; font-weight:bold; border:none; cursor:pointer;">ENVIAR ACTUALIZACIÓN</button>
-                        </form>
-                    </div>
-                </div>
-            `;
-
-            // Inicializar estado del checkbox pago_movil
-            const initEl = document.getElementById('upd-pago-movil-init');
-            if (initEl && initEl.dataset.checked === '1') {
-                document.getElementById('upd-bank').disabled = true;
-                document.getElementById('upd-account').disabled = true;
-                document.getElementById('upd-bank').removeAttribute('required');
-                document.getElementById('upd-account').removeAttribute('required');
-            }
-
-            document.getElementById('update-data-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('upd-submit');
-                btn.disabled = true;
-                btn.innerText = 'PROCESANDO...';
-
-                const payload = {
-
-                    phone: document.getElementById('upd-phone').value,
-                    address: document.getElementById('upd-address').value,
-                    sector: document.getElementById('upd-sector').value,
-                    bank_name: document.getElementById('upd-bank').value,
-                    bank_account: document.getElementById('upd-account').value,
-                    pago_movil: document.getElementById('upd-pago-movil').checked ? 1 : 0,
-                    emergency_contact: document.getElementById('upd-emer-name').value,
-                    emergency_phone: document.getElementById('upd-emer-phone').value,
-                    is_allergic: document.getElementById('upd-allergies').value
-                };
-
-                const photoInput = document.getElementById('upd-photo');
-                if (photoInput.files && photoInput.files[0]) {
-                    const file = photoInput.files[0];
-                    const reader = new FileReader();
-                    reader.onload = async function(ev) {
-                        payload.photo_base64 = ev.target.result;
-                        await submitUpdateForm(token, payload);
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    await submitUpdateForm(token, payload);
-                }
-            });
-
-        } catch(e) {
-            document.body.innerHTML = `<div style="color:white; text-align:center; margin-top:50px;">Error de conexión</div>`;
-        }
-    };
-
-    async function submitUpdateForm(token, payload) {
-        try {
-            const res = await fetch('/api/public/update-data/' + token, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                document.body.innerHTML = `
-                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; color:white; background:#0b0f19; font-family:'Outfit', sans-serif;">
-                        <h1 style="font-size:4rem; margin:0; color:#10b981;">✅</h1>
-                        <h2 style="margin-top:20px;">¡Datos Enviados!</h2>
-                        <p style="color:var(--muted); margin-top:10px; max-width:400px; text-align:center;">
-                            Tus datos han sido enviados exitosamente a Recursos Humanos para su verificación.
-                            Puedes cerrar esta ventana.
-                        </p>
-                    </div>
-                `;
-            } else {
-                alert('Error al enviar: ' + (data.error || 'Error desconocido'));
-                document.getElementById('upd-submit').disabled = false;
-                document.getElementById('upd-submit').innerText = 'ENVIAR ACTUALIZACIÓN';
-            }
-        } catch(e) {
-            alert('Error de conexión');
-            document.getElementById('upd-submit').disabled = false;
-            document.getElementById('upd-submit').innerText = 'ENVIAR ACTUALIZACIÓN';
-        }
-    }
-
-</script>
-<!-- FIN PANEL ENVÍOS MASIVOS -->

@@ -55,6 +55,84 @@
     .online-dot { display: inline-block; width: 6px; height: 6px; background-color: #22c55e; border-radius: 50%; margin-right: 5px; animation: blink 2s infinite; vertical-align: middle; }
     .unread-badge { background: #ef4444; color: white; border-radius: 50%; padding: 2px 5px; font-size: 9px; font-weight: bold; margin-left: 5px; vertical-align: middle; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    /* ─── PANEL UBICACIÓN EN VIVO ─── */
+    .loc-pinned-item {
+      padding: 8px 6px; border-radius: 6px; cursor: pointer;
+      font-size: 10px; margin-bottom: 5px;
+      background: linear-gradient(135deg, #052e16, #166534);
+      color: #86efac; font-weight: bold;
+      border-left: 3px solid #22c55e;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: background 0.2s;
+    }
+    .loc-pinned-item:hover { background: linear-gradient(135deg, #166534, #15803d); }
+    .loc-pinned-badge {
+      background: #22c55e; color: #000; border-radius: 4px;
+      padding: 1px 5px; font-size: 8px; font-weight: 900;
+      margin-left: auto; flex-shrink: 0; display: none;
+    }
+    #loc-panel {
+      position: absolute; inset: 0;
+      background: #020617; z-index: 10002;
+      display: none; flex-direction: column;
+    }
+    #loc-panel.open { display: flex; }
+    .loc-panel-header {
+      padding: 10px 12px; background: #0f172a;
+      border-bottom: 1px solid #1e3a5f;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .loc-panel-body {
+      flex: 1; padding: 14px 12px;
+      display: flex; flex-direction: column; gap: 10px;
+      overflow-y: auto;
+    }
+    .loc-panel-desc {
+      background: #0f172a; border: 1px solid #1e3a5f;
+      border-radius: 8px; padding: 10px 12px;
+      font-size: 11px; color: #94a3b8; line-height: 1.5;
+    }
+    .loc-panel-desc strong { color: #e2e8f0; }
+    .loc-action-btn {
+      width: 100%; padding: 12px; border: none; border-radius: 8px;
+      font-size: 12px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      transition: transform 0.15s; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .loc-action-btn:active { transform: scale(0.97); }
+    .loc-btn-current { background: linear-gradient(135deg, #0369a1, #0ea5e9); box-shadow: 0 3px 10px rgba(14,165,233,0.3); }
+    .loc-btn-live    { background: linear-gradient(135deg, #166534, #22c55e); box-shadow: 0 3px 10px rgba(34,197,94,0.3); }
+    .loc-btn-stop    { background: linear-gradient(135deg, #7f1d1d, #ef4444); box-shadow: 0 3px 10px rgba(239,68,68,0.3); }
+    .loc-status {
+      background: #0f172a; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: 8px 12px;
+      font-size: 11px; color: #64748b;
+      display: none;
+    }
+    .loc-status.visible { display: block; }
+    .loc-pulse {
+      display: inline-block; width: 7px; height: 7px;
+      background: #22c55e; border-radius: 50%;
+      animation: locPulse 1.2s infinite; margin-right: 5px;
+    }
+    @keyframes locPulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.3; transform:scale(0.6); }
+    }
+
+    .chat-attach-menu {
+      position: absolute; bottom: 50px; left: 10px; background: #1e293b; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: none; flex-direction: column; padding: 5px 0; z-index: 10001; min-width: 180px;
+    }
+    .chat-attach-menu.show { display: flex; }
+    .attach-item {
+      padding: 10px 15px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 13px;
+    }
+    .attach-item:hover { background: #334155; }
+    .attach-icon { font-size: 16px; }
   `;
   document.head.appendChild(style);
 
@@ -63,25 +141,75 @@
     <div id="internal-chat-widget">
       <div class="chat-sidebar">
         <div class="chat-sidebar-header">Conversaciones</div>
-        <div class="chat-list" id="chat-list"></div>
+        <div class="chat-list" id="chat-list">
+          <!-- Ítem fijo: Ubicación en Vivo -->
+          <div class="loc-pinned-item" id="loc-pinned-btn">
+            📍 Ubicación en Vivo
+            <span class="loc-pinned-badge" id="loc-pinned-badge">EN VIVO</span>
+          </div>
+        </div>
         <div class="chat-actions">
           <button class="chat-btn" id="btn-new-chat">Nueva Conversación</button>
           <button class="chat-btn" id="btn-new-group" style="display:none; background:#a855f7;">Crear Grupo</button>
         </div>
       </div>
-      <div class="chat-main">
+      <div class="chat-main" style="position:relative;">
+        <!-- PANEL UBICACIÓN EN VIVO -->
+        <div id="loc-panel">
+          <div class="loc-panel-header">
+            <button id="loc-panel-back" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;">&#8249;</button>
+            <span style="font-size:16px;">📍</span>
+            <div style="flex:1">
+              <div style="font-weight:800;font-size:12px;color:#22c55e;">UBICACIÓN EN VIVO</div>
+              <div style="font-size:10px;color:#475569;">Solo visible para supervisores</div>
+            </div>
+            <button id="loc-panel-close" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:14px;">&#10005;</button>
+          </div>
+          <div class="loc-panel-body">
+            <button class="loc-action-btn loc-btn-current" id="loc-btn-current">
+              <span style="font-size:16px;">🔵</span>
+              <div>
+                <div>Enviar ubicación actual</div>
+                <div style="font-size:10px;font-weight:400;opacity:0.8;">Una sola vez · Exacta a 10m</div>
+              </div>
+            </button>
+            <button class="loc-action-btn loc-btn-live" id="loc-btn-live">
+              <span style="font-size:16px;">🟢</span>
+              <div>
+                <div>Compartir en tiempo real</div>
+                <div style="font-size:10px;font-weight:400;opacity:0.8;">Actualiza cada 15s · Hasta que la desactives</div>
+              </div>
+            </button>
+            <button class="loc-action-btn loc-btn-stop" id="loc-btn-stop" style="display:none;">
+              <span style="font-size:16px;">🔴</span>
+              <div>
+                <div>Detener ubicación en vivo</div>
+                <div style="font-size:10px;font-weight:400;opacity:0.8;">Toca aquí para dejar de compartir</div>
+              </div>
+            </button>
+            <div class="loc-status" id="loc-status"></div>
+          </div>
+        </div>
+        <!-- FIN PANEL UBICACIÓN EN VIVO -->
         <div class="chat-main-header">
           <strong id="chat-title">Selecciona un chat</strong>
           <div>
             <button id="btn-delete-chat" style="background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:14px; margin-right:10px; display:none;" title="Borrar historial">🗑️</button>
-            <button id="btn-close-chat" style="background:transparent; border:none; color:white; cursor:pointer;">✖</button>
+            <button id="btn-close-chat" style="display:none; background:transparent; border:none; color:white; cursor:pointer;">✖</button>
           </div>
         </div>
         <div class="chat-body" id="chat-body"></div>
-        <div class="chat-footer">
-          <button id="btn-attach-img" style="background:transparent; border:none; cursor:pointer; font-size:16px;" title="Adjuntar Imagen">📎</button>
+        <div class="chat-footer" style="position:relative;">
+          <button id="btn-attach-img" style="background:transparent; border:none; cursor:pointer; font-size:16px;" title="Adjuntar">📎</button>
+          
+          <div id="attach-menu" class="chat-attach-menu">
+            <div class="attach-item" id="attach-gallery"><span class="attach-icon">📷</span> Galería</div>
+            <div class="attach-item" id="attach-location"><span class="attach-icon">📍</span> Ubicación actual</div>
+            <div class="attach-item" id="attach-live-location"><span class="attach-icon">📡</span> Ubicación en tiempo real</div>
+          </div>
+
           <input type="text" id="chat-input" class="chat-input" placeholder="Escribe un mensaje..." disabled />
-          <button id="btn-voice-note" style="background:transparent; border:none; cursor:pointer; font-size:16px;" title="Mantener presionado para Grabar" disabled>🎤</button>
+          <button id="btn-voice-note" style="display:none; background:transparent; border:none; cursor:pointer; font-size:16px;" title="Mantener presionado para Grabar" disabled>🎤</button>
           <button id="btn-send" class="chat-btn" disabled>Enviar</button>
         </div>
         <input type="file" id="chat-file-input" accept="image/*" style="display:none;" />
@@ -153,6 +281,79 @@
   const newChatModal = document.getElementById('new-chat-modal');
   const newChatSearch = document.getElementById('new-chat-search');
   const newChatList = document.getElementById('new-chat-list');
+
+  // ─── PANEL UBICACIÓN EN VIVO ───
+  const locPanel       = document.getElementById('loc-panel');
+  const locPinnedBtn   = document.getElementById('loc-pinned-btn');
+  const locPinnedBadge = document.getElementById('loc-pinned-badge');
+  const locPanelBack   = document.getElementById('loc-panel-back');
+  const locPanelClose  = document.getElementById('loc-panel-close');
+  const locBtnCurrent  = document.getElementById('loc-btn-current');
+  const locBtnLive     = document.getElementById('loc-btn-live');
+  const locBtnStop     = document.getElementById('loc-btn-stop');
+  const locStatus      = document.getElementById('loc-status');
+  let _liveLocInterval = null;
+
+  function setLocStatus(msg, pulse) {
+    locStatus.classList.add('visible');
+    locStatus.innerHTML = pulse ? `<span class="loc-pulse"></span>${msg}` : msg;
+  }
+  function setLiveUI(isLive) {
+    locBtnLive.style.display = isLive ? 'none' : 'flex';
+    locBtnStop.style.display = isLive ? 'flex' : 'none';
+    locPinnedBadge.style.display = isLive ? 'inline-block' : 'none';
+  }
+
+  locPinnedBtn.onclick = () => locPanel.classList.add('open');
+  locPanelBack.onclick = () => locPanel.classList.remove('open');
+  locPanelClose.onclick = () => locPanel.classList.remove('open');
+
+  locBtnCurrent.onclick = () => {
+    if (!navigator.geolocation) return setLocStatus('❌ Geolocalización no disponible', false);
+    setLocStatus('Obteniendo posición...', true);
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+      try {
+        const cu = getCurrentUser();
+        const res = await fetch('/api/location/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+          body: JSON.stringify({ lat, lon, accuracy, entity_id: cu?.id, entity_type: 'staff' })
+        });
+        setLocStatus(res.ok ? '✅ Ubicación enviada a Geolocalización' : '❌ Error al enviar', false);
+      } catch(e) { setLocStatus('❌ Falló la petición', false); }
+    }, (err) => setLocStatus('❌ ' + err.message, false), { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  locBtnLive.onclick = () => {
+    if (!navigator.geolocation) return setLocStatus('❌ Geolocalización no disponible', false);
+    setLocStatus('Iniciando ubicación en tiempo real...', true);
+    const token = getToken();
+    async function sendLive(pos) {
+      try {
+        await fetch('/api/location/live', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ lat: pos.coords.latitude, lon: pos.coords.longitude, accuracy: pos.coords.accuracy })
+        });
+        setLocStatus('🟢 Compartiendo en tiempo real... (cada 15s)', true);
+      } catch(e) {}
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      sendLive(pos);
+      setLiveUI(true);
+      _liveLocInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(sendLive, ()=>{}, { enableHighAccuracy: true, timeout: 8000 });
+      }, 15000);
+    }, (err) => setLocStatus('❌ ' + err.message, false), { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  locBtnStop.onclick = async () => {
+    clearInterval(_liveLocInterval); _liveLocInterval = null;
+    try { await fetch('/api/location/live', { method: 'DELETE', headers: { 'Authorization': `Bearer ${getToken()}` } }); } catch(e) {}
+    setLiveUI(false);
+    setLocStatus('⏹ Ubicación en vivo detenida', false);
+  };
 
   function getToken() { return localStorage.getItem('token'); }
   function getCurrentUser() { 
@@ -336,7 +537,10 @@
   }
 
   function renderConversations(groups, users) {
-    chatList.innerHTML = '';
+    // Limpiar solo los items dinámicos, preservando el ítem fijo de ubicación
+    Array.from(chatList.children).forEach(el => {
+      if (el.id !== 'loc-pinned-btn') el.remove();
+    });
     groups.forEach(g => {
       const div = document.createElement('div');
       div.className = 'chat-item'; 
@@ -344,7 +548,7 @@
       
       const gName = g.name.toUpperCase();
       if (gName === 'GLOBAL EYE STAFF') {
-        div.style.background = '#10b981';
+        div.style.background = '#a855f7';
         div.style.color = '#fff';
         div.style.fontWeight = 'bold';
       } else if (gName === 'ORO, PLATA Y BRONCE') {
@@ -373,6 +577,8 @@
   }
 
   function openChat(chatData) {
+    // Cerrar panel de ubicación si está abierto
+    if (locPanel) locPanel.classList.remove('open');
     activeChat = chatData;
     chatTitle.innerText = chatData.name;
     chatInput.disabled = false; sendBtn.disabled = false; btnVoiceNote.disabled = false;
@@ -380,7 +586,6 @@
     chatInput.focus();
     Array.from(chatList.children).forEach(c => c.classList.remove('active'));
     lastMessageCount = 0;
-    // active state will be set in renderConversations, but we can do it manually or just reload
     loadMessages();
     startPolling();
   }
@@ -423,7 +628,8 @@
       
       if (m.attachment_url) {
         if (m.attachment_type === 'image') {
-          inner += `<div style="margin-bottom:5px;"><img src="${m.attachment_url}" style="max-width:100%; border-radius:8px; cursor:pointer;" onclick="window.open('${m.attachment_url}')"/></div>`;
+          const imgUrl = m.attachment_url.replace('https://fotos.eye-staff.app/', '/api/photos/');
+          inner += `<div style="margin-bottom:5px;"><img src="${imgUrl}" style="max-width:100%; max-height:200px; border-radius:8px; cursor:pointer; display:block; object-fit:cover;" onclick="(function(u){var ov=document.createElement('div');ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer;';ov.onclick=function(){ov.remove();};var img=document.createElement('img');img.src=u;img.style.cssText='max-width:95vw;max-height:95vh;border-radius:8px;';ov.appendChild(img);document.body.appendChild(ov);}('${imgUrl}'))"/></div>`;
         } else if (m.attachment_type === 'audio') {
           inner += `<div style="margin-bottom:5px;"><audio controls src="${m.attachment_url}" style="max-width:100%; height:30px;"></audio></div>`;
         }
@@ -497,7 +703,99 @@
     } catch(e) {}
   };
 
-  btnAttachImg.onclick = () => fileInput.click();
+  const attachMenu = document.getElementById('attach-menu');
+  btnAttachImg.onclick = (e) => {
+    e.stopPropagation();
+    if (!activeChat) return;
+    attachMenu.classList.toggle('show');
+  };
+
+  document.getElementById('attach-gallery').onclick = () => {
+    attachMenu.classList.remove('show');
+    fileInput.click();
+  };
+
+  document.getElementById('attach-location').onclick = () => {
+    attachMenu.classList.remove('show');
+    if (!activeChat) return;
+    if (!navigator.geolocation) return alert('Geolocalización no soportada por tu navegador');
+
+    chatInput.placeholder = 'Obteniendo ubicación...';
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy;
+        const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+
+        // Registrar en Geolocalización (sección admin)
+        try {
+          const token = getToken();
+          const cu = getCurrentUser();
+          await fetch('/api/location/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ lat, lon, accuracy, entity_id: cu?.id, entity_type: 'staff' })
+          });
+        } catch(e) {}
+
+        // Enviar enlace por chat
+        chatInput.placeholder = 'Escribe un mensaje...';
+        chatInput.value = `📍 Mi ubicación actual:\n${mapsLink}`;
+        sendMessage();
+      },
+      (err) => {
+        alert('Error al obtener la ubicación. Verifica los permisos.');
+        chatInput.placeholder = 'Escribe un mensaje...';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  document.getElementById('attach-live-location').onclick = () => {
+    attachMenu.classList.remove('show');
+    if (!activeChat) return;
+    if (!navigator.geolocation) return alert('Geolocalización no soportada');
+
+    const token = getToken();
+
+    async function sendLivePos(pos) {
+      const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+      try {
+        await fetch('/api/location/live', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ lat, lon, accuracy })
+        });
+      } catch(e) {}
+    }
+
+    // Si ya está activo, detenerlo
+    if (_liveLocInterval) {
+      clearInterval(_liveLocInterval);
+      _liveLocInterval = null;
+      fetch('/api/location/live', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }).catch(()=>{});
+      chatInput.value = '⏹ He detenido la ubicación en tiempo real.';
+      sendMessage();
+      document.getElementById('attach-live-location').innerHTML = '<span class="attach-icon">📡</span> Ubicación en tiempo real';
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+      sendLivePos(pos);
+      const mapsLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      chatInput.value = `📡 Estoy compartiendo mi ubicación en tiempo real.\nAbre la sección Geolocalización para verla en el mapa.\nPosición actual: ${mapsLink}`;
+      sendMessage();
+      document.getElementById('attach-live-location').innerHTML = '<span class="attach-icon">🔴</span> Detener ubicación en vivo';
+
+      _liveLocInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(sendLivePos, ()=>{}, { enableHighAccuracy: true, timeout: 8000 });
+      }, 15000);
+    }, (err) => {
+      alert('No se pudo obtener la ubicación: ' + err.message);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  };
+
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -575,7 +873,12 @@
 
   // Close chat when clicking on empty areas (non-interactive elements)
   widget.addEventListener('click', (e) => {
-    const isInteractive = e.target.closest('button, input, .chat-item, .tc-msg, label, audio, img');
+    // Si hace click fuera del attach-menu, lo ocultamos
+    if (!e.target.closest('#btn-attach-img') && !e.target.closest('.chat-attach-menu')) {
+      attachMenu.classList.remove('show');
+    }
+
+    const isInteractive = e.target.closest('button, input, .chat-item, .tc-msg, label, audio, img, .attach-item');
     if (!isInteractive) {
       // Prevent closing if clicking on scrollbars
       if (e.target.clientWidth && e.offsetX > e.target.clientWidth) return;

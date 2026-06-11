@@ -1,0 +1,64 @@
+name = "grupo-eye-staff"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "020953556771a3695e7f0a5f0acdf064"
+
+[assets]
+directory = "./frontend"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "valet-db"
+database_id = "0c3d5545-adc7-47ac-84b6-02405dd1df22"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "valet-parking-photos"
+
+[vars]
+JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
+OFFICE_GROUP_ID = "1203630234567890@g.us"
+WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
+WHATSAPP_BOT_API_KEY = "dev-local-api-key"
+TELEGRAM_BOT_TOKEN = "8913183532:AAFmvsiSZKMd_IKXsqovzU3cUrOYQkmzsBs"
+[ai]
+binding = "AI"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[routes]]
+pattern = "eye-staff.app"
+custom_domain = true
+
+
+
+[env.staging]
+name = "grupo-eye-staff-staging"
+workers_dev = true
+routes = []
+# Eliminamos o sobreescribimos triggers si queremos evitar crons en staging (opcional)
+triggers = { crons = [] }
+
+[env.staging.vars]
+IS_STAGING = "true"
+JWT_SECRET = "p8X3mA9qL7sT2vB4yZ6rN1kF0wH9cQ5d"
+OFFICE_GROUP_ID = "1203630234567890@g.us"
+WHATSAPP_BOT_URL = "https://valet-whatsapp-bot.onrender.com/api/send"
+WHATSAPP_BOT_API_KEY = "dev-local-api-key"
+TELEGRAM_BOT_TOKEN = "8688024661:AAHq4i1JnEFg7vImx10SrdsAshhbuDoGz2s"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "d1-staging"
+database_id = "3ed7d3a3-82f7-49a0-b0a8-47c32d42e532"
+migrations_dir = "migrations"
+
+[[env.staging.r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "valet-parking-photos"
+
+[env.staging.ai]
+binding = "AI"
