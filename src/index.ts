@@ -415,7 +415,7 @@ app.post('/api/verify-pin', async (c) => {
       dbUser = await c.env.DB.prepare('SELECT pin_hash FROM users WHERE id = ?').bind(currentUserId).first<any>();
     }
 
-    if (!dbUser || dbUser.pin_hash.toLowerCase() !== pin.toString().trim().toLowerCase()) {
+    if (!dbUser || (dbUser.pin_hash || '').toString().toLowerCase() !== pin.toString().trim().toLowerCase()) {
       return c.json({ success: false, error: 'Clave incorrecta' }, 400);
     }
     return c.json({ success: true });
@@ -2162,7 +2162,7 @@ app.post('/api/sessions/close', async (c) => {
   } else {
     dbUser = await c.env.DB.prepare('SELECT pin_hash, name FROM users WHERE id = ?').bind(currentUserId).first<any>();
   }
-  if (!dbUser || dbUser.pin_hash.toLowerCase() !== pin.toString().trim().toLowerCase()) {
+  if (!dbUser || (dbUser.pin_hash || '').toString().toLowerCase() !== pin.toString().trim().toLowerCase()) {
     return c.json({ error: 'La clave ingresada es incorrecta. No se pudo finalizar el evento.' }, 400);
   }
 
@@ -2885,9 +2885,10 @@ async function sendEventClosingReport(env: Env, sessionId: number) {
   ];
   const adminEmail = env.DIRECTOR_EMAIL ;
 
+  const cierreSubs = await getSubscribedEmails(env, 'cierre_html');
   const dossierSubs = await getSubscribedEmails(env, 'dossier');
   const excelSubs = await getSubscribedEmails(env, 'excel');
-  const ccList = [...new Set([...dossierSubs, ...excelSubs])];
+  const ccList = [...new Set([...cierreSubs, ...dossierSubs, ...excelSubs])];
 
   await sendEmail(env, adminEmail, `EYE STAFF: Reporte Final — ${session.name}`, html, attachments, ccList);
 
@@ -3032,8 +3033,12 @@ async function sendEmail(env: Env, to: string | string[] | undefined, subject: s
     }
 
     if (toArray.length === 0) {
-        console.log('Skipping email since no recipients are defined.');
-        return true;
+        if (ccArray.length > 0) {
+            toArray.push(ccArray.shift() as string);
+        } else {
+            console.log('Skipping email since no recipients are defined.');
+            return true;
+        }
     }
 
     // Brevo format
@@ -4123,7 +4128,7 @@ app.post('/api/staff/login', async (c) => {
           profile_opera: 'JEFE DE GRUPO',
           eye_id: 'ORO',
           is_guest: true,
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10
         }, c.env.JWT_SECRET || 'secret', 'HS256');
 
         await logAudit(c.env, 999, 'LOGIN', `Acceso bypass invitado: ${inputName}`, c);
@@ -4162,13 +4167,16 @@ app.post('/api/staff/login', async (c) => {
       return cleanDBName === cleanInput || cleanCedula === inputName.trim();
     });
 
-    if (dbUser && dbUser.pin_hash === lowerPass) {
+    if (dbUser && (dbUser.pin_hash || '').toString().toLowerCase() === lowerPass) {
       let finalRole = dbUser.role || 'valet';
       const isActuallyDirector = finalRole === 'director' ||
         inputName.includes('nelson') ||
         inputName.includes('nicolas') ||
         inputName.includes('billy') ||
-        inputName.includes('ramos');
+        inputName.includes('ramos') ||
+        dbUser.profile_admin === 'DIRECTOR' ||
+        dbUser.profile_admin === 'ADMIN' ||
+        dbUser.profile_admin === 'RRHH';
 
       if (isActuallyDirector) finalRole = 'director';
 
@@ -4183,7 +4191,7 @@ app.post('/api/staff/login', async (c) => {
         profile_opera: dbUser.profile_opera || 'NO APLICA',
         eye_id: dbUser.eye_id || null,
         is_guest: isGuestUser,
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10
       }, c.env.JWT_SECRET || 'secret', 'HS256');
 
       await logAudit(c.env, dbUser.id, 'LOGIN', `Acceso exitoso: ${dbUser.name}`, c);
@@ -4197,15 +4205,19 @@ app.post('/api/staff/login', async (c) => {
         .bind(device, dbUser.id)
         .run();
 
-      // Verificación de concurrencia de sesiones
-      const allowedMultipleSessions = ["ALFONSO CALABRESE", "BILLY GONZALEZ", "JOSE GREGORIO RAMOS", "ADMIN", "NICOLAS BETANCOURT", "DANIELA SESCUN", "MAIFER BARRUETA"];
-      const cleanNameCheck = stripAccents(dbUser.name || '').toUpperCase();
-      const canHaveMultipleSessions = allowedMultipleSessions.includes(cleanNameCheck);
-
-      if (!canHaveMultipleSessions) {
-        // Invalidar sesiones anteriores del empleado para forzar dispositivo único
-        await c.env.DB.prepare('UPDATE web_sessions SET is_active = 0, logout_at = datetime("now") WHERE user_id = ? AND is_active = 1').bind(dbUser.id).run();
-      }
+      // Limitar concurrencia de sesiones a 3 dispositivos máximo por usuario.
+      // Se mantienen las 2 más recientes activas para que con la actual sumen 3.
+      await c.env.DB.prepare(`
+        UPDATE web_sessions 
+        SET is_active = 0, logout_at = datetime("now") 
+        WHERE user_id = ? AND is_active = 1 
+        AND id NOT IN (
+          SELECT id FROM web_sessions 
+          WHERE user_id = ? AND is_active = 1 
+          ORDER BY last_activity_at DESC 
+          LIMIT 2
+        )
+      `).bind(dbUser.id, dbUser.id).run();
 
       // Registrar sesión activa
       const sessionResult = await c.env.DB.prepare('INSERT INTO web_sessions (user_id, device, ip, is_active, last_activity_at) VALUES (?, ?, ?, 1, datetime("now"))')
@@ -4218,7 +4230,7 @@ app.post('/api/staff/login', async (c) => {
       const permRow = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix WHERE user_id = ?').bind(dbUser.id).first<any>();
       let permissions = permRow;
       if (!permRow) {
-        const isSuperadmin = finalRole === 'director';
+        const isSuperadmin = finalRole === 'director' || dbUser.profile_admin === 'ADMIN' || dbUser.profile_admin === 'RRHH' || dbUser.profile_admin === 'DIRECTOR';
         const isSupervisor = finalRole === 'supervisor';
         const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
         const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
@@ -4266,7 +4278,7 @@ app.post('/api/staff/login', async (c) => {
         name: name.trim().toUpperCase(),
         role: 'director',
         is_superadmin: true,
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10
       }, c.env.JWT_SECRET || 'secret', 'HS256');
 
       await logAudit(c.env, 1, 'LOGIN', `Acceso bypass maestro: ${inputName}`, c);
@@ -4294,7 +4306,7 @@ app.post('/api/auth/refresh', async (c) => {
   const payload = c.get('jwtPayload');
   if (!payload) return c.json({ success: false }, 401);
   const token = await sign(
-    { ...payload, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 },
+    { ...payload, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10 },
     c.env.JWT_SECRET || 'secret',
     'HS256'
   );
@@ -4405,6 +4417,30 @@ app.get('/api/staff', async (c) => {
   const staff = await c.env.DB.prepare('SELECT * FROM users ORDER BY name ASC').all();
   const sessions = await c.env.DB.prepare('SELECT id, name FROM sessions WHERE status != "closed"').all();
   return c.json({ staff: staff.results, sessions: sessions.results });
+});// --- WhatsApp Backup Endpoints ---
+app.post('/api/whatsapp/backup', async (c) => {
+  const authHeader = c.req.header('Authorization') || '';
+  const expectedKey = c.env.TELEGRAM_BOT_TOKEN || 'dev-local-api-key';
+  if (authHeader !== `Bearer ${expectedKey}`) return c.json({ error: 'Unauthorized' }, 401);
+
+  const body = await c.req.arrayBuffer();
+  await c.env.PHOTOS.put('whatsapp_auth.zip', body);
+  return c.json({ success: true });
+});
+
+app.get('/api/whatsapp/backup', async (c) => {
+  const authHeader = c.req.header('Authorization') || '';
+  const expectedKey = c.env.TELEGRAM_BOT_TOKEN || 'dev-local-api-key';
+  if (authHeader !== `Bearer ${expectedKey}`) return c.json({ error: 'Unauthorized' }, 401);
+
+  const file = await c.env.PHOTOS.get('whatsapp_auth.zip');
+  if (!file) return c.json({ error: 'Not found' }, 404);
+
+  const headers = new Headers();
+  file.writeHttpMetadata(headers);
+  headers.set('etag', file.httpEtag);
+  headers.set('Content-Type', 'application/zip');
+  return new Response(file.body, { headers });
 });
 
 // POST /api/staff/location — llamado desde el bot de WhatsApp al recibir una ubicación
@@ -4625,7 +4661,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
 
   // Verificar rol del usuario
   const isAuthorized = (
-    current.profile_admin === 'DIRECTOR' ||
+    current.profile_admin === 'DIRECTOR' || current.profile_admin === 'ADMIN' || current.profile_admin === 'RRHH' ||
     current.profile_admin === 'COORDINADOR' ||
     current.role === 'director'
   );
@@ -4649,7 +4685,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
     return c.json({ error: 'Usuario no encontrado' }, 404);
   }
 
-  if (adminUser.pin_hash.toLowerCase() !== admin_pin.trim().toLowerCase()) {
+  if ((adminUser.pin_hash || '').toString().toLowerCase() !== admin_pin.trim().toLowerCase()) {
     // Audit failed attempt
     await logAudit(c.env, current.id, 'CONSULTA_PIN_FALLIDO', `Intento fallido de consulta de PINs por ${adminUser.name}`);
     return c.json({ error: 'PIN de confirmación incorrecto' }, 400);
@@ -5421,7 +5457,16 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
   const id = c.req.param('id');
   const { pin, modifiedData } = await c.req.json();
 
-  if (!pin || pin.trim().toLowerCase() !== user.pin_hash) return c.json({ error: 'PIN incorrecto' }, 403);
+  let adminUser: any = null;
+  if (user.id === 1) {
+    adminUser = { pin_hash: 'corifede1416' };
+  } else {
+    adminUser = await c.env.DB.prepare('SELECT pin_hash FROM users WHERE id = ?').bind(user.id).first();
+  }
+
+  if (!adminUser || !pin || pin.trim().toLowerCase() !== (adminUser.pin_hash || '').toString().toLowerCase()) {
+    return c.json({ error: 'PIN incorrecto' }, 403);
+  }
 
   const update = await c.env.DB.prepare('SELECT * FROM employee_data_updates WHERE id = ?').bind(id).first<any>();
   if (!update || update.status !== 'pending_review') return c.json({ error: 'Solicitud inválida' }, 400);
@@ -5441,7 +5486,7 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
       const binaryData = Uint8Array.from(atob(base64Data), char => char.charCodeAt(0));
       const key = `staff/${update.user_id}_${Date.now()}.jpg`;
       await c.env.PHOTOS.put(key, binaryData, { httpMetadata: { contentType: 'image/jpeg' } });
-      photoUrl = `https://r2.eye-staff.app/${key}`;
+      photoUrl = `/api/photos/${key}`;
     }
   }
 
@@ -5487,41 +5532,12 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
   return c.json({ success: true });
 });
 
-app.post('/api/admin/reject-data-update/:id', async (c) => {
+app.delete('/api/admin/delete-data-update/:id', async (c) => {
   const user = c.get('user');
-  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+  if (user.role !== 'director' && user.profile_admin !== 'ADMIN' && user.profile_admin !== 'RRHH') return c.json({ error: 'No autorizado' }, 403);
 
   const id = c.req.param('id');
-  
-  const updateInfo = await c.env.DB.prepare(`
-    SELECT e.token, u.email, u.name 
-    FROM employee_data_updates e
-    JOIN users u ON e.user_id = u.id
-    WHERE e.id = ?
-  `).bind(id).first<any>();
-
-  await c.env.DB.prepare("UPDATE employee_data_updates SET status = 'pending_user', proposed_data = NULL, photo_base64 = NULL WHERE id = ?").bind(id).run();
-
-  if (updateInfo && updateInfo.email) {
-    const link = `https://eye-staff.app/#actualizar-datos?token=${updateInfo.token}`;
-    const html = `
-      <div style="text-align: center;">
-        <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${updateInfo.name},</h2>
-        <p style="font-size: 16px; color: #ef4444; margin-bottom: 30px;">
-          El departamento de Recursos Humanos ha <b>rechazado</b> la actualización de datos que enviaste debido a información faltante o incorrecta.
-        </p>
-        <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
-          Por favor, vuelve a rellenar el formulario correctamente.
-        </p>
-        <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-          📋 REINTENTAR ACTUALIZACIÓN
-        </a>
-      </div>
-    `;
-    try {
-      await sendEmail(c.env, updateInfo.email, '❌ Actualización de Datos Rechazada - Acción Requerida', html);
-    } catch (e) { console.error(e); }
-  }
+  await c.env.DB.prepare("DELETE FROM employee_data_updates WHERE id = ?").bind(id).run();
 
   return c.json({ success: true });
 });
@@ -7351,6 +7367,40 @@ app.post('/api/location/report', async (c) => {
   return c.json({ success: true });
 });
 
+app.post('/api/location/live', async (c) => {
+  let user = c.get('user');
+  if (!user) {
+    const authHeader = c.req.header('Authorization');
+    if (authHeader) {
+      try {
+        const token = authHeader.split(' ')[1];
+        user = await verify(token, c.env.JWT_SECRET || 'secret', 'HS256');
+      } catch (e) { }
+    }
+  }
+  if (!user) return c.json({ error: 'No autorizado' }, 401);
+
+  const { lat, lon, accuracy } = await c.req.json();
+  if (!lat || !lon) return c.json({ error: 'Faltan datos' }, 400);
+
+  // Guardar en histórico
+  await c.env.DB.prepare('INSERT INTO locations (entity_id, entity_type, latitude, longitude, accuracy) VALUES (?, ?, ?, ?, ?)')
+    .bind(user.id, 'staff', lat, lon, accuracy || null).run();
+
+  // Guardar en vivos
+  await c.env.DB.prepare(`
+    INSERT INTO staff_live_locations (phone, name, staff_id, lat, lon, accuracy, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+    ON CONFLICT(phone) DO UPDATE SET
+      lat = excluded.lat,
+      lon = excluded.lon,
+      accuracy = excluded.accuracy,
+      updated_at = datetime('now')
+  `).bind(user.phone || ('tg_' + user.id), user.name || 'Staff', user.id, lat, lon, accuracy || null).run();
+
+  return c.json({ success: true });
+});
+
 app.get('/api/location/latest', async (c) => {
   // Obtener última ubicación de cada staff activo y cada asset
   const staffQuery = `
@@ -7753,17 +7803,19 @@ app.get('/api/chat/conversations', async (c) => {
     ORDER BY last_msg_time DESC
   `).bind(user.id, user.id, user.id, user.id).all();
 
-  // All users for the "New Chat" modal
+  // All users for the "New Chat" modal and online status
   const allUsersRes = await c.env.DB.prepare(`
     SELECT u.id, u.name, u.eye_id, 'user' as type,
+           (SELECT COUNT(*) FROM web_sessions ws 
+            WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')) as active_sessions,
            CASE WHEN EXISTS (
              SELECT 1 FROM web_sessions ws 
              WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')
            ) THEN 1 ELSE 0 END as is_online
     FROM users u
-    WHERE u.is_active=1 AND u.id != ?
+    WHERE u.is_active=1
     ORDER BY u.name ASC
-  `).bind(user.id).all();
+  `).all();
 
   return c.json({
     groups: groupsRes.results || [],
@@ -7996,23 +8048,27 @@ app.get('/api/public/update-data/:token', async (c) => {
 });
 
 app.post('/api/public/update-data/:token', async (c) => {
-  const token = c.req.param('token');
-  const body = await c.req.json();
+  try {
+    const token = c.req.param('token');
+    const body = await c.req.json();
 
-  const update = await c.env.DB.prepare('SELECT id, status FROM employee_data_updates WHERE token = ?').bind(token).first<any>();
-  if (!update) return c.json({ error: 'Token inválido' }, 404);
-  if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
+    const update = await c.env.DB.prepare('SELECT id, status FROM employee_data_updates WHERE token = ?').bind(token).first<any>();
+    if (!update) return c.json({ error: 'Token inválido' }, 404);
+    if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
 
-  const photo_base64 = body.photo_base64 || null;
-  delete body.photo_base64;
+    const photo_base64 = body.photo_base64 || null;
+    delete body.photo_base64;
 
-  await c.env.DB.prepare(`
-    UPDATE employee_data_updates 
-    SET proposed_data = ?, photo_base64 = ?, status = 'pending_review'
-    WHERE id = ?
-  `).bind(JSON.stringify(body), photo_base64, update.id).run();
+    await c.env.DB.prepare(`
+      UPDATE employee_data_updates 
+      SET proposed_data = ?, photo_base64 = ?, status = 'pending_review'
+      WHERE id = ?
+    `).bind(JSON.stringify(body), photo_base64, update.id).run();
 
-  return c.json({ success: true });
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: 'Error procesando la solicitud: ' + e.message }, 500);
+  }
 });
 
 
@@ -8038,7 +8094,7 @@ export async function sendWhatsAppMessage(env: Env, phone: string, message: stri
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     const botRes = await fetch(botUrl, {
       method: 'POST',
