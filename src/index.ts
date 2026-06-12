@@ -436,16 +436,6 @@ app.get('/api/sessions/without-budget', async (c) => {
   }
 });
 
-app.get('/api/sessions/:id', async (c) => {
-  try {
-    const id = c.req.param('id');
-    const res = await c.env.DB.prepare(`SELECT * FROM sessions WHERE id = ?`).bind(id).first();
-    return c.json({ success: true, data: res });
-  } catch (e: any) {
-    return c.json({ success: false, error: e.message }, 500);
-  }
-});
-
 app.get('/api/sessions/active', async (c) => {
   const sessionsRes = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("planning", "active") ORDER BY id ASC').all();
   const sessions = (sessionsRes.results || []) as any[];
@@ -1189,6 +1179,16 @@ app.get('/api/sessions/concluded', async (c) => {
   }
 
   return c.json({ sessions });
+});
+
+app.get('/api/sessions/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const res = await c.env.DB.prepare(`SELECT * FROM sessions WHERE id = ?`).bind(id).first();
+    return c.json({ success: true, data: res });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
 });
 
 app.get('/api/staff/:id/sessions', async (c) => {
