@@ -2659,11 +2659,7 @@
             user.profile_admin === 'COORDINADOR'
         ));
 
-        if (!isAdmin && (!window.activeSessions || window.activeSessions.length === 0)) {
-            enterModule('valet');
-            setTimeout(updateFloatingChatVisibility, 100);
-            return;
-        }
+        // Redirect logic removed so all users land on the main portal menu
 
         const view = document.getElementById('current-view');
         document.getElementById('btn-back-portal').style.display = 'none';
