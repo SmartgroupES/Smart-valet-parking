@@ -678,26 +678,15 @@ app.put('/api/presupuestos/:id', async (c) => {
     ).run();
 
     if (prev && prev.estatus !== 'APROBADO' && data.estatus === 'APROBADO') {
-      if (c.env.RESEND_API_KEY) {
-        const mailPayload = {
-          from: 'EYE STAFF <onboarding@resend.dev>',
-          to: [c.env.DIRECTOR_EMAIL as string],
-          subject: `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`,
-          html: `
-                    <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
-                    <p>El presupuesto <strong>#${data.form?.correlativo || id}</strong> para el evento <strong>${data.evento}</strong> ha cambiado a estado APROBADO.</p>
-                    <p>Por favor, ingrese a la <strong>Gestión de Listas</strong> en el sistema para asignar los empleados correspondientes y finalizar la programación del evento.</p>
-                `
-        };
-        if (c.env.IS_STAGING === "true") {
-          mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-          mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-        }
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(mailPayload)
-        }).catch(e => console.error("Error sending email on budget approval", e));
+      if (c.env.DIRECTOR_EMAIL) {
+        const html = `
+          <h2 style="color: #22c55e;">Presupuesto Aprobado</h2>
+          <p>El presupuesto <strong>#${data.form?.correlativo || id}</strong> para el evento <strong>${data.evento}</strong> ha cambiado a estado APROBADO.</p>
+          <p>Por favor, ingrese a la <strong>Gestión de Listas</strong> en el sistema para asignar los empleados correspondientes y finalizar la programación del evento.</p>
+        `;
+        const subject = `PRESUPUESTO APROBADO: #${data.form?.correlativo || id} - ${data.evento}`;
+        await sendEmail(c.env, c.env.DIRECTOR_EMAIL as string, subject, html, undefined, undefined, undefined, 'EYE STAFF')
+          .catch(e => console.error("Error sending email on budget approval", e));
       }
     }
     return c.json({ success: true });
@@ -721,39 +710,11 @@ app.post('/api/presupuestos/send-email', async (c) => {
   try {
     const { to, subject, pdfData, filename, senderName } = await c.req.json();
 
-    if (!c.env.RESEND_API_KEY) {
-      return c.json({ success: false, error: 'RESEND API KEY missing' });
-    }
-
     const fromName = senderName || 'EYE STAFF';
-
-    const mailPayload = {
-      from: `${fromName} <onboarding@resend.dev>`,
-      to: [to],
-      subject: subject,
-      html: `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`,
-      attachments: [
-        {
-          filename: filename,
-          content: pdfData
-        }
-      ]
-    };
-    if (c.env.IS_STAGING === "true") {
-      mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-      mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-    }
-    const resendRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(mailPayload)
-    });
-
-    const data = await resendRes.json();
-    if (!resendRes.ok) {
-      console.error('Resend error:', data);
-      return c.json({ success: false, error: data });
-    }
+    const html = `<p>Hola,</p><p>Adjunto información referente al presupuesto solicitado.</p><p>Atentamente,<br>${fromName === 'RENTAEQUIPOS' ? 'Rentaequipos' : 'Eye Staff'}</p>`;
+    const attachments = [{ name: filename, content: pdfData }];
+    
+    await sendEmail(c.env, to, subject, html, attachments, undefined, undefined, fromName);
 
     return c.json({ success: true });
   } catch (e: any) {
@@ -769,10 +730,6 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
     const evento = data.evento || 'N/A';
     const fecha = data.fecha || 'N/A';
     const tipo = (data.form && data.form.tipoEvento) ? data.form.tipoEvento : 'N/A';
-
-    if (!c.env.RESEND_API_KEY) {
-      return c.json({ success: false, error: 'RESEND API KEY missing' });
-    }
 
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -793,29 +750,10 @@ app.post('/api/presupuestos/notify-hr', async (c) => {
       </div>
     `;
 
-    const mailPayload = {
-      from: 'EYE STAFF <onboarding@resend.dev>',
-      to: [c.env.DIRECTOR_EMAIL as string],
-      subject: `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`,
-      html: htmlBody
-    };
-    if (c.env.IS_STAGING === "true") {
-      mailPayload.subject = `[🔴 DESARROLLO] ${mailPayload.subject}`;
-      mailPayload.html = `<div style="background-color: #ff0000; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-radius: 5px; font-family: sans-serif;">⚠️ ENTORNO DE DESARROLLO ⚠️</div>` + mailPayload.html;
-    }
-    const resendRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${c.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(mailPayload)
-    });
+    const subject = `NUEVO PRESUPUESTO APROBADO - Asignación de Personal (Ref: #${budgetId})`;
+    await sendEmail(c.env, c.env.DIRECTOR_EMAIL as string, subject, htmlBody, undefined, undefined, undefined, 'EYE STAFF');
 
-    const resData = await resendRes.json();
-    if (!resendRes.ok) {
-      console.error('Resend error:', resData);
-      return c.json({ success: false, error: resData });
-    }
-
-    return c.json({ success: true, data: resData });
+    return c.json({ success: true, data: {} });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
@@ -3060,7 +2998,7 @@ function wrapInCorporateTemplate(content: string) {
   `;
 }
 
-async function sendEmail(env: Env, to: string | string[] | undefined, subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string) {
+async function sendEmail(env: Env, to: string | string[] | undefined, subject: string, html: string, attachments?: any[], cc?: string[], reportId?: string, senderName?: string) {
   if (!env.BREVO_API_KEY) {
       throw new Error('BREVO_API_KEY no configurado en este entorno.');
   }
@@ -3084,7 +3022,7 @@ async function sendEmail(env: Env, to: string | string[] | undefined, subject: s
 
     // Brevo format
     const payload: any = {
-      sender: { name: 'EYE STAFF', email: 'no-reply@eye-staff.app' },
+      sender: { name: senderName || 'EYE STAFF', email: 'no-reply@eye-staff.app' },
       to: toArray.map(e => ({ email: e.trim() })),
       subject,
       htmlContent: wrapInCorporateTemplate(html)
