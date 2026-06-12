@@ -13789,6 +13789,14 @@ function renderPresupuestos(el) {
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
                 <h3 id="generador-title" style="color:#a855f7; margin:0; font-weight:900;">NUEVO PRESUPUESTO</h3>
             </div>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px;">
+                <label style="color: #c084fc; font-weight: bold; margin-bottom: 5px; display: block;">¿ASOCIAR A UN EVENTO EXISTENTE?</label>
+                <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0; margin-bottom: 10px;">Selecciona un evento de Gestión de Listas que aún no tenga presupuesto para autocompletar los datos.</p>
+                <select id="pres-asociar-evento" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;" onchange="autoFillFromEvent()">
+                    <option value="">NO ASOCIAR (CREAR PRESUPUESTO EN BLANCO)</option>
+                </select>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
                 <div class="field" style="grid-column: 1 / -1; display:flex; gap:15px; margin-bottom:5px;">
                     <div style="flex:1;">
@@ -14309,6 +14317,49 @@ window.fetchNextBudgetId = async function() {
     }
 };
 
+window.abrirGeneradorNuevo = function() {
+    window.currentEditingPresupuestoId = null;
+    window.currentEditingPresupuestoTimestamp = null;
+    document.getElementById('generador-title').innerHTML = 'NUEVO PRESUPUESTO';
+    limpiarFormularioPresupuesto();
+    document.getElementById('pres-empresa-emisora').value = 'EYE STAFF';
+    window.fetchNextBudgetId();
+    loadEventosSinPresupuesto();
+    switchPresupuestoTab('generador');
+};
+
+window.loadEventosSinPresupuesto = async function() {
+    const el = document.getElementById('pres-asociar-evento');
+    if (!el) return;
+    try {
+        const res = await apiFetch('/api/sessions/without-budget');
+        if (res && res.data) {
+            el.innerHTML = '<option value="">-- No asociar (Evento nuevo) --</option>' + 
+                res.data.map(s => `<option value="${s.id}">${s.nombre} (${s.fecha})</option>`).join('');
+        }
+    } catch(e) { console.error(e); }
+};
+
+window.autoFillFromEvent = async function() {
+    const id = document.getElementById('pres-asociar-evento').value;
+    if (!id) return;
+    try {
+        const res = await apiFetch(`/api/sessions/${id}`);
+        if (res && res.data) {
+            const s = res.data;
+            document.getElementById('pres-evento').value = s.client_name || '';
+            document.getElementById('pres-fecha').value = s.started_at || '';
+            document.getElementById('pres-fecha-fin').value = s.started_at || '';
+            document.getElementById('pres-inicio').value = s.convocation_time || '';
+            document.getElementById('pres-fin-hora').value = '';
+            if (document.getElementById('pres-direccion')) {
+                document.getElementById('pres-direccion').value = s.location || '';
+                updatePresupuestoMap();
+            }
+        }
+    } catch(e) { console.error(e); }
+};
+
 window.nuevoPresupuesto = function() {
     window.currentEditingPresupuestoId = null;
     window.currentEditingPresupuestoTimestamp = null;
@@ -14489,7 +14540,8 @@ async function guardarDatosPresupuesto(actionName) {
             fecha_fin: document.getElementById('pres-fecha-fin').value,
             fin_hora: document.getElementById('pres-fin-hora').value
         },
-        items: JSON.parse(JSON.stringify(itemsPresupuesto))
+        items: JSON.parse(JSON.stringify(itemsPresupuesto)),
+        sessionId: document.getElementById('pres-asociar-evento') ? document.getElementById('pres-asociar-evento').value : null
     };
     
     let correlativo = window.currentEditingPresupuestoId;

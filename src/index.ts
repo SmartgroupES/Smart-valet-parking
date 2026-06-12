@@ -427,6 +427,25 @@ app.post('/api/verify-pin', async (c) => {
 // ===============================
 // GESTIÓN DE SESIONES (EVENTOS)
 // ===============================
+app.get('/api/sessions/without-budget', async (c) => {
+  try {
+    const res = await c.env.DB.prepare(`SELECT * FROM sessions WHERE (budget_id IS NULL OR budget_id = '') AND (status = 'planning' OR status = 'active') ORDER BY started_at DESC`).all();
+    return c.json({ success: true, data: res.results });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.get('/api/sessions/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const res = await c.env.DB.prepare(`SELECT * FROM sessions WHERE id = ?`).bind(id).first();
+    return c.json({ success: true, data: res });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
 app.get('/api/sessions/active', async (c) => {
   const sessionsRes = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("planning", "active") ORDER BY id ASC').all();
   const sessions = (sessionsRes.results || []) as any[];
@@ -656,6 +675,10 @@ app.post('/api/presupuestos', async (c) => {
       correlativo, data.empresa, data.evento, data.fecha, data.monto, data.estatus || 'GENERADO', data.action || 'guardar',
       JSON.stringify(data.form || {}), JSON.stringify(data.items || []), data.timestamp || new Date().getTime()
     ).run();
+
+    if (data.sessionId) {
+      await c.env.DB.prepare('UPDATE sessions SET budget_id = ? WHERE id = ?').bind(correlativo, data.sessionId).run();
+    }
 
     return c.json({ success: true, id: correlativo });
   } catch (e: any) {
