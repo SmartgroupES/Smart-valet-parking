@@ -24,6 +24,10 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
+        @keyframes blinkHeaderLocation {
+            0% { transform: scale(1); box-shadow: 0 0 0px transparent; border-color: rgba(40,168,233,0.3); }
+            100% { transform: scale(1.05); box-shadow: 0 0 15px rgba(40,168,233,0.8); border-color: #28A8E9; }
+        }
         @keyframes blinkChatHeader {
             0% { background: rgba(40,168,233,0.1); border-color: rgba(40,168,233,0.3); color: #28A8E9; }
             100% { background: #3b82f6; border-color: #3b82f6; color: #ffffff; box-shadow: 0 0 10px rgba(59,130,246,0.6); }
@@ -12741,6 +12745,11 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         if (livePanel) {
                             livePanel.textContent = locs.length;
                             livePanel.style.display = locs.length > 0 ? 'inline-block' : 'none';
+                        }
+                        
+                        const headerLocBtn = document.getElementById('btn-header-location');
+                        if (headerLocBtn) {
+                            headerLocBtn.style.animation = locs.length > 0 ? 'blinkHeaderLocation 1s infinite alternate' : '';
                         }
 
                         // Actualizar sección GPS en vivo del panel lateral
