@@ -2719,10 +2719,15 @@
         const hasUserAlert = (typesMatch) => {
             if (!user || !user.id) return false;
             return (window.allSessions || []).some(s => {
-                if (s.status !== 'active' && s.status !== 'planned') return false;
                 const sType = (s.type || 'valet').toLowerCase();
                 if (!typesMatch.some(t => sType.includes(t))) return false;
-                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id === user.id);
+                
+                if (isAdmin) {
+                    return s.status === 'active';
+                } else {
+                    if (s.status !== 'active' && s.status !== 'planned') return false;
+                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id === user.id);
+                }
             });
         };
 
