@@ -574,7 +574,7 @@ app.post('/api/presupuestos/client', async (c) => {
 });
 app.get('/api/presupuestos', async (c) => {
   try {
-    const result = await c.env.DB.prepare('SELECT * FROM budgets WHERE is_deleted = 0 ORDER BY CAST(id AS INTEGER) DESC').all();
+    const result = await c.env.DB.prepare('SELECT * FROM budgets WHERE is_deleted = 0 ORDER BY timestamp DESC').all();
     return c.json({ success: true, budgets: result.results });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
