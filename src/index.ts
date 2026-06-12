@@ -52,7 +52,7 @@ async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]
         'cierre_html': 'cierre_html'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html'];
+    const validFields = ['convocatoria', 'cumpleanos', 'dossier_pdf', 'bbdd_excel', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento'];
     if (!validFields.includes(field)) return [];
 
     const subs = await env.DB.prepare(`
@@ -207,6 +207,7 @@ async function initDatabase(db: D1Database) {
   try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_ve INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE user_permissions_matrix ADD COLUMN custodia_mod INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE budgets ADD COLUMN is_deleted INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_report_subscriptions ADD COLUMN apertura_evento INTEGER DEFAULT 0').run(); } catch (e) { }
 
   // Tabla de Mensajería Interna (Chat)
   try {
@@ -2970,8 +2971,15 @@ async function sendEventActivationEmail(env: Env, sessionId: number) {
     </div>
   `;
 
-  const adminEmail = env.DIRECTOR_EMAIL ;
-  await sendEmail(env, adminEmail, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
+  const emails = await getSubscribedEmails(env, 'apertura_evento');
+  if (emails.length > 0) {
+    for (const email of emails) {
+      await sendEmail(env, email, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
+    }
+  } else {
+    const adminEmail = env.DIRECTOR_EMAIL;
+    if (adminEmail) await sendEmail(env, adminEmail, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
+  }
 }
 
 

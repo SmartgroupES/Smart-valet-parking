@@ -8986,6 +8986,7 @@
                 { id: 'permisos', name: 'Permisos' },
                 { id: 'plantilla', name: 'Plantilla RRHH' },
                 { id: 'actualizacion_datos', name: 'Actualización Datos' },
+                { id: 'apertura_evento', name: 'Apertura Evento' },
                 { id: 'cierre_html', name: 'Cierre Evento' },
                 { id: 'credenciales', name: 'Cred. Acceso' }
             ];
@@ -9043,6 +9044,7 @@
                             'permisos': 'permisos',
                             'plantilla_rrhh': 'plantilla',
                             'actualizacion_datos': 'actualizacion_datos',
+                            'apertura_evento': 'apertura_evento',
                             'cierre_html': 'cierre_html',
                             'credenciales': 'credenciales'
                         };
@@ -14173,7 +14175,9 @@ window.toggleReportSubscription = async function(checkboxElement, userId, report
             'nominas': 'nominas',
             'permisos': 'permisos',
             'plantilla': 'plantilla_rrhh',
-            'actualizacion_datos': 'actualizacion_datos'
+            'actualizacion_datos': 'actualizacion_datos',
+            'apertura_evento': 'apertura_evento',
+            'cierre_html': 'cierre_html'
         };
         const res = await apiFetch('/api/admin/report-subscriptions', {
             method: 'POST',
