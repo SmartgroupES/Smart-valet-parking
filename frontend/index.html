@@ -10377,7 +10377,7 @@
         const isAdmin = isUserAdminOrStaff(user) || user.profile_admin === 'DIRECTOR' || user.profile_admin === 'COORDINADOR';
 
         let filteredSessions = (window.allSessions || []).filter(s => {
-            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO') || s.type.toUpperCase().includes('GUARDIA'));
+            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO'));
             if (!isAcceso) return false;
             if (s.status !== 'active' && s.status !== 'planning') return false;
             
