@@ -4684,6 +4684,30 @@
                     
                     <!-- Pre-Event Access Control Container -->
                     <div id="pre-event-access-control-container"></div>
+                    
+                    ${(() => {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAdminOrRRHH = window.isUserAdminOrStaff && window.isUserAdminOrStaff(user);
+                        if (isAdminOrRRHH) {
+                            return `
+                                <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:0.75rem; color:var(--warning); font-weight:900; margin-bottom:15px; text-align:center; letter-spacing:1px;">🛡️ ACCIONES DE ADMINISTRADOR / RRHH</div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                                        <button class="btn" style="flex:1; min-width:140px; background:var(--success); color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="activatePlannedSession(${session.id})">
+                                            🚀 INICIAR EVENTO
+                                        </button>
+                                        <button class="btn" style="flex:1; min-width:140px; background:var(--accent); color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="enterModule('listas'); setTimeout(()=>editEventFromCalendar(${session.id}), 100);">
+                                            📝 MODIFICAR EVENTO
+                                        </button>
+                                        <button class="btn" style="flex:1; min-width:140px; background:var(--brand-red); color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="window.activeSessionId=${session.id}; if(typeof finalizeEvent === 'function') { finalizeEvent(); } else { toast('Para finalizar debe entrar al evento activo.', 'warning'); }">
+                                            🏁 FINALIZAR EVENTO
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return '';
+                    })()}
 
                     <div style="margin-top:30px; margin-bottom:20px; display:flex; justify-content:center;">
                         ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
@@ -10353,7 +10377,7 @@
         const isAdmin = isUserAdminOrStaff(user) || user.profile_admin === 'DIRECTOR' || user.profile_admin === 'COORDINADOR';
 
         let filteredSessions = (window.allSessions || []).filter(s => {
-            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO'));
+            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO') || s.type.toUpperCase().includes('GUARDIA'));
             if (!isAcceso) return false;
             if (s.status !== 'active' && s.status !== 'planning') return false;
             
