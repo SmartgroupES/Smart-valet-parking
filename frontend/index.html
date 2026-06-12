@@ -8926,15 +8926,25 @@
                 <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ADMIN</div>
                 <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.adminCount}</div>
             </div>
-            <div style="${baseCardStyle} border-top:3px solid var(--accent); cursor:default; flex: 2.2; min-width: 160px; padding:4px;">
-                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; margin-bottom: 2px; white-space:nowrap;">PERFIL OPERATIVO</div>
-                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:2px 4px; font-size:0.55rem; font-weight:700; width:100%;">
-                    <span style="color:#FFD700; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,215,0,0.05); ${window.cardFilter==='JEFE DE GRUPO'?'background:rgba(255,215,0,0.2); outline:1px solid #FFD700;':''}" onclick="setCardFilter('JEFE DE GRUPO')">JG: ${stats.profiles['JEFE DE GRUPO'] || 0}</span>
-                    <span style="color:#E5E4E2; cursor:pointer; padding:2px; border-radius:4px; background:rgba(229,228,226,0.05); ${window.cardFilter==='SUPERVISOR'?'background:rgba(229,228,226,0.2); outline:1px solid #E5E4E2;':''}" onclick="setCardFilter('SUPERVISOR')">SUP: ${stats.profiles['SUPERVISOR'] || 0}</span>
-                    <span style="color:#CD7F32; cursor:pointer; padding:2px; border-radius:4px; background:rgba(205,127,50,0.05); ${window.cardFilter==='COORDINADOR'?'background:rgba(205,127,50,0.2); outline:1px solid #CD7F32;':''}" onclick="setCardFilter('COORDINADOR')">COORD: ${stats.profiles['COORDINADOR'] || 0}</span>
-                    <span style="color:#fff; cursor:pointer; padding:2px; border-radius:4px; background:rgba(255,255,255,0.05); ${window.cardFilter==='COORDINADOR AUXILIAR'?'background:rgba(255,255,255,0.2); outline:1px solid #fff;':''}" onclick="setCardFilter('COORDINADOR AUXILIAR')">CAUX: ${stats.profiles['COORDINADOR AUXILIAR'] || 0}</span>
-                    <span style="color:#8B5CF6; cursor:pointer; padding:2px; border-radius:4px; background:rgba(139,92,246,0.05); ${window.cardFilter==='LOGÍSTICA'?'background:rgba(139,92,246,0.2); outline:1px solid #8B5CF6;':''}" onclick="setCardFilter('LOGÍSTICA')">LOG: ${stats.profiles['LOGÍSTICA'] || 0}</span>
-                </div>
+            <div style="${getStyle('JEFE DE GRUPO')} border-top:3px solid #FFD700;" onclick="setCardFilter('JEFE DE GRUPO')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">JEFES DE GRUPO</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#FFD700;">${stats.profiles['JEFE DE GRUPO'] || 0}</div>
+            </div>
+            <div style="${getStyle('SUPERVISOR')} border-top:3px solid #E5E4E2;" onclick="setCardFilter('SUPERVISOR')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">SUPERVISORES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#E5E4E2;">${stats.profiles['SUPERVISOR'] || 0}</div>
+            </div>
+            <div style="${getStyle('COORDINADOR')} border-top:3px solid #CD7F32;" onclick="setCardFilter('COORDINADOR')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">COORDINADORES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#CD7F32;">${stats.profiles['COORDINADOR'] || 0}</div>
+            </div>
+            <div style="${getStyle('COORDINADOR AUXILIAR')} border-top:3px solid #fff;" onclick="setCardFilter('COORDINADOR AUXILIAR')">
+                <div style="font-size:0.4rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">COORD. AUXILIARES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.profiles['COORDINADOR AUXILIAR'] || 0}</div>
+            </div>
+            <div style="${getStyle('LOGÍSTICA')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('LOGÍSTICA')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">LOGÍSTICAS</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.profiles['LOGÍSTICA'] || 0}</div>
             </div>
             ${pinQueryCardHtml}
         `;
