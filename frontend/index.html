@@ -2720,6 +2720,23 @@
         const pendingBudgetsListas = window._globalBudgets ? window._globalBudgets.filter(b => b.estatus === 'APROBADO' && !(window.allSessions || []).some(s => s.budget_id == b.id)) : [];
         const hasPendingListasAlert = pendingBudgetsListas.length > 0;
 
+        const hasUserAlert = (typesMatch) => {
+            if (!user || !user.id) return false;
+            return (window.allSessions || []).some(s => {
+                if (s.status !== 'active' && s.status !== 'planned') return false;
+                const sType = (s.type || 'valet').toLowerCase();
+                if (!typesMatch.some(t => sType.includes(t))) return false;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id === user.id);
+            });
+        };
+
+        const alertValet = hasUserAlert(['valet']);
+        const alertAccesos = hasUserAlert(['acceso', 'logistico', 'logístico']);
+        const alertAlquiler = hasUserAlert(['alquiler']);
+        const alertTraslados = hasUserAlert(['traslado']);
+        const alertGuardia = hasUserAlert(['guardia']);
+        const alertCustodia = hasUserAlert(['custodia']);
+
         el.innerHTML = `
             <div id="portal-view" style="width:90%; margin:0 auto; padding-top:10px; padding-bottom: 10vh;">
                 <div class="view-header" style="text-align: center; display: block; margin-bottom: 10px;">
@@ -2962,12 +2979,17 @@
                 <!-- 2. SERVICIOS -->
                 <div style="margin-bottom: 25px; ${canSeeEvents ? '' : 'display:none;'}">
                     <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">SERVICIOS</h2>
-                    
+                    <style>
+                        @keyframes blinkServiceAlert {
+                            0% { background-color: rgba(239, 68, 68, 0.05); transform: scale(1); }
+                            100% { background-color: rgba(239, 68, 68, 0.6); transform: scale(1.02); box-shadow: 0 0 20px rgba(239,68,68,0.6); border-color: #ef4444; }
+                        }
+                    </style>
                     <!-- Servicios Activos -->
                     <div class="menu-grid" style="margin-top:0; gap:12px;">
                         ${canSeeValet ? `
                         <!-- VALET PARKING (ACTIVO) -->
-                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 3px solid var(--brand-red); background: rgba(239, 68, 68, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 3px solid var(--brand-red); background: rgba(239, 68, 68, 0.05); padding:12px 15px; ${alertValet ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🚗</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">VALET PARKING</span>
@@ -2975,8 +2997,8 @@
                         </div>
                         ` : ''}
                         ${canSeeAccesos ? `
-                        <!-- CONTROL DE ACCESOS -->
-                        <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                        <!-- EVENTOS LOGÍSTICOS -->
+                        <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px; ${alertAccesos ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🆔</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">EVENTOS LOGÍSTICOS</span>
@@ -2985,7 +3007,7 @@
                         ` : ''}
                         ${canSeeAlquiler ? `
                         <!-- ALQUILER DE EQUIPOS -->
-                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px; ${alertAlquiler ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🏗️</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
@@ -2994,7 +3016,7 @@
                         ` : ''}
                         ${canSeeTraslados ? `
                         <!-- TRASLADOS -->
-                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px; ${alertTraslados ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🚐</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
@@ -3003,7 +3025,7 @@
                         ` : ''}
                         ${canSeeGuardia ? `
                         <!-- GUARDIA DIURNA/NOCTURNA -->
-                        <div class="menu-item" onclick="enterModule('guardia')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="enterModule('guardia')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px; ${alertGuardia ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🌙</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
@@ -3012,7 +3034,7 @@
                         ` : ''}
                         ${canSeeCustodia ? `
                         <!-- CUSTODIA -->
-                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px;">
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px; ${alertCustodia ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">🛡️</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
