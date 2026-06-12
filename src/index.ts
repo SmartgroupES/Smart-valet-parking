@@ -2112,6 +2112,47 @@ app.post('/api/reports/send-credentials', async (c) => {
   }
 });
 
+app.delete('/api/sessions/:id', async (c) => {
+  const id = c.req.param('id');
+  if (!id) return c.json({ error: 'Falta ID de sesión' }, 400);
+
+  try {
+    // 0. Si tiene presupuesto asociado, cambiar su estatus a NO APROBADO
+    const session = await c.env.DB.prepare('SELECT budget_id FROM sessions WHERE id = ?').bind(id).first<{ budget_id: string }>();
+    if (session && session.budget_id) {
+      await c.env.DB.prepare('UPDATE budgets SET estatus = "NO APROBADO" WHERE id = ?').bind(session.budget_id).run();
+    }
+
+    // 1. Quitar la sesión de los usuarios que la tengan asignada
+    const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
+    for (const u of (usersWithSession.results || [])) {
+      let currentIds = u.current_session_id ? u.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
+      currentIds = currentIds.filter(x => x !== id.toString());
+      await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, u.id).run();
+    }
+
+    // 2. Eliminar toda la data asociada y finalmente la sesión
+    await Promise.all([
+      c.env.DB.prepare('DELETE FROM payroll_submissions WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM chat_messages WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM access_control_guests WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM access_logs WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM guest_list WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM staff_attendance WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM guardia_details WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM event_reports WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM vehicles WHERE session_id = ?').bind(id).run(),
+      c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run()
+    ]);
+
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
 app.post('/api/sessions/close', async (c) => {
   let { id, pin, status } = await c.req.json().catch(() => ({}));
 
