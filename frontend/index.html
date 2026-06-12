@@ -2320,6 +2320,7 @@
                                     <option value="" disabled selected>Seleccione...</option>
                                     <option value="valet parking">VALET PARKING</option>
                                     <option value="control de accesos">CONTROL DE ACCESOS</option>
+                                    <option value="evento logistico">EVENTO LOGÍSTICO</option>
                                     <option value="alquiler de equipos">ALQUILER DE EQUIPOS</option>
                                     <option value="traslados">TRASLADOS</option>
                                     <option value="guardia diurna/nocturna">GUARDIA DIURNA/NOCTURNA</option>
@@ -2978,7 +2979,7 @@
                         <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid var(--accent); background: rgba(99, 102, 241, 0.05); padding:12px 15px;">
                             <i style="font-size:1.5rem">🆔</i>
                             <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS</span>
+                                <span class="menu-item-title" style="font-size:0.9rem;">CONTROL DE ACCESOS Y EVENTOS LOGÍSTICOS</span>
                             </div>
                         </div>
                         ` : ''}
@@ -6884,7 +6885,7 @@
                 reports = reports.filter(r => !hiddenIds.includes(r.id));
             }
 
-            const types = ['TODOS', 'valet parking', 'control de accesos', 'alquiler de equipos', 'traslados', 'guardia diurna/nocturna', 'custodia'];
+            const types = ['TODOS', 'valet parking', 'control de accesos', 'evento logistico', 'alquiler de equipos', 'traslados', 'guardia diurna/nocturna', 'custodia'];
 
             let html = `
                 <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -6930,7 +6931,7 @@
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
                                 <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                     <div style="font-size:1.2rem; font-weight:900; color:var(--success);">${r.total_vehicles}</div>
-                                    <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${(r.event_type || '').toLowerCase() === 'control de accesos' ? 'ASISTENTES' : 'VEHÍCULOS'}</div>
+                                    <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${((r.event_type || '').toLowerCase() === 'control de accesos' || (r.event_type || '').toLowerCase() === 'evento logistico') ? 'ASISTENTES' : 'VEHÍCULOS'}</div>
                                 </div>
                                 <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                     <div style="font-size:1.2rem; font-weight:900; color:var(--accent);">${r.total_staff}</div>
@@ -10352,7 +10353,7 @@
         const isAdmin = isUserAdminOrStaff(user) || user.profile_admin === 'DIRECTOR' || user.profile_admin === 'COORDINADOR';
 
         let filteredSessions = (window.allSessions || []).filter(s => {
-            const isAcceso = s.type && s.type.toUpperCase().includes('ACCESOS');
+            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO'));
             if (!isAcceso) return false;
             if (s.status !== 'active' && s.status !== 'planning') return false;
             
@@ -10384,7 +10385,7 @@
         const headerHtml = `
             <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
                 <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
-                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS 🚧</h1>
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS Y EVENTOS LOGÍSTICOS 🚧</h1>
                 </div>
 
                 <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
@@ -10907,7 +10908,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         el.innerHTML = `
             <div id="access-control-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
                 <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
-                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS</h1>
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 CONTROL DE ACCESOS Y EVENTOS LOGÍSTICOS</h1>
                 </div>
                 <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(168, 85, 247, 0.05); border:1px solid #a855f7; padding:35px; border-radius:24px;">
                     <i style="font-size:3rem; display:block; margin-bottom:15px;">🚧</i>
@@ -13824,6 +13825,7 @@ function renderPresupuestos(el) {
                         <select id="pres-tipo-evento" style="width:100%; height:42px; background:var(--surface2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:0 10px;">
                             <option value="VALET PARKING">VALET PARKING</option>
                             <option value="CONTROL DE ACCESOS">CONTROL DE ACCESOS</option>
+                            <option value="EVENTO LOGISTICO">EVENTO LOGÍSTICO</option>
                             <option value="ALQUILER DE EQUIPOS">ALQUILER DE EQUIPOS</option>
                             <option value="TRASLADOS">TRASLADOS</option>
                             <option value="GUARDIA DIURNA/NOCTURNA">GUARDIA DIURNA/NOCTURNA</option>
