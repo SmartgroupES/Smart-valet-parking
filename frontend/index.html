@@ -970,7 +970,7 @@
                     <i>🔑</i>
                 </div>
 
-                <div id="btn-telegram-link" onclick="linkTelegram()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(40,168,233,0.1); border:1px solid rgba(40,168,233,0.3); padding:6px 12px; border-radius:8px; color:#28A8E9; font-size:0.65rem; font-weight:800; margin-right:5px;" title="VINCULAR CON TELEGRAM">
+                <div id="btn-header-location" onclick="toggleLocationModal()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(40,168,233,0.1); border:1px solid rgba(40,168,233,0.3); padding:6px 12px; border-radius:8px; color:#28A8E9; font-size:0.65rem; font-weight:800; margin-right:5px;" title="COMPARTIR UBICACIÓN">
                     <span>UBICACIÓN</span><i>📍</i>
                 </div>
 
@@ -1000,7 +1000,7 @@
                 </script>
             </div>
             <div id="btn-back-portal" class="btn btn-secondary btn-sm" onclick="exitToPortal()" style="display:none; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,0.05);">
-                🏠 HOME
+                🏠
             </div>
 
         </div>
@@ -1699,7 +1699,7 @@
         const view = document.getElementById('current-view');
         const btn = document.getElementById('btn-back-portal');
         btn.style.display = 'flex';
-        btn.innerHTML = '🏠 HOME';
+        btn.innerHTML = '🏠';
         btn.onclick = exitToPortal;
         
         if (module === 'valet') {
@@ -2516,7 +2516,7 @@
         const btn = document.getElementById('btn-back-portal');
         if (btn) {
             btn.style.display = 'flex';
-            btn.innerHTML = '🏠 HOME';
+            btn.innerHTML = '🏠';
             btn.onclick = exitToPortal;
         }
 
@@ -3399,7 +3399,7 @@
         
         if (tab === 'home' || tab === 'valet-menu') {
             renderHome(view);
-            btn.innerHTML = '🏠 HOME';
+            btn.innerHTML = '🏠';
             btn.onclick = exitToPortal;
             return;
         }
@@ -4558,7 +4558,7 @@
             const btn = document.getElementById('btn-back-portal');
             if (btn) {
                 btn.style.display = 'flex';
-                btn.innerHTML = '🏠 HOME';
+                btn.innerHTML = '🏠';
                 btn.onclick = exitToPortal;
             }
 
@@ -8767,7 +8767,7 @@
                         <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
                     </div>
                     <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="downloadStaffMatrixExcel()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
+                        <button class="btn btn-success" onclick="downloadRRHHTemplate()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
                         <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
                     </div>
                 </div>
@@ -8939,7 +8939,10 @@
                 { id: 'credenciales', name: 'Cred. Acceso' }
             ];
             
-            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;"><th style="padding:10px 5px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:120px;">EMPLEADO</th>';
+            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;">';
+            thead += '<th style="padding:10px 5px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; min-width:100px; max-width:100px; width:100px;">EMPLEADO</th>';
+            thead += '<th style="padding:10px 5px; text-align:left; position:sticky; left:100px; top:0; background:#0f111a; z-index:10; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:90px; width:90px;">PERFIL</th>';
+            
             reports.forEach(r => {
                 const parts = r.name.split(' ');
                 const formattedName = parts.length > 1 ? parts.join('<br>') : r.name;
@@ -8948,11 +8951,24 @@
             thead += '</tr></thead>';
 
             let tbody = '<tbody>';
-            users.forEach(u => {
+            
+            const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5, 'LOGISTICA': 5 };
+            const sortedUsers = [...users].sort((a, b) => {
+                const pA = rolePriority[(a.profile_opera || '').toUpperCase()] || 99;
+                const pB = rolePriority[(b.profile_opera || '').toUpperCase()] || 99;
+                if (pA !== pB) return pA - pB;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+
+            sortedUsers.forEach(u => {
                 const nameParts = u.name.toUpperCase().split(' ');
                 const displayName = nameParts.length > 2 ? `${nameParts[0]}<br>${nameParts[1]} ${nameParts[2]}` : (nameParts.length === 2 ? `${nameParts[0]}<br>${nameParts[1]}` : nameParts[0]);
+                const perfil = (u.profile_opera || 'N/A').toUpperCase();
+                
                 tbody += `<tr class="matrix-row" data-name="${u.name.toLowerCase()}" style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
-                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:900; color:white; font-size:0.7rem; position:sticky; left:0; background:#0f111a; z-index:8; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:120px; line-height:1.2;">${displayName}</td>`;
+                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:900; color:white; font-size:0.7rem; position:sticky; left:0; background:#0f111a; z-index:8; min-width:100px; max-width:100px; width:100px; line-height:1.2;">${displayName}</td>`;
+                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:700; color:var(--muted); font-size:0.6rem; position:sticky; left:100px; background:#0f111a; z-index:8; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:90px; width:90px; line-height:1.2;">${perfil}</td>`;
+                
                 reports.forEach(r => {
                     tbody += `<td style="padding:8px 2px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:16px; height:16px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
                 });
@@ -9175,9 +9191,7 @@
                                     <button class="btn btn-sm" onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#25D366; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                         💬
                                     </button>
-                                    <button class="btn btn-sm" onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#28A8E9; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                        📩
-                                    </button>
+
                                 </div>
                             </td>
                         </tr>

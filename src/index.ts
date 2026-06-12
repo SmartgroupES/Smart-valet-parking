@@ -7364,6 +7364,21 @@ app.post('/api/location/report', async (c) => {
     .bind(entity_id, entity_type, lat, lon, accuracy || null)
     .run();
 
+  if (entity_type === 'staff') {
+    const user: any = await c.env.DB.prepare('SELECT id, name, phone FROM users WHERE id = ?').bind(entity_id).first();
+    if (user) {
+      await c.env.DB.prepare(`
+        INSERT INTO staff_live_locations (phone, name, staff_id, lat, lon, accuracy, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now', '-12 minutes'))
+        ON CONFLICT(phone) DO UPDATE SET
+          lat = excluded.lat,
+          lon = excluded.lon,
+          accuracy = excluded.accuracy,
+          updated_at = datetime('now', '-12 minutes')
+      `).bind(user.phone || ('tg_' + user.id), user.name || 'Staff', user.id, lat, lon, accuracy || null).run();
+    }
+  }
+
   return c.json({ success: true });
 });
 
