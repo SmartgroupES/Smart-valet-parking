@@ -8158,7 +8158,13 @@ export default {
     env.DIRECTOR_EMAIL = undefined;
     ctx.waitUntil(checkScheduledNotifications(env));
 
-
+    // Ping WhatsApp bot to prevent it from sleeping on Render
+    if (env.WHATSAPP_BOT_URL) {
+      try {
+        const pingUrl = new URL(env.WHATSAPP_BOT_URL).origin + '/ping';
+        ctx.waitUntil(fetch(pingUrl).then(res => res.text()).catch(() => {}));
+      } catch (e) {}
+    }
   },
   async email(message: any, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = undefined;

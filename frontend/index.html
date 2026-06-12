@@ -10511,7 +10511,7 @@
                 <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
             </div>`;
         } else {
-            el.innerHTML = headerHtml + '<div id="ac-dashboard-container" style="padding: 20px; text-align:center; color:var(--muted);">Cargando módulo de operación...</div>' + getVolverBtn('VOLVER AL HOME', 'exitToPortal()') + '<div class="footer-info" style="margin-top:20px; text-align:center;"></div></div>';
+            el.innerHTML = headerHtml + '<div id="ac-dashboard-container" style="padding: 20px; text-align:center; color:var(--muted);">Cargando módulo de operación...</div></div>';
             
             apiFetch(`/api/accesos/${session.id}/guests`).then(res => {
                 let guests = [];
