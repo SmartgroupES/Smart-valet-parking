@@ -2689,17 +2689,17 @@
                                 <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DESAYUNOS (02-10)</label>
                                      <div style="display:flex; gap:8px;">
                                         <input type="number" id="lista-guardia-desayunos" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="time" id="lista-guardia-hora-desayunos" class="input-field" style="width:50%; border-radius:8px; padding:8px;" title="Hora">
+                                        <input type="text" id="lista-guardia-hora-desayunos" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
                                      </div></div>
                                 <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">ALMUERZOS (10-18)</label>
                                      <div style="display:flex; gap:8px;">
                                         <input type="number" id="lista-guardia-almuerzos" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="time" id="lista-guardia-hora-almuerzos" class="input-field" style="width:50%; border-radius:8px; padding:8px;" title="Hora">
+                                        <input type="text" id="lista-guardia-hora-almuerzos" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
                                      </div></div>
                                 <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CENAS (18-02)</label>
                                      <div style="display:flex; gap:8px;">
                                         <input type="number" id="lista-guardia-cenas" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="time" id="lista-guardia-hora-cenas" class="input-field" style="width:50%; border-radius:8px; padding:8px;" title="Hora">
+                                        <input type="text" id="lista-guardia-hora-cenas" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
                                      </div></div>
                                 <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">PROVEEDOR DE COMIDAS</label>
                                      <input type="text" id="lista-guardia-proveedor" class="input-field" placeholder="Ej. Catering Juan" style="width:100%; border-radius:8px; padding:8px;"></div>
@@ -2780,6 +2780,9 @@
             setupTimeInputMask('lista-hora-convocatoria');
             setupTimeInputMask('lista-hora-inicio');
             setupTimeInputMask('lista-hora-fin');
+            setupTimeInputMask('lista-guardia-hora-desayunos');
+            setupTimeInputMask('lista-guardia-hora-almuerzos');
+            setupTimeInputMask('lista-guardia-hora-cenas');
             window.renderMaterialesGrid();
         } catch (e) {
             console.error(e);
