@@ -9103,6 +9103,176 @@
         }
     };
 
+    window.downloadAuditLogsPDF = async function() {
+        const periodSelect = document.getElementById('audit-export-period');
+        const period = periodSelect ? periodSelect.value : 'all';
+        const searchInput = document.getElementById('audit-search-input');
+        const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        
+        showLoading('GENERANDO PDF...');
+        try {
+            const res = await apiFetch('/api/admin/audit-logs?period=' + period);
+            let list = res.logs || [];
+            
+            if (search) {
+                list.forEach(l => {
+                    let extracted = l.user_name;
+                    if (!extracted && l.details) {
+                        let upperDetails = l.details.toUpperCase();
+                        if (upperDetails.includes('BYPASS MAESTRO:')) {
+                            extracted = upperDetails.split('BYPASS MAESTRO:')[1].trim();
+                        } else if (upperDetails.includes('BYPASS INVITADO:')) {
+                            extracted = upperDetails.split('BYPASS INVITADO:')[1].trim();
+                        }
+                    }
+                    l.displayUser = extracted;
+                });
+                list.forEach((l, i) => {
+                    if (!l.displayUser) {
+                        let match = list.slice(i + 1).find(other => other.device === l.device && other.displayUser);
+                        l.displayUser = match ? match.displayUser : 'ADMIN';
+                    }
+                });
+                
+                list = list.filter(l => 
+                    (l.displayUser && l.displayUser.toLowerCase().includes(search)) ||
+                    (l.details && l.details.toLowerCase().includes(search)) ||
+                    (l.action && l.action.toLowerCase().includes(search))
+                );
+            }
+            
+            if (list.length === 0) {
+                toast('No hay registros en el periodo seleccionado', 'warning');
+                return;
+            }
+
+            const doc = new window.jspdf.jsPDF('landscape');
+            doc.setFontSize(14);
+            doc.text(`Historial de Actividad - ${period.toUpperCase()}`, 14, 15);
+            
+            const tableBody = list.map(l => {
+                const dateOpts = { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                let dateStr = '';
+                try { dateStr = new Intl.DateTimeFormat('es-VE', dateOpts).format(new Date(l.timestamp)); } catch(e) { dateStr = l.timestamp; }
+                
+                return [
+                    dateStr,
+                    (l.action || '').toUpperCase(),
+                    l.displayUser || l.user_name || 'DESCONOCIDO',
+                    l.user_role || 'NO APLICA',
+                    l.details || '',
+                    l.ip || '',
+                    l.device || ''
+                ];
+            });
+
+            doc.autoTable({
+                startY: 20,
+                head: [['FECHA Y HORA', 'ACCIÓN', 'USUARIO', 'ROL', 'DETALLES', 'IP', 'DISPOSITIVO']],
+                body: tableBody,
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [22, 27, 44] }
+            });
+
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, '_blank', 'width=800,height=600');
+            
+            toast('✅ PDF GENERADO CON ÉXITO', 'success');
+        } catch(e) {
+            console.error('Error al generar PDF de historial:', e);
+            toast('❌ ERROR AL GENERAR PDF', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.loadAuditLogs = async function() {
+        const container = document.getElementById('audit-logs-container');
+        if (!container) return;
+        
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--muted);">CARGANDO REGISTROS...</div>';
+        
+        const searchInput = document.getElementById('audit-search-input');
+        const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        
+        try {
+            const res = await apiFetch('/api/admin/audit-logs?period=all');
+            let list = res.logs || [];
+            
+            list.forEach(l => {
+                let extracted = l.user_name;
+                if (!extracted && l.details) {
+                    let upperDetails = l.details.toUpperCase();
+                    if (upperDetails.includes('BYPASS MAESTRO:')) {
+                        extracted = upperDetails.split('BYPASS MAESTRO:')[1].trim();
+                    } else if (upperDetails.includes('BYPASS INVITADO:')) {
+                        extracted = upperDetails.split('BYPASS INVITADO:')[1].trim();
+                    }
+                }
+                l.displayUser = extracted;
+            });
+            list.forEach((l, i) => {
+                if (!l.displayUser) {
+                    let match = list.slice(i + 1).find(other => other.device === l.device && other.displayUser);
+                    l.displayUser = match ? match.displayUser : 'ADMIN';
+                }
+            });
+            
+            if (search) {
+                list = list.filter(l => 
+                    (l.displayUser && l.displayUser.toLowerCase().includes(search)) ||
+                    (l.details && l.details.toLowerCase().includes(search)) ||
+                    (l.action && l.action.toLowerCase().includes(search))
+                );
+            }
+            
+            list = list.slice(0, 25);
+            
+            if (list.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--muted);">NO HAY REGISTROS QUE COINCIDAN</div>';
+                return;
+            }
+            
+            let html = `
+                <table style="width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:10px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.1); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">
+                            <th style="padding:10px; text-align:left;">Fecha</th>
+                            <th style="padding:10px; text-align:left;">Usuario</th>
+                            <th style="padding:10px; text-align:left;">Acción</th>
+                            <th style="padding:10px; text-align:left;">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            list.forEach(l => {
+                const dateOpts = { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                let dateStr = '';
+                try { dateStr = new Intl.DateTimeFormat('es-VE', dateOpts).format(new Date(l.timestamp)); } catch(e) { dateStr = l.timestamp; }
+                
+                let userColor = l.user_role === 'ADMIN' ? 'var(--danger)' : 'var(--accent)';
+                if (!l.user_name) userColor = 'var(--muted)';
+                
+                html += `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:10px; color:var(--muted); white-space:nowrap;">${dateStr}</td>
+                        <td style="padding:10px; font-weight:bold; color:${userColor};">${l.displayUser || l.user_name || 'DESCONOCIDO'}</td>
+                        <td style="padding:10px;">${(l.action || '').toUpperCase()}</td>
+                        <td style="padding:10px; color:var(--muted); font-size:0.75rem;">${l.details || ''}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--danger);">ERROR AL CARGAR REGISTROS</div>';
+        }
+    };
+
     window.downloadPermissionsMatrixExcel = async function() {
         showLoading('GENERANDO EXCEL...');
         try {
@@ -10096,13 +10266,14 @@
                     🛡️ HISTORIAL DE ACTIVIDAD
                     <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
                         <input type="text" id="audit-search-input" placeholder="Buscar empleado..." style="background:rgba(0,0,0,0.3); color:white; border:1px solid var(--border); border-radius:5px; padding:5px; font-size:0.7rem; outline:none; width:120px;" onclick="event.stopPropagation()" oninput="window.loadAuditLogs()" autocomplete="off">
-                        <select id="audit-export-period" style="background:var(--surface); color:white; border:1px solid var(--border); border-radius:5px; padding:5px; font-size:0.7rem; outline:none;" onclick="event.stopPropagation()" onchange="window.loadAuditLogs()">
+                        <select id="audit-export-period" style="background:var(--surface); color:white; border:1px solid var(--border); border-radius:5px; padding:5px; font-size:0.7rem; outline:none;" onclick="event.stopPropagation()">
                             <option value="all">Todos</option>
                             <option value="year">Último año</option>
                             <option value="month">Último mes</option>
                             <option value="week" selected>Última semana</option>
                         </select>
                         <button class="btn btn-sm" onclick="event.stopPropagation(); window.downloadAuditLogsExcel()" style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:5px; font-size:0.7rem; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(16,185,129,0.2);">📥 EXCEL</button>
+                        <button class="btn btn-sm" onclick="event.stopPropagation(); window.downloadAuditLogsPDF()" style="background:#e11d48; color:white; border:none; padding:6px 12px; border-radius:5px; font-size:0.7rem; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(225,29,72,0.2);">📄 PDF</button>
                     </div>
                 </summary>
                 <div id="audit-logs-container" style="padding:0 15px 15px 15px; border-top:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
