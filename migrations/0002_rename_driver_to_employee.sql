@@ -1,7 +1,7 @@
 -- Migración: renombrar rol 'driver' a 'employee'
 -- SQLite no permite ALTER COLUMN con CHECK, hay que recrear la tabla.
 
-PRAGMA foreign_keys = OFF;
+PRAGMA defer_foreign_keys = ON;
 
 -- 1. Crear tabla temporal con el nuevo constraint
 CREATE TABLE users_new (
@@ -49,5 +49,3 @@ FROM users;
 -- 3. Reemplazar tabla
 DROP TABLE users;
 ALTER TABLE users_new RENAME TO users;
-
-PRAGMA foreign_keys = ON;

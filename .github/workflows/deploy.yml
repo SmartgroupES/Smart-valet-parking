@@ -1,3 +1,4 @@
+# Deploy workflow for Cloudflare Workers
 name: Deploy to Cloudflare Workers
 
 on:
