@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   role TEXT NOT NULL CHECK(role IN ('driver','supervisor','director','logistics')),
   telegram_chat_id TEXT,
   telegram_link_token TEXT,
+  entry_date TEXT,
+  is_corporate_profile INTEGER DEFAULT 0,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -469,7 +471,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   FOREIGN KEY(group_id) REFERENCES chat_groups(id)
 );
 
--- Detalles de Guardia Diurna/Nocturna
+-- Detalles de Guardia Diurna/Nocturna y Logística General
 CREATE TABLE IF NOT EXISTS guardia_details (
   session_id INTEGER PRIMARY KEY,
   transport TEXT,
@@ -477,6 +479,106 @@ CREATE TABLE IF NOT EXISTS guardia_details (
   almuerzos INTEGER DEFAULT 0,
   cenas INTEGER DEFAULT 0,
   materials TEXT,
+  proveedor TEXT,
+  horas_solicitadas TEXT,
   FOREIGN KEY(session_id) REFERENCES sessions(id)
 );
 
+-- Formatos de Pago (Hoja de Eventos del Personal)
+CREATE TABLE IF NOT EXISTS payment_formats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha TEXT,
+    nombre TEXT,
+    cedula TEXT,
+    telefono_celular TEXT,
+    telefono_fijo TEXT,
+    observacion TEXT,
+    pdf_r2_key TEXT,
+    procesado BOOLEAN DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS payment_format_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    format_id INTEGER,
+    numero INTEGER,
+    evento TEXT,
+    fecha TEXT,
+    lugar TEXT,
+    actividad TEXT,
+    monto REAL,
+    FOREIGN KEY(format_id) REFERENCES payment_formats(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_payment_formats_cedula ON payment_formats(cedula);
+CREATE INDEX IF NOT EXISTS idx_payment_format_events_format_id ON payment_format_events(format_id);
+ALTER TABLE user_permissions_matrix ADD COLUMN portal_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN portal_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN operaciones_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN operaciones_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN listas_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN listas_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN administracion_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN administracion_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN gestion_personal_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN gestion_personal_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN captacion_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN captacion_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN informes_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN informes_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN cierre_eventos_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN cierre_eventos_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN bases_datos_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN bases_datos_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN inventarios_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN inventarios_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN auditoria_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN auditoria_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN direccion_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN direccion_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN presupuestos_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN presupuestos_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN nomina_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN nomina_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN cierres_direccion_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN cierres_direccion_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN proyectos_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN proyectos_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN publicidad_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN publicidad_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN legal_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN legal_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN geolocalizacion_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN geolocalizacion_mod INTEGER DEFAULT 0;
+
+ALTER TABLE user_permissions_matrix ADD COLUMN backup_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN backup_mod INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN formatos_ve INTEGER DEFAULT 0;
+ALTER TABLE user_permissions_matrix ADD COLUMN formatos_mod INTEGER DEFAULT 0;
+
+-- Historial de Movimientos de Inventario
+CREATE TABLE IF NOT EXISTS inventory_movements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id INTEGER NOT NULL,
+  session_id INTEGER,
+  quantity_change INTEGER NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('assignment', 'return', 'manual_adjustment')),
+  user_name TEXT,
+  notes TEXT,
+  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(item_id) REFERENCES inventory_items(id),
+  FOREIGN KEY(session_id) REFERENCES sessions(id)
+);
+
+-- Periodos de Nómina / Corte de Recepción de Formatos
+CREATE TABLE IF NOT EXISTS payroll_periods (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    start_date TEXT,
+    cutoff_date TEXT NOT NULL,
+    status TEXT DEFAULT 'OPEN' CHECK(status IN ('OPEN', 'REVIEWING', 'PAID')),
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT
+);
+
+-- Añadimos las columnas a payment_formats si no existen (el script las ignorará si ya están en un alter table)

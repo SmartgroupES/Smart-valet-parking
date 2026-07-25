@@ -53,7 +53,7 @@ TELEGRAM_BOT_TOKEN = "8688024661:AAHq4i1JnEFg7vImx10SrdsAshhbuDoGz2s"
 [[env.staging.d1_databases]]
 binding = "DB"
 database_name = "d1-staging"
-database_id = "3ed7d3a3-82f7-49a0-b0a8-47c32d42e532"
+database_id = "93ad4645-5555-45b0-83e3-4b5525745c2f"
 migrations_dir = "migrations"
 
 [[env.staging.r2_buckets]]

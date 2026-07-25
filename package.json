@@ -17,6 +17,7 @@
     "wrangler": "^4.83.0"
   },
   "dependencies": {
+    "acorn": "^8.17.0",
     "hono": "^4.12.14",
     "jose": "^6.2.2",
     "jsdom": "^29.1.1",

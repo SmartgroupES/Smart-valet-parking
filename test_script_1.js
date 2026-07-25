@@ -1,0 +1,41 @@
+
+    window.toggleReportFav = function(cardId) {
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        const canModify = currentUser && (currentUser.profile_admin === 'ADMIN' || currentUser.profile_admin === 'RRHH' || currentUser.role === 'director');
+        if (!canModify) {
+            alert('No tienes autorización para modificar los reportes favoritos. Solo el perfil de RRHH y ADMIN pueden hacerlo.');
+            return;
+        }
+
+        let favs = JSON.parse(localStorage.getItem('valet_report_favs') || '[]');
+        if (favs.includes(cardId)) {
+            favs = favs.filter(id => id !== cardId);
+        } else {
+            favs.push(cardId);
+        }
+        localStorage.setItem('valet_report_favs', JSON.stringify(favs));
+        if (window.applyReportFavs) window.applyReportFavs();
+    };
+
+    window.applyReportFavs = function() {
+        let favs = JSON.parse(localStorage.getItem('valet_report_favs') || '[]');
+        const container = document.getElementById('report-cards-grid');
+        if (!container) return;
+        
+        const cards = Array.from(container.children);
+        cards.forEach((card, index) => {
+            const id = card.getAttribute('data-card-id');
+            if (!id) return;
+            
+            const favIndex = favs.indexOf(id);
+            if (favIndex !== -1) {
+                card.style.order = favIndex - favs.length; 
+                const icon = card.querySelector('.report-fav-btn');
+                if (icon) icon.textContent = '❤️';
+            } else {
+                card.style.order = index; 
+                const icon = card.querySelector('.report-fav-btn');
+                if (icon) icon.textContent = '🤍';
+            }
+        });
+    };

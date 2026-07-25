@@ -1,0 +1,14491 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Registro del Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('[PWA] Service Worker registrado:', reg.scope))
+                .catch(err => console.warn('[PWA] Error al registrar SW:', err));
+        });
+    }
+
+    if (window.location.search.includes('logout=1') || window.location.search.includes('force_logout=1')) {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+
+    // --- CONFIG & STATE ---
+    const API_BASE = window.location.origin;
+    const VERSION = '2.5.55';
+    window.ENABLE_MODULE_ACCESOS = true;
+    window.ENABLE_MODULE_ALQUILER = true;
+    
+    function formatPhone(phone) {
+        if (!phone) return '---';
+        let clean = phone.toString().replace(/\D/g, '');
+        if (clean.startsWith('58') && clean.length === 12) {
+            clean = '0' + clean.substring(2);
+        }
+        if (clean.length === 11) {
+            return clean.substring(0, 4) + '-' + clean.substring(4);
+        }
+        return phone;
+    }
+    
+    // Global Error Handler for debugging
+    window.onerror = function(msg, url, line, col, error) {
+        const message = (msg || '').toString();
+        // Ignorar errores típicos de extensiones de navegador, inyecciones de script, o CDN con problemas de red
+        if (
+            !line || 
+            line <= 1 || 
+            !url || 
+            url.indexOf('chrome-extension') > -1 || 
+            url.indexOf('moz-extension') > -1 || 
+            (url.indexOf('http') === -1 && url.indexOf('/') === -1) ||
+            message.indexOf('Unexpected token') > -1 || 
+            message.indexOf('Script error') > -1
+        ) {
+            console.warn("Ignored script error (external/injected):", msg, "at", url, "line", line);
+            return false;
+        }
+        const errorMsg = `ERROR V2: ${msg}\nEn: ${line}:${col}`;
+        console.error(errorMsg, error);
+        if (typeof toast === 'function') toast(errorMsg, 'error');
+        else alert(errorMsg);
+        return false;
+    };
+
+    window.isUserAdminOrStaff = function(user) {
+        if (!user) return false;
+        const userName = (user.name || '').toUpperCase();
+        const adminNames = [
+            'NELSON', 'NICOLAS', 'NICOLÁS', 'BILLY', 'RAMOS', 'SESCUN', 'SESCÚN',
+            'DERH', 'DIAZ', 'DÍAZ', 'ALFONSO', 'CALABRESE', 'PIMENTEL', 
+            'RICARDO', 'RODRIGUEZ', 'RODRÍGUEZ', 'MAFER', 'BARRUETA',
+            'INVITADO', 'DEMO', 'RRHH', 'ADMIN'
+        ];
+        return user.role === 'director' || adminNames.some(name => userName.includes(name)) || user.profile_admin === 'RRHH' || (user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN');
+    };
+
+    window.hasPermission = function(perm) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.id === 1) {
+            return true;
+        }
+        if (user.permissions && user.permissions[perm] !== undefined) {
+            return user.permissions[perm] === 1;
+        }
+        const isSuperadmin = user.role === 'director';
+        const isSupervisor = user.role === 'supervisor';
+        const isVIP = checkVipAccess(user);
+
+        switch(perm) {
+            case 'valet_ve': return true;
+            case 'valet_mod': return isSuperadmin || isSupervisor;
+            case 'eventos_ve': return isSuperadmin || isSupervisor;
+            case 'eventos_mod': return isSuperadmin || isSupervisor;
+            case 'admin_ve': return isSuperadmin;
+            case 'admin_mod': return isSuperadmin;
+            case 'vip_ve': return isVIP;
+            case 'vip_mod': return isVIP;
+            case 'seg_ve': return isSuperadmin;
+            case 'seg_mod': return isSuperadmin;
+            default: return false;
+        }
+    };
+    
+    // Time & Date Helpers for cross-browser consistency
+    function parseSQLiteDate(dateInput) {
+        if (!dateInput) return null;
+        if (dateInput instanceof Date) return dateInput;
+        if (typeof dateInput === 'string' && dateInput.includes(' ') && !dateInput.endsWith('Z')) {
+            // Convertir "YYYY-MM-DD HH:MM:SS" de SQLite a "YYYY-MM-DDTHH:MM:SSZ" (UTC)
+            return new Date(dateInput.replace(' ', 'T') + 'Z');
+        }
+        return new Date(dateInput);
+    }
+
+    function formatTime24h(dateInput) {
+        if (!dateInput) return '--:--';
+        const d = parseSQLiteDate(dateInput);
+        if (isNaN(d.getTime())) return '--:--';
+        return d.toLocaleTimeString('es-VE', { timeZone: 'America/Caracas', hour12: false, hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDateExplicit(dateInput) {
+        if (!dateInput) return 'S/F';
+        const d = parseSQLiteDate(dateInput);
+        if (isNaN(d.getTime())) return 'S/F';
+        const weekday = d.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', weekday: 'long' }).toLowerCase();
+        const dateStr = d.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', day: '2-digit', month: '2-digit', year: '2-digit' });
+        return `${weekday} ${dateStr}`;
+    }
+
+    function setupTimeInputMask(id) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.addEventListener('input', () => {
+            let val = input.value.replace(/[^0-9]/g, '');
+            if (val.length > 4) val = val.substring(0, 4);
+            if (val.length > 2) {
+                val = val.substring(0, 2) + ':' + val.substring(2);
+            }
+            input.value = val;
+        });
+        input.addEventListener('blur', () => {
+            const val = input.value;
+            if (!val) return;
+            const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (!regex.test(val)) {
+                toast('HORA INVÁLIDA. USE FORMATO 24H (EJ: 23:00)', 'error');
+                input.value = '';
+            }
+        });
+    }
+
+    function isStaffMemberBusy(staffId, currentSessionId) {
+        const targetDate = document.getElementById('lista-fecha')?.value;
+        if (!targetDate) return null;
+
+        const targetTimeStart = document.getElementById('lista-hora-convocatoria')?.value || document.getElementById('lista-hora-inicio')?.value || '00:00';
+        const targetDateFin = document.getElementById('lista-fecha-fin')?.value || targetDate;
+        const targetTimeEnd = document.getElementById('lista-hora-fin')?.value || '23:59';
+
+        const newStart = new Date(`${targetDate}T${targetTimeStart}`);
+        const newEnd = new Date(`${targetDateFin}T${targetTimeEnd}`);
+
+        if (isNaN(newStart.getTime()) || isNaN(newEnd.getTime())) return null;
+
+        const busySession = (window.activeSessions || []).find(sess => {
+            if (sess.id == window.editingSessionId) return false;
+
+            if (sess.status === 'active' && String(currentSessionId || '').split(',').includes(String(sess.id))) return true;
+
+            const isAssigned = (sess.assigned_staff_list || []).some(u => u.id == staffId) || (sess.supervisor_id == staffId);
+            if (isAssigned) {
+                const sessStartDay = sess.started_at ? sess.started_at.split('T')[0] : '';
+                if (!sessStartDay) return false;
+
+                const sessTimeStart = sess.convocation_time || sess.event_start_time || '00:00';
+                const sessEndDay = sess.event_end_date ? sess.event_end_date.split('T')[0] : sessStartDay;
+                const sessTimeEnd = sess.event_end_time || '23:59';
+
+                const sessStart = new Date(`${sessStartDay}T${sessTimeStart}`);
+                const sessEnd = new Date(`${sessEndDay}T${sessTimeEnd}`);
+
+                if (isNaN(sessStart.getTime()) || isNaN(sessEnd.getTime())) return false;
+
+                if (newStart < sessEnd && newEnd > sessStart) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        return busySession || null;
+    }
+    let currentTab = 'dashboard';
+    let currentStaff = { id: 1, name: 'Director Valet', role: 'director' };
+    let vehicles = [];
+    let settings = { currency: '$', company_name: 'EYE STAFF' };
+
+    // --- INITIALIZATION ---
+    window.onload = async () => {
+        const hash = window.location.hash;
+        if (hash.startsWith('#actualizar-datos')) {
+            const urlParams = new URLSearchParams(hash.split('?')[1]);
+            const token = urlParams.get('token');
+            if (token) {
+                renderDataUpdateForm(token);
+                return;
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000); 
+        initScreenSaver();
+        initSessionTimeoutMonitor();
+
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.style.display = 'flex';
+        
+        // BYPASS TEMPORAL DESACTIVADO
+        /*
+        localStorage.setItem('token', 'emergency-bypass-token');
+        localStorage.setItem('user', JSON.stringify({ id: 1, name: 'ADMIN BYPASS', role: 'director', is_superadmin: true }));
+        */
+        
+        const userStr = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+
+        // Si la sesión es de INVITADO, limpiarla para forzar login real
+        if (token && userStr) {
+            try {
+                const parsedUser = JSON.parse(userStr);
+                if (parsedUser && parsedUser.is_guest === true) {
+                    localStorage.clear();
+                    if (splash) { splash.style.opacity = '0'; splash.style.display = 'none'; }
+                    renderLoginWall();
+                    return;
+                }
+            } catch(e) {}
+        }
+
+        if (!token || !userStr) {
+            // Ocultar splash antes de mostrar login
+            if (splash) { splash.style.opacity = '0'; splash.style.display = 'none'; }
+            renderLoginWall();
+            return;
+        } else {
+            apiFetch('/api/my-permissions').then(res => {
+                if (res && res.permissions) {
+                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+                    u.permissions = res.permissions;
+                    localStorage.setItem('user', JSON.stringify(u));
+                }
+            }).catch(e => console.error('Error refreshing my-permissions:', e));
+        }
+
+        window.filterMatrixRows = function(val) {
+            const query = val.toLowerCase().trim();
+            const rows = document.querySelectorAll('.matrix-row');
+            rows.forEach(r => {
+                if (r.getAttribute('data-name').includes(query)) {
+                    r.style.display = '';
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+        };
+
+        let user;
+        try {
+            user = JSON.parse(userStr);
+            if (!user || !user.name) throw new Error('Sesión inválida');
+        } catch (e) {
+            localStorage.clear();
+            renderLoginWall();
+            return;
+        }
+
+        const loginView = document.getElementById('login-view');
+        if (loginView) loginView.style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        
+        const navName = document.getElementById('nav-user-name');
+        if (navName) navName.textContent = user.name;
+        const btnChangePin = document.getElementById('btn-change-pin');
+        if (btnChangePin) btnChangePin.style.display = 'flex';
+
+        // Si es INVITADO (guest), mostrar overlay de emergencia para re-login
+        if (user.is_guest === true || user.id === 999) {
+            // Crear overlay de emergencia que cubre TODO
+            const emergOverlay = document.createElement('div');
+            emergOverlay.style.cssText = `
+                position: fixed; inset: 0; z-index: 99999;
+                background: rgba(15,23,42,0.97);
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: 24px; font-family: system-ui, sans-serif;
+            `;
+            emergOverlay.innerHTML = `
+                <div style="font-size:3rem;font-weight:900;letter-spacing:-1px;">
+                    <span style="color:#ef4444;">EYE</span><span style="color:#f8fafc;">STAFF</span>
+                </div>
+                <p style="color:#94a3b8;font-size:1rem;text-align:center;max-width:320px;line-height:1.6;">
+                    Sesión de demostración detectada.<br>Haga clic para iniciar sesión con sus credenciales.
+                </p>
+                <button id="emerg-login-btn" style="
+                    background:#ef4444; color:#fff; border:none;
+                    padding:18px 48px; border-radius:16px;
+                    font-size:1.2rem; font-weight:900; cursor:pointer;
+                    letter-spacing:1px; box-shadow:0 8px 32px rgba(239,68,68,0.4);
+                    transition:transform 0.15s;
+                " onmouseover="this.style.transform='scale(1.05)'" 
+                   onmouseout="this.style.transform='scale(1)'">
+                    INICIAR SESIÓN
+                </button>
+            `;
+            document.body.appendChild(emergOverlay);
+            document.getElementById('emerg-login-btn').addEventListener('click', () => {
+                localStorage.clear();
+                emergOverlay.remove();
+                if (splash) { splash.style.opacity = '0'; splash.style.display = 'none'; }
+                renderLoginWall();
+            });
+            return; // No continuar con el resto de la inicialización
+        }
+
+        // Cargar datos
+        loadSettings().then(() => checkActiveSession()).catch(e => console.error('Data error:', e));
+        exitToPortal();
+
+        // Animación del chat para live locations (cada 15s en cualquier pantalla)
+        async function checkLiveLocationAnimation() {
+            const chatBtn = document.getElementById('btn-telegram-link');
+            try {
+                const locRes = await apiFetch('/api/staff/live-locations');
+                const count = (locRes && locRes.locations) ? locRes.locations.length : 0;
+                window.isLiveLocationActive = count > 0;
+                if (!chatBtn) return;
+                if (count > 0) {
+                    chatBtn.style.animation = 'blinkChatHeader 1s infinite alternate';
+                } else {
+                    chatBtn.style.animation = 'none';
+                    chatBtn.style.background = '';
+                    chatBtn.style.borderColor = '';
+                    chatBtn.style.color = '#28A8E9';
+                }
+            } catch (e) {
+                window.isLiveLocationActive = false;
+                if (!chatBtn) return;
+                chatBtn.style.animation = 'none';
+                chatBtn.style.background = '';
+                chatBtn.style.borderColor = '';
+                chatBtn.style.color = '#28A8E9';
+            }
+        }
+        setInterval(checkLiveLocationAnimation, 15000);
+        checkLiveLocationAnimation();
+
+        // Auto-refresh silencioso cada 3 minutos para actualizar datos y solicitudes sin que se note
+        setInterval(() => {
+            const modal = document.getElementById('modal-container');
+            if (modal && modal.style.display === 'flex') return;
+            const ae = document.activeElement;
+            if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT')) return;
+            
+            if (typeof checkActiveSession === 'function') checkActiveSession();
+            if (window.currentTab === 'eventos' && typeof loadCustodiaOnly === 'function') loadCustodiaOnly();
+            if (window.currentTab === 'checkout' && typeof loadCheckoutGrid === 'function') loadCheckoutGrid();
+            if (window.currentTab === 'resumen' && typeof loadFullResumen === 'function') loadFullResumen();
+            if (window.currentTab === 'dashboard' && typeof loadDashboardData === 'function') loadDashboardData();
+        }, 180000);
+
+        // Hide Splash
+        setTimeout(() => {
+            if (splash) {
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }
+        }, 800);
+
+        // Deep Link Handler for Budget -> Event
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'create_session_from_budget') {
+            const budgetId = urlParams.get('budget_id');
+            if (budgetId) {
+                setTimeout(async () => {
+                    showLoading('CARGANDO DATOS DEL PRESUPUESTO...');
+                    try {
+                        const res = await apiFetch('/api/presupuestos');
+                        if (res && res.success && res.budgets) {
+                            const b = res.budgets.find(x => x.id === budgetId);
+                            if (b) {
+                                enterModule('listas');
+                                
+                                const form = typeof b.form_data === 'string' ? JSON.parse(b.form_data) : b.form_data || {};
+                                
+                                setTimeout(() => {
+                                    // Helper: calcular hora - 2h
+                                    const calcConvocatoria = (horaInicio) => {
+                                        if (!horaInicio) return '';
+                                        const [h, m] = horaInicio.split(':').map(Number);
+                                        const total = h * 60 + m - 120;
+                                        const hh = Math.floor(((total % 1440) + 1440) % 1440 / 60);
+                                        const mm = ((total % 1440) + 1440) % 1440 % 60;
+                                        return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+                                    };
+
+                                    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+
+                                    setVal('lista-presupuesto', b.id);
+                                    setVal('lista-nombre', b.evento);
+                                    setVal('lista-fecha', b.fecha);
+                                    setVal('lista-contacto', form.atencion);
+                                    setVal('lista-telefono', form.telefonos);
+                                    setVal('lista-direccion', form.direccion);
+                                    setVal('lista-hora-inicio', form.inicio);
+                                    setVal('lista-hora-fin', form.fin_hora);
+                                    setVal('lista-fecha-fin', form.fecha_fin || b.fecha);
+
+                                    // Convocatoria = hora inicio - 2 horas (por defecto, editable)
+                                    const convCalc = calcConvocatoria(form.inicio);
+                                    setVal('lista-hora-convocatoria', convCalc || form.convocatoria);
+
+                                    // Tipo de evento
+                                    const typeSelect = document.getElementById('lista-tipo');
+                                    const tVal = (form.tipoEvento || '').toLowerCase();
+                                    if (typeSelect && tVal) {
+                                        for(let opt of typeSelect.options) {
+                                            if (opt.value.toLowerCase() === tVal) { typeSelect.value = opt.value; break; }
+                                        }
+                                    }
+
+                                    // Expandir el panel de datos del evento
+                                    const content = document.getElementById('datos-evento-content');
+                                    if (content) {
+                                        content.style.display = 'block';
+                                        const icon = document.getElementById('datos-evento-icon');
+                                        if (icon) icon.innerText = '▼';
+                                    }
+
+                                    // Scroll suave hacia arriba
+                                    document.getElementById('current-view')?.scrollIntoView({ behavior: 'smooth' });
+                                    toast('✅ DATOS DEL PRESUPUESTO CARGADOS — Asigne el personal y guarde el evento', 'success');
+                                }, 500);
+                            } else {
+                                toast('Presupuesto no encontrado', 'error');
+                            }
+                        }
+                    } catch(e) {
+                        toast('Error cargando presupuesto', 'error');
+                    }
+                    hideLoading();
+                    
+                    // Quitar los parametros de la URL para que no vuelva a recargarse al refrescar
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }, 1500);
+            }
+        }
+    };
+
+    function renderLoginWall() {
+        const loginView = document.getElementById('login-view');
+        if (!loginView) return;
+        
+        loginView.innerHTML = `
+            <div class="login-wall">
+                <div class="logo-text" style="font-size: 3rem; margin-bottom: 40px; flex-direction: column; align-items: center; gap: 0;">
+                <div><span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span></div>
+                </div>
+                
+                <div class="login-card">
+                    <h2 style="margin: 0; font-size: 1.2rem; letter-spacing: 2px;">ACCESO RESTRINGIDO</h2>
+                    <p style="color: var(--muted); font-size: 0.8rem; margin: -10px 0 10px 0;">INGRESE SUS CREDENCIALES</p>
+                    
+                    <div class="field" style="margin:0;">
+                        <input type="text" id="login-name" class="login-input" placeholder="USUARIO" autocomplete="off">
+                    </div>
+                    
+                    <div class="field" style="margin:0;">
+                        <input type="password" id="login-cedula" class="login-input" placeholder="CONTRASEÑA" autocomplete="off" onmouseover="this.type='text'" onmouseout="this.type='password'">
+                    </div>
+                    
+                    <button class="btn" onclick="handleLogin()" style="height: 65px; border-radius: 18px; font-size: 1.2rem; font-weight: 900; background: var(--accent);">
+                        ENTRAR
+                    </button>
+                    
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="javascript:void(0)" onclick="forgotPassword()" style="color: var(--accent); font-size: 0.85rem; text-decoration: none; font-weight: 700;">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                </div>
+            </div>
+        `;
+        loginView.style.display = 'block';
+        document.getElementById('app').style.display = 'none';
+    }
+
+    async function handleLogin() {
+        console.log('Iniciando handleLogin...');
+        const name = document.getElementById('login-name').value;
+        const cedula = document.getElementById('login-cedula').value;
+        
+        if (!name || !cedula) return toast('COMPLETE LOS CAMPOS', 'error');
+        
+        showLoading('VERIFICANDO IDENTIDAD...');
+        try {
+            const res = await fetch(API_BASE + '/api/staff/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, cedula })
+            });
+            const data = await res.json();
+            
+            hideLoading();
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data));
+                localStorage.setItem('web_session_id', data.web_session_id); // Almacenar ID de sesión
+                localStorage.setItem('session_start_time', Date.now()); // Set session start time for 6-hour limit
+                toast('ACCESO CONCEDIDO', 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                toast(data.error || 'DATOS INCORRECTOS', 'error');
+                console.error('Login failed:', data);
+            }
+        } catch (e) {
+            hideLoading();
+            toast('ERROR DE CONEXIÓN: ' + e.message, 'error');
+            console.error('Fetch error:', e);
+        }
+    }
+
+    async function forgotPassword() {
+        const username = document.getElementById('login-name').value.trim();
+        if (!username) {
+            return toast('⚠️ Ingresa tu USUARIO primero y luego presiona "¿Olvidaste tu contraseña?"', 'warning');
+        }
+        
+        showLoading('ENVIANDO CORREO...');
+        try {
+            const res = await fetch(API_BASE + '/api/public/forgot-pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            
+            let data;
+            try {
+                data = await res.json();
+            } catch(e) {
+                data = { error: 'Error desconocido del servidor' };
+            }
+            
+            if (res.ok && data.success) {
+                toast('✅ ' + data.message, 'success');
+            } else {
+                toast('❌ ' + (data.error || 'Error al solicitar contraseña'), 'error');
+            }
+        } catch (e) {
+            toast('❌ ERROR: No se pudo contactar al servidor', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function openChangePasswordModal() {
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div style="text-align:center;">
+                <h2 style="margin-bottom:20px;">CAMBIAR CONTRASEÑA</h2>
+                <div class="field">
+                    <label>NUEVA CONTRASEÑA</label>
+                    <input type="password" id="new-password-input" class="login-input" placeholder="MIN 4 CARACTERES">
+                </div>
+                <button class="btn" style="width:100%; margin-top:10px;" onclick="saveNewPassword()">GUARDAR NUEVA CLAVE</button>
+            </div>
+        `;
+        openModal();
+    }
+
+    async function saveNewPassword() {
+        const newPassword = document.getElementById('new-password-input').value;
+        if (!newPassword || newPassword.length < 4) return toast('MÍNIMO 4 CARACTERES', 'error');
+        
+        showLoading('ACTUALIZANDO...');
+        try {
+            const res = await fetch(API_BASE + '/api/staff/change-password', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify({ newPassword })
+            });
+            hideLoading();
+            if (res.ok) {
+                toast('CLAVE ACTUALIZADA', 'success');
+                alert('🔑 CONTRASEÑA ACTUALIZADA CON ÉXITO\n\nTu nueva contraseña ha sido guardada correctamente en el sistema. Por favor, utilízala en tu próximo inicio de sesión.');
+                closeModal();
+            } else {
+                toast('ERROR AL ACTUALIZAR', 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            toast('ERROR DE CONEXIÓN', 'error');
+        }
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('es-VE', { timeZone: 'America/Caracas', day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = formatTime24h(now);
+
+        // Actualizar todos los footers dinámicamente con logo y enlace a geolocalización
+        const mapLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg';
+        const userIconUrl = '/user_icon.png';
+        const onlineCount = typeof window.getOnlineChatUsersCount === 'function' ? window.getOnlineChatUsersCount() : 0;
+        const displayCount = Math.max(1, onlineCount);
+
+        const onlineText = ` | <span style="color:var(--success); font-weight:900;">${displayCount}</span>`;
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span><a href="https://eye-staff.com/" target="_blank" style="color:inherit; text-decoration:none;">EYE STAFF 2026</a> - v2.7.17 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
+        document.querySelectorAll('.footer-info').forEach(el => {
+            el.innerHTML = footerHTML;
+            if (window.currentModule === 'portal') {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+
+        // Garantizar footer en TODAS las vistas: si el <main> no tiene .footer-info, crearlo al final
+        const mainEl = document.querySelector('main');
+        if (mainEl && !mainEl.querySelector('.footer-info')) {
+            const autoFooter = document.createElement('div');
+            autoFooter.className = 'footer-info auto-footer';
+            autoFooter.style.cssText = 'margin-top:50px; text-align:center; color:var(--muted); padding-bottom:50px;';
+            if (window.currentModule !== 'portal') {
+                autoFooter.style.display = 'none';
+            }
+            autoFooter.innerHTML = footerHTML;
+            mainEl.appendChild(autoFooter);
+        }
+    }
+
+    function getElapsedTime(start) {
+        if (!start) return '--:--';
+        const s = parseSQLiteDate(start);
+        const now = new Date();
+        const diff = Math.floor((now - s) / 1000);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        return `${h}h ${m}m`;
+    }
+
+    function enterModule(module) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (module === 'valet' && !hasPermission('valet_ve')) {
+            return toast('⚠️ ACCESO RESTRINGIDO A VALET PARKING', 'warning');
+        }
+        if (module === 'hr' && !hasPermission('admin_ve')) {
+            return toast('⚠️ ACCESO RESTRINGIDO A ADMINISTRACIÓN', 'warning');
+        }
+        if ((module === 'listas' || module === 'eventos') && !hasPermission('eventos_ve')) {
+            return toast('⚠️ ACCESO RESTRINGIDO A EVENTOS Y OPERACIONES', 'warning');
+        }
+        if ((module === 'vip_eye_staff' || module === 'liveloc') && !hasPermission('vip_ve')) {
+            return toast('⚠️ ACCESO RESTRINGIDO A DIRECCIÓN EYE STAFF', 'warning');
+        }
+
+        window.currentModule = module;
+
+        // Limpiar auto-footers previos al cambiar de vista
+        document.querySelectorAll('.auto-footer').forEach(el => el.remove());
+
+        const view = document.getElementById('current-view');
+        const btn = document.getElementById('btn-back-portal');
+        btn.style.display = 'flex';
+        btn.innerHTML = '🏠';
+        btn.onclick = exitToPortal;
+        
+        if (module === 'valet') {
+            checkActiveSession().then(() => {
+                renderHome(view);
+                setTimeout(updateFloatingChatVisibility, 100);
+            });
+        } else if (module === 'hr') {
+            showTab('admin');
+            setTimeout(updateFloatingChatVisibility, 100);
+        } else if (module === 'accesos') {
+            renderAccessControl(view);
+        } else if (module === 'alquiler') {
+            renderAlquiler(view);
+        } else if (module === 'listas') {
+            apiFetch('/api/sessions/next-correlativo').then(res => {
+                window.nextCorrelativo = res.next || 1;
+                renderListas(view);
+                setTimeout(updateFloatingChatVisibility, 100);
+            });
+        } else if (module === 'eventos') {
+            renderEventsDashboard(view);
+            setTimeout(updateFloatingChatVisibility, 100);
+        } else if (module === 'chat') {
+            window.chatLoadedOnce = false; // Forzar recarga fresca del directorio de chat al entrar
+            renderChat(view);
+            setTimeout(updateFloatingChatVisibility, 100);
+        } else if (module === 'accesos' || module === 'renta' || module === 'formatos' || module === 'traslados' || module === 'guardia' || module === 'custodia_portal' || module === 'vip_eye_staff' || module === 'liveloc') {
+            if (module === 'accesos') renderAccessControl(view);
+            else if (module === 'renta') renderRentaEquipos(view);
+            else if (module === 'traslados') showToast('MÓDULO DE TRASLADOS PRÓXIMAMENTE');
+            else if (module === 'guardia') renderGuardia(view);
+            else if (module === 'custodia_portal') showToast('MÓDULO DE CUSTODIA PRÓXIMAMENTE');
+            else if (module === 'vip_eye_staff') renderVipEyeStaff(view);
+            else if (module === 'liveloc') renderGeolocalizacion(view);
+            else renderFormatos(view);
+            setTimeout(updateFloatingChatVisibility, 100);
+        }
+    }
+
+    
+    
+    
+    function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
+    }
+
+
+    window.calendarViewDate = window.calendarViewDate || new Date();
+    window.changeCalendarWeek = function(offset) {
+        if (offset === 'today') {
+            window.calendarViewDate = new Date();
+        } else {
+            window.calendarViewDate.setDate(window.calendarViewDate.getDate() + offset);
+        }
+        const container = document.getElementById('calendar-wrapper-container');
+        if (container) {
+            container.innerHTML = generateWeeklyCalendarHTML();
+        }
+    };
+
+    function generateWeeklyCalendarHTML() {
+        const viewDate = window.calendarViewDate || new Date();
+        
+        // Find Monday of the viewed week
+        const currentDay = viewDate.getDay();
+        const diff = viewDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+        const startOfWeek = new Date(viewDate.setDate(diff));
+        startOfWeek.setHours(0,0,0,0);
+        
+        const weekDays = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
+        const isDirector = isUserAdminOrStaff(user);
+
+        const allSessionsRaw = window.allSessions || [];
+        const allSessions = allSessionsRaw.filter(s => {
+            if (isDirector) return true;
+            return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+        
+        function getEventColor(s) {
+            if (s.status === 'closed' || s.status === 'concluded') {
+                return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--muted)', grayscale: true };
+            }
+            const type = s.type;
+            const t = (type || '').toLowerCase();
+            if (t.includes('valet')) return { bg: 'rgba(239, 68, 68, 0.15)', border: 'var(--brand-red)', text: '#ef4444' };
+            if (t.includes('boda')) return { bg: 'rgba(245, 158, 11, 0.15)', border: 'var(--warning)', text: '#f59e0b' };
+            if (t.includes('corp')) return { bg: 'rgba(99, 102, 241, 0.15)', border: 'var(--accent)', text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16, 185, 129, 0.15)', border: 'var(--brand-green)', text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255, 255, 255, 0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        const monthName = startOfWeek.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+        
+        let html = `
+        <div id="calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; position:relative; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="const content = document.getElementById('calendario-content'); content.style.display = content.style.display === 'none' ? 'flex' : 'none'; const icon = document.getElementById('calendario-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                    <h3 style="margin:0; color:var(--accent); font-size:1.1rem; font-weight:900;">CALENDARIO SEMANAL</h3>
+                    <span id="calendario-icon" style="color:var(--accent); font-size:0.8rem;">▶</span>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeCalendarWeek(-7)">⬅️</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:0.8rem; font-weight:bold; color:white;" onclick="changeCalendarWeek('today')">HOY</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:8px 12px; font-size:1rem;" onclick="changeCalendarWeek(7)">➡️</button>
+                </div>
+            </div>
+            
+            <div id="calendario-content" style="display:none; flex-direction:column; width:100%;">
+            <div style="font-size:0.8rem; color:var(--accent); font-weight:900; background:rgba(99, 102, 241, 0.1); padding:8px 15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                ${monthName}
+            </div>
+            <style>
+                @media (max-width: 768px) {
+                    .calendar-week-container { flex-direction: column !important; }
+                    .calendar-day-col { width: 100% !important; margin-bottom: 5px; }
+                }
+            </style>
+            <div class="calendar-week-container" style="display:flex; gap:5px; width:100%; padding-bottom:5px; justify-content:space-between;">
+        `;
+        
+        const currentDateIterator = new Date(startOfWeek);
+        const actualToday = new Date();
+        actualToday.setHours(0,0,0,0);
+        let combinedSessions = [...(window.allSessions || [])];
+        if (window._globalBudgets) {
+            const futureBudgets = window._globalBudgets.filter(b => {
+                if (b.estatus !== 'APROBADO') return false;
+                if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+                return true;
+            }).map(b => ({
+                id: 'budget-' + b.id,
+                name: b.evento || 'PRESUPUESTO APROBADO',
+                started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+                event_start_time: (b.form && b.form.inicio) || '00:00',
+                type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+                assigned_staff: 'SIN ASIGNAR',
+                address: (b.form && b.form.direccion) || 'N/A',
+                status: 'planning',
+                is_budget: true,
+                budget_id: b.id
+            }));
+            combinedSessions.push(...futureBudgets);
+        }
+
+        for (let d = 0; d < 7; d++) {
+            const isToday = currentDateIterator.getTime() === actualToday.getTime();
+            const dateStr = currentDateIterator.getDate();
+            const dayName = weekDays[d];
+            
+            const sessionsThisDay = combinedSessions.filter(s => {
+                if (s.status === 'budgeted') return false;
+                const rawDate = s.started_at || s.created_at;
+                
+                let sDate;
+                if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                    const parts = rawDate.split('-');
+                    sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                } else {
+                    sDate = new Date(rawDate);
+                }
+                
+                sDate.setHours(0,0,0,0);
+                return sDate.getTime() === currentDateIterator.getTime();
+            });
+            
+            let bg = 'rgba(255,255,255,0.015)';
+            let border = '1px solid rgba(255,255,255,0.03)';
+            if (isToday) {
+                bg = 'rgba(99, 102, 241, 0.05)';
+                border = '1px solid var(--accent)';
+            }
+            
+            let eventsHtml = '';
+            if (sessionsThisDay.length > 0) {
+                eventsHtml = sessionsThisDay.map(s => {
+                    const colorSet = getEventColor(s);
+                    const isClosed = s.status === 'closed' || s.status === 'concluded';
+                    return `
+                        <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="cursor:pointer; background:${colorSet.bg}; border-left:4px solid ${colorSet.border}; color:${colorSet.text}; font-size:0.75rem; padding:8px 6px; border-radius:6px; margin-bottom:6px; display:flex; flex-direction:column; gap:4px; transition:0.2s; filter:${colorSet.grayscale ? 'grayscale(1)' : 'none'}; opacity:${colorSet.grayscale ? '0.85' : '1'}; text-align:center;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${colorSet.bg}';">
+                            <div style="font-weight:900; font-size:0.75rem; line-height:1.2; word-break:break-word;">${s.name.toUpperCase()} ${isClosed ? ' (FIN)' : ''}</div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:bold;">
+                                ${s.type ? s.type.toUpperCase() : 'N/A'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                eventsHtml = `<div style="min-height:20px;"></div>`;
+            }
+
+            html += `
+                <div class="calendar-day-col" style="background:${bg}; border:${border}; border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:6px; min-width: 0; width: 14.28%; box-sizing:border-box;">
+                    <div style="display:flex; justify-content:center; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; position:relative;">
+                        <span style="font-size:0.65rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--text)'}; opacity:${isToday ? '1' : '0.8'}; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center;">
+                            ${dayName.substring(0,3)} ${dateStr}
+                        </span>
+                        ${isToday ? `<div style="position:absolute; right:0; background:var(--accent); color:white; font-size:0.4rem; font-weight:900; padding:1px 3px; border-radius:4px;">HOY</div>` : ''}
+                    </div>
+                    <div style="display:flex; flex-direction:column; overflow-y:auto; max-height:400px; padding-right:5px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent;">
+                        ${eventsHtml}
+                    </div>
+                </div>
+            `;
+            
+            
+            currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+        }
+        
+        html += `</div>
+
+            </div>
+        </div>`;
+        
+        return html;
+    }
+
+    window.currentHomeMonthDate = new Date();
+
+    window.changeHomeCalendarMonth = function(offset) {
+        if (offset === 'today') {
+            window.currentHomeMonthDate = new Date();
+        } else {
+            window.currentHomeMonthDate.setDate(window.currentHomeMonthDate.getDate() + (offset * 7));
+        }
+        const view = document.getElementById('current-view');
+        if (view) renderHome(view);
+    };
+
+    function generateMonthlyCalendarHTML() {
+        // Semana de referencia (lunes de la semana en curso por defecto)
+        const viewDate = new Date(window.currentHomeMonthDate);
+        viewDate.setHours(0,0,0,0);
+
+        // Calcular el lunes de la semana que contiene viewDate
+        const wd = viewDate.getDay();
+        const diffToMonday = wd === 0 ? -6 : 1 - wd;
+        const monday = new Date(viewDate);
+        monday.setDate(viewDate.getDate() + diffToMonday);
+        monday.setHours(0,0,0,0);
+
+        const actualToday = new Date();
+        actualToday.setHours(0,0,0,0);
+
+        const weekDayNames = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+
+        // Nombre del mes para el encabezado
+        const monthName = monday.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet' };
+        const isDirector = isUserAdminOrStaff(user);
+
+        let combinedSessions = [...(window.allSessions || [])].filter(s => {
+            if (isDirector) return true;
+            return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+        if (window._globalBudgets) {
+            const futureBudgets = window._globalBudgets.filter(b => {
+                if (b.estatus !== 'APROBADO') return false;
+                if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+                return true;
+            }).map(b => ({
+                id: 'budget-' + b.id,
+                name: b.evento || 'PRESUPUESTO APROBADO',
+                started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+                event_start_time: (b.form && b.form.inicio) || '00:00',
+                type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+                status: 'planning',
+                is_budget: true,
+                budget_id: b.id
+            }));
+            combinedSessions.push(...futureBudgets);
+        }
+
+        function getEventColor(s) {
+            if (s.is_budget) return { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)', text: 'var(--muted)' };
+            const t = (s.type || '').toLowerCase();
+            if (t.includes('valet'))  return { bg: 'rgba(239,68,68,0.15)',   border: '#ef4444',  text: '#ef4444' };
+            if (t.includes('boda'))   return { bg: 'rgba(245,158,11,0.15)',  border: '#f59e0b',  text: '#f59e0b' };
+            if (t.includes('corp'))   return { bg: 'rgba(99,102,241,0.15)',  border: '#818cf8',  text: '#818cf8' };
+            if (t.includes('cumple')) return { bg: 'rgba(16,185,129,0.15)', border: '#10b981',  text: '#10b981' };
+            if (t.includes('conciert')) return { bg: 'rgba(168,85,247,0.15)', border: '#a855f7', text: '#c084fc' };
+            return { bg: 'rgba(255,255,255,0.05)', border: 'var(--muted)', text: 'var(--text)' };
+        }
+
+        // Construir filas de días
+        let daysHtml = '';
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(monday);
+            day.setDate(monday.getDate() + i);
+            const isToday = day.getTime() === actualToday.getTime();
+            const dayLabel = weekDayNames[i];
+            const dayNum = day.getDate();
+            const dateStr = day.toISOString().split('T')[0];
+
+            const sessionsThisDay = combinedSessions.filter(s => {
+                if (s.status === 'budgeted') return false;
+                const rawDate = s.started_at || s.created_at;
+                let sDate;
+                if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                    const parts = rawDate.split('-');
+                    sDate = new Date(parts[0], parts[1]-1, parts[2]);
+                } else {
+                    sDate = new Date(rawDate);
+                }
+                sDate.setHours(0,0,0,0);
+                return sDate.getTime() === day.getTime();
+            });
+
+            const rowBg    = isToday ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.02)';
+            const rowBorder = isToday ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.05)';
+
+            let eventsHtml = '';
+            if (sessionsThisDay.length > 0) {
+                eventsHtml = sessionsThisDay.map(s => {
+                    const c = getEventColor(s);
+                    const isClosed = s.status === 'closed' || s.status === 'concluded';
+                    const time = s.event_start_time ? `<span style="font-size:0.55rem; color:var(--muted); margin-left:6px;">${s.event_start_time}</span>` : '';
+                    return `<div onclick="showDayDetails('${day.toISOString()}')" style="cursor:pointer; background:${c.bg}; border-left:3px solid ${c.border}; color:${c.text}; font-size:0.7rem; padding:6px 10px; border-radius:6px; display:flex; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                        <span style="font-weight:900; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.toUpperCase()}${isClosed ? ' ✓' : ''}</span>
+                        ${time}
+                    </div>`;
+                }).join('');
+            }
+
+            daysHtml += `
+            <div style="background:${rowBg}; border:${rowBorder}; border-radius:12px; padding:10px 14px; display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <span style="font-size:0.75rem; font-weight:900; color:${isToday ? 'var(--accent)' : 'var(--muted)'}; text-transform:uppercase; letter-spacing:1px;">${dayLabel} ${dayNum}</span>
+                    ${isToday ? '<span style="font-size:0.5rem; background:var(--accent); color:#fff; padding:2px 7px; border-radius:10px; font-weight:900; letter-spacing:1px;">HOY</span>' : ''}
+                </div>
+                ${eventsHtml || '<span style="font-size:0.65rem; color:rgba(255,255,255,0.15); padding-left:2px;">Sin eventos</span>'}
+            </div>`;
+        }
+
+        return `
+        <div id="monthly-calendar-wrapper" style="background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:20px; width:100%; box-sizing:border-box; display:flex; flex-direction:column; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0; color:var(--accent); font-size:1rem; font-weight:900;">📅 CALENDARIO SEMANAL</h3>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(-1)">←</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:0.75rem; font-weight:bold; color:white;" onclick="changeHomeCalendarMonth('today')">HOY</button>
+                    <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); padding:7px 11px; font-size:1rem;" onclick="changeHomeCalendarMonth(1)">→</button>
+                </div>
+            </div>
+            <div style="font-size:0.75rem; color:var(--accent); font-weight:900; background:rgba(99,102,241,0.1); padding:7px 14px; border-radius:10px; text-align:center; margin-bottom:14px;">${monthName}</div>
+            <div id="monthly-calendar-grid" style="display:flex; flex-direction:column; gap:8px;">
+                ${daysHtml}
+            </div>
+        </div>`;
+    }
+
+
+        async function saveListaEvento() {
+        const baseName = document.getElementById('lista-nombre').value;
+        const correlativo = document.getElementById('lista-correlativo').value;
+        const name = `${baseName} ${correlativo}`;
+        const type = document.getElementById('lista-tipo').value;
+        const date = document.getElementById('lista-fecha').value;
+        
+        if (!baseName || !type || !date) {
+            return toast('POR FAVOR COMPLETE LOS CAMPOS OBLIGATORIOS (NOMBRE, TIPO, FECHA)', 'error');
+        }
+        
+        // Colectar personal seleccionado desde window.staffSelection
+        const staff_ids = [
+            ...(window.staffSelection?.supervisors || []),
+            ...(window.staffSelection?.employees || [])
+        ];
+        
+        if (staff_ids.length === 0) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN PERSONAL AL EVENTO', 'error');
+        }
+        
+        const hasSupervisor = (window.staffSelection?.supervisors || []).length > 0;
+        if (!hasSupervisor) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN ENCARGADO O SUPERVISOR', 'error');
+        }
+
+        // MOSTRAR MODAL DE VERIFICACION
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:500px;">
+                <h2 style="margin-bottom:20px; font-size:1.2rem; color:var(--brand-white); text-align:center;">VERIFICACIÓN DE PERSONAL</h2>
+                <p style="text-align:center; color:var(--muted); font-size:0.8rem; margin-bottom:20px;">Desmarque a quien desee eliminar de la lista antes de guardar.</p>
+                
+                <h3 style="color:var(--warning); font-size:0.8rem; margin-bottom:10px;">🛡️ SUPERVISORES / ENCARGADOS</h3>
+                <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px; margin-bottom:20px;">
+                    ${window.staffSelection.supervisors.map(id => {
+                        const staff = window.allStaffData.find(s => s.id == id);
+                        return staff ? `
+                            <label style="display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+                                <input type="checkbox" checked value="${id}" class="verify-supervisor-chk" style="width:18px; height:18px; accent-color:var(--warning);">
+                                <span style="font-weight:700;">${staff.name.toUpperCase()}</span>
+                            </label>
+                        ` : '';
+                    }).join('') || '<div style="color:var(--muted); font-size:0.8rem; text-align:center;">Ninguno</div>'}
+                </div>
+
+                <h3 style="color:var(--accent); font-size:0.8rem; margin-bottom:10px;">👥 EMPLEADOS / VALETS</h3>
+                <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:10px; margin-bottom:20px; max-height:200px; overflow-y:auto;">
+                    ${window.staffSelection.employees.map(id => {
+                        const staff = window.allStaffData.find(s => s.id == id);
+                        return staff ? `
+                            <label style="display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+                                <input type="checkbox" checked value="${id}" class="verify-employee-chk" style="width:18px; height:18px; accent-color:var(--accent);">
+                                <span style="font-weight:700;">${staff.name.toUpperCase()}</span>
+                            </label>
+                        ` : '';
+                    }).join('') || '<div style="color:var(--muted); font-size:0.8rem; text-align:center;">Ninguno</div>'}
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="btn btn-secondary" style="flex:1;" onclick="this.closest('.modal-overlay').remove()">CANCELAR</button>
+                    <button class="btn" style="flex:1; background:var(--brand-green); color:white; font-weight:900;" onclick="confirmSaveListaEvento(this)">APROBAR Y GUARDAR</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.confirmSaveListaEvento = async function(btn) {
+        const modal = btn.closest('.modal-overlay');
+        const supervisor_ids = Array.from(modal.querySelectorAll('.verify-supervisor-chk:checked')).map(chk => parseInt(chk.value));
+        const employee_ids = Array.from(modal.querySelectorAll('.verify-employee-chk:checked')).map(chk => parseInt(chk.value));
+        
+        window.staffSelection.supervisors = supervisor_ids;
+        window.staffSelection.employees = employee_ids;
+        
+        updateStaffList('supervisor');
+        updateStaffList('employee');
+        
+        const staff_ids = [...supervisor_ids, ...employee_ids];
+        
+        if (staff_ids.length === 0) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN PERSONAL AL EVENTO', 'error');
+        }
+        
+        if (supervisor_ids.length === 0) {
+            return toast('❌ DEBE ASIGNAR AL MENOS UN ENCARGADO O SUPERVISOR', 'error');
+        }
+
+        modal.remove();
+
+        const baseName = document.getElementById('lista-nombre').value;
+        const correlativo = document.getElementById('lista-correlativo').value;
+        const type = document.getElementById('lista-tipo').value;
+        const date = document.getElementById('lista-fecha').value;
+
+        showLoading('GUARDANDO EVENTO...');
+        
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const supervisor_id = supervisor_ids.length > 0 ? supervisor_ids.join(',') : String(user.id);
+            
+            const isEditing = !!window.editingSessionId;
+            const endpoint = isEditing ? '/api/sessions/update' : '/api/sessions/plan';
+            
+            const res = await apiFetch(endpoint, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    id: window.editingSessionId,
+                    name: baseName, 
+                    correlativo: correlativo,
+                    type: type.toLowerCase(), 
+                    supervisor_id: supervisor_id,
+                    staff_ids: staff_ids,
+                    started_at: date,
+                    phone: document.getElementById('lista-telefono').value,
+                    address: document.getElementById('lista-direccion').value,
+                    contact_name: document.getElementById('lista-contacto').value,
+                    client: document.getElementById('lista-empresa').value,
+                    observations: document.getElementById('lista-observaciones')?.value || '',
+                    convocation_time: document.getElementById('lista-hora-convocatoria')?.value || '',
+                    event_start_time: document.getElementById('lista-hora-inicio')?.value || '',
+                    event_end_time: document.getElementById('lista-hora-fin')?.value || '',
+                    event_end_date: document.getElementById('lista-fecha-fin')?.value || '',
+                    budget_id: document.getElementById('lista-presupuesto')?.value || null
+                })
+            });
+            
+            if (!res) {
+                hideLoading();
+                return;
+            }
+            if (res.error) throw new Error(res.error);
+
+            const newSessionId = res.id || window.editingSessionId;
+            if (type.toLowerCase() === 'guardia diurna/nocturna' && newSessionId) {
+                await apiFetch(`/api/guardia/${newSessionId}/details`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        transport: document.getElementById('lista-guardia-transporte')?.value || '',
+                        desayunos: parseInt(document.getElementById('lista-guardia-desayunos')?.value || '0'),
+                        almuerzos: parseInt(document.getElementById('lista-guardia-almuerzos')?.value || '0'),
+                        cenas: parseInt(document.getElementById('lista-guardia-cenas')?.value || '0'),
+                        materials: document.getElementById('lista-guardia-materiales')?.value || ''
+                    })
+                });
+            }
+
+            await checkActiveSession();
+            toast(isEditing ? '📝 EVENTO ACTUALIZADO CORRECTAMENTE' : '🚀 EVENTO GUARDADO Y PROGRAMADO', 'success');
+            
+            // Reset state and re-render to clear form
+            window.editingSessionId = null;
+            window.staffSelection = { supervisors: [], employees: [] };
+            renderListas(document.getElementById('current-view'));
+            handleAddressChange(''); 
+            
+        } catch (e) {
+            toast('❌ ERROR AL GUARDAR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+        window.toggleGuardiaFields = function() {
+            const type = document.getElementById('lista-tipo').value;
+            const container = document.getElementById('guardia-fields-container');
+            if(type === 'guardia diurna/nocturna') {
+                container.style.display = 'grid';
+            } else {
+                container.style.display = 'none';
+            }
+        };
+
+        window.calcularSugerenciasGuardia = function() {
+            const totalStaff = document.querySelectorAll('#list-supervisor .staff-item input:checked, #list-employee .staff-item input:checked').length;
+            if(totalStaff === 0) return toast('Asigna personal primero para calcular comidas', 'warning');
+            
+            const inicio = document.getElementById('lista-hora-inicio').value;
+            const fin = document.getElementById('lista-hora-fin').value;
+            let des = 0, alm = 0, cen = 0;
+            
+            if(inicio && fin) {
+               const startH = parseInt(inicio.split(':')[0] || 0);
+               let endH = parseInt(fin.split(':')[0] || 0);
+               if (endH < startH) endH += 24; 
+               
+               for(let h=startH; h<endH; h++) {
+                  let modH = h % 24;
+                  if (modH >= 2 && modH < 10) des = totalStaff;
+                  if (modH >= 10 && modH < 18) alm = totalStaff;
+                  if ((modH >= 18 && modH < 24) || (modH >= 0 && modH < 2)) cen = totalStaff;
+               }
+            } else {
+               alm = totalStaff; 
+            }
+            
+            document.getElementById('lista-guardia-desayunos').value = des;
+            document.getElementById('lista-guardia-almuerzos').value = alm;
+            document.getElementById('lista-guardia-cenas').value = cen;
+            toast('Comidas calculadas según el personal asignado', 'success');
+        };
+
+    async function renderListas(view) {
+        showLoading('CARGANDO PERSONAL...');
+        try {
+            const staffRes = await apiFetch('/api/staff');
+            const allStaff = staffRes?.staff || [];
+            
+            view.innerHTML = `
+                <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                </div>
+                <div class="header" style="margin-bottom: 20px;">
+                    <h1 class="view-title">📋 GESTIÓN DE LISTAS</h1>
+                </div>
+                ${(() => {
+                    let pendingHTML = '';
+                    if (window._globalBudgets && window.allSessions) {
+                        const pendingB = window._globalBudgets.filter(b => b.estatus === 'APROBADO' && !window.allSessions.some(s => s.budget_id == b.id));
+                        if (pendingB.length > 0) {
+                            pendingHTML += `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; justify-content:center;">`;
+                            pendingB.forEach(b => {
+                                pendingHTML += `
+                                    <div class="blinking-balloon" style="background:#000; color:white; padding:10px 20px; border-radius:30px; font-weight:900; font-size:0.9rem; box-shadow:0 4px 15px rgba(239,68,68,0.4); animation: blinkBalloon 1s infinite alternate; cursor:pointer;" onclick="cargarPresupuestoEnLista('${b.id}')" title="Haga clic para cargar datos y asignar personal">
+                                        ⚠️ PRESUPUESTO #${b.correlativo || b.id} - ${b.evento ? b.evento.toUpperCase() : 'SIN EVENTO'} - ${b.fecha || 'SIN FECHA'} - ASIGNAR PERSONAL
+                                    </div>
+                                `;
+                            });
+                            pendingHTML += `</div>`;
+                            if (!document.getElementById('blink-style')) {
+                                const style = document.createElement('style');
+                                style.id = 'blink-style';
+                                style.innerHTML = `@keyframes blinkBalloon { 0% { background-color: #000; transform: scale(1); } 100% { background-color: #ef4444; transform: scale(1.02); } }`;
+                                document.head.appendChild(style);
+                            }
+                        }
+                    }
+                    return pendingHTML;
+                })()}
+                <div class="listas-grid" style="display:grid; grid-template-columns: 1fr; gap: 20px; align-items:stretch; width:100%; max-width:100%; box-sizing:border-box;">
+                    <!-- COLUMNA 1: PANEL DE ENTRADA -->
+                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.3s ease-out;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('datos-evento-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('datos-evento-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                            <h3 style="margin:0; color:var(--accent);">Datos del Evento</h3>
+                            <span id="datos-evento-icon" style="color:var(--accent); font-size:0.8rem;">▶</span>
+                        </div>
+                        <div id="datos-evento-content" style="display:none;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; text-align:left;">
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">FECHA DEL EVENTO</label>
+                                <input type="date" id="lista-fecha" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;" onchange="updateStaffList('supervisor'); updateStaffList('employee');">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
+                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;" onchange="if(window.toggleGuardiaFields) window.toggleGuardiaFields()">
+                                    <option value="" disabled selected>Seleccione...</option>
+                                    <option value="valet parking">VALET PARKING</option>
+                                    <option value="control de accesos">CONTROL DE ACCESOS</option>
+                                    <option value="evento logistico">EVENTO LOGÍSTICO</option>
+                                    <option value="alquiler de equipos">ALQUILER DE EQUIPOS</option>
+                                    <option value="traslados">TRASLADOS</option>
+                                    <option value="guardia diurna/nocturna">GUARDIA DIURNA/NOCTURNA</option>
+                                    <option value="custodia">CUSTODIA</option>
+                                </select>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOMBRE DEL EVENTO</label>
+                                <input type="text" id="lista-nombre" class="input-field" placeholder="Ej. Boda Martínez" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            <div style="display: none;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CORRELATIVO</label>
+                                <input type="text" id="lista-correlativo" class="input-field" value="${window.nextCorrelativo || ''}" readonly>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DIRECCIÓN</label>
+                                <input type="text" id="lista-direccion" class="input-field" placeholder="Dirección del lugar" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;"
+                                    oninput="handleAddressChange(this.value)">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">Nº PRESUPUESTO</label>
+                                <input type="text" id="lista-presupuesto" class="input-field" placeholder="Opcional" readonly style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box; background:rgba(0,0,0,0.2); opacity:0.8;">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOMBRE DE CONTACTO</label>
+                                <input type="text" id="lista-contacto" class="input-field" placeholder="Nombre" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">EMPRESA</label>
+                                <input type="text" id="lista-empresa" class="input-field" placeholder="Productora / Empresa" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            <div style="grid-column: span 1;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TELÉFONO</label>
+                                <input type="tel" id="lista-telefono" class="input-field" placeholder="+58 ..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box;">
+                            </div>
+                            
+                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.65rem; color:var(--warning); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🕗 CONVOCATORIA</label>
+                                    <input type="text" id="lista-hora-convocatoria" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
+                                </div>
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.65rem; color:var(--accent); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🚀 INICIO EVENTO</label>
+                                    <input type="text" id="lista-hora-inicio" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
+                                </div>
+                            </div>
+                            
+                            <div style="grid-column: span 2; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.65rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📅 FECHA FIN DE EVENTO</label>
+                                    <input type="date" id="lista-fecha-fin" class="input-field" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" onchange="updateStaffList('supervisor'); updateStaffList('employee');">
+                                </div>
+                                <div style="min-width:0;">
+                                    <label style="font-size:0.65rem; color:var(--muted); font-weight:800; display:block; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🏁 FIN (EST.)</label>
+                                    <input type="text" id="lista-hora-fin" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:12px; padding:12px; box-sizing:border-box; font-size:0.8rem; text-align:center;" oninput="updateStaffList('supervisor'); updateStaffList('employee');">
+                                </div>
+                            </div>
+
+                            <div style="grid-column: span 2;">
+                                <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOTAS / OBSERVACIONES</label>
+                                <textarea id="lista-observaciones" class="input-field" placeholder="Notas adicionales..." style="width:100%; margin-top:5px; border-radius:12px; padding:12px; box-sizing:border-box; height:60px; resize:none; background:var(--surface); color:#fff; border:1px solid var(--border);"></textarea>
+                            </div>
+
+                            <div id="guardia-fields-container" style="display:none; grid-column: span 2; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; padding:15px; background:rgba(168,85,247,0.1); border-radius:12px; border:1px solid rgba(168,85,247,0.3);">
+                                <h4 style="grid-column: span 2; margin:0; color:#a855f7;">Requisitos de Guardia <button type="button" class="btn btn-sm" onclick="calcularSugerenciasGuardia()" style="background:var(--accent); color:white; padding:4px 10px; float:right; border-radius:6px; font-size:0.7rem;">CALCULAR COMIDAS</button></h4>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TRANSPORTE</label>
+                                     <input type="text" id="lista-guardia-transporte" class="input-field" placeholder="Ej. Autobús" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DESAYUNOS (02-10)</label>
+                                     <input type="number" id="lista-guardia-desayunos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">ALMUERZOS (10-18)</label>
+                                     <input type="number" id="lista-guardia-almuerzos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CENAS (18-02)</label>
+                                     <input type="number" id="lista-guardia-cenas" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                <div style="grid-column: span 2;"><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">MATERIALES REQUERIDOS</label>
+                                     <input type="text" id="lista-guardia-materiales" class="input-field" placeholder="Ej. Radios, Linternas" style="width:100%; border-radius:8px; padding:8px;"></div>
+                            </div>
+
+                        </div>
+
+                        <div onclick="showExpandedMap()" style="margin-top:20px; border-radius:16px; overflow:hidden; border:1px solid var(--border); height:160px; background:rgba(0,0,0,0.2); position:relative; cursor:zoom-in;">
+                            <div id="map-label" style="position:absolute; top:10px; left:10px; z-index:10; background:rgba(15,23,42,0.8); padding:4px 8px; border-radius:6px; font-size:0.5rem; color:var(--accent); font-weight:900; border:1px solid var(--border); backdrop-filter:blur(4px);">📍 OFICINA EYE STAFF</div>
+                            <iframe 
+                                id="planning-map-iframe"
+                                width="100%" 
+                                height="100%" 
+                                frameborder="0" 
+                                style="border:0; filter: grayscale(0.5) contrast(1.2) opacity(0.8);" 
+                                src="https://www.google.com/maps?q=F4PG%2BF97%2C%20Calle%20Garcilazo%2C%20Caracas%201080%2C%20Miranda%2C%20Venezuela&output=embed" 
+                                allowfullscreen>
+                            </iframe>
+                            <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:5;"></div>
+                        </div>
+                    </div>
+                        </div>
+
+                    <!-- COLUMNA 2: ASIGNACIÓN DE PERSONAL (BÚSQUEDA) -->
+                    <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.4s ease-out; display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('asignacion-personal-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('asignacion-personal-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                            <h3 style="margin:0; color:var(--warning);">Asignación de Personal</h3>
+                            <span id="asignacion-personal-icon" style="color:var(--warning); font-size:0.8rem;">▶</span>
+                        </div>
+                        <div id="asignacion-personal-content" style="display:none;">
+                        
+                        <!-- SECCIÓN SUPERVISORES -->
+                        <div style="margin-bottom:25px;">
+                            <label style="font-size:0.65rem; color:var(--warning); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">🛡️ SUPERVISORES / ENCARGADOS</label>
+                            <input type="text" id="filter-supervisor" class="input-field" placeholder="Filtrar por nombre..." 
+                                style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
+                                oninput="updateStaffList('supervisor')">
+                            <div id="list-supervisor" style="height:150px; overflow-y:auto; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--warning) transparent;">
+                                <!-- Cargado dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN EMPLEADOS -->
+                        <div id="employee-selection-section" style="flex:1; display:flex; flex-direction:column; min-height:0; transition:0.3s;">
+                            <label style="font-size:0.65rem; color:var(--accent); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">👥 EMPLEADOS / VALETS</label>
+                            <input type="text" id="filter-employee" class="input-field" placeholder="Filtrar por nombre..." 
+                                style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
+                                oninput="updateStaffList('employee')">
+                            <div id="list-employee" style="height:240px; overflow-y:auto; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--accent) transparent;">
+                                <!-- Cargado dinámicamente -->
+                            </div>
+                        </div>
+
+                        <button class="btn" style="width:100%; margin-top:20px; border-radius:16px; padding:18px; font-size:1rem; font-weight:900; background:var(--brand-green); color:white;" onclick="saveListaEvento()">GUARDAR EVENTO</button>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUMNA 3: CALENDARIO SEMANAL (ABAJO A ANCHO COMPLETO) -->
+                    <div class="listas-calendar-wrapper-col" id="calendar-wrapper-container">
+                        ${generateWeeklyCalendarHTML()}
+                    </div>
+                </div>
+            `;
+            window.allStaffData = allStaff;
+            window.staffSelection = { supervisors: [], employees: [] };
+            
+            // Inicializar listas de personal
+            updateStaffList('supervisor');
+            updateStaffList('employee');
+
+            // Inicializar mascaras de hora 24h
+            setupTimeInputMask('lista-hora-convocatoria');
+            setupTimeInputMask('lista-hora-inicio');
+            setupTimeInputMask('lista-hora-fin');
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR DATOS', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+    function showSessionPicker(type) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = isUserAdminOrStaff(user);
+
+        const sessions = (window.activeSessions || []).filter(s => {
+            if (!isDirector) {
+                const isAssigned = s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                if (!isAssigned) return false;
+            }
+            return (s.type === type || (!s.type && type === 'valet')) && (s.status === 'active' || s.status === 'planning');
+        });
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:400px; text-align:center;">
+                <h2 style="margin-bottom:20px; font-size:1.2rem; color:var(--brand-white); letter-spacing:1px;">SELECCIONE EVENTO</h2>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    ${sessions.map(s => {
+                        const isPlanning = s.status === 'planning';
+                        const bg = isPlanning ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)';
+                        const opacity = isPlanning ? '0.5' : '1';
+                        return `
+                            <button class="btn" style="padding:15px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:${bg}; border:1px solid var(--border); opacity:${opacity};" onclick="selectSession(${s.id}, '${type}')">
+                                <div style="display:flex; flex-direction:column;">
+                                    <span style="font-weight:700;">${s.name}</span>
+                                    <span style="font-size:0.55rem; color:var(--muted);">${isPlanning ? '🕒 PLANIFICADO' : '✅ ACTIVO'}</span>
+                                </div>
+                                <span style="font-size:0.7rem; opacity:0.6;">ID: ${s.id}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                    <hr style="border:0; border-top:1px solid var(--border); margin:15px 0; opacity:0.3;">
+                    <button class="btn" style="background:var(--success); color:white; font-weight:800;" onclick="protectedAction(startNewSession)">+ INICIAR OTRO EVENTO</button>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="margin-top:10px;">CANCELAR</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.selectSession = async function(id, type) {
+        document.querySelector('.modal-overlay.open')?.remove();
+        
+        // Configurar botón de retorno al portal
+        const btn = document.getElementById('btn-back-portal');
+        if (btn) {
+            btn.style.display = 'flex';
+            btn.innerHTML = '🏠';
+            btn.onclick = exitToPortal;
+        }
+
+        if (id === 'new') {
+            window.activeSession = null;
+            localStorage.removeItem('selectedSessionId');
+            if (type === 'valet') renderHome(document.getElementById('current-view'));
+            if (type === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
+        } else if (id === '') {
+            window.activeSession = null;
+            localStorage.setItem('selectedSessionId', 'none');
+            if (type === 'valet') renderHome(document.getElementById('current-view'));
+            if (type === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
+        } else {
+            const session = window.activeSessions.find(s => s.id == id);
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', id);
+            if (type === 'valet') renderHome(document.getElementById('current-view'));
+            if (type === 'eventos') renderEventsDashboard(document.getElementById('current-view'));
+        }
+        await checkActiveSession(); // Refrescar conteos y UI
+    }
+    
+    window.switchGlobalSession = async function(id) {
+        const session = window.activeSessions.find(s => s.id == id);
+        if (session) {
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', id);
+            await checkActiveSession();
+            
+            // Refrescar vista actual si es necesario
+            const currentView = document.getElementById('current-view');
+            if (document.getElementById('home-view')) renderHome(currentView);
+            else if (document.getElementById('events-dashboard')) renderEventsDashboard(currentView);
+        }
+    }
+
+    window.activatePlannedSession = async function(id) {
+        const session = (window.activeSessions || []).find(s => s.id == id);
+        if (session) {
+            // Validar restricción de 3 horas previas
+            let yyyy, mm, dd;
+            const rawDate = session.started_at || session.created_at;
+            if (typeof rawDate === 'string' && rawDate.length >= 10 && rawDate.includes('-')) {
+                const parts = rawDate.substring(0, 10).split('-');
+                yyyy = parts[0]; mm = parts[1]; dd = parts[2];
+            } else {
+                const d = new Date(rawDate);
+                yyyy = d.getFullYear(); mm = String(d.getMonth() + 1).padStart(2, '0'); dd = String(d.getDate()).padStart(2, '0');
+            }
+            const [h, m] = (session.event_start_time || '00:00').split(':');
+            const schedDate = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${h.padStart(2, '0')}:${m.padStart(2, '0')}:00-04:00`);
+            
+            const diffMs = schedDate.getTime() - Date.now();
+            const diffHours = diffMs / (1000 * 60 * 60);
+            
+            if (diffHours > 3) {
+                const bypass = prompt(`⚠️ RESTRICCIÓN DE SEGURIDAD:\n\nEL EVENTO ESTÁ PROGRAMADO PARA LAS ${session.event_start_time}.\n\nNO SE PUEDE INICIAR CON MÁS DE 3 HORAS DE ANTELACIÓN SIN AUTORIZACIÓN.\n\nINGRESE CÓDIGO DE AUTORIZACIÓN RRHH PARA CONTINUAR:`);
+                if (!bypass) return;
+                window.bypassCode = bypass;
+            }
+        }
+
+        if (!confirm('¿DESEA INICIAR OPERACIÓN PARA ESTE EVENTO AHORA?')) return;
+        showLoading('ACTIVANDO EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/activate', {
+                method: 'POST',
+                body: JSON.stringify({ id: id, bypass_code: window.bypassCode })
+            });
+            if (res && res.error) throw new Error(res.error);
+            
+            toast('🚀 EVENTO ACTIVADO CORRECTAMENTE', 'success');
+            await checkActiveSession();
+            // Refrescar para que window.activeSession tenga el nuevo status y renderizar
+            const s = window.activeSessions.find(s => s.id == id);
+            window.activeSession = s;
+            renderHome(document.getElementById('current-view'));
+        } catch (e) {
+            toast('❌ ERROR AL ACTIVAR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.activarSesionDirecta = async function(id) {
+        if (!confirm('¿DESEA INICIAR OPERACIÓN PARA ESTE EVENTO AHORA?')) return;
+        showLoading('INICIANDO EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/activate', {
+                method: 'POST',
+                body: JSON.stringify({ id: id })
+            });
+            if (res && res.error) throw new Error(res.error);
+            
+            toast('🚀 EVENTO INICIADO CORRECTAMENTE', 'success');
+            await checkActiveSession();
+            renderHome(document.getElementById('current-view'));
+        } catch (e) {
+            toast('❌ ERROR AL INICIAR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.updateFloatingChatVisibility = function() {
+        // Funcionalidad de chat deshabilitada para refactorización
+    };
+
+    function checkVipAccess(user) {
+        if (!user) return false;
+        
+        // Verificación por perfiles (Admin y RRHH)
+        const isDirector = user.role === 'director';
+        const isAdmin = user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+        const isRRHH = user.profile_admin === 'RRHH';
+        
+        if (isDirector || isAdmin || isRRHH) return true;
+
+        if (!user.name) return false;
+        const allowedVipNames = [
+            "ADMIN",
+            "JOSÉ GREGORIO RAMOS",
+            "NICOLÁS BETANCOURT",
+            "BILLY GONZÁLEZ",
+            "ALFONSO CALABRESE",
+            "INVITADO",
+            "EMPLEADO INVITADO (DEMO)"
+        ];
+        return allowedVipNames.some(name => {
+            const normalizedUser = user.name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const normalizedAllowed = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return normalizedUser === normalizedAllowed || normalizedUser.includes(normalizedAllowed);
+        });
+    }
+
+    function exitToPortal() {
+        if (window.chatInterval) {
+            clearInterval(window.chatInterval);
+            window.chatInterval = null;
+        }
+        window.currentModule = 'portal';
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = isUserAdminOrStaff(user);
+
+        const isAdmin = isDirector || (user && (
+            false
+        ));
+
+        // Redirect logic removed so all users land on the main portal menu
+
+        const view = document.getElementById('current-view');
+        document.getElementById('btn-back-portal').style.display = 'none';
+        renderPortal(view);
+        setTimeout(updateFloatingChatVisibility, 100);
+    }
+
+    window.isPlanningExpanded = false;
+    window.togglePlanningSection = function(e) {
+        if (e) e.stopPropagation();
+        window.isPlanningExpanded = !window.isPlanningExpanded;
+        const view = document.getElementById('current-view');
+        renderPortal(view);
+    }
+
+    window.isCalendarExpanded = false;
+    window.toggleCalendarSection = function(e) {
+        if (e) e.stopPropagation();
+        window.isCalendarExpanded = !window.isCalendarExpanded;
+        const view = document.getElementById('current-view');
+        renderPortal(view);
+    }
+
+    window.isServicesExpanded = false;
+    window.toggleServicesSection = function() {
+        window.isServicesExpanded = !window.isServicesExpanded;
+        const view = document.getElementById('current-view');
+        renderPortal(view);
+    }
+
+    function renderPortal(el) {
+        if (!el) return;
+        setTimeout(() => window.scrollTo(0, 0), 50);
+        
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { role: 'valet', name: 'INVITADO' };
+        
+        const isDirector = hasPermission('admin_ve');
+        const canSeeVip = hasPermission('vip_ve');
+
+        const isAdmin = user && (
+            user.profile_admin === 'ADMIN' &&
+            user.profile_opera === 'ADMIN' &&
+            user.eye_id === 'ADMIN'
+        );
+
+        const checkAssigned = (keywords) => {
+            const sessions = window.allSessions || [];
+            return sessions.some(s => {
+                if (s.status !== 'active' && s.status !== 'planning' && s.status !== 'pending') return false;
+                const sType = (s.type || 'valet').toLowerCase();
+                const isMatch = keywords.some(kw => sType.includes(kw));
+                if (!isMatch) return false;
+                const isStrictAdmin = user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+            });
+        };
+
+        const hasActiveType = (keywords) => {
+            const sessions = window.allSessions || [];
+            return sessions.some(s => {
+                if (s.status !== 'active') return false;
+                const sType = (s.type || 'valet').toLowerCase();
+                const isMatch = keywords.some(kw => sType.includes(kw));
+                if (!isMatch) return false;
+                const isStrictAdmin = user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+            });
+        };
+
+        const canSeeValet = hasPermission('valet_ve') && checkAssigned(['valet']);
+        const canSeeAccesos = window.ENABLE_MODULE_ACCESOS && hasPermission('accesos_ve') && checkAssigned(['acceso', 'logistico', 'logístico']);
+        const canSeeAlquiler = window.ENABLE_MODULE_ALQUILER && hasPermission('alquiler_ve') && checkAssigned(['alquiler']);
+        const canSeeTraslados = hasPermission('traslados_ve') && checkAssigned(['traslado']);
+        const canSeeGuardia = hasPermission('guardia_ve') && checkAssigned(['guardia']);
+        const canSeeCustodia = hasPermission('custodia_ve') && checkAssigned(['custodia']);
+        const canSeeEvents = canSeeValet || canSeeAccesos || canSeeAlquiler || canSeeTraslados || canSeeGuardia || canSeeCustodia;
+
+        const blinkValet = hasActiveType(['valet']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const blinkAccesos = hasActiveType(['acceso', 'logistico', 'logístico']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const blinkAlquiler = hasActiveType(['alquiler']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const blinkTraslados = hasActiveType(['traslado']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const blinkGuardia = hasActiveType(['guardia']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const blinkCustodia = hasActiveType(['custodia']) ? 'animation: blinkServiceAlert 1s infinite alternate;' : '';
+        const canSeeEventosListas = hasPermission('eventos_ve');
+
+        // Calcular estado de Valet Parking
+        const activeSessions = window.activeSessions || [];
+        const valetSessions = activeSessions.filter(s => (s.type === 'valet' || !s.type) && s.status === 'active');
+        let valetStatus = 'GESTIÓN VEHÍCULOS';
+        const hasPulse = valetSessions.length > 0 ? '<span class="status-pulse"></span>' : '';
+        if (valetSessions.length > 1) valetStatus = `${hasPulse}<b>${valetSessions.length}</b> EVENTOS ACTIVOS`;
+        else if (valetSessions.length === 1) valetStatus = `${hasPulse}<b>${window.activeVehiclesCount || 0}</b> VEHÍCULOS ACTIVOS`;
+
+        const pendingBudgetsListas = window._globalBudgets ? window._globalBudgets.filter(b => b.estatus === 'APROBADO' && !(window.allSessions || []).some(s => s.budget_id == b.id)) : [];
+        const hasPendingListasAlert = pendingBudgetsListas.length > 0;
+
+        const hasScheduledEvents = (window.allSessions || []).some(s => s.status === 'planning' || s.status === 'pending') || (window._globalBudgets && window._globalBudgets.some(b => b.estatus === 'APROBADO' && !(window.allSessions || []).some(sess => sess.budget_id == b.id)));
+
+        el.innerHTML = `
+            <div id="portal-view" style="width:90%; margin:0 auto; padding-top:10px; padding-bottom: 10vh;">
+                <div class="view-header" style="text-align: center; display: block; margin-bottom: 10px;">
+                    <h1 class="view-title" style="font-size: 1.8rem; letter-spacing: -1px; color:var(--brand-white);">¡PASIÓN POR LOS <span style="color:var(--brand-red)">EVENTOS!</span></h1>
+                </div>
+
+                <div id="portal-events-section" style="${canSeeEventosListas ? '' : 'display:none;'}">
+                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">EVENTOS</h2>
+                
+                <!-- 1. EVENTOS ACTIVOS (SITUACIÓN LIVE) -->
+                <div style="margin-bottom: 25px;">
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        <div class="menu-item" onclick="enterModule('eventos')" style="grid-column: span 3; border-top: 4px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding: 20px;">
+                            <div class="menu-item-content" style="width:100%">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <div style="display:flex; align-items:center; gap:10px; width:100%; justify-content:center;">
+                                        <i style="font-size:1.8rem">📊</i>
+                                        <div>
+                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">EVENTOS ACTIVOS</span>
+                                            </div>
+                                    </div>
+                                    <div style="position:absolute; top:15px; right:20px;">
+                                        <span class="status-pulse" style="position:static; display:inline-block;"></span>
+                                        <span style="font-size:0.65rem; color:var(--success); font-weight:900; margin-left:5px;">LIVE</span>
+                                    </div>
+                                </div>
+
+                                <div style="width:100%; overflow-x:auto;">
+                                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:center;">
+                                        <thead>
+                                            <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.55rem; text-transform:uppercase; letter-spacing:1px;">
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">EVENTO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">TIPO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">HORA INICIO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">TRANSCURRIDO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">PERSONAL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${(() => {
+                                                const active = (window.activeSessions || []).filter(s => {
+                                                    if (s.status !== 'active') return false;
+                                                    const sType = (s.type || 'valet').toLowerCase();
+                                                    if (sType.includes('accesos') && !canSeeAccesos) return false;
+                                                    if (sType.includes('alquiler') && !canSeeAlquiler) return false;
+                                                    if (sType.includes('valet') && !canSeeValet) return false;
+                                                    if (isDirector) return true;
+                                                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                                                });
+                                                if (active.length > 0) {
+                                                    return active.map(s => `
+                                                        <tr onclick="selectSession(${s.id}, ${JSON.stringify(s.type || 'valet').replace(/"/g, '&quot;')})" style="border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                 <div style="font-weight:900; color:#fff; font-size:0.85rem; text-align:center; text-transform:uppercase;">${s.name}</div>
+                                                             </td>
+                                                             <td style="padding:12px 5px; color:var(--accent); font-weight:900; font-size:0.85rem; text-transform:uppercase; text-align:center; vertical-align:middle;">
+                                                                 ${s.type || 'VALET PARKING'}
+                                                             </td>
+                                                            <td style="padding:12px 5px; color:var(--muted); font-weight:900; font-size:0.85rem; text-align:center; vertical-align:middle;">
+                                                                ${formatTime24h(s.started_at)}
+                                                            </td>
+                                                            <td style="padding:12px 5px; color:var(--warning); font-weight:900; font-size:1.1rem; text-align:center; vertical-align:middle;">
+                                                                ${getElapsedTime(s.started_at)}
+                                                            </td>
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                <div class="staff-tooltip-trigger" style="display:inline-block;">
+                                                                    <div style="font-weight:900; color:var(--accent); font-size:1.1rem; display:flex; align-items:center; justify-content:center; gap:5px;">
+                                                                        👤 ${s.assigned_staff_count || 0}
+                                                                    </div>
+                                                                    <div class="staff-tooltip" style="text-align:left;">
+                                                                        <div style="font-weight:900; margin-bottom:10px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; font-size:0.7rem; letter-spacing:1px; text-align:center;">EQUIPO ASIGNADO</div>
+                                                                        ${s.assigned_staff_list && s.assigned_staff_list.length > 0 ? s.assigned_staff_list.map(u => `
+                                                                            <div class="tooltip-row">
+                                                                                <span style="color:#fff; font-weight:800;">${u.name.toUpperCase()}</span>
+                                                                            </div>
+                                                                        `).join('') : '<div style="color:var(--muted); font-style:italic; font-size:0.7rem; text-align:center;">SIN PERSONAL ASIGNADO</div>'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('');
+                                                }
+                                                return '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px; width:100%;">NO HAY EVENTOS ACTIVOS</td></tr>';
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.5 EVENTOS PROGRAMADOS -->
+                <div style="margin-bottom: 25px;">
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        <div class="menu-item" style="grid-column: span 3; border-top: 4px solid #64748b; background: rgba(100, 116, 139, 0.05); padding: 12px 20px; ${isAdmin && !window.isPlanningExpanded && hasScheduledEvents ? 'animation: blinkServiceAlert 1s infinite alternate;' : ''}">
+                            <div class="menu-item-content" style="width:100%">
+                                <div style="display:flex; justify-content:center; align-items:center; position:relative; ${window.isPlanningExpanded || window.isCalendarExpanded ? 'margin-bottom:12px;' : ''}">
+                                    <div style="display:flex; align-items:center; gap:10px; justify-content:center; width:100%;">
+                                        <div onclick="toggleCalendarSection(event)" style="cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:12px; padding:4px 8px; transition:0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'" title="Mostrar/Ocultar Calendario">
+                                            <i style="font-size:1.8rem; opacity:0.8;">📅</i>
+                                        </div>
+                                        <div>
+                                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">EVENTOS PROGRAMADOS</span>
+                                            </div>
+                                    </div>
+                                    <div onclick="togglePlanningSection(event)" style="position:absolute; right:0; display:flex; align-items:center; gap:15px; cursor:pointer; padding:8px; border-radius:12px; transition:0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                                        <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); display:grid; place-items:center; font-size:0.6rem; transition:0.3s; transform:${window.isPlanningExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}">▼</div>
+                                    </div>
+                                </div>
+
+                                ${window.isPlanningExpanded ? `
+                                <div style="width:100%; overflow-x:auto;">
+                                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:center;">
+                                        <thead>
+                                            <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px;">
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">EVENTO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">FECHA PROGRAMADA</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">TIPO DE EVENTO</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">PERSONAL</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">CLIENTE</th>
+                                                <th style="padding:10px 5px; text-align:center; vertical-align:middle;">CONTACTO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${(() => {
+                                                const planning = (window.activeSessions || []).filter(s => {
+                                                    if (s.status !== 'planning' && s.status !== 'pending') return false;
+                                                    const sType = (s.type || 'valet').toLowerCase();
+                                                    if (sType.includes('accesos') && !canSeeAccesos) return false;
+                                                    if (sType.includes('alquiler') && !canSeeAlquiler) return false;
+                                                    if (sType.includes('valet') && !canSeeValet) return false;
+                                                    if (isDirector) return true;
+                                                    return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                                                });
+                                                
+                                                // Inject approved budgets
+                                                if (window._globalBudgets) {
+                                                    const futureBudgets = window._globalBudgets.filter(b => {
+                                                        if (b.estatus !== 'APROBADO') return false;
+                                                        // Filter out if a session exists with this budget_id
+                                                        if ((window.allSessions || []).some(sess => sess.budget_id == b.id)) return false;
+                                                        const bDateStr = (b.fecha && b.fecha !== 'N/A') ? b.fecha : (b.form && b.form.fecha);
+                                                        if (!bDateStr) return false;
+                                                        const d = new Date(bDateStr);
+                                                        d.setHours(23,59,59,999);
+                                                        // Permitir presupuestos de hasta 48 horas en el pasado por si el evento inicia tarde en la noche o de madrugada
+                                                        return d.getTime() >= Date.now() - (2 * 24 * 60 * 60 * 1000);
+                                                    }).map(b => ({
+                                                        id: 'budget-' + b.id,
+                                                        name: b.evento || 'PRESUPUESTO APROBADO',
+                                                        started_at: (b.fecha && b.fecha !== 'N/A' ? b.fecha : (b.form && b.form.fecha)) + 'T' + (b.form && b.form.inicio ? b.form.inicio : '00:00') + ':00',
+                                                        event_start_time: (b.form && b.form.inicio) || '00:00',
+                                                        type: (b.form && b.form.tipoEvento) || 'SERVICIO',
+                                                        assigned_staff_count: 0,
+                                                        client: (b.form && b.form.atencion) || 'N/A',
+                                                        phone: (b.form && b.form.telefonos) || '-',
+                                                        is_budget: true,
+                                                        budget_id: b.id,
+                                                        budget_timestamp: b.timestamp
+                                                    }));
+                                                    planning.push(...futureBudgets);
+                                                }
+                                                
+                                                planning.sort((a, b) => {
+                                                     const getVal = (s) => {
+                                                         if (!s.started_at) return 0;
+                                                         const d = new Date(s.started_at);
+                                                         if (isNaN(d.getTime())) return 0;
+                                                         const time = s.event_start_time || '00:00';
+                                                         const [h, m] = time.split(':');
+                                                         d.setHours(parseInt(h) || 0, parseInt(m) || 0, 0, 0);
+                                                         return d.getTime();
+                                                     };
+                                                     return getVal(a) - getVal(b);
+                                                });
+                                                if (planning.length > 0) {
+                                                    return planning.map(s => {
+                                                        const hasStaff = s.assigned_staff_list && s.assigned_staff_list.length > 0;
+                                                        const clickAction = hasStaff ? (s.is_budget ? `cargarPresupuestoDesdeHistorial(${JSON.stringify(s.budget_id || '').replace(/"/g, '&quot;')}, ${s.budget_timestamp}); document.getElementById('current-view').style.display='none'; document.getElementById('presupuestos-view').style.display='block'; window.scrollTo(0,0);` : `renderScheduledEventDetail(${s.id})`) : '';
+                                                        const rowStyle = hasStaff ? "border-bottom:1px solid rgba(255,255,255,0.03); opacity:0.8; cursor:pointer; transition: background 0.2s;" : "border-bottom:1px solid rgba(255,255,255,0.03); filter:grayscale(100%); opacity:0.3; cursor:not-allowed;";
+                                                        const hoverEvents = hasStaff ? `onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"` : '';
+
+                                                        return `
+                                                        <tr ${clickAction ? `onclick="${clickAction}"` : ''} style="${rowStyle}" ${hoverEvents}>
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                <div style="font-weight:900; color:#fff; font-size:0.95rem; text-align:center;">${s.name}</div>
+                                                            </td>
+                                                            <td style="padding:12px 5px; color:var(--muted); font-weight:700; text-align:center; vertical-align:middle;">
+                                                                ${(() => {
+                                                                    try {
+                                                                        const d = new Date(s.started_at);
+                                                                        if (!s.started_at || isNaN(d.getTime())) return 'S/F';
+                                                                        return d.toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'});
+                                                                    } catch(e) {
+                                                                        return 'S/F';
+                                                                    }
+                                                                })()} - <span style="color:#fff; font-weight:900;">${s.event_start_time || formatTime24h(s.started_at)}</span>
+                                                            </td>
+                                                            <td style="padding:12px 5px; color:var(--accent2); font-weight:800; font-size:0.7rem; text-transform:uppercase; text-align:center; vertical-align:middle;">
+                                                                ${s.type || 'SERVICIO'}
+                                                            </td>
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                <div style="font-weight:900; color:var(--accent); font-size:0.95rem; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
+                                                                    👤 ${s.assigned_staff_count || 0}
+                                                                </div>
+                                                            </td>
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                <div style="font-weight:700; color:#fff; font-size:0.85rem; text-align:center;">${s.contact_name || s.client || 'N/A'}</div>
+                                                            </td>
+                                                            <td style="padding:12px 5px; text-align:center; vertical-align:middle;">
+                                                                <div style="font-size:0.65rem; color:var(--muted); font-weight:700; text-align:center;">${s.phone || '-'}</div>
+                                                            </td>
+                                                        </tr>
+                                                    `;
+                                                    }).join('');
+                                                }
+                                                return '<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--muted); font-weight:800; letter-spacing:2px;">NO HAY EVENTOS PROGRAMADOS</td></tr>';
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ` : ''}
+
+                                ${window.isCalendarExpanded ? `
+                                <div style="grid-column: span 3; margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:20px;">
+                                    ${generateMonthlyCalendarHTML()}
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+                
+                <!-- 2. SERVICIOS -->
+                <div style="margin-bottom: 25px; ${canSeeEvents ? '' : 'display:none;'}">
+                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">SERVICIOS</h2>
+                    <style>
+                        @keyframes blinkServiceAlert {
+                            0% { transform: scale(1); box-shadow: 0 0 0px transparent; border-color: rgba(255, 255, 255, 0.05); }
+                            100% { transform: scale(1.02); box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); border-color: #ef4444; }
+                        }
+                    </style>
+                    <!-- Servicios Activos -->
+                    <div class="menu-grid" style="margin-top:0; gap:12px;">
+                        ${canSeeValet ? `
+                        <!-- VALET PARKING (ACTIVO) -->
+                        <div class="menu-item" onclick="enterModule('valet')" style="border-top: 3px solid var(--brand-red); background: rgba(239, 68, 68, 0.05); padding:12px 15px; ${blinkValet}">
+                            <i style="font-size:1.5rem">🚗</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">VALET PARKING</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeAccesos ? `
+                        <!-- EVENTOS LOGÍSTICOS -->
+                        <div class="menu-item" onclick="enterModule('accesos')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px; ${blinkAccesos}">
+                            <i style="font-size:1.5rem">🆔</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">EVENTOS LOGÍSTICOS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeAlquiler ? `
+                        <!-- ALQUILER DE EQUIPOS -->
+                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px; ${blinkAlquiler}">
+                            <i style="font-size:1.5rem">🏗️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeTraslados ? `
+                        <!-- TRASLADOS -->
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px; ${blinkTraslados}">
+                            <i style="font-size:1.5rem">🚐</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeGuardia ? `
+                        <!-- GUARDIA DIURNA/NOCTURNA -->
+                        <div class="menu-item" onclick="enterModule('guardia')" style="border-top: 3px solid #6366f1; background: rgba(99, 102, 241, 0.05); padding:12px 15px; ${blinkGuardia}">
+                            <i style="font-size:1.5rem">🌙</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">GUARDIA DIURNA/NOCTURNA</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${canSeeCustodia ? `
+                        <!-- CUSTODIA -->
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px; ${blinkCustodia}">
+                            <i style="font-size:1.5rem">🛡️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div id="portal-operations-section">
+                <!-- 3. OPERACIONES -->
+                <div>
+                    <h2 style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 2px;">OPERACIONES</h2>
+                    <div class="menu-grid operations-grid-custom" style="margin-top:0; gap:12px;">
+                        ${isDirector ? `
+                        <style>
+                            @keyframes blinkPortalListas {
+                                0% { background-color: #000; transform: scale(1); }
+                                100% { background-color: #ef4444; transform: scale(1.02); box-shadow: 0 0 15px rgba(239,68,68,0.5); }
+                            }
+                        </style>
+                        <div class="menu-item ${hasPendingListasAlert ? '' : 'admin-card-bg'}" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; padding:12px 15px; ${hasPendingListasAlert ? 'animation: blinkPortalListas 1s infinite alternate;' : ''}">
+                            <i style="font-size:1.5rem">📋</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">LISTAS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${!(user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN') ? `
+                        <div class="menu-item admin-card-bg" onclick="enterModule('formatos')" style="border-top: 3px solid #10b981; padding:12px 15px;">
+                            <i style="font-size:1.5rem">📄</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">FORMATOS</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${isDirector ? `
+                        <!-- ADMINISTRACIÓN (RRHH) -->
+                        <div class="menu-item admin-card-bg" onclick="enterModule('hr')" style="border-top: 3px solid #6366f1; padding:12px 15px;">
+                            <i style="font-size:1.5rem">⚙️</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">ADMINISTRACIÓN</span>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        ${canSeeVip ? `
+                        <!-- DIRECCIÓN EYE STAFF -->
+                        <div class="menu-item admin-card-bg" onclick="enterModule('vip_eye_staff')" style="border-top: 3px solid #eab308; padding:12px 15px;">
+                            <i style="font-size:1.5rem">🚀</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title" style="font-size:0.9rem;">DIRECCIÓN EYE STAFF</span>
+                            </div>
+                        </div>
+                        ` : ''}
+
+
+
+                    </div>
+                </div>
+                </div>
+                
+                <div class="footer-info" style="margin-top: 30px;"></div>
+            </div>
+        `;
+        updateClock();
+    }
+
+    // --- SCREEN SAVER LOGIC ---
+    let idleTime = 0;
+    let currentPattern = [];
+    let isDrawing = false;
+    const SAVED_PATTERN = "012"; // Default pattern, could be fetched from API
+
+    function initScreenSaver() {
+        document.onmousemove = document.onkeypress = document.ontouchstart = () => idleTime = 0;
+        setInterval(() => {
+            idleTime++;
+            if (idleTime >= 300) { // 5 minutes inactivity
+                document.getElementById('screensaver').style.display = 'flex';
+            }
+        }, 1000);
+    }
+
+    function hideScreenSaver() {
+        document.getElementById('screensaver').style.display = 'none';
+        idleTime = 0;
+    }
+
+    // --- SESSION TIMEOUT MONITOR ---
+    function initSessionTimeoutMonitor() {
+        const MAX_SESSION_MS = 6 * 60 * 60 * 1000; // 6 hours
+        const WARNING_MS = MAX_SESSION_MS - (5 * 60 * 1000); // 5 mins before 6 hours = 5h 55m
+
+        setInterval(() => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            let sessionStart = localStorage.getItem('session_start_time');
+            if (!sessionStart) {
+                sessionStart = Date.now();
+                localStorage.setItem('session_start_time', sessionStart);
+            }
+
+            const elapsed = Date.now() - parseInt(sessionStart);
+
+            if (elapsed >= MAX_SESSION_MS) {
+                const modal = document.getElementById('session-warning-modal');
+                if (modal) modal.remove();
+                alert('⏳ SESIÓN EXPIRADA. Por seguridad, ha excedido el límite de 6 horas de conexión continua.');
+                logout();
+            } else if (elapsed >= WARNING_MS && !document.getElementById('session-warning-modal')) {
+                showSessionWarningModal();
+            }
+        }, 60000); // check every minute
+    }
+
+    function showSessionWarningModal() {
+        const overlay = document.createElement('div');
+        overlay.id = 'session-warning-modal';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:999999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);';
+        
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface);border:1px solid var(--accent);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;box-shadow:0 0 40px rgba(99,102,241,0.4);';
+        
+        card.innerHTML = `
+            <div style="font-size:3rem; margin-bottom:10px;">⏳</div>
+            <h2 style="color:white; margin-bottom:15px; font-weight:900;">SESIÓN POR EXPIRAR</h2>
+            <p style="color:var(--muted); font-size:0.9rem; margin-bottom:25px; line-height:1.5;">
+                Por políticas de seguridad, las sesiones se cierran automáticamente tras 6 horas de conexión.<br><br>
+                Su sesión expirará en <b>5 minutos</b>. ¿Desea extenderla por 6 horas más?
+            </p>
+            <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+                <button id="btn-extend-session" class="btn" style="flex:1; background:var(--success); color:black; font-weight:900; padding:15px; border-radius:12px; border:none; cursor:pointer; min-width:140px;">EXTENDER SESIÓN</button>
+                <button id="btn-close-session" class="btn" style="flex:1; background:transparent; border:1px solid var(--danger); color:var(--danger); font-weight:900; padding:15px; border-radius:12px; cursor:pointer; min-width:140px;">CERRAR AHORA</button>
+            </div>
+        `;
+
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+
+        document.getElementById('btn-extend-session').onclick = () => {
+            localStorage.setItem('session_start_time', Date.now());
+            overlay.remove();
+            toast('✅ SESIÓN EXTENDIDA POR 6 HORAS', 'success');
+        };
+
+        document.getElementById('btn-close-session').onclick = () => {
+            logout();
+        };
+    }
+
+
+
+
+    window.finalizeEvent = async function(skipConfirm = false) {
+        if (!window.activeSession) return;
+
+        if (!skipConfirm) {
+            const confirmMsg = `¿ESTÁ COMPLETAMENTE SEGURO DE QUE DESEA FINALIZAR EL EVENTO "${window.activeSession.name.toUpperCase()}"?\\n\\nESTA ACCIÓN ES IRREVERSIBLE, SE ENVIARÁN LOS REPORTES Y NO SE PODRÁ REALIZAR MÁS REGISTROS EN ESTA JORNADA.`;
+            if (!confirm(confirmMsg)) return;
+        }
+
+        showLoading('FINALIZANDO EVENTO Y ENVIANDO REPORTES...');
+        try {
+            const res = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id: window.activeSession.id })
+            });
+            if (!res) return; // apiFetch ya maneja el toast del error
+
+            if (res.success) {
+                toast('🚀 EVENTO FINALIZADO Y REPORTES ENVIADOS', 'success');
+                await checkActiveSession();
+                if (res.report) {
+                    renderEventCloseReport(document.getElementById('current-view'), res.report);
+                } else {
+                    exitToPortal();
+                }
+            }
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    function renderEventCloseReport(el, report) {
+        if (!el || !report) return;
+        const s = report.summaryData || {};
+        const vehicles = report.vehicles || [];
+        let staff = report.staffWithAttendance || [];
+        window.scrollTo(0, 0);
+
+        const isLogistico = (s.event_type || '').toUpperCase() === 'EVENTO LOGISTICO';
+        
+        const formatHHMM = (mins) => {
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        };
+
+        if (isLogistico) {
+            staff = [...staff].map(st => {
+                const r = (st.role || '').toUpperCase();
+                const newRole = (r.includes('SUPERVISOR') || r.includes('DIRECTOR')) ? 'SUPERVISOR' : 'LOGÍSTICA';
+                return { ...st, role: newRole };
+            }).sort((a, b) => {
+                if (a.role === 'SUPERVISOR' && b.role !== 'SUPERVISOR') return -1;
+                if (b.role === 'SUPERVISOR' && a.role !== 'SUPERVISOR') return 1;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+        }
+
+        const datosEventoLogistico = [
+            ['Evento', s.session_name||'—'],
+            ['Tipo', (s.event_type||'valet').toUpperCase()],
+            ['Ubicación', s.location||'N/A'],
+            ['Contacto', s.contact||'N/A'],
+            ['Empresa', s.client||'N/A'],
+            ['Inicio', s.started_at ? new Date(s.started_at).toLocaleString() : '—'],
+            ['Fin', s.ended_at ? new Date(s.ended_at).toLocaleString() : '—']
+        ];
+        const datosEventoValet = [
+            ['Evento', s.session_name||'—'],
+            ['Tipo', (s.event_type||'valet').toUpperCase()],
+            ['Ubicación', s.location||'N/A'],
+            ['Contacto', s.contact||'N/A'],
+            ['Inicio', s.started_at ? new Date(s.started_at).toLocaleString() : '—'],
+            ['Fin', s.ended_at ? new Date(s.ended_at).toLocaleString() : '—'],
+            ['Estancia promedio', `${s.avg_stay_mins||0} min`]
+        ];
+
+        el.innerHTML = `
+        <div style="width:90%; margin:0 auto; padding-top:10px; padding-bottom:10vh;">
+            <div style="background:linear-gradient(135deg,#0b0f19,#161b2c); border:1px solid rgba(239,68,68,0.3); border-radius:16px; padding:24px; margin-bottom:20px; text-align:center;">
+                <div style="font-size:2.5rem; margin-bottom:8px;">🏁</div>
+                <h1 style="margin:0; color:var(--brand-red); font-size:1.4rem; font-weight:900; letter-spacing:1px;">REPORTE DE CIERRE</h1>
+                <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">${(s.session_name||'EVENTO').toUpperCase()}</div>
+            </div>
+
+            ${isLogistico ? '' : `
+            <!-- KPIs rápidos -->
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;">
+                <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--success); border-radius:12px; padding:16px; text-align:center;">
+                    <div style="font-size:2rem; font-weight:900; color:var(--success);">${s.total_vehicles||0}</div>
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:700; margin-top:4px;">VEHÍCULOS</div>
+                </div>
+                <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--warning); border-radius:12px; padding:16px; text-align:center;">
+                    <div style="font-size:2rem; font-weight:900; color:var(--warning);">${s.total_delivered||0}</div>
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:700; margin-top:4px;">ENTREGADOS</div>
+                </div>
+                <div style="background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:12px; padding:16px; text-align:center;">
+                    <div style="font-size:2rem; font-weight:900; color:var(--accent);">${s.duration_mins||0}</div>
+                    <div style="font-size:0.6rem; color:var(--muted); font-weight:700; margin-top:4px;">MINUTOS</div>
+                </div>
+            </div>
+            `}
+
+            <!-- Detalle del evento -->
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
+                <div style="font-size:0.65rem; color:var(--accent2); font-weight:900; letter-spacing:2px; margin-bottom:12px;">📋 DATOS DEL EVENTO</div>
+                ${(isLogistico ? datosEventoLogistico : datosEventoValet).map(([l,v]) => `
+                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <span style="font-size:0.75rem; color:var(--muted);">${l}</span>
+                    <span style="font-size:0.75rem; font-weight:700;">${v}</span>
+                </div>`).join('')}
+            </div>
+
+            ${isLogistico ? '' : `
+            <!-- Tabla de vehículos -->
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; overflow-x:auto;">
+                <div style="font-size:0.65rem; color:var(--success); font-weight:900; letter-spacing:2px; margin-bottom:12px;">🚗 VEHÍCULOS (${vehicles.length})</div>
+                <table style="width:100%; border-collapse:collapse; font-size:0.7rem;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.55rem; text-transform:uppercase;">
+                            <th style="padding:6px 4px; text-align:left;">#</th>
+                            <th style="padding:6px 4px; text-align:left;">PLACA</th>
+                            <th style="padding:6px 4px; text-align:left;">PROPIETARIO</th>
+                            <th style="padding:6px 4px; text-align:left;">MARCA</th>
+                            <th style="padding:6px 4px;">ENTRADA</th>
+                            <th style="padding:6px 4px;">SALIDA</th>
+                            <th style="padding:6px 4px;">ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${vehicles.map((v, i) => {
+                            const tIn = v.created_at ? new Date(v.created_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) : '—';
+                            const tOut = v.check_out_at ? new Date(v.check_out_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) : '—';
+                            const delivered = ['delivered','retrieved'].includes(v.status);
+                            return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                <td style="padding:6px 4px; color:var(--muted);">${i+1}</td>
+                                <td style="padding:6px 4px; font-weight:900; color:var(--brand-white);">${v.plate||'—'}</td>
+                                <td style="padding:6px 4px;">${(v.owner_name||'—').toUpperCase().substring(0,16)}</td>
+                                <td style="padding:6px 4px; color:var(--muted);">${v.brand||'—'}</td>
+                                <td style="padding:6px 4px; text-align:center;">${tIn}</td>
+                                <td style="padding:6px 4px; text-align:center;">${tOut}</td>
+                                <td style="padding:6px 4px; text-align:center;"><span style="font-size:0.55rem; font-weight:900; padding:2px 6px; border-radius:10px; background:${delivered?'rgba(34,197,94,0.1)':'rgba(245,158,11,0.1)'}; color:${delivered?'var(--success)':'var(--warning)'};">${delivered?'ENTREGADO':'CUSTODIA'}</span></td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+            `}
+
+            <!-- Tabla de personal -->
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; overflow-x:auto;">
+                <div style="font-size:0.65rem; color:var(--accent); font-weight:900; letter-spacing:2px; margin-bottom:12px;">👥 PERSONAL (${staff.length})</div>
+                <table style="width:100%; border-collapse:collapse; font-size:0.7rem;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.55rem; text-transform:uppercase;">
+                            <th style="padding:6px 4px; text-align:left;">NOMBRE</th>
+                            <th style="padding:6px 4px; text-align:left;">ROL</th>
+                            <th style="padding:6px 4px;">ENTRADA</th>
+                            <th style="padding:6px 4px;">SALIDA</th>
+                            <th style="padding:6px 4px;">DESC.</th>
+                            <th style="padding:6px 4px;">JORNADA</th>
+                            ${isLogistico ? '' : '<th style="padding:6px 4px;">VEH.</th>'}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${staff.map(m => `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                            <td style="padding:6px 4px; font-weight:700;">${(m.name||'').toUpperCase()}</td>
+                            <td style="padding:6px 4px; color:var(--muted); font-size:0.6rem;">${(m.role||'').toUpperCase()}</td>
+                            <td style="padding:6px 4px; text-align:center;">${m.entry_time||'—'}</td>
+                            <td style="padding:6px 4px; text-align:center;">${m.exit_time||'—'}</td>
+                            <td style="padding:6px 4px; text-align:center;">${isLogistico ? formatHHMM(m.break_mins||0) : ((m.break_mins||0)+'m')}</td>
+                            <td style="padding:6px 4px; text-align:center; color:var(--success); font-weight:700;">${isLogistico ? formatHHMM(m.total_mins||0) : ((m.total_mins||0)+'m')}</td>
+                            ${isLogistico ? '' : `<td style="padding:6px 4px; text-align:center; font-weight:700;">${m.vehicles_attended||0}</td>`}
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen ejecutivo -->
+            <div style="background:linear-gradient(135deg,rgba(239,68,68,0.05),rgba(239,68,68,0.02)); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:20px; margin-bottom:24px;">
+                <div style="font-size:0.65rem; color:var(--brand-red); font-weight:900; letter-spacing:2px; margin-bottom:12px;">📊 RESUMEN EJECUTIVO</div>
+                ${isLogistico ? `
+                <p style="font-size:0.8rem; line-height:1.7; color:rgba(255,255,255,0.85); margin:0;">
+                    El equipo estuvo integrado por <strong>${staff.length}</strong> persona(s).<br>
+                    Duración total del evento: <strong style="color:var(--brand-red);">${formatHHMM(s.duration_mins||0)} hrs</strong>.
+                    <br><br>
+                    📧 El reporte completo ha sido enviado por correo electrónico e incluye un <strong>PDF</strong> oficial con formato EYE STAFF.
+                    Los archivos también han sido guardados en la <strong>BBDD DE EVENTOS</strong> para consulta posterior.
+                </p>
+                ` : `
+                <p style="font-size:0.8rem; line-height:1.7; color:rgba(255,255,255,0.85); margin:0;">
+                    Se recibieron <strong style="color:var(--success);">${s.total_vehicles||0}</strong> vehículos, 
+                    de los cuales <strong style="color:var(--success);">${s.total_delivered||0}</strong> fueron entregados 
+                    y <strong style="color:var(--warning);">${s.total_in_custody||0}</strong> permanecieron en custodia al cierre. 
+                    El tiempo promedio de estancia fue de <strong style="color:var(--accent);">${s.avg_stay_mins||0} minutos</strong>. 
+                    El equipo estuvo integrado por <strong>${s.total_staff||0}</strong> persona(s). 
+                    Duración total del evento: <strong style="color:var(--brand-red);">${s.duration_mins||0} minutos</strong>.
+                    <br><br>
+                    📧 El reporte completo ha sido enviado por correo electrónico e incluye un archivo <strong>Excel (.xlsx)</strong> con 3 hojas de análisis y un <strong>PDF</strong> oficial con formato EYE STAFF.
+                    Los archivos también han sido guardados en la <strong>BBDD DE EVENTOS</strong> para consulta posterior.
+                </p>
+                `}
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+            </div>
+        </div>`;
+    }
+
+    async function checkActiveSession() {
+        const res = await apiFetch('/api/sessions/active');
+        const activeSessions = (res && res.sessions) ? res.sessions : [];
+        
+        const resC = await apiFetch('/api/sessions/concluded');
+        const concludedSessions = (resC && resC.sessions) ? resC.sessions : [];
+        
+        const resB = await apiFetch('/api/presupuestos');
+        if (resB && resB.budgets) {
+            window._globalBudgets = resB.budgets.map(d => ({
+                ...d,
+                form: typeof d.form_data === 'string' ? JSON.parse(d.form_data) : d.form_data,
+                items: typeof d.items_data === 'string' ? JSON.parse(d.items_data) : d.items_data
+            }));
+        }
+        
+        window.allSessions = [...activeSessions, ...concludedSessions];
+        
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = isUserAdminOrStaff(user);
+
+        const isAdmin = isDirector || (user && (
+            false
+        ));
+
+        // Filtrar sesiones activas si no es administrador
+        let filteredActiveSessions = activeSessions;
+        if (!isAdmin) {
+            filteredActiveSessions = activeSessions.filter(s => {
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+            });
+        }
+        
+        window.activeSessions = filteredActiveSessions;
+        
+        // Intentar recuperar sesión seleccionada previamente
+        const savedId = localStorage.getItem('selectedSessionId');
+        let session = filteredActiveSessions.find(s => s.id == savedId);
+        
+        // Si no hay guardada o no es válida, tomar la primera activa (prioridad 'active') si existe
+        if (!session && savedId !== 'none') {
+            session = filteredActiveSessions.find(s => s.status === 'active') || filteredActiveSessions[0];
+            if (session) localStorage.setItem('selectedSessionId', session.id);
+        }
+
+        window.activeSession = session;
+        const container = document.getElementById('active-session-container');
+        const selector = document.getElementById('active-session-selector');
+        
+        if (session) {
+            if (container && selector) {
+                selector.innerHTML = activeSessions.map(s => `
+                    <option value="${s.id}" ${s.id == session.id ? 'selected' : ''}>${s.name.toUpperCase()}</option>
+                `).join('');
+                container.style.display = 'flex';
+            }
+            
+            // Cargar conteo de vehículos activos para la sesión seleccionada
+            const vRes = await apiFetch('/api/vehicles/active?session_id=' + session.id);
+            window.activeVehiclesCount = vRes ? (vRes.vehicles || []).length : 0;
+        } else {
+            window.activeVehiclesCount = 0;
+            if (container) container.style.display = 'none';
+        }
+
+        // Actualizar habilitación de botones de menú si existen
+        if (document.getElementById('menu-checkin')) {
+            const isSessionActive = window.activeSession && window.activeSession.status === 'active';
+            if (isSessionActive) {
+                document.getElementById('menu-checkin').classList.remove('disabled');
+                document.getElementById('menu-checkin').style.opacity = '1';
+                document.getElementById('menu-checkin').style.cursor = 'pointer';
+                document.getElementById('menu-checkin').style.filter = 'none';
+                document.getElementById('menu-checkin').style.pointerEvents = 'auto';
+                
+                document.getElementById('menu-eventos').classList.remove('disabled');
+                document.getElementById('menu-eventos').style.opacity = '1';
+                document.getElementById('menu-eventos').style.cursor = 'pointer';
+                document.getElementById('menu-eventos').style.filter = 'none';
+                document.getElementById('menu-eventos').style.pointerEvents = 'auto';
+
+                if (document.getElementById('menu-resumen')) {
+                    document.getElementById('menu-resumen').classList.remove('disabled');
+                    document.getElementById('menu-resumen').style.opacity = '1';
+                    document.getElementById('menu-resumen').style.cursor = 'pointer';
+                    document.getElementById('menu-resumen').style.filter = 'none';
+                    document.getElementById('menu-resumen').style.pointerEvents = 'auto';
+                }
+            } else {
+                document.getElementById('menu-checkin').classList.add('disabled');
+                document.getElementById('menu-checkin').style.opacity = '0.4';
+                document.getElementById('menu-checkin').style.cursor = 'not-allowed';
+                document.getElementById('menu-checkin').style.filter = 'grayscale(1)';
+                document.getElementById('menu-checkin').style.pointerEvents = 'auto';
+                
+                document.getElementById('menu-eventos').classList.add('disabled');
+                document.getElementById('menu-eventos').style.opacity = '0.4';
+                document.getElementById('menu-eventos').style.cursor = 'not-allowed';
+                document.getElementById('menu-eventos').style.filter = 'grayscale(1)';
+                document.getElementById('menu-eventos').style.pointerEvents = 'auto';
+
+                if (document.getElementById('menu-resumen')) {
+                    document.getElementById('menu-resumen').classList.add('disabled');
+                    document.getElementById('menu-resumen').style.opacity = '0.4';
+                    document.getElementById('menu-resumen').style.cursor = 'not-allowed';
+                    document.getElementById('menu-resumen').style.filter = 'grayscale(1)';
+                    document.getElementById('menu-resumen').style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        // La redirección forzada a Valet si no hay sesiones ha sido eliminada a petición
+        // para que el empleado se mantenga en la vista "Portal/Home".
+
+
+        // Si estamos en el portal, refrescar para mostrar estado actual
+        if (document.getElementById('portal-view')) {
+            renderPortal(document.getElementById('current-view'));
+        }
+    }
+
+    // NAVIGATION
+    async function showTab(tab) {
+        window.currentValetTab = tab;
+        setTimeout(() => window.scrollTo(0, 0), 0);
+        const view = document.getElementById('current-view');
+        const btn = document.getElementById('btn-back-portal');
+        
+        if (tab === 'home' || tab === 'valet-menu') {
+            renderHome(view);
+            btn.innerHTML = '🏠';
+            btn.onclick = exitToPortal;
+            return;
+        }
+
+        // Si entramos a una sub-vista, el botón de arriba debe volver al menú del módulo o al home
+        if (tab === 'admin') {
+            btn.innerHTML = '🏠 HOME';
+            btn.onclick = exitToPortal;
+        } else {
+            btn.innerHTML = '🏠 MENÚ';
+            btn.onclick = () => showTab('home');
+        }
+
+        // Bloqueo de seguridad: No permitir operar si no hay evento activo
+        const operationalTabs = ['checkin', 'eventos', 'resumen'];
+        if (operationalTabs.includes(tab) && !window.activeSession) {
+            toast('⚠️ DEBE INICIAR UN EVENTO EN ADMIN PARA OPERAR', 'warning');
+            return;
+        }
+
+        // Renderizar la vista correspondiente
+        switch(tab) {
+            case 'checkin': renderCheckin(view); break;
+            case 'eventos': renderEvents(view); break;
+            case 'checkout': renderCheckout(view); break;
+            case 'resumen': renderResumen(view); break;
+            case 'admin': renderAdmin(view); break;
+            case 'staff': renderStaff(view); break;
+        }
+    }
+
+    function renderHome(el) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = isUserAdminOrStaff(user);
+
+        const isAdmin = isDirector || (user && (
+            false
+        ));
+
+        // Filtrar sesiones por tipo Valet, activas o en planificación
+        let filteredSessions = (window.allSessions || []).filter(s => {
+            const isValet = !s.type || s.type.toLowerCase().includes('valet');
+            if (!isValet) return false;
+            if (s.status !== 'active' && s.status !== 'planning') return false;
+            
+            const isStrictAdmin = user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+
+        if (filteredSessions.length === 0) {
+            document.getElementById('btn-back-portal').style.display = 'none';
+            el.innerHTML = `
+                <div id="home-view" style="padding-top:20px;">
+                    <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
+                        <h1 class="view-title">MENÚ VALET PARKING</h1>
+                    </div>
+                    
+                    <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(239, 68, 68, 0.05); border:1px solid var(--danger); padding:35px; border-radius:24px;">
+                        <i style="font-size:3rem; display:block; margin-bottom:15px;">🚗</i>
+                        <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN EVENTO ASIGNADO</h2>
+                        <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
+                            No tiene ningún evento asignado actualmente.
+                        </p>
+                    </div>
+
+                    <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
+                        <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                            ⬅ VOLVER
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        // Si la sesión activa seleccionada no pertenece a las sesiones del empleado
+        if (window.activeSession && !filteredSessions.some(s => s.id == window.activeSession.id)) {
+            window.activeSession = filteredSessions[0];
+            localStorage.setItem('selectedSessionId', window.activeSession.id);
+        }
+
+        document.getElementById('btn-back-portal').style.display = 'flex';
+
+        el.innerHTML = `
+            <div id="home-view">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:10px;">
+                    <h1 class="view-title">MENÚ VALET PARKING</h1>
+                </div>
+
+                <!-- SELECCIÓN DE EVENTO (COMBOBOX) -->
+                <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">EVENTO SELECCIONADO</label>
+                        <select onchange="(async () => { window.currentSessionId = parseInt(this.value); localStorage.setItem('selectedSessionId', this.value); await checkActiveSession(); if(document.getElementById('home-view')) renderHome(document.getElementById('current-view')); })()" 
+                            style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
+                            ${(filteredSessions || []).filter(s => !s.type || s.type.toLowerCase().includes('valet')).map(s => 
+                                `<option value="${s.id}" ${window.activeSession && window.activeSession.id == s.id ? 'selected' : ''} style="color:${s.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
+                                    ${s.name.toUpperCase()} (${s.status === 'active' ? 'ACTIVO' : 'PLANIFICADO'})
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- INFO DEL EVENTO SELECCIONADO -->
+                ${(() => {
+                    const session = window.activeSession;
+                    if (!session) return '';
+                    
+                    if (session.status === 'active') {
+                        return `
+                            <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px; text-align:center; border-radius:18px;">
+                                <div style="display:flex; justify-content:center; align-items:center; gap:5px;">
+                                    <span style="font-size:0.6rem; color:var(--muted); font-weight:800;">VEHÍCULOS EN CUSTODIA:</span>
+                                    <span style="font-size:0.9rem; font-weight:900; color:var(--success);">${window.activeVehiclesCount || 0}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (session.status === 'planning') {
+                        let yyyy, mm, dd;
+                        const rawDate = session.started_at || session.created_at;
+                        if (typeof rawDate === 'string' && rawDate.length >= 10 && rawDate.includes('-')) {
+                            const parts = rawDate.substring(0, 10).split('-');
+                            yyyy = parts[0]; mm = parts[1]; dd = parts[2];
+                        } else {
+                            const d = new Date(rawDate);
+                            yyyy = d.getFullYear(); mm = String(d.getMonth() + 1).padStart(2, '0'); dd = String(d.getDate()).padStart(2, '0');
+                        }
+                        const [hh, mm_time] = (session.event_start_time || '00:00').split(':');
+                        const schedDate = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${hh.padStart(2, '0')}:${mm_time.padStart(2, '0')}:00-04:00`);
+
+                        const diffMs = schedDate.getTime() - Date.now();
+                        const diffHoursTotal = diffMs / (1000 * 60 * 60);
+
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === session.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            false ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+
+                        let endDetailsHtml = '';
+                        if (session.event_end_date && session.event_end_time) {
+                            const [eyy, emm, edd] = session.event_end_date.split('-');
+                            const endSchedDate = new Date(parseInt(eyy), parseInt(emm) - 1, parseInt(edd));
+                            const [ehh, emi] = session.event_end_time.split(':');
+                            endSchedDate.setHours(parseInt(ehh) || 0, parseInt(emi) || 0, 0, 0);
+                            endDetailsHtml = `
+                                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:10px; margin-bottom:5px;">FINALIZA EL DÍA:</div>
+                                <div style="font-size:0.95rem; font-weight:900; color:var(--danger);">${formatDateExplicit(endSchedDate)} A LAS ${session.event_end_time}</div>
+                            `;
+                        }
+
+                        const detailsHtml = `
+                            <div class="stat-card" style="margin: 20px auto; max-width: 500px; text-align:center; background:rgba(245, 158, 11, 0.05); border:1px solid var(--warning); padding:25px; border-radius:24px;">
+                                <i style="font-size:2.5rem; display:block; margin-bottom:15px;">🕒</i>
+                                <h2 style="color:var(--warning); margin:0 0 5px 0; font-size:1.2rem; font-weight:900;">EVENTO PLANIFICADO</h2>
+                                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px; font-weight:700;">EL EVENTO ESTÁ EN LISTA PERO AÚN NO HA INICIADO OPERATIVAMENTE.</p>
+                                <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
+                                    <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                                    ${endDetailsHtml}
+                                    <div id="countdown-timer-${session.id}" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
+                                        FALTAN ${Math.floor(diffHoursTotal)}H ${Math.floor((diffMs % 3600000) / 60000)}M
+                                    </div>
+                                    ${session.address ? `
+                                        <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">DIRECCIÓN DEL EVENTO:</div>
+                                            <div style="font-size:0.85rem; font-weight:900; color:#fff; margin-bottom:12px; text-transform:uppercase; line-height:1.4;">${session.address}</div>
+                                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:0.65rem; font-weight:900; color:#fff; text-decoration:none; transition:0.2s; cursor:pointer;">
+                                                📍 VER EN GOOGLE MAPS
+                                            </a>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                        `;
+
+                        let actionHtml = '';
+                        if (diffHoursTotal <= 3) {
+                            if (isAuthorizedSupervisor) {
+                                actionHtml = `
+                                    <div style="margin-top:20px;">
+                                        <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
+                                    </div>
+                                `;
+                            } else {
+                                actionHtml = `
+                                    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                        <div style="font-size:0.8rem; font-weight:900; color:var(--warning); margin-bottom:5px;">🕒 ESPERANDO INICIO DE OPERACIÓN</div>
+                                        <div style="font-size:0.6rem; color:var(--muted); font-weight:700;">EL SUPERVISOR O ADMINISTRADOR DEBE INICIAR EL EVENTO PARA PODER EMPEZAR.</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                        
+                        return detailsHtml + actionHtml + '</div>';
+                    }
+                    return '';
+                })()}
+
+
+
+                ${(() => {
+                    const isSessionActive = window.activeSession && window.activeSession.status === 'active';
+                    if (!isSessionActive) return '';
+                    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    const isAuthorizedSupervisor = window.activeSession && (
+                        currentUser.id === window.activeSession.supervisor_id || 
+                        currentUser.role === 'director' ||
+                        false ||
+                        window.isUserAdminOrStaff(currentUser)
+                    );
+                    const disabledClass = !isSessionActive ? 'disabled' : '';
+                    const disabledStyle = !isSessionActive ? 'opacity:0.4; cursor:not-allowed; filter:grayscale(1); pointer-events:auto !important;' : '';
+                    const clickToast = isSessionActive ? '' : (
+                        isAuthorizedSupervisor 
+                            ? "toast('⚠️ ACTIVE EL EVENTO PARA OPERAR', 'warning')" 
+                            : "toast('⚠️ ESPERANDO QUE EL SUPERVISOR INICIE LA OPERACIÓN', 'warning')"
+                    );
+
+                    return `
+                    <div class="menu-grid" style="max-width: 1000px; margin: 20px auto;">
+                        <div id="menu-checkin" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('checkin')" : clickToast}" style="${disabledStyle}">
+                            <i>🚗</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">RECEPCIÓN</span>
+                                <span class="menu-item-desc">INGRESAR VEHÍCULO</span>
+                            </div>
+                        </div>
+                        
+                        <div id="menu-eventos" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('eventos')" : clickToast}" style="${disabledStyle}">
+                            <i>📊</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">CUSTODIA <span id="custody-count-inline" style="color:var(--success); margin-left:5px; font-weight:900;"></span></span>
+                                <span class="menu-item-desc">VEHÍCULOS EN RECINTO</span>
+                            </div>
+                        </div>
+
+                        <div id="menu-resumen" class="menu-item ${disabledClass}" onclick="${isSessionActive ? "showTab('resumen')" : clickToast}" style="${disabledStyle}">
+                            <i>📋</i>
+                            <div class="menu-item-content">
+                                <span class="menu-item-title">RESUMEN</span>
+                                <span class="menu-item-desc">REPORTES Y ESTADÍSTICAS</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    `;
+                })()}
+
+                        <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                ${(window.activeSession && window.activeSession.status === 'active' && (() => {
+                    const cu = JSON.parse(localStorage.getItem('user') || '{}');
+                    return (cu.id === window.activeSession.supervisor_id || cu.role === 'director' || false || window.isUserAdminOrStaff(cu));
+                })()) ? `
+                <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = true;
+                        
+                        const filteredStaffList = isAuthorizedSupervisor 
+                            ? (window.activeSession.assigned_staff_list || [])
+                            : (window.activeSession.assigned_staff_list || []).filter(u => u.id === currentUser.id);
+                            
+                        const isEventActive = window.activeSession.status === 'active';
+
+                        return `
+                            ${(window.activeSession.type === 'guardia diurna/nocturna' && window.activeSession.guardia_details) ? `
+                                <div style="margin-bottom:25px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:16px; padding:15px; text-align:left;">
+                                    <div style="font-size:0.7rem; color:var(--accent); font-weight:900; letter-spacing:2px; margin-bottom:10px;">🛡️ RECURSOS ASIGNADOS A LA GUARDIA</div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.8rem;">
+                                        <div><span style="color:var(--muted); font-weight:700;">TRANSPORTE:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.transport || 'N/A'}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">MATERIALES:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.materials || 'N/A'}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">DESAYUNOS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.desayunos || 0}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">ALMUERZOS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.almuerzos || 0}</span></div>
+                                        <div><span style="color:var(--muted); font-weight:700;">CENAS:</span> <span style="color:#fff; font-weight:900;">${window.activeSession.guardia_details.cenas || 0}</span></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div style="text-align:center; margin-bottom:25px;">
+                                <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                                <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
+                                    ${isAuthorizedSupervisor ? 'REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO' : 'REGISTRE SUS HORAS INDIVIDUALES PARA EL EVENTO'}
+                                </div>
+                            </div>
+                            
+                            <div class="staff-grid" style="display:grid; ${isAuthorizedSupervisor ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr; max-width: 380px; margin: 0 auto;'} gap:15px;">
+                                ${filteredStaffList.map(u => {
+                                    const isSupervisor = u.id === window.activeSession.supervisor_id;
+                                    const att = u.attendance || [];
+                                    const entry = att.find(a => a.type === 'entry')?.timestamp;
+                                    const exit = att.find(a => a.type === 'exit')?.timestamp;
+                                    
+                                    let totalTime = '0:00h';
+                                    if (entry) {
+                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        let workedMs = 0;
+                                        const refTime = exit ? new Date(exit) : new Date();
+
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            const current = sorted[i];
+                                            const currentType = current.type;
+                                            const currentT = new Date(current.timestamp);
+
+                                            const next = sorted[i + 1];
+                                            const nextT = next ? new Date(next.timestamp) : refTime;
+
+                                            if (currentType === 'entry') {
+                                                workedMs += (nextT - currentT);
+                                            }
+                                        }
+                                        
+                                        const hours = Math.floor(workedMs / 3600000);
+                                        const mins = Math.floor((workedMs % 3600000) / 60000);
+                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                    }
+
+                                    const formatTime = formatTime24h;
+
+                                    const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                                    const hasExited = exit !== undefined;
+                                    const isAbsent = lastAction === 'absent';
+
+                                    // Botones: sin descanso
+                                    const canEntry = isEventActive && (!lastAction || lastAction === 'exit');
+                                    const canExit = isEventActive && (!lastAction || lastAction === 'entry');
+
+                                    // Si está inasistente, ocultar la tarjeta del control
+                                    if (isAbsent) {
+                                        return `
+                                        <div class="stat-card" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; opacity:0.5;">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:var(--danger); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid rgba(239,68,68,0.3);">
+                                                    INASISTENTE
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    }
+
+                                    let statusText = 'INACTIVO';
+                                    let statusColor = 'var(--muted)';
+                                    if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                                    else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
+
+                                    let buttonsHtml = `
+                                        <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
+                                        <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                    `;
+
+                                    return `
+                                        <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                                    ${statusText}
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                            </div>
+
+                                            <div style="display:flex; gap:6px;">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    })()}
+                </div>
+
+                <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            false ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        if (!isAuthorizedSupervisor) return '';
+                        
+                        const staff = window.activeSession.assigned_staff_list || [];
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
+                        
+                        return `
+                            <button class="btn" 
+                                    onclick="finalizeEvent()" 
+                                    ${!allExited ? 'disabled' : ''} 
+                                    style="background:${allExited ? 'var(--brand-red)' : 'rgba(255,255,255,0.05)'}; color:white; padding:18px 50px; border-radius:50px; font-weight:900; font-size:1.1rem; border:1px solid ${allExited ? 'var(--brand-red)' : 'var(--border)'}; cursor:${allExited ? 'pointer' : 'not-allowed'}; opacity:${allExited ? '1' : '0.4'}; box-shadow: ${allExited ? '0 10px 30px rgba(239,68,68,0.3)' : 'none'}; transition:0.3s;">
+                                🏁 FINALIZAR EVENTO
+                            </button>
+                        `;
+                    })()}
+                </div>
+                ` : ''}
+
+                <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px; padding-bottom: 20px;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                    <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+                </div>
+            </div>
+        `;
+        
+        updateClock();
+        // Cargar contador de custodia si hay sesión
+        if (window.activeSession) {
+            updateCustodyCounter();
+        }
+    }
+
+    async function updateAttendanceUI() {
+        const res = await apiFetch('/api/attendance/current?session_id=' + window.activeSession.id);
+        const status = res ? res.status : 'none';
+        const el = document.getElementById('attendance-status');
+        if (!el) return;
+        
+        if (status === 'entry') {
+            el.innerHTML = '<span style="color:var(--success)">✅ ESTÁS ACTIVO EN ESTE EVENTO</span>';
+            document.getElementById('btn-entry').style.opacity = '0.3';
+            document.getElementById('btn-entry').style.pointerEvents = 'none';
+            document.getElementById('btn-exit').style.opacity = '1';
+            document.getElementById('btn-exit').style.pointerEvents = 'auto';
+        } else {
+            el.innerHTML = '<span style="color:var(--danger)">⚠️ NO HAS MARCADO ENTRADA</span>';
+            document.getElementById('btn-entry').style.opacity = '1';
+            document.getElementById('btn-entry').style.pointerEvents = 'auto';
+            document.getElementById('btn-exit').style.opacity = '0.3';
+            document.getElementById('btn-exit').style.pointerEvents = 'none';
+        }
+    }
+
+    async function logAttendance(type) {
+        if (!window.activeSession) return;
+        showLoading('REGISTRANDO...');
+        try {
+            let res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({ type, session_id: window.activeSession.id })
+            });
+            if (res && res.error_code === 'LAST_EMPLOYEE_CUSTODIA') {
+                hideLoading();
+                const confirmMsg = `⚠️ ALERTA OPERATIVA CRÍTICA ⚠️\n\nAún quedan ${res.custody_count} vehículo(s) en custodia en el recinto.\n\nSi registras tu salida, serás el último empleado activo y los vehículos quedarán sin custodia en el recinto.\n\n¿Deseas proceder con la salida de todas formas y enviar una notificación por correo al Director informando que los vehículos se quedaron sin custodia?`;
+                if (confirm(confirmMsg)) {
+                    showLoading('PROCESANDO SALIDA DE EMERGENCIA Y ENVIANDO ALERTA...');
+                    res = await apiFetch('/api/attendance/log', {
+                        method: 'POST',
+                        body: JSON.stringify({ type, session_id: window.activeSession.id, bypass_custody: true })
+                    });
+                } else {
+                    return; // Cancelado
+                }
+            }
+            if (res && res.error) {
+                toast(res.error, 'error');
+            } else {
+                toast(type === 'entry' ? '📥 ENTRADA REGISTRADA' : '📤 SALIDA REGISTRADA', 'success');
+                updateAttendanceUI();
+            }
+        } catch (e) {
+            toast('ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function logAttendanceForStaff(type, sessionId, userId, name) {
+        if (!confirm(`¿REGISTRAR "${type.toUpperCase()}" PARA ${name.toUpperCase()}?`)) return;
+        showLoading('REGISTRANDO...');
+        try {
+            let res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({ type, session_id: sessionId, user_id: userId })
+            });
+            if (res && res.error_code === 'LAST_EMPLOYEE_CUSTODIA') {
+                hideLoading();
+                const confirmMsg = `⚠️ ALERTA OPERATIVA CRÍTICA ⚠️\n\nAún quedan ${res.custody_count} vehículo(s) en custodia en el recinto.\n\nSi registras la salida de este último empleado, no quedará personal operativo para custodiar los vehículos en el recinto.\n\n¿Desea proceder con la salida de todas formas y enviar una notificación por correo al Director informando que los vehículos se quedaron sin custodia?`;
+                if (confirm(confirmMsg)) {
+                    showLoading('PROCESANDO SALIDA DE EMERGENCIA Y ENVIANDO ALERTA...');
+                    res = await apiFetch('/api/attendance/log', {
+                        method: 'POST',
+                        body: JSON.stringify({ type, session_id: sessionId, user_id: userId, bypass_custody: true })
+                    });
+                } else {
+                    return; // Cancelado
+                }
+            }
+            if (res && res.error) {
+                toast(res.error, 'error');
+            } else {
+                toast(`✅ ${type.toUpperCase()} REGISTRADA PARA ${name.toUpperCase()}`, 'success');
+                renderEventsDashboard(document.getElementById('current-view'));
+            }
+        } catch (e) {
+            toast('ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function updateCustodyCounter() {
+        if (!window.activeSession) return;
+        const stats = await apiFetch('/api/events/stats?session_id=' + window.activeSession.id);
+        const count = stats ? (stats.custody || 0) : 0;
+        window.activeVehiclesCount = count;
+        
+        const el = document.getElementById('custody-count-inline');
+        if (el) {
+            el.textContent = '(' + count + ')';
+            el.style.color = '#10b981';
+        }
+        
+        const headerEl = document.getElementById('header-custody-count');
+        if (headerEl) headerEl.textContent = count;
+    }
+
+    // --- DIRECCIÓN EYE STAFF ---
+    async function renderVipEyeStaff(el) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!hasPermission('vip_ve')) {
+            exitToPortal();
+            return;
+        }
+        const hasCfoAccess = hasPermission('vip_mod');
+        
+        window.scrollTo(0, 0);
+
+        el.innerHTML = `
+
+            <div class="view-header">
+                <h1 class="view-title">🚀 DIRECCIÓN EYE STAFF</h1>
+            </div>
+            <div class="menu-grid operations-grid-custom" style="margin-top:20px; gap:12px;">
+                <!-- PRESUPUESTOS -->
+                <div class="menu-item admin-card-bg" onclick="renderPresupuestos(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7;">
+                    <i style="font-size:1.8rem">📊</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PRESUPUESTOS</span>
+                    </div>
+                </div>
+
+                <!-- NÓMINA Y PAGOS -->
+                ${hasCfoAccess ? `
+                <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'formatos')" style="border-top: 4px solid var(--success);">
+                    <i style="font-size:1.8rem">💰</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">NÓMINA Y PAGOS</span>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- CIERRES -->
+                <div class="menu-item admin-card-bg" onclick="toast('🔒 CIERRES estará disponible próximamente', 'info')" style="border-top: 4px solid #10b981;">
+                    <i style="font-size:1.8rem">🔒</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES</span>
+                    </div>
+                </div>
+
+                <!-- PROYECTOS -->
+                <div class="menu-item admin-card-bg" onclick="toast('📁 PROYECTOS estará disponible próximamente', 'info')" style="border-top: 4px solid #3b82f6;">
+                    <i style="font-size:1.8rem">📁</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PROYECTOS</span>
+                    </div>
+                </div>
+
+                <!-- PUBLICIDAD -->
+                <div class="menu-item admin-card-bg" onclick="renderMarketing(document.getElementById('current-view'))" style="border-top: 4px solid #d946ef;">
+                    <i style="font-size:1.8rem">📢</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">PUBLICIDAD</span>
+                    </div>
+                </div>
+
+                <!-- LEGAL -->
+                <div class="menu-item admin-card-bg" onclick="toast('⚖️ LEGAL estará disponible próximamente', 'info')" style="border-top: 4px solid #f97316;">
+                    <i style="font-size:1.8rem">⚖️</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">LEGAL</span>
+                    </div>
+                </div>
+
+                <!-- GEOLOCALIZACIÓN -->
+                <div class="menu-item admin-card-bg" onclick="renderGeolocalizacion(document.getElementById('current-view'))" style="border-top: 4px solid #a855f7;">
+                    <i style="font-size:1.8rem">📍</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GEOLOCALIZACIÓN</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 40px;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+            </div>
+            <div class="footer-info" style="margin-top:60px;"></div>
+        `;
+        updateClock();
+    }
+
+    // --- FORMATOS (PAYROLL) ---
+    async function renderFormatos(el) {
+        el.innerHTML = `
+            <div style="margin-bottom:15px; display:flex; justify-content:flex-start;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+            </div>
+            <div class="view-header">
+                <h1 class="view-title">📄 FORMATOS Y NÓMINA</h1>
+            </div>
+            <div id="payroll-content"></div>
+            <div style="display: flex; justify-content: center; margin-top: 40px;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+            </div>
+            <div class="footer-info" style="margin-top:60px;"></div>
+        `;
+        
+        updateClock();
+        renderStaffPayrollForm(document.getElementById('payroll-content'));
+    }
+
+    async function renderStaffPayrollForm(el) {
+        el.innerHTML = '<div class="spinner"></div>';
+        const [staffRes, ratesRes] = await Promise.all([
+            apiFetch('/api/staff'),
+            apiFetch('/api/payroll/rates')
+        ]);
+        
+        const staff = (staffRes && staffRes.staff) ? staffRes.staff : [];
+        const rates = (ratesRes && ratesRes.rates) ? ratesRes.rates : [];
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+        window.venezuelanBanks = [
+            "BANCO CENTRAL DE VENEZUELA", "BANCO INDUSTRIAL DE VENEZUELA", "BANCO DE VENEZUELA",
+            "BANCO VENEZOLANO DE CRÉDITO", "BANCO MERCANTIL", "BBVA PROVINCIAL", "BANCARIBE",
+            "BANCO EXTERIOR", "BANCO OCCIDENTAL DE DESCUENTO", "CORP BANCA", "BANCO CARONÍ",
+            "BANESCO BANCO UNIVERSAL", "BANCO SOFITASA", "BANCO PLAZA",
+            "BANCO DE LA GENTE EMPRENDEDORA (BANGENTE)", "BANCO DEL PUEBLO SOBERANO",
+            "BANCO FONDO COMÚN", "100% BANCO", "DEL SUR BANCO UNIVERSAL", "BANCO DEL TESORO",
+            "BANCO DE DESARROLLO DEL MICROEMPRESARIO", "BANCO AGRÍCOLA DE VENEZUELA",
+            "BANCRECER", "MI BANCO", "BANCO ACTIVO", "BANCAMIGA BANCO UNIVERSAL",
+            "BANCO INTERNACIONAL DE DESARROLLO", "BANPLUS BANCO UNIVERSAL",
+            "BANCO DIGITAL DE LOS TRABAJADORES", "BANCO ESPÍRITU SANTO",
+            "BANCO DE LA FUERZA ARMADA NACIONAL BOLIVARIANA (BANFANB)", "CITIBANK",
+            "BANCO NACIONAL DE CRÉDITO", "R4 BANCO", "N58 BANCO DIGITAL",
+            "INSTITUTO MUNICIPAL DE CRÉDITO POPULAR"
+        ];
+        
+        window.allStaff = staff;
+
+        el.innerHTML = `
+            <div class="card" style="max-width:650px; margin:0 auto; background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:24px;">
+                <h2 style="margin-bottom:25px; font-size:1.4rem; color:#fff; text-align:center; font-weight:800; letter-spacing:1px;">REPORTE DE JORNADA</h2>
+                <form id="payroll-form" onsubmit="submitPayroll(event)">
+                    
+                    <div class="field" style="position:relative;">
+                        <label>EMPLEADO</label>
+                        <div style="position:relative;">
+                            <input type="text" id="staff-search-input" placeholder="BUSCAR O SELECCIONAR..." oninput="filterStaffSearch(this.value)" onclick="filterStaffSearch(this.value)" autocomplete="off" style="background:var(--surface2); border:1px solid var(--border); padding-right:70px;">
+                            <div style="position:absolute; right:10px; top:50%; transform:translateY(-50%); display:flex; gap:10px; color:var(--muted); pointer-events:none;">
+                                <span>🔍</span>
+                                <span>▼</span>
+                            </div>
+                        </div>
+                        <div id="staff-search-results" style="position:absolute; top:85px; left:0; width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; z-index:100; display:none; max-height:300px; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8);"></div>
+                        <input type="hidden" name="user_id" id="payroll-staff-id" required>
+                    </div>
+
+                    <div class="field" style="margin-top:25px;">
+                        <label>EVENTOS / SESIONES TRABAJADAS (SELECCIONE)</label>
+                        <div id="payroll-sessions-list" style="background:var(--surface2); padding:15px; border-radius:12px; border:1px solid var(--border); max-height:250px; overflow-y:auto; display:grid; grid-template-columns:1fr; gap:10px;">
+                            <div style="color:var(--muted); text-align:center; font-size:0.8rem; padding:20px;">SELECCIONE UN EMPLEADO PARA VER SU HISTORIAL</div>
+                        </div>
+                        <input type="hidden" name="session_id" id="payroll-selected-session" required>
+                    </div>
+
+
+
+                    <button type="submit" class="btn" style="width:100%; height:60px; font-size:1.2rem; font-weight:800; background:var(--success); margin-top:20px; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);">
+                        ENVIAR REPORTE DE PAGO
+                    </button>
+                </form>
+            </div>
+        `;
+
+        // Cargar datos iniciales del usuario actual
+        const me = staff.find(u => u.id == currentUser.id || (currentUser.name && u.name.toUpperCase() === currentUser.name.toUpperCase()));
+        if (me) {
+            document.getElementById('staff-search-input').value = me.name;
+            document.getElementById('payroll-staff-id').value = me.id;
+            onPayrollStaffChange(me.id);
+        }
+        window.payrollSelections = [];
+    }
+
+    window.filterStaffSearch = function(val) {
+        const resultsEl = document.getElementById('staff-search-results');
+        
+        const matches = window.allStaff.filter(u => !val || u.name.toLowerCase().includes(val.toLowerCase()));
+        
+        if (matches.length > 0) {
+            resultsEl.innerHTML = matches.map(u => {
+                const isBusy = !!u.current_session_id;
+                const statusTag = isBusy 
+                    ? '<span style="color:var(--accent); font-size:0.55rem; font-weight:800; border:1px solid var(--accent); padding:2px 6px; border-radius:4px; opacity:0.8;">EN EVENTO</span>' 
+                    : '<span style="color:var(--success); font-size:0.55rem; opacity:0.7;">DISPONIBLE</span>';
+
+                return `
+                    <div onclick="selectStaffResult(${u.id}, '${u.name}')" style="padding:15px; border-bottom:1px solid var(--border); cursor:pointer; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); transition: background 0.2s;">
+                        <div style="flex:1">
+                            <b style="color:#fff;">${u.name}</b>
+                        </div>
+                        <div style="text-align:right;">
+                            ${statusTag}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            resultsEl.style.display = 'block';
+        } else {
+            resultsEl.innerHTML = '<div style="padding:15px; color:var(--danger); font-size:0.7rem; text-align:center;">NO SE ENCONTRARON COINCIDENCIAS</div>';
+            resultsEl.style.display = 'block';
+        }
+        
+        const closeResults = (e) => {
+            if (!resultsEl.contains(e.target) && e.target.id !== 'staff-search-input') {
+                resultsEl.style.display = 'none';
+                document.removeEventListener('click', closeResults);
+            }
+        };
+        document.addEventListener('click', closeResults);
+    }
+
+    window.selectStaffResult = function(id, name) {
+        document.getElementById('staff-search-input').value = name;
+        document.getElementById('payroll-staff-id').value = id;
+        document.getElementById('staff-search-results').style.display = 'none';
+        onPayrollStaffChange(id);
+    }
+
+    window.onPayrollStaffChange = async function(userId) {
+        if (!userId) return;
+        
+        // Resetear selecciones previas al cambiar de empleado
+        window.payrollSelections = [];
+        const hiddenInput = document.getElementById('payroll-selected-session');
+        if (hiddenInput) hiddenInput.value = '';
+        
+        // Cargar sesiones trabajadas
+        const listEl = document.getElementById('payroll-sessions-list');
+        listEl.innerHTML = '<div class="spinner-sm"></div>';
+        
+        const [sessionsRes, staffRes] = await Promise.all([
+            apiFetch(`/api/staff/${userId}/sessions`),
+            apiFetch(`/api/staff`) // Para obtener datos bancarios
+        ]);
+        
+        const allSessionsFetch = (sessionsRes && sessionsRes.sessions) ? sessionsRes.sessions : [];
+        const userPayroll = JSON.parse(localStorage.getItem('user') || '{}');
+        const isStrictAdminPayroll = userPayroll && userPayroll.profile_admin === 'ADMIN' && userPayroll.profile_opera === 'ADMIN' && userPayroll.eye_id === 'ADMIN';
+        const sessions = allSessionsFetch.filter(s => isStrictAdminPayroll || s.status === 'closed' || s.status === 'concluded');
+        const staffMember = (staffRes && staffRes.staff) ? staffRes.staff.find(u => u.id == userId) : null;
+
+        if (sessions.length === 0) {
+            listEl.innerHTML = '<div style="color:var(--muted); text-align:center; font-size:0.75rem; padding:20px;">SIN EVENTOS REGISTRADOS</div>';
+        } else {
+            listEl.innerHTML = sessions.map(s => `
+                <div class="session-selector-item" onclick="selectPayrollSession(${s.id}, '${(s.started_at || '').split('T')[0] || ''}', '${s.role}', '${s.name}')" 
+                     style="padding:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition: all 0.2s; margin-bottom:10px;">
+                    <div>
+                        <div style="font-weight:800; font-size:0.85rem; color:#fff;">${s.name}</div>
+                        <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">${s.role} | ${s.started_at ? new Date(s.started_at).toLocaleDateString() : 'S/F'}</div>
+                    </div>
+                    <div class="check-indicator" id="check-${s.id}" style="width:20px; height:20px; border:2px solid var(--border); border-radius:50%; display:grid; place-items:center; font-size:0.7rem; color:var(--success);"></div>
+                </div>
+            `).join('');
+        }
+
+        // Datos bancarios omitidos (removidos de la interfaz)
+    }
+
+    window.selectPayrollSession = function(id, date, role, name) {
+        const item = event.currentTarget;
+        const index = window.payrollSelections.findIndex(s => s.id === id);
+        
+        if (index > -1) {
+            // Deseleccionar
+            window.payrollSelections.splice(index, 1);
+            if (id === 0) {
+                item.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                item.style.background = 'rgba(16, 185, 129, 0.05)';
+            } else {
+                item.style.borderColor = 'var(--border)';
+                item.style.background = 'rgba(255,255,255,0.03)';
+            }
+            document.getElementById(`check-${id}`).innerHTML = '';
+        } else {
+            // Seleccionar
+            window.payrollSelections.push({ id, date, role, name: name || 'EVENTO GENERAL / OPERACIÓN EXTRA' });
+            item.style.borderColor = 'var(--success)';
+            item.style.background = 'rgba(34, 197, 94, 0.05)';
+            document.getElementById(`check-${id}`).innerHTML = '✓';
+        }
+
+        // Actualizar input oculto de IDs
+        document.getElementById('payroll-selected-session').value = window.payrollSelections.map(s => s.id).join(',');
+    }
+
+    window.toggleManualBank = function(val) {
+        const manualField = document.getElementById('manual-bank-field');
+        const manualInput = document.getElementById('bank-name-manual');
+        if (val === 'OTRO') {
+            manualField.style.display = 'block';
+            manualInput.required = true;
+        } else {
+            manualField.style.display = 'none';
+            manualInput.required = false;
+        }
+    }
+
+    window.submitPayroll = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const btn = form.querySelector('button[type="submit"]');
+        
+        if (window.payrollSelections.length === 0) {
+            return toast('⚠️ SELECCIONE AL MENOS UN EVENTO', 'warning');
+        }
+
+        if (btn.disabled) return;
+
+        const formData = new FormData(form);
+        const baseData = Object.fromEntries(formData.entries());
+
+        btn.disabled = true;
+        btn.innerHTML = 'PROCESANDO...';
+        showLoading('ENVIANDO REPORTES...');
+        
+        try {
+            const sessionsData = window.payrollSelections.map(s => ({
+                session_id: s.id,
+                date: s.date,
+                role: s.role,
+                name: s.name
+            }));
+
+            const data = { 
+                ...baseData, 
+                bank_name: "",
+                bank_account: "",
+                session_ids: window.payrollSelections.map(s => s.id),
+                sessions_data: sessionsData
+            };
+
+            await apiFetch('/api/payroll/submit', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+
+            toast('✅ REPORTES ENVIADOS CORRECTAMENTE', 'success');
+            renderFormatos(document.getElementById('current-view'));
+        } catch (e) {
+            console.error(e);
+            toast('ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+            btn.disabled = false;
+            btn.innerHTML = 'ENVIAR REPORTE DE PAGO';
+        }
+    }
+    async function protectedAction(callback) {
+        callback();
+    }
+
+    async function renderEventsDashboard(el) {
+        window.scrollTo(0, 0);
+        showLoading('CARGANDO EVENTOS...');
+        try {
+            const res = await apiFetch('/api/sessions/active');
+            const sessions = (res && res.sessions) 
+                ? res.sessions.filter(s => s.status === 'active').sort((a,b) => new Date(a.started_at) - new Date(b.started_at)) 
+                : [];
+            window.activeSessions = sessions;
+            
+            if (sessions.length === 0) {
+                el.innerHTML = `
+                    <div class="view-header"><h1 class="view-title">📅 DETALLE DE EVENTOS ACTIVOS</h1></div>
+                    <div class="stat-card" style="text-align:center; padding:50px;">
+                        <i style="font-size:4rem; display:block; margin-bottom:20px;">⚠️</i>
+                        <h2 style="color:var(--danger)">SIN EVENTOS</h2>
+                        <p style="color:var(--muted)">Inicie o planifique un evento para ver reportes.</p>
+                    </div>
+                    <div style="margin-top:30px; margin-bottom:20px; display:flex; justify-content:center;">
+                        ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                    </div>
+                `;
+                updateClock();
+                return;
+            }
+
+            const staffRes = await apiFetch('/api/staff');
+            const allStaff = staffRes?.staff || [];
+
+            let html = `
+                <div class="view-header">
+                    <h1 class="view-title">📅 DETALLE DE EVENTOS ACTIVOS</h1>
+                </div>
+                <div class="events-grid">
+            `;
+
+            for (const session of sessions) {
+                const isPlanning = session.status === 'planning';
+                const stats = await apiFetch('/api/events/stats?session_id=' + session.id);
+                const sessionStaff = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
+                const attendance = await apiFetch('/api/attendance/session/' + session.id) || [];
+
+                html += `
+                    <div class="stat-card" style="border-top:4px solid ${isPlanning ? '#f59e0b' : 'var(--accent2)'}; padding:25px; background: ${isPlanning ? 'rgba(255, 255, 255, 0.01)' : 'rgba(255, 255, 255, 0.02)'}; border-radius:24px; position:relative; ${isPlanning ? 'opacity:0.85;' : ''}">
+                        <div class="event-card-split">
+                            <div class="event-card-left">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:20px; flex-wrap:nowrap;">
+                                    <div style="flex:1; min-width:0;">
+                                        <h2 style="margin:0; font-size:1.2rem; color:white; font-weight:900; letter-spacing:-0.5px; ${isPlanning ? 'opacity:0.7;' : ''}">${(session.type || 'EVENTO').toUpperCase()} - ${session.name.toUpperCase()}</h2>
+                                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:2px; ${isPlanning ? 'opacity:0.6;' : ''}">DETALLES DEL SERVICIO</div>
+                                        <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                            <div style="width:10px; height:10px; border-radius:50%; background:${isPlanning ? '#f59e0b' : 'var(--success)'}; box-shadow: 0 0 10px ${isPlanning ? '#f59e0b' : 'var(--success)'}44;"></div>
+                                            <span style="font-size:0.7rem; color:${isPlanning ? '#f59e0b' : 'var(--success)'}; font-weight:900;">${isPlanning ? 'PROGRAMADO' : 'ACTIVO'}</span>
+                                        </div>
+                                        <div style="margin-top:15px; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; max-width:600px;">
+                                            <div style="flex:1; min-width:100px;">
+                                                <div style="font-size:0.5rem; color:var(--warning); font-weight:800; text-transform:uppercase;">🕗 CONVOCATORIA</div>
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff;">${session.convocation_time || '--:--'}</div>
+                                            </div>
+                                            <div style="flex:1; min-width:100px;">
+                                                <div style="font-size:0.5rem; color:var(--accent); font-weight:800; text-transform:uppercase;">🚀 INICIO EVENTO</div>
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff;">${session.event_start_time || '--:--'}</div>
+                                            </div>
+                                            <div style="flex:1.2; min-width:120px;">
+                                                <div style="font-size:0.5rem; color:var(--muted); font-weight:800; text-transform:uppercase;">🏁 FIN (EST.)</div>
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; flex-direction:column;">
+                                                    <span>${session.event_end_time || '--:--'}</span>
+                                                    ${session.event_end_date ? `<span style="font-size:0.65rem; color:var(--muted); margin-top:2px; font-weight:500;">📅 ${session.event_end_date.split('T')[0].split('-').reverse().join('/')}</span>` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:15px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
+                                            <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
+                                            ${session.address ? `
+                                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
+                                                    ${session.address.toUpperCase()} 🔗
+                                                </a>
+                                            ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="event-card-right" style="${isPlanning ? 'filter:grayscale(1); opacity:0.3;' : ''}">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                                    <div style="font-size:0.7rem; color:var(--warning); font-weight:900; letter-spacing:2px; text-transform:uppercase;">📋 CONTROL DE PERSONAL</div>
+                                    ${sessionStaff.length > 0 && session.address ? `<button class="btn btn-sm" onclick="openSmartRoute('${session.address.replace(/'/g, "\\'")}', '${sessionStaff.map(s => s.name.replace(/'/g, "\\'")).join(',')}')" style="background:rgba(168, 85, 247, 0.15); color:#a855f7; border:1px solid #a855f7; border-radius:12px; padding:6px 12px; font-size:0.6rem; font-weight:900;">🚌 RUTA INTELIGENTE</button>` : ''}
+                                </div>
+                                <div class="staff-control-grid">
+                                    ${(() => {
+                                        const sortedStaff = [...sessionStaff].sort((a, b) => {
+                                            const isASuper = a.id == session.supervisor_id || ['supervisor', 'director'].includes(String(a.role).toLowerCase());
+                                            const isBSuper = b.id == session.supervisor_id || ['supervisor', 'director'].includes(String(b.role).toLowerCase());
+                                            if (isASuper && !isBSuper) return -1;
+                                            if (!isASuper && isBSuper) return 1;
+                                            return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+                                        });
+
+                                        return sortedStaff.length > 0 ? sortedStaff.map(u => {
+                                            const userLogs = attendance.filter(a => a.user_id == u.id);
+                                            const entryLog = [...userLogs].reverse().find(a => a.type === 'entry');
+                                            const lastLog = userLogs[0]; // Descending order
+                                            
+                                            const entryTime = formatTime24h(entryLog?.timestamp);
+                                            
+                                            // Calcular Horas Trabajadas
+                                            let totalMs = 0;
+                                            if (entryLog) {
+                                                const now = new Date();
+                                                let breakMs = 0;
+                                                const sortedLogs = [...userLogs].reverse(); // Chronological
+                                                let lastBreakStart = null;
+                                                
+                                                sortedLogs.forEach(log => {
+                                                    if (log.type === 'break_start') lastBreakStart = new Date(log.timestamp);
+                                                    if (log.type === 'break_end' && lastBreakStart) {
+                                                        breakMs += (new Date(log.timestamp) - lastBreakStart);
+                                                        lastBreakStart = null;
+                                                    }
+                                                });
+                                                
+                                                if (lastLog?.type === 'break_start') {
+                                                    breakMs += (now - new Date(lastLog.timestamp));
+                                                }
+                                                
+                                                totalMs = (now - new Date(entryLog.timestamp)) - breakMs;
+                                            }
+                                            
+                                            const hours = Math.floor(totalMs / 3600000);
+                                            const minutes = Math.floor((totalMs % 3600000) / 60000);
+                                            const workedTime = `${hours}h ${minutes}m`;
+
+                                            let statusColor = 'var(--muted)';
+                                            if (lastLog?.type === 'entry') statusColor = 'var(--success)';
+                                            else if (lastLog?.type === 'break_start') statusColor = 'var(--warning)';
+                                            
+                                            const isSuper = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
+                                            const hasApiKey = !!u.callmebot_api_key;
+
+                                            if (isPlanning) {
+
+                                                return `
+                                                    <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:8px 10px; box-sizing:border-box; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:6px;">
+                                                        <div style="display:flex; align-items:center; gap:6px; min-width:0; flex:1;">
+                                                            <div style="font-size:0.75rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                                                                ${u.name.toUpperCase()}
+                                                                ${isSuper ? `
+                                                                    <span style="font-size:0.5rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 4px; border-radius:4px; margin-left:4px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                        SUPERVISOR
+                                                                    </span>
+                                                                ` : ''}
+                                                            </div>
+                                                        </div>
+                                                        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                                                            ${hasApiKey ? `
+                                                                <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:4px 8px; font-size:0.6rem; font-weight:900; border-radius:6px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                                                                    📲 AUTO
+                                                                </button>
+                                                            ` : ''}
+                                                            <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:4px 8px; font-size:0.7rem; font-weight:900; border-radius:6px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                                💬
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }
+
+                                            return `
+                                                <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:8px 10px; box-sizing:border-box; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                                                    <div style="display:flex; align-items:center; gap:6px; min-width:0; flex:1;">
+                                                        <div style="width:8px; height:8px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 10px ${statusColor}44; flex-shrink:0;"></div>
+                                                        <div style="font-size:0.75rem; font-weight:900; color:white; display:flex; align-items:center; gap:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                                            ${u.name.toUpperCase()}
+                                                            ${isSuper ? `
+                                                                <span style="font-size:0.5rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 4px; border-radius:4px; margin-left:4px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                    SUPERVISOR
+                                                                </span>
+                                                            ` : ''}
+                                                            <span onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#25D366;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
+                                                            <span onclick="openTelegramDirectMessage(${u.id}, '${u.name}', '${u.telegram_chat_id || ''}')" title="Chat Interno (APP)" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#28A8E9; margin-left:6px;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">📩</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style="text-align:right; flex-shrink:0;">
+                                                        <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase;">
+                                                            ENT: <span style="color:#fff">${entryTime}</span> • <span style="color:var(--accent2)">${workedTime}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('') : '<div style="font-size:0.65rem; color:var(--muted); font-style:italic; text-align:center; padding:20px;">SIN PERSONAL ASIGNADO</div>';
+                                    })()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`; // Cerrar grid de eventos
+
+
+            html += `
+                <div style="display: flex; justify-content: center; margin-top: 40px;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                </div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.13</div>
+            `;
+
+            el.innerHTML = html;
+            updateClock();
+        } catch (e) {
+            console.error('Events Dashboard Error:', e);
+            toast('ERROR AL CARGAR EVENTOS', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderScheduledEventDetail(sessionId) {
+        window.currentModule = 'evento_detalle';
+        window.scrollTo(0, 0);
+        showLoading('CARGANDO DETALLE DEL EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/active');
+            const sessions = (res && res.sessions) ? res.sessions : [];
+            const session = sessions.find(s => s.id == sessionId);
+            if (!session) {
+                toast('EVENTO PROGRAMADO NO ENCONTRADO', 'error');
+                return;
+            }
+            
+            // Set the back button to portal
+            const btn = document.getElementById('btn-back-portal');
+            if (btn) {
+                btn.style.display = 'flex';
+                btn.innerHTML = '🏠';
+                btn.onclick = exitToPortal;
+            }
+
+            const staffRes = await apiFetch('/api/staff');
+            const allStaff = staffRes?.staff || [];
+            const sessionStaffRaw = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
+            
+            const supervisors = sessionStaffRaw.filter(u => u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase()));
+            const employees = sessionStaffRaw.filter(u => !(u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase())));
+            
+            supervisors.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            employees.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            
+            const sessionStaff = [...supervisors, ...employees];
+
+            const el = document.getElementById('current-view');
+
+            let html = `
+                <div class="view-header">
+                    <h1 class="view-title">📅 DETALLE DE EVENTO PROGRAMADO</h1>
+                </div>
+                
+                <div style="max-width:1200px; margin:0 auto; padding:0 15px;">
+                    <div class="stat-card" style="border-top:4px solid #f59e0b; padding:25px; background: rgba(255, 255, 255, 0.02); border-radius:24px; position:relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:10px;">
+                            <div>
+                                <h2 style="margin:0; font-size:1.4rem; color:white; font-weight:900; letter-spacing:-0.5px;">${(session.type || 'EVENTO').toUpperCase()} - ${(session.name || '').toUpperCase()}</h2>
+                                <div style="font-size:0.8rem; color:var(--warning); font-weight:900; margin-top:10px; display:flex; align-items:flex-start; gap:8px; background:rgba(245,158,11,0.08); padding:10px 14px; border-radius:12px; border:1px solid rgba(245,158,11,0.2);">
+                                    <span style="font-size:1.1rem; margin-top:2px;">📅</span>
+                                    <span style="display:flex; flex-direction:column; gap:2px;">
+                                        <span style="color:white; font-size:0.85rem; font-weight:900;">${(() => {
+                                            try {
+                                                const d = new Date(session.started_at);
+                                                if (!session.started_at || isNaN(d.getTime())) return 'S/F';
+                                                return d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                            } catch(e) {
+                                                return 'S/F';
+                                            }
+                                        })()}</span>
+                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:800; display:flex; gap:12px; margin-top:2px; flex-wrap:wrap;">
+                                            <span>📢 CONVOCATORIA: <b style="color:var(--warning);">${session.convocation_time || '00:00'} H</b></span>
+                                            <span>🚀 INICIO: <b style="color:white;">${session.event_start_time || '00:00'} H</b></span>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:15px; width:100%;">
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">👤 CLIENTE / CONTACTO</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">${(session.contact_name || session.client || 'NO ESPECIFICADO').toUpperCase()}</span>
+                                    </div>
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🏁 FINALIZACIÓN ESTIMADA</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">
+                                            ${(() => {
+                                                try {
+                                                    if (!session.event_end_date) return 'NO ESPECIFICADA';
+                                                    const d = new Date(session.event_end_date + 'T00:00:00');
+                                                    if (isNaN(d.getTime())) return 'NO ESPECIFICADA';
+                                                    const datePart = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                                    const timePart = session.event_end_time ? ` - ${session.event_end_time} H` : '';
+                                                    return `${datePart}${timePart}`;
+                                                } catch(e) {
+                                                    return 'NO ESPECIFICADA';
+                                                }
+                                            })()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:12px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
+                                    <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
+                                    ${session.address ? `
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
+                                            ${session.address.toUpperCase()} 🔗
+                                        </a>
+                                    ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:20px;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                                <i style="font-size:1.1rem; opacity:0.6;">📋</i>
+                                <span style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Control de Personal</span>
+                            </div>
+                            
+                            <div class="scheduled-staff-grid">
+                                ${(() => {
+                                    if (sessionStaff.length > 0) {
+                                        return sessionStaff.map(u => {
+
+                                            const isSupervisor = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
+                                            const hasApiKey = !!u.callmebot_api_key;
+                                            return `
+                                                <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px;">
+                                                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+                                                        <div style="font-size:0.82rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                                                            ${u.name.toUpperCase()}
+                                                            ${isSupervisor ? `
+                                                                <span style="font-size:0.55rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                    SUPERVISOR
+                                                                </span>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>
+                                                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                                        ${hasApiKey ? `
+                                                            <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                                                                📲 AUTO
+                                                            </button>
+                                                        ` : ''}
+                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                            💬
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('');
+                                    }
+                                    return '<div style="font-size:0.65rem; color:var(--muted); font-style:italic; text-align:center; padding:20px;">SIN PERSONAL ASIGNADO</div>';
+                                })()}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pre-Event Access Control Container -->
+                    <div id="pre-event-access-control-container"></div>
+                    
+                    ${(() => {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAdminOrRRHH = window.isUserAdminOrStaff && window.isUserAdminOrStaff(user);
+                        if (isAdminOrRRHH) {
+                            return `
+                                <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:0.75rem; color:var(--warning); font-weight:900; margin-bottom:15px; text-align:center; letter-spacing:1px;">🛡️ ACCIONES DE ADMINISTRADOR / RRHH</div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                                        <button class="btn" style="flex:1; min-width:140px; background:var(--accent); color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="enterModule('listas'); setTimeout(()=>editEventFromCalendar(${session.id}), 100);">
+                                            📝 MODIFICAR EVENTO
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return '';
+                    })()}
+
+                    <div style="margin-top:30px; margin-bottom:20px; display:flex; justify-content:center;">
+                        ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                    </div>
+                </div>
+            `;
+
+            el.innerHTML = html;
+            updateClock();
+            
+            if (session.type && session.type.toUpperCase().includes('ACCESOS')) {
+                setTimeout(() => {
+                    if(typeof renderAccessControlPreEvent === 'function') {
+                        renderAccessControlPreEvent(session);
+                    }
+                }, 100);
+            }
+        } catch (e) {
+            console.error('Render Scheduled Event Detail Error:', e);
+            toast('ERROR AL CARGAR DETALLES DEL EVENTO', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    async function showSessionStatsDetail(sessionId, type, sessionName) {
+        window.activeSessionId = sessionId;
+        window.activeSessionName = sessionName;
+        showLoading('CARGANDO DETALLES...');
+        try {
+            const itemsRaw = await apiFetch('/api/vehicles/all?session_id=' + sessionId);
+            let items = (itemsRaw && Array.isArray(itemsRaw.vehicles)) ? itemsRaw.vehicles : [];
+            
+            if (type === 'custody') {
+                items = items.filter(e => !['delivered', 'retrieved', 'pre-registered'].includes(e.status));
+            } else if (type === 'exits') {
+                items = items.filter(e => ['delivered', 'retrieved'].includes(e.status));
+            }
+            
+            const title = type === 'entries' ? 'ENTRADA' : type === 'custody' ? 'EN RECINTO' : 'SALIDA';
+            const icon = type === 'entries' ? '📥' : type === 'custody' ? '🅿️' : '📤';
+            const color = type === 'entries' ? 'var(--accent2)' : type === 'custody' ? 'var(--success)' : 'var(--muted)';
+
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div style="text-align:center; padding:10px;">
+                    <div style="font-size:2rem; margin-bottom:10px;">${icon}</div>
+                    <h2 style="color:${color}; font-weight:900; margin-bottom:5px;">${title}</h2>
+                    <p style="font-size:0.8rem; color:var(--muted); margin-bottom:20px;">EVENTO: ${sessionName.toUpperCase()}</p>
+                    
+                    <div style="max-height:60vh; overflow-y:auto; text-align:left;">
+                        ${items.length > 0 ? items.map(v => `
+                            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:15px; padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div style="font-size:1.1rem; font-weight:900; color:white;">
+                                        <span style="cursor:pointer; border-bottom:1px dashed rgba(255,255,255,0.4);" onmouseover="this.style.color='var(--accent2)'; this.style.borderColor='var(--accent2)';" onmouseout="this.style.color='white'; this.style.borderColor='rgba(255,255,255,0.4)';" onclick="viewVehicleDetailReadOnly(${v.id}, '${type}')">${v.plate.toUpperCase()}</span>
+                                    </div>
+                                    <div style="font-size:0.65rem; color:var(--accent); font-weight:800; text-transform:uppercase; margin-bottom:2px;">👤 ${v.owner_name || 'SIN NOMBRE'}</div>
+                                    <div style="font-size:0.65rem; color:var(--muted); font-weight:700;">${v.brand || 'V. SIN MARCA'} • ${v.color || 'COLOR N/A'}</div>
+                                    <div style="font-size:0.6rem; color:var(--muted); margin-top:5px;">ENT: ${v.check_in_at ? formatTime24h(v.check_in_at) : 'N/A'} ${v.check_out_at ? '• SAL: ' + formatTime24h(v.check_out_at) : ''}</div>
+                                </div>
+                                <div style="font-size:0.8rem; font-weight:900; color:var(--accent2)">#${String(v.daily_seq || 0).padStart(3, '0')}</div>
+                            </div>
+                        `).join('') : `<p style="text-align:center; color:var(--muted); padding:20px;">NO HAY REGISTROS EN ESTA CATEGORÍA</p>`}
+                    </div>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:20px; border-radius:15px;" onclick="closeModal()">CERRAR</button>
+                </div>
+            `;
+            openModal();
+        } catch (e) {
+            toast('ERROR AL CARGAR DETALLES', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function viewVehicleDetailReadOnly(id, listType = null) {
+        showLoading('CARGANDO DETALLE...');
+        try {
+            const v = await apiFetch('/api/vehicles/' + id);
+            if (!v) return;
+            
+            const marks = v.damage_json ? JSON.parse(v.damage_json) : [];
+            const modalBody = document.getElementById('modal-body');
+
+            const statusLabels = {
+                'parked': 'EN CUSTODIA',
+                'pending_retrieval': 'PEDIDO',
+                'retrieved': 'ENTREGADO',
+                'delivering': 'ENTREGANDO',
+                'requested': 'SOLICITADO',
+                'pre-registered': 'PRE-REGISTRADO'
+            };
+            const displayStatus = statusLabels[v.status] || v.status.toUpperCase();
+            
+            const closeAction = window.activeSessionId && listType
+                ? `showSessionStatsDetail(window.activeSessionId, '${listType}', window.activeSessionName)`
+                : `closeModal()`;
+
+            modalBody.innerHTML = `
+                <div style="text-align:left; padding: 5px;">
+                    <h2 style="margin-top:0; font-weight:900; color:white; font-size:1.6rem; letter-spacing:-0.5px;">${v.plate.toUpperCase()}</h2>
+                    
+                    <div class="grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">NOMBRE DEL CLIENTE</label>
+                            <div style="font-size:0.85rem; color:white; font-weight:700;">${(v.owner_name || '—').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">ESTADO</label>
+                            <div style="font-size:0.85rem; color:var(--accent2); font-weight:900;">${displayStatus}</div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">MARCA Y MODELO</label>
+                            <div style="font-size:0.85rem; color:white; font-weight:700;">${(v.brand || '—').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">COLOR</label>
+                            <div style="font-size:0.85rem; color:white; font-weight:700;">${(v.color || '—').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">HORA ENTRADA</label>
+                            <div style="font-size:0.85rem; color:white; font-weight:700;">${v.check_in_at ? formatTime24h(v.check_in_at) : '—'}</div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">HORA SALIDA</label>
+                            <div style="font-size:0.85rem; color:white; font-weight:700;">${v.check_out_at ? formatTime24h(v.check_out_at) : '—'}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:20px;">
+                        <label style="font-size:0.55rem; color:var(--muted); font-weight:900; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:4px;">CORRELATIVO</label>
+                        <div style="font-size:1.1rem; color:var(--success); font-weight:900;">#${String(v.daily_seq || 0).padStart(3, '0')}</div>
+                    </div>
+                    
+                    <div class="detail-section-title" style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">INSPECCIÓN DE ENTRADA</div>
+                    <div style="border-bottom: 1px solid var(--border); margin: 5px 0 15px 0; opacity: 0.1;"></div>
+                    
+                    <div style="display:flex; justify-content:center; margin-bottom:25px;">
+                        <div class="damage-canvas" style="max-width:300px; background:white; padding:0; border-radius:15px; position:relative; overflow:hidden; border:1px solid var(--border);">
+                            <img src="${v.vehicle_type === 'moto' ? 'moto-blueprint.png' : 'car-blueprint.png'}" style="width:100%; display:block; pointer-events:none;">
+                            <svg viewBox="0 0 1000 1000" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+                                <g id="detail-damage-marks">
+                                    ${marks.map(m => `<circle cx="${m.x}" cy="${m.y}" r="25" fill="var(--accent2)" stroke="white" stroke-width="5"/>`).join('')}
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section-title" style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">FOTOS DE EVIDENCIA</div>
+                    <div style="border-bottom: 1px solid var(--border); margin: 5px 0 15px 0; opacity: 0.1;"></div>
+                    <div id="detail-photos" class="photo-grid" style="margin-bottom:25px; display:grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap:10px;">Cargando fotos...</div>
+                    
+                    <button class="btn btn-secondary" style="width:100%; min-height:50px; font-size:0.9rem; font-weight:900; border-radius:15px; display:inline-flex; align-items:center; justify-content:center;" onclick="${closeAction}">VOLVER A LA LISTA</button>
+                </div>
+            `;
+            openModal();
+            loadDetailPhotos(v.id);
+        } catch (e) {
+            toast('❌ ERROR AL CARGAR DETALLES', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function closeSessionFromDashboard(id, name) {
+        if (!confirm(`⚠️ CONFIRMACIÓN\\n\\n¿Realmente está seguro que desea cerrar y concluir definitivamente el evento "${name.toUpperCase()}"?\\n\\nEsta acción NO se puede deshacer y liberará a todo el personal.`)) {
+            return;
+        }
+        
+        showLoading('CERRANDO JORNADA...');
+        try {
+            const res = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            
+            if (res && res.success) {
+                toast('✅ JORNADA CERRADA Y REPORTES ENVIADOS', 'success');
+                // Recargar el dashboard de eventos
+                renderEventsDashboard(document.getElementById('current-view'));
+            }
+        } catch (e) {
+            toast('❌ ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderEvents(el) {
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">📊 CUSTODIA</h1></div>
+            <div id="custodia-hero" style="margin-bottom:25px"></div>
+            
+            <div class="stat-card" style="margin-bottom:20px">
+                <div class="field">
+                    <label>BUSCADOR DE PLACA</label>
+                    <input type="text" id="custodia-search" placeholder="BUSCAR VEHÍCULO..." oninput="filterCustodia(this.value)" style="text-transform:uppercase; font-size:1.2rem; text-align:center; height:50px;">
+                </div>
+            </div>
+
+            <div id="custodia-list-detail"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+            </div>
+            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+        `;
+        loadCustodiaOnly();
+    }
+
+    let fullCustodiaList = [];
+    async function loadCustodiaOnly() {
+        if (!window.activeSession) return;
+        // Cargar stats
+        const stats = await apiFetch('/api/events/stats?session_id=' + window.activeSession.id);
+        const hero = document.getElementById('custodia-hero');
+        if (stats && hero) {
+            hero.innerHTML = `
+                <div class="stat-card" style="text-align:center; border-bottom:5px solid var(--success); padding:30px;">
+                    <div style="font-size:1rem; color:var(--muted); font-weight:700;">VEHÍCULOS EN RECINTO</div>
+                    <div style="font-size:4rem; font-weight:900; color:var(--success)">${stats.custody || stats.in_custody || 0}</div>
+                </div>
+            `;
+        }
+
+        const res = await apiFetch('/api/events/detail/CUSTODIA?session_id=' + window.activeSession.id);
+        if (res && res.list) {
+            fullCustodiaList = res.list;
+            renderCustodiaList(fullCustodiaList);
+        }
+    }
+
+    function filterCustodia(q) {
+        const filtered = fullCustodiaList.filter(v => v.plate.includes(q.toUpperCase()));
+        renderCustodiaList(filtered);
+    }
+
+    function renderCustodiaList(list) {
+        const container = document.getElementById('custodia-list-detail');
+        if (!container) return;
+
+        // Estilo de rejilla responsiva (6 columnas en desktop)
+        container.style.display = 'grid';
+        container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+        container.style.gap = '15px';
+
+        const sorted = [...list].sort((a, b) => {
+            const aReq = a.status === 'pending_retrieval';
+            const bReq = b.status === 'pending_retrieval';
+            if (aReq && !bReq) return -1;
+            if (!aReq && bReq) return 1;
+            return 0;
+        });
+
+        container.innerHTML = sorted.map(v => {
+            const time = v.time_in || '--:--';
+            return `
+                <div class="vehicle-card" onclick="viewVehicleDetail(${v.id})" style="border-top:4px solid ${v.status === 'pending_retrieval' ? 'var(--danger)' : 'var(--success)'}; margin-bottom:0; cursor:pointer; position:relative; overflow:hidden; padding:15px; height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+                    ${v.status === 'pending_retrieval' ? `
+                        <div style="position:absolute; top:0; right:0; background:var(--danger); color:white; font-size:0.5rem; font-weight:900; padding:2px 6px; border-bottom-left-radius:8px; animation: pulse 1s infinite;">PEDIDO</div>
+                    ` : ''}
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div class="plate-tag" style="font-size:0.9rem; padding:2px 8px;">${v.plate}</div>
+                            <div style="font-size:0.6rem; color:var(--muted)">${time}</div>
+                        </div>
+                        <div style="font-weight:800; font-size:0.85rem; color:white; margin-bottom:4px;">${(v.owner_name || 'SIN NOMBRE').toUpperCase()}</div>
+                        <div style="font-size:0.7rem; color:var(--accent2); font-weight:700; text-transform:uppercase;">
+                            ${v.brand || ''} ${v.model || ''}
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:700;">${v.color || 'N/A'}</div>
+                            <div style="font-size:0.7rem; color:var(--accent); font-weight:800;">#${String(v.daily_seq || 0).padStart(5, '0')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('') || '<p style="grid-column:1/-1; text-align:center; color:var(--muted)">NO SE ENCONTRARON VEHÍCULOS</p>';
+    }
+
+    async function viewStatsDetail(type) {
+        const container = document.getElementById('stats-detail-list');
+        showLoading('CARGANDO DETALLE...');
+        const res = await apiFetch('/api/events/detail/' + type);
+        hideLoading();
+        if (!res) return;
+
+        container.innerHTML = `
+            <div class="card" style="border:1px solid var(--accent)">
+                <h3 style="margin-top:0">DETALLE: ${type}</h3>
+                <div style="overflow-x:auto">
+                    <table class="table" style="font-size:0.85rem;">
+                        <thead>
+                            <tr><th>PLACA</th><th>NOMBRE</th><th>HORA</th></tr>
+                        </thead>
+                        <tbody>
+                            ${res.list.map(v => `
+                                <tr onclick="viewVehicleDetail(${v.id})" style="cursor:pointer">
+                                    <td><b>${v.plate}</b></td>
+                                    <td>${v.owner_name || '—'}</td>
+                                    <td>${v.time || '—'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function updateEventStats() {
+        const session = await apiFetch('/api/sessions/active');
+        const nameEl = document.getElementById('active-session-name');
+        
+        if (session && !session.error) {
+            nameEl.textContent = session.name;
+            const stats = await apiFetch('/api/sessions/active/stats');
+            if (stats) {
+                document.getElementById('val-reservations').textContent = stats.reservations || 0;
+                document.getElementById('val-recibidos').textContent = stats.recibidos || 0;
+                document.getElementById('val-custodia').textContent = stats.custodia || 0;
+                document.getElementById('val-entregados').textContent = stats.entregados || 0;
+            }
+        } else {
+            nameEl.textContent = 'SIN EVENTO ACTIVO';
+        }
+    }
+
+    async function updateEventSessionUI() {
+        const container = document.getElementById('event-session-status');
+        const session = await apiFetch('/api/sessions/active');
+        if (session && !session.error) {
+            container.innerHTML = `
+                <div style="color:var(--success); font-weight:800; font-size:1.2rem; margin-bottom:10px">● ACTIVA</div>
+                <div style="font-size:1.1rem">${session.name}</div>
+                <div style="color:var(--muted); font-size:0.8rem; margin-top:5px">Iniciada: ${new Date(session.created_at || Date.now()).toLocaleString()}</div>
+            `;
+        } else {
+            container.innerHTML = `<div style="color:var(--muted)">No hay una sesión de trabajo activa.</div>`;
+        }
+    }
+
+    async function startNewSession() {
+        const name = prompt('Nombre del evento o jornada (ej: Boda Familia Perez):');
+        if (!name) return;
+        
+        // Obtener lista de staff disponible (que no esté en sesión activa)
+        const staffRes = await apiFetch('/api/staff');
+        const staff = (staffRes && staffRes.staff) ? staffRes.staff : [];
+        const availableStaff = staff.filter(s => !s.current_session_id);
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:450px; text-align:left;">
+                <h2 style="margin-bottom:20px; font-size:1.4rem; color:#fff; text-align:center; font-weight:800;">🚀 INICIAR EVENTO</h2>
+                
+                <div class="field">
+                    <label>NOMBRE DEL EVENTO</label>
+                    <input type="text" value="${name}" readonly style="background:rgba(255,255,255,0.03); border:1px solid var(--border); opacity:0.8;">
+                </div>
+
+                <div class="field" style="margin-top:15px;">
+                    <label>ASIGNAR SUPERVISOR (OBLIGATORIO)</label>
+                    <select id="new-session-supervisor" required style="background:var(--surface2); border:1px solid var(--accent); color:#fff; height:45px;">
+                        <option value="">SELECCIONE...</option>
+                        ${availableStaff.map(s => `<option value="${s.id}">${s.name.toUpperCase()}</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="field" style="margin-top:15px;">
+                    <label>PERSONAL ASIGNADO ADICIONAL</label>
+                    <div id="new-session-staff-list" style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; max-height:180px; overflow-y:auto; padding:5px;">
+                        ${availableStaff.map(s => `
+                            <label style="display:flex; align-items:center; gap:12px; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;">
+                                <input type="checkbox" class="staff-checkbox" value="${s.id}" style="width:18px; height:18px;">
+                                <div style="flex:1">
+                                    <div style="font-size:0.85rem; font-weight:600; color:#fff;">${s.name}</div>
+                                </div>
+                            </label>
+                        `).join('')}
+                        ${availableStaff.length === 0 ? '<div style="padding:20px; text-align:center; color:var(--danger); font-size:0.8rem;">TODOS LOS EMPLEADOS ESTÁN OCUPADOS</div>' : ''}
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; margin-top:25px;">
+                    <button class="btn btn-primary" style="flex:1; height:50px; font-weight:800;" onclick="confirmNewSession('${name}')">INICIAR EVENTO</button>
+                    <button class="btn btn-secondary" style="flex:1; height:50px; font-weight:800;" onclick="this.closest('.modal-overlay').remove()">CANCELAR</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.confirmNewSession = async function(name) {
+        const supervisor_id = document.getElementById('new-session-supervisor').value;
+        if (!supervisor_id) return toast('DEBE ASIGNAR UN SUPERVISOR', 'error');
+        
+        const staff_ids = Array.from(document.querySelectorAll('.staff-checkbox:checked')).map(cb => cb.value);
+        
+        document.querySelector('.modal-overlay.open').remove();
+        showLoading('INICIANDO EVENTO...');
+        
+        try {
+            // 1. Planificar
+            const res = await apiFetch('/api/sessions/plan', {
+                method: 'POST',
+                body: JSON.stringify({ name, type: 'valet', supervisor_id, staff_ids })
+            });
+
+            if (res && res.error) return toast(res.error, 'error');
+
+            if (res && res.id) {
+                // 2. Activar inmediatamente con todo el personal
+                await apiFetch('/api/sessions/activate', {
+                    method: 'POST',
+                    body: JSON.stringify({ id: res.id, supervisor_id, staff_ids })
+                });
+                
+                toast('🚀 EVENTO INICIADO CON ÉXITO', 'success');
+                location.reload();
+            }
+        } catch (e) {
+            toast('❌ ERROR AL INICIAR', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderCheckin(el) {
+        currentDamageMarks = [];
+        photoData = {};
+        el.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">🚗 RECEPCIÓN</h1>
+                <a href="manual.html" target="_blank" style="text-decoration:none; background:rgba(255,255,255,0.05); padding:8px 15px; border-radius:10px; font-size:0.7rem; color:var(--muted); font-weight:800; border:1px solid var(--border);">📖 MANUAL</a>
+            </div>
+            
+            <div class="grid" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <!-- SECCIÓN DE ESCANEO IA (REGLA DE LAS 4 FOTOS) -->
+                <div class="stat-card" style="width: 100%; max-width: 500px; border-top: 4px solid var(--accent); position: relative; overflow: hidden;">
+                    <div style="background: rgba(99, 102, 241, 0.1); margin: -20px -20px 20px -20px; padding: 15px; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                            📸 CAPTURA DE VEHÍCULO (5 FOTOS)
+                        </div>
+                        <div style="font-size: 0.65rem; color: var(--muted); margin-top: 4px; font-weight: 600;">PLACA + 4 ÁNGULOS PRINCIPALES</div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                        <!-- FOTO PLACA (FULL WIDTH) -->
+                        <div class="photo-slot" onclick="triggerPhoto('plate')" id="slot-plate" style="height: 140px; width:100%;">
+                            <span style="font-size: 1rem; font-weight: 900; opacity: 0.2; position: absolute; top: 10px; right: 15px;">PLACA</span>
+                            <i>📷</i><span class="photo-label">PLACA</span>
+                        </div>
+                        
+                        <!-- 4 FOTOS GRID -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="photo-slot" onclick="triggerPhoto(1)" id="slot-1" style="height: 110px;">
+                                <span style="font-size: 1.2rem; font-weight: 900; opacity: 0.2; position: absolute; top: 5px; right: 10px;">F1</span>
+                                <i>📷</i><span class="photo-label">FOTO 1</span>
+                            </div>
+                            <div class="photo-slot" onclick="triggerPhoto(2)" id="slot-2" style="height: 110px;">
+                                <span style="font-size: 1.2rem; font-weight: 900; opacity: 0.2; position: absolute; top: 5px; right: 10px;">F2</span>
+                                <i>📷</i><span class="photo-label">FOTO 2</span>
+                            </div>
+                            <div class="photo-slot" onclick="triggerPhoto(3)" id="slot-3" style="height: 110px;">
+                                <span style="font-size: 1.2rem; font-weight: 900; opacity: 0.2; position: absolute; top: 5px; right: 10px;">F3</span>
+                                <i>📷</i><span class="photo-label">FOTO 3</span>
+                            </div>
+                            <div class="photo-slot" onclick="triggerPhoto(4)" id="slot-4" style="height: 110px;">
+                                <span style="font-size: 1.2rem; font-weight: 900; opacity: 0.2; position: absolute; top: 5px; right: 10px;">F4</span>
+                                <i>📷</i><span class="photo-label">FOTO 4</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="btn-ai-scan" class="btn" style="width: 100%; height: 55px; font-weight: 900; background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%); border: none; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);" onclick="processAIPhotos()">
+                        🤖 ANALIZAR CON IA Y AUTOCOMPLETAR
+                    </button>
+                </div>
+
+                <div class="stat-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
+                    <div style="font-size:0.7rem; color:var(--accent); font-weight:800; margin-bottom:15px; letter-spacing:1px; text-align:center;">VERIFIQUE LOS DATOS ANTES DE DAR ENTRADA</div>
+                    
+                    <div id="duplicate-plate-alert" style="display:none; background:#fef2f2; border:2px solid #ef4444; color:#991b1b; padding:15px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:900; animation: blink-red 1s infinite;">
+                        ⚠️ ¡ALERTA! ESTA PLACA YA SE ENCUENTRA EN EL RECINTO
+                    </div>
+
+                    <div class="field">
+                        <label>TIPO DE VEHÍCULO <span style="color:var(--brand-red)">*</span></label>
+                        <select id="in-vehicle-type" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;" onchange="updateBlueprint(this.value)">
+                            <option value="car">🚗 VEHÍCULO / COCHE</option>
+                            <option value="moto">🏍️ MOTO / SCOOTER</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label>PLACA * OBLIGATORIO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-plate" placeholder="EJ: ABC-123" oninput="handlePlateInput(this.value)" onblur="checkPlateComplete(this.value)" list="predictive-plates" required></div>
+                    <datalist id="predictive-plates"></datalist>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div class="field"><label>MARCA <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-brand" placeholder="EJ: TOYOTA" required></div>
+                        <div class="field"><label>MODELO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-model" placeholder="EJ: COROLLA" required></div>
+                    </div>
+                    
+                    <div class="field"><label>COLOR <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-color" placeholder="EJ: BLANCO" required></div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div class="field"><label>NOMBRE <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-owner" placeholder="EJ: JUAN PEREZ" oninput="handleOwnerInput(this.value)" list="predictive-owners" required></div>
+                        <datalist id="predictive-owners"></datalist>
+                        <div class="field"><label>CONTACTO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-phone" placeholder="EJ: +584141234567" required></div>
+                    </div>
+                    <div class="field"><label>EMAIL <span style="color:var(--brand-red)">*</span></label><input type="email" id="in-email" placeholder="EJ: CLIENTE@CORREO.COM" required></div>
+
+                    <div class="detail-section-title" style="margin-top:20px">INSPECCIÓN DE ENTRADA</div>
+                    <div style="border-bottom: 1px solid var(--border); margin: 10px 0 20px 0; opacity: 0.3;"></div>
+                    <div class="damage-canvas" onclick="markDamage(event)" style="max-width:320px; background:white; padding:0; border-radius:15px; position:relative; overflow:hidden; border:1px solid var(--border);">
+                        <img id="blueprint-img" src="car-blueprint.png" style="width:100%; display:block; pointer-events:none;">
+                        <svg viewBox="0 0 1000 1000" id="damage-svg" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+                            <g id="damage-marks"></g>
+                        </svg>
+                    </div>
+                    <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+                    <button class="btn btn-sm btn-secondary" onclick="clearDamage()" style="width:100%; margin-bottom:20px;">🧹 LIMPIAR MARCAS</button>
+                    <textarea id="in-notes" placeholder="NOTAS ADICIONALES SOBRE EL ESTADO..." style="height:80px; margin-bottom:20px;"></textarea>
+
+                    <input type="file" id="photo-input" accept="image/*,image/heic,image/heif,image/webp" capture="environment" style="display:none" onchange="handlePhoto(this)">
+                    
+                    <button class="btn" style="width:100%; margin-top:30px; height:70px; font-size:1.4rem" onclick="processCheckin()">GENERAR TICKET</button>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+            </div>
+            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+        `;
+    }
+
+    window.updateBlueprint = function(type) {
+        const img = document.getElementById('blueprint-img');
+        if (img) {
+            img.src = type === 'moto' ? 'moto-blueprint.png' : 'car-blueprint.png';
+        }
+        currentDamageMarks = [];
+        renderDamageMarks();
+    }
+
+    let currentDamageMarks = [];
+    let photoData = {};
+    let activePhotoSlot = null;
+
+    function markDamage(e) {
+        const svg = document.getElementById('damage-svg');
+        const rect = svg.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 1000;
+        const y = ((e.clientY - rect.top) / rect.height) * 1000;
+        currentDamageMarks.push({x, y});
+        renderDamageMarks();
+    }
+
+    function renderDamageMarks() {
+        const g = document.getElementById('damage-marks');
+        g.innerHTML = currentDamageMarks.map(m => `<circle cx="${m.x}" cy="${m.y}" r="20" fill="var(--brand-red)" stroke="white" stroke-width="4"/>`).join('');
+    }
+
+    function clearDamage() { currentDamageMarks = []; renderDamageMarks(); }
+
+    async function processAIPhotos() {
+        const images = Object.values(photoData);
+        if (images.length === 0) {
+            return toast('📸 TOMA AL MENOS 1 FOTO PARA ANALIZAR', 'warning');
+        }
+
+        const btn = document.getElementById('btn-ai-scan');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '🤖 ANALIZANDO...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+
+        showLoading('🤖 IA ANALIZANDO VEHÍCULO...');
+
+        try {
+            const res = await apiFetch('/api/ai/scan-vehicle', {
+                method: 'POST',
+                body: JSON.stringify({ images })
+            });
+
+            if (res && res.success) {
+                if (res.plate && !res.plate.toUpperCase().includes('REVISAR')) document.getElementById('in-plate').value = res.plate.toUpperCase();
+                if (res.brand && !res.brand.toUpperCase().includes('REVISAR')) document.getElementById('in-brand').value = res.brand.toUpperCase();
+                if (res.model && !res.model.toUpperCase().includes('REVISAR')) document.getElementById('in-model').value = res.model.toUpperCase();
+                if (res.color && !res.color.toUpperCase().includes('REVISAR')) document.getElementById('in-color').value = res.color.toUpperCase();
+                
+                if (res.comments && !res.comments.toUpperCase().includes('REVISAR')) {
+                    const notesEl = document.getElementById('in-notes');
+                    if (notesEl.value) notesEl.value += '\n';
+                    notesEl.value += `[IA]: ${res.comments}`;
+                }
+
+                toast('✅ DATOS RECONOCIDOS POR IA', 'success');
+            } else {
+                toast('⚠️ IA NO PUDO RECONOCER TODOS LOS DATOS', 'warning');
+            }
+        } catch (e) {
+            toast('❌ ERROR EN EL ESCANEO IA', 'error');
+        } finally {
+            hideLoading();
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+    }
+
+    async function triggerPhoto(idx) {
+        activePhotoSlot = idx;
+        document.getElementById('photo-input').click();
+    }
+
+    async function handlePhoto(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        
+        showLoading('OPTIMIZANDO IMAGEN...');
+        
+        try {
+            // Comprimimos a un tamaño razonable para el slot y para la IA
+            const base64 = await compressImage(file, 1024, 0.7);
+            photoData[activePhotoSlot] = base64;
+            const slot = document.getElementById('slot-' + activePhotoSlot);
+            slot.classList.add('filled');
+            const displayLabel = activePhotoSlot === 'plate' ? 'PLACA' : 'FOTO ' + activePhotoSlot;
+            slot.innerHTML = `
+                <img src="${base64}">
+                <span style="font-size: 0.8rem; font-weight: 900; opacity: 0.9; position: absolute; top: 5px; right: 10px; color: white; text-shadow: 0 0 10px black; background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px;">${displayLabel}</span>
+                <button type="button" onclick="removePhoto('${activePhotoSlot}', event)" style="position:absolute; bottom:8px; right:8px; background:rgba(220,38,38,0.9); color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:14px; font-weight:bold; display:flex; align-items:center; justify-content:center; z-index:10; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">✕</button>
+            `;
+            toast('📸 FOTO CAPTURADA', 'success');
+        } catch (e) {
+            toast('Error al procesar foto', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+    function removePhoto(idx, event) {
+        if (event) event.stopPropagation();
+        delete photoData[idx];
+        const slot = document.getElementById('slot-' + idx);
+        slot.classList.remove('filled');
+        const displayLabel = idx === 'plate' ? 'PLACA' : 'FOTO ' + idx;
+        const shortLabel = idx === 'plate' ? 'PLACA' : 'F' + idx;
+        const topPos = idx === 'plate' ? '10px' : '5px';
+        
+        slot.innerHTML = `
+            <span style="font-size: ${idx === 'plate' ? '1rem' : '1.2rem'}; font-weight: 900; opacity: 0.2; position: absolute; top: ${topPos}; right: 10px;">${shortLabel}</span>
+            <i>📷</i><span class="photo-label">${displayLabel}</span>
+        `;
+        toast('🗑️ FOTO ELIMINADA', 'info');
+    }
+
+    function compressImage(file, maxWidth = 1200, quality = 0.7) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = maxWidth;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+            };
+        });
+    }
+
+    async function renderCheckout(el) {
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">📤 ENTREGA</h1></div>
+            <div style="display:flex; flex-direction:column; gap:20px;">
+                <div class="stat-card">
+                    <div class="field"><label>BUSCADOR RAPIDO</label>
+                        <input type="text" id="out-search" list="active-plates" placeholder="BUSCAR PLACA..." oninput="searchCheckout(this.value)" style="text-transform:uppercase; font-size:1.5rem; text-align:center; height:60px;">
+                        <datalist id="active-plates"></datalist>
+                    </div>
+                    <div id="out-results" style="margin-top:20px"></div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2 style="margin-top:0; margin-bottom:15px; font-size:1.2rem;">🏎️ VEHÍCULOS SOLICITADOS</h2>
+                    <div id="out-grid" style="display:grid; grid-template-columns:1fr; gap:15px;">CARGANDO VEHÍCULOS...</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+            </div>
+            <div class="chat-access-btn" style="margin-top:20px" onclick="showGlobalChat()">💬 ACCEDER AL CENTRO DE MENSAJES</div>
+            <div class="footer-info">COPYRIGHT EYE STAFF 2026 - v1.1</div>
+        `;
+        loadActivePlates();
+        loadCheckoutGrid();
+    }
+
+    async function loadCheckoutGrid() {
+        const data = await apiFetch('/api/vehicles/active');
+        const grid = document.getElementById('out-grid');
+        if (data && data.vehicles) {
+            grid.innerHTML = data.vehicles.map(v => `
+                <div class="vehicle-card photo-tooltip-trigger" onclick="viewVehicleDetail(${v.id})">
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div class="plate-tag">${v.plate}</div>
+                        <div style="background:var(--accent); color:white; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px;">#${(v.daily_seq || 0).toString().padStart(5, '0')}</div>
+                    </div>
+                    <div style="margin-top:10px; font-weight:700; color:var(--accent2)">${v.brand || 'Vehículo'}</div>
+                    <div style="font-size:0.8rem; color:var(--muted)">${v.owner_name || ''}</div>
+                    ${v.first_photo ? `
+                        <div class="photo-tooltip">
+                            <img src="/api/photos/${v.first_photo}" style="width:180px; border-radius:8px">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('') || '<p>No hay vehículos para entregar</p>';
+        }
+    }
+
+    async function loadActivePlates() {
+        const data = await apiFetch('/api/vehicles/active');
+        const dl = document.getElementById('active-plates');
+        if (data?.vehicles) {
+            dl.innerHTML = data.vehicles.map(v => `<option value="${v.plate}">`).join('');
+        }
+    }
+
+    async function searchCheckout(q) {
+        if (q.length < 2) return document.getElementById('out-results').innerHTML = '';
+        const data = await apiFetch('/api/vehicles/search?q=' + encodeURIComponent(q));
+        const results = document.getElementById('out-results');
+        results.innerHTML = data?.map(v => `
+            <div class="vehicle-card" onclick="viewVehicleDetail(${v.id})">
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <div class="plate-tag">${v.plate}</div>
+                    <span style="font-size:0.8rem; color:var(--muted)">${v.owner_name || ''}</span>
+                </div>
+            </div>
+        `).join('') || '<p>No se encontraron resultados</p>';
+    }
+
+    async function viewVehicleDetail(id) {
+        const v = await apiFetch('/api/vehicles/' + id);
+        if (!v) return;
+        
+        const marks = v.damage_json ? JSON.parse(v.damage_json) : [];
+        const modalBody = document.getElementById('modal-body');
+
+        const statusLabels = {
+            'parked': 'EN CUSTODIA',
+            'pending_retrieval': 'PEDIDO',
+            'retrieved': 'ENTREGADO',
+            'delivering': 'ENTREGANDO',
+            'requested': 'SOLICITADO'
+        };
+        const displayStatus = statusLabels[v.status] || v.status.toUpperCase();
+        
+        modalBody.innerHTML = `
+            <h2 style="margin-top:0">${v.plate}</h2>
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px">
+                <div><label>NOMBRE</label><div>${(v.owner_name || '—').toUpperCase()}</div></div>
+                <div><label>ESTADO</label><div style="color:var(--accent2); font-weight:900;">${displayStatus}</div></div>
+            </div>
+
+            <div id="security-verification-box" style="background:#064e3b20; border:1px solid #10b981; padding:15px; border-radius:12px; margin-bottom:20px; text-align:center;">
+                <div style="font-size:0.7rem; color:#10b981; font-weight:800; margin-bottom:5px; text-transform:uppercase;">Claves Dinámicas (Verificar al entregar)</div>
+                <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+                    <div style="font-size:1.4rem; font-weight:900; letter-spacing:3px;">
+                        <span>${v.auth_token_1 || '—'}</span>
+                        <span>${v.auth_token_2 || '—'}</span>
+                    </div>
+                    <button id="btn-verify-security" class="btn btn-sm" style="background:#10b981; color:white; padding:5px 15px;" onclick="verifySecurityTokens(${v.id})">VERIFICAR QR</button>
+                </div>
+                <div id="verification-status" style="font-size:0.6rem; color:#10b981; font-weight:800; margin-top:8px; display:none;">✅ IDENTIDAD CONFIRMADA</div>
+            </div>
+            
+            <div class="detail-section-title">INSPECCIÓN DE ENTRADA</div>
+            <div style="border-bottom: 1px solid var(--border); margin: 10px 0 20px 0; opacity: 0.3;"></div>
+            <div class="damage-canvas" style="margin-bottom:20px; max-width:320px; background:white; padding:0; border-radius:15px; position:relative; overflow:hidden; border:1px solid var(--border);">
+                <img src="${v.vehicle_type === 'moto' ? 'moto-blueprint.png' : 'car-blueprint.png'}" style="width:100%; display:block; pointer-events:none;">
+                <svg viewBox="0 0 1000 1000" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+                    <g id="detail-damage-marks">
+                        ${marks.map(m => `<circle cx="${m.x}" cy="${m.y}" r="25" fill="var(--accent2)" stroke="white" stroke-width="5"/>`).join('')}
+                    </g>
+                </svg>
+            </div>
+            
+
+
+            <div class="detail-section-title">Fotos de Evidencia</div>
+            <div id="detail-photos" class="photo-grid" style="margin-bottom:20px">Cargando fotos...</div>
+            
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                <button id="btn-do-checkout" class="btn" style="flex:2; min-height:50px; font-size:0.8rem; padding: 5px 15px; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; line-height: 1.2; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); opacity: 0.4;" onclick="doCheckout(${v.id}, '${v.owner_phone || ''}', '${v.plate}', '${v.owner_name || ''}', '${v.brand || ''}')" disabled>ENTREGAR VEHÍCULO Y NOTIFICAR</button>
+                <button class="btn btn-secondary" style="flex:1; min-height:50px; font-size:0.9rem; display: inline-flex; align-items: center; justify-content: center; text-align: center;" onclick="closeModal()">CERRAR</button>
+            </div>
+        `;
+        openModal();
+        loadDetailPhotos(v.id);
+    }
+
+    async function loadStaffChat(vehicleId) {
+        const messages = await apiFetch('/api/messages/' + vehicleId);
+        const box = document.getElementById('staff-chat-box');
+        if (messages && messages.length > 0) {
+            box.innerHTML = messages.map(m => `
+                <div style="align-self:${m.from_role === 'staff' ? 'flex-end' : 'flex-start'}; background:${m.from_role === 'staff' ? 'var(--accent)' : 'var(--surface)'}; color:white; padding:8px 12px; border-radius:12px; max-width:80%; font-size:0.8rem; border-bottom-${m.from_role === 'staff' ? 'right' : 'left'}-radius:2px;">
+                    ${m.text}
+                </div>
+            `).join('');
+            box.scrollTop = box.scrollHeight;
+        } else {
+            box.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:0.7rem; margin-top:60px;">No hay mensajes</div>';
+        }
+    }
+
+    async function sendStaffMessage(vehicleId) {
+        const input = document.getElementById('staff-chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        await apiFetch('/api/messages/' + vehicleId, { method: 'POST', body: JSON.stringify({ text }) });
+        loadStaffChat(vehicleId);
+    }
+
+    function shareTelegram(phone, plate, code) {
+        if (!phone) {
+            toast('⚠️ Este cliente no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const ticketUrl = `${API_BASE}/ticket/${code}`;
+        const msg = `🚗 *EYE STAFF — Ticket Valet Parking*\n\nHola, bienvenido/a. Aquí está el registro digital de tu vehículo:\n\n📋 *Placa:* ${plate}\n🔗 *Ver ticket y fotos aquí:*\n${ticketUrl}\n\n_Para solicitar tu vehículo, muestra este mensaje o el código al coordinador._`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+        toast('✅ Abriendo Telegram con ticket del cliente...', 'success');
+    }
+
+    async function loadDetailPhotos(id) {
+        const data = await apiFetch(`/api/vehicles/${id}/photos`);
+        const el = document.getElementById('detail-photos');
+        if (data?.photos?.length) {
+            el.innerHTML = data.photos.map((p, idx) => {
+                // Forzar URL absoluta para evitar problemas de base path
+                const baseUrl = window.location.origin;
+                const photoUrl = p.url.startsWith('/') ? p.url : `/api/photos/${p.url}`;
+                const fullUrl = baseUrl + photoUrl;
+
+                return `
+                    <div class="photo-slot filled" style="background:#1a1a1a; cursor:pointer;" onclick="openPhotoViewer(${JSON.stringify(data.photos.map(x => x.url.startsWith('/') ? x.url : '/api/photos/' + x.url)).replace(/"/g, '&quot;')}, ${idx})">
+                        <img src="${fullUrl}" 
+                             style="width:100%; height:100%; object-fit:cover; display:block;" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=ERROR+FOTO'; this.parentElement.style.borderColor='var(--danger)';"
+                             onload="this.style.opacity='1';">
+                    </div>
+                `;
+            }).join('');
+        } else {
+            el.innerHTML = '<p style="grid-column:1/-1; color:var(--muted); text-align:center; padding:20px;">No hay fotos de evidencia registradas</p>';
+        }
+    }
+
+    // --- PHOTO VIEWER ---
+    function openPhotoViewer(urls, startIdx = 0) {
+        let currentIdx = startIdx;
+        const modal = document.getElementById('modal-container');
+        const body = document.getElementById('modal-body');
+        
+        const updateView = () => {
+            body.innerHTML = `
+                <div class="photo-modal-content">
+                    <button class="photo-close-btn" onclick="closeModal()">Cerrar</button>
+                    <div class="photo-viewer-container">
+                        <img src="${API_BASE}/api/photos/${urls[currentIdx]}" class="photo-viewer-img">
+                        ${urls.length > 1 ? `
+                            <div class="photo-viewer-nav">
+                                <button class="photo-nav-btn" id="prev-photo"><i>◀</i></button>
+                                <button class="photo-nav-btn" id="next-photo"><i>▶</i></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div style="text-align:center; margin-top:20px; color:var(--muted); font-size:0.9rem">
+                        Foto ${currentIdx + 1} de ${urls.length}
+                    </div>
+                </div>
+            `;
+            
+            if (urls.length > 1) {
+                document.getElementById('prev-photo').onclick = (e) => { e.stopPropagation(); currentIdx = (currentIdx - 1 + urls.length) % urls.length; updateView(); };
+                document.getElementById('next-photo').onclick = (e) => { e.stopPropagation(); currentIdx = (currentIdx + 1) % urls.length; updateView(); };
+            }
+        };
+
+        updateView();
+        modal.classList.add('open');
+        modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+    }
+
+    // --- PREDICTIVE CHECK-IN ---
+    async function handlePlateInput(val) {
+        if (val.length < 2) {
+            document.getElementById('duplicate-plate-alert').style.display = 'none';
+            return;
+        }
+
+        // 1. Verificar duplicados activos (en recinto)
+        apiFetch('/api/vehicles/active').then(res => {
+            if (res && res.vehicles) {
+                const isDuplicate = res.vehicles.some(v => v.plate.toUpperCase() === val.toUpperCase());
+                document.getElementById('duplicate-plate-alert').style.display = isDuplicate ? 'block' : 'none';
+            }
+        });
+
+        // 2. Sugerencias predictivas (Datalist)
+        apiFetch('/api/vehicles/predictive?q=' + encodeURIComponent(val)).then(res => {
+            if (res) {
+                const dl = document.getElementById('predictive-plates');
+                dl.innerHTML = res.map(v => `<option value="${v.plate}">${v.brand || ''} ${v.model || ''} — ${v.owner_name || ''}</option>`).join('');
+            }
+        });
+
+    }
+
+    async function checkPlateComplete(val) {
+        if (!val || val.trim().length < 3) return;
+        apiFetch('/api/vehicles/by-plate/' + encodeURIComponent(val.trim())).then(data => {
+            if (data && !data.error) {
+                let updated = false;
+                if (data.brand) { document.getElementById('in-brand').value = data.brand; updated = true; }
+                if (data.model) { document.getElementById('in-model').value = data.model; updated = true; }
+                if (data.color) { document.getElementById('in-color').value = data.color; updated = true; }
+                if (data.owner_name) { document.getElementById('in-owner').value = data.owner_name; updated = true; }
+                if (data.owner_phone) { document.getElementById('in-phone').value = data.owner_phone; updated = true; }
+                if (data.owner_email) { document.getElementById('in-email').value = data.owner_email; updated = true; }
+                if (updated) toast('✨ DATOS AUTOCOMPLETADOS', 'success');
+            }
+        });
+    }
+
+    async function handleOwnerInput(val) {
+        if (val.length < 3) return;
+
+        // Sugerencias de nombres
+        apiFetch('/api/customers/predictive?q=' + encodeURIComponent(val)).then(res => {
+            if (res) {
+                const dl = document.getElementById('predictive-owners');
+                dl.innerHTML = res.map(v => `<option value="${v.owner_name}">${v.owner_phone || ''}</option>`).join('');
+                
+                // Si el nombre coincide exactamente, autocompletar contacto
+                const match = res.find(v => v.owner_name.toUpperCase() === val.toUpperCase());
+                if (match) {
+                    if (match.owner_phone) document.getElementById('in-phone').value = match.owner_phone;
+                    if (match.owner_email) document.getElementById('in-email').value = match.owner_email;
+                }
+            }
+        });
+    }
+
+    window.verifySecurityTokens = async function(id) {
+        console.log("Verifying security for vehicle ID:", id);
+        if (confirm("¿HA ESCANEADO EL QR DEL CLIENTE Y COINCIDEN LAS CLAVES DINÁMICAS?")) {
+            // Registrar en el historial de auditoría
+            await apiFetch('/api/events/verify-qr', {
+                method: 'POST',
+                body: JSON.stringify({ id: id })
+            });
+
+            const btn = document.getElementById('btn-do-checkout');
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.classList.add('btn-checkout-titilante');
+            }
+            const verifyBtn = document.getElementById('btn-verify-security');
+            if (verifyBtn) verifyBtn.style.display = 'none';
+            
+            const status = document.getElementById('verification-status');
+            if (status) {
+                status.innerHTML = '✅ IDENTIDAD VERIFICADA';
+                status.style.display = 'block';
+            }
+            toast('IDENTIDAD VERIFICADA', 'success');
+        }
+    }
+
+    async function doCheckout(id, phone, plate, ownerName, brand) {
+        if (!confirm('¿CONFIRMAR ENTREGA DEL VEHÍCULO?')) return;
+        
+        showLoading('REGISTRANDO ENTREGA...');
+        const res = await apiFetch('/api/events/checkout', {
+            method: 'POST',
+            body: JSON.stringify({ id: id })
+        });
+        
+        if (res) {
+            hideLoading();
+            toast('✅ Vehículo entregado', 'success');
+            closeModal();
+
+            // [TEMPORALMENTE DESHABILITADO POR SOLICITUD DEL USUARIO]
+            // Telegram Integration (Nativo) - WhatsApp
+            /*
+            if (phone) {
+                try {
+                    const waRes = await apiFetch('/api/valet/notificar', {
+                        method: 'POST',
+                        body: JSON.stringify({ nombre: ownerName || '', vehiculo: brand || '', placa: plate, telefono: phone })
+                    });
+                    if (waRes && waRes.url) {
+                        window.open(waRes.url, '_blank');
+                    }
+                } catch(e) {
+                    console.error('Error enviando WA:', e);
+                }
+            }
+            */
+
+            const sid = window.activeSession ? window.activeSession.id : null;
+            let inCustodyCount = 0;
+            if (sid) {
+                const resAct = await apiFetch('/api/events/detail/CUSTODIA?session_id=' + sid);
+                if (resAct && resAct.list) {
+                    inCustodyCount = resAct.list.length;
+                }
+            }
+
+            if (inCustodyCount === 0) {
+                showTab('home');
+            } else {
+                showTab('resumen');
+            }
+        } else {
+            hideLoading();
+        }
+    }
+
+    async function enviarAlertaWA() {
+        const phone = prompt('Ingrese el teléfono del supervisor o grupo (ej: 04121234567):', '04121234567');
+        if (!phone) return;
+        
+        const msg = prompt('Ingrese el mensaje de alerta:', 'Alerta operativa en Valet Parking');
+        if (!msg) return;
+
+        showLoading('GENERANDO ALERTA WA...');
+        try {
+            const waRes = await apiFetch('/api/staff/alerta', {
+                method: 'POST',
+                body: JSON.stringify({ mensaje: msg, telefono: phone })
+            });
+            if (waRes && waRes.url) {
+                window.open(waRes.url, '_blank');
+                toast('Alerta generada', 'success');
+            }
+        } catch(e) {
+            console.error('Error generando alerta WA:', e);
+            toast('Error generando alerta', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderSettings(el) {
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">⚙️ Ajustes</h1><button class="btn" onclick="saveSettings()">Guardar</button></div>
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="field"><label>Nombre de Empresa</label><input type="text" id="set-name" value="${settings.company_name}"></div>
+                    <div class="field"><label>Moneda</label><input type="text" id="set-currency" value="${settings.currency}"></div>
+                </div>
+                
+                <div class="stat-card" style="margin-top:20px; border-left:4px solid var(--accent2);">
+                    <div class="stat-label" style="color:var(--accent2)">DOCUMENTACIÓN Y ACCESOS</div>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
+                        <a href="/manual.html" target="_blank" class="btn" style="background:var(--accent2); text-decoration:none;">📘 VER MANUAL DE OPERACIÓN (PDF)</a>
+                        <div style="background:var(--surface2); padding:15px; border-radius:10px; font-size:0.85rem; border:1px solid var(--border);">
+                            <strong>Claves de Acceso del Sistema:</strong><br>
+                            • Operaciones: Libres de clave<br>
+                            • Operativo: <code>STAFF-EYE-01</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-top: 40px; margin-bottom: 60px;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderHistory(el) {
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">📜 Historial de Auditoría</h1></div>
+            <div class="stat-card" style="margin-bottom:20px;">
+                <div class="field"><label>Filtrar por Placa</label>
+                    <input type="text" id="hist-search" placeholder="Escribe placa para buscar..." oninput="filterHistory(this.value)" style="text-transform:uppercase">
+                </div>
+            </div>
+            <div id="history-container" class="stat-card" style="padding:0; overflow-x:auto;">
+                <table class="data-table" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="text-align:left; border-bottom:1px solid var(--border)">
+                            <th style="padding:15px">Placa</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr><td colspan="5" style="text-align:center; padding:20px;">Cargando historial...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+        loadHistory();
+    }
+
+    async function loadHistory() {
+        const data = await apiFetch('/api/vehicles');
+        const list = data?.vehicles || data || [];
+        window.fullHistory = list;
+        renderHistoryTable(list);
+    }
+
+    function renderHistoryTable(list) {
+        const tbody = document.getElementById('history-table-body');
+        tbody.innerHTML = list.map(v => `
+            <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:15px"><div class="plate-tag" style="font-size:0.8rem">${v.plate}</div></td>
+                <td style="font-size:0.85rem">${new Date(v.created_at).toLocaleString()}</td>
+                <td style="font-size:0.85rem">${v.check_out_at ? new Date(v.check_out_at).toLocaleString() : '-'}</td>
+                <td><span class="status-dot status-${v.status}"></span> ${v.status === 'parked' ? 'En Parking' : 'Entregado'}</td>
+                <td><button class="btn btn-sm" onclick="viewVehicleDetail(${v.id})">Ver Detalle</button></td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center; padding:20px;">No hay registros</td></tr>';
+    }
+
+    function filterHistory(q) {
+        const filtered = window.fullHistory.filter(v => v.plate.includes(q.toUpperCase()));
+        renderHistoryTable(filtered);
+    }
+
+    async function renderResumen(el) {
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">📋 RESUMEN JORNADA</h1></div>
+            
+            <div class="grid" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <div id="block-custodia" class="stat-card" style="width: 100%; max-width: 500px; cursor: pointer; border-bottom: 5px solid var(--success);">
+                    <div class="stat-label">EN CUSTODIA</div>
+                    <div id="total-custodia" class="stat-value">0</div>
+                    <div id="list-custodia" style="display: none; margin-top: 20px; text-align: left;"></div>
+                </div>
+
+                <div id="block-entregados" class="stat-card" style="width: 100%; max-width: 500px; cursor: pointer; border-bottom: 5px solid var(--warning);">
+                    <div class="stat-label">ENTREGADOS</div>
+                    <div id="total-entregados" class="stat-value">0</div>
+                    <div id="list-entregados" style="display: none; margin-top: 20px; text-align: left;"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+            </div>
+            <div class="footer-info" style="margin-top:40px; text-align:center;">COPYRIGHT EYE STAFF 2026</div>
+        `;
+        
+        document.getElementById('block-entregados').onclick = () => toggleResumenList('list-entregados');
+        document.getElementById('block-custodia').onclick = () => toggleResumenList('list-custodia');
+
+        loadFullResumen();
+    }
+
+    function toggleResumenList(id) {
+        const el = document.getElementById(id);
+        const isHidden = el.style.display === 'none';
+        el.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+            window.lastOpenedResumenList = id;
+        } else if (window.lastOpenedResumenList === id) {
+            window.lastOpenedResumenList = null;
+        }
+        event.stopPropagation();
+    }
+
+    async function loadFullResumen() {
+        if (!window.activeSession) return;
+        const sid = window.activeSession.id;
+        
+        const resDel = await apiFetch('/api/events/detail/ENTREGADOS?session_id=' + sid);
+        if (resDel && resDel.list) {
+            document.getElementById('total-entregados').textContent = resDel.list.length;
+            document.getElementById('list-entregados').innerHTML = renderMiniList(resDel.list, 'var(--warning)');
+        }
+        const resAct = await apiFetch('/api/events/detail/CUSTODIA?session_id=' + sid);
+        if (resAct && resAct.list) {
+            document.getElementById('total-custodia').textContent = resAct.list.length;
+            document.getElementById('list-custodia').innerHTML = renderMiniList(resAct.list, 'var(--success)');
+        }
+
+        if (window.lastOpenedResumenList) {
+            const openEl = document.getElementById(window.lastOpenedResumenList);
+            if (openEl) openEl.style.display = 'block';
+        }
+    }
+
+    function renderMiniList(items, color) {
+        if (!items || items.length === 0) return '<p style="font-size:0.8rem; color:var(--muted); text-align:center;">SIN REGISTROS</p>';
+        return items.map(v => {
+            const time = v.time_out || v.time_in || '--:--';
+            const label = v.time_out ? 'SALIDA' : 'ENTRADA';
+            return `
+            <div onclick="viewVehicleDetail(${v.id}); event.stopPropagation();" style="background:var(--surface2); padding:12px; border-radius:10px; border-left:4px solid ${color}; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border:1px solid var(--border); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='var(--surface2)'">
+                <div>
+                    <div style="font-weight:900; font-size:1.1rem; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+                        ${v.plate}
+                        <span style="font-size:0.7rem; color:var(--accent); font-weight:800;">#${String(v.daily_seq || 0).padStart(5, '0')}</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:white; font-weight:700; margin-top:2px;">${(v.owner_name || '—').toUpperCase()}</div>
+                    <div style="font-size:0.65rem; color:var(--accent2); font-weight:700; text-transform:uppercase; margin-top:2px;">
+                        ${v.brand || ''} ${v.model || ''} | ${v.color || ''}
+                    </div>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">${label}: ${time}</div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function renderResumenItems(items) {
+        const list = document.getElementById('resumen-list');
+        list.innerHTML = items.map(v => `
+            <div class="vehicle-card" style="border-left:4px solid var(--accent2)">
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <div class="plate-tag">${v.plate}</div>
+                    <div style="font-size:0.75rem; color:var(--muted)">ENTREGA: ${formatTime24h(v.check_out_at)}</div>
+                </div>
+                <div style="margin-top:10px; font-weight:700;">${v.owner_name || 'SIN NOMBRE'}</div>
+                <div style="font-size:0.8rem; color:var(--muted)">${v.brand || ''} ${v.model || ''}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; color:var(--muted)">SIN RESULTADOS</p>';
+    }
+
+    function filterResumen(q) {
+        const filtered = fullResumenList.filter(v => v.plate.includes(q.toUpperCase()));
+        renderResumenItems(filtered);
+    }
+
+    // --- API FUNCTIONS ---
+    async function apiFetch(path, options = {}) {
+        const token = localStorage.getItem('token');
+        const webSessionId = localStorage.getItem('web_session_id');
+        const headers = { 
+            'Authorization': 'Bearer ' + token, 
+            'Content-Type': 'application/json',
+            'X-Web-Session-ID': webSessionId, // Header para rastrear actividad
+            ...options.headers 
+        };
+        try {
+            const url = API_BASE + path + (path.includes('?') ? '&' : '?') + 't=' + Date.now();
+            const res = await fetch(url, { ...options, headers, cache: 'no-store' });
+            
+            if (res.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                location.reload();
+                return null;
+            }
+
+            const data = await res.json();
+            if (!res.ok) {
+                if (data.error_code !== 'TRIGGER_FINISH_EVENT' && data.error_code !== 'LAST_EMPLOYEE_CUSTODIA') {
+                    toast(data.error || 'Error en la solicitud', 'error');
+                }
+                return { success: false, error: data.error, error_code: data.error_code, ...data };
+            }
+            return data;
+        } catch (e) {
+            console.error('API Fetch Error:', e);
+            toast('Error de conexión con el servidor', 'error');
+            return { success: false, error: e.message };
+        }
+    }
+
+    async function downloadDailyReport() {
+        showLoading('Generando archivo...');
+        const data = await apiFetch('/api/vehicles/active');
+        if (data && data.vehicles) {
+            let csv = 'PLACA,MARCA,MODELO,NOMBRE,TELÉFONO,ENTRADA\n';
+            data.vehicles.forEach(v => {
+                csv += `"${v.plate}","${v.brand || ''}","${v.model || ''}","${v.owner_name || ''}","${v.owner_phone || ''}","${new Date(v.created_at).toLocaleString()}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `reporte_valet_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        hideLoading();
+    }
+
+    async function sendClosingReport() {
+        if (!confirm('¿Seguro que deseas finalizar la jornada y enviar el reporte a eyestaff.ncarrillo@gmail.com?')) return;
+        
+        showLoading('Generando y enviando reporte...');
+        const res = await apiFetch('/api/reports/send-summary', { method: 'POST' });
+        
+        hideLoading();
+        if (res && res.success) {
+            toast('📧 Reporte enviado con éxito', 'success');
+        } else {
+            toast('Error al enviar reporte', 'error');
+        }
+    }
+
+    async function loadDashboardData() {
+        if (!window.activeSession) return;
+        const sid = window.activeSession.id;
+        
+        const stats = await apiFetch('/api/dashboard/today?session_id=' + sid);
+        if (stats) {
+            document.getElementById('val-parked').textContent = stats.total || 0;
+            document.getElementById('val-checkins').textContent = stats.checkins || 0;
+            document.getElementById('val-earnings').textContent = '$' + (stats.earnings || 0);
+        }
+        const data = await apiFetch('/api/vehicles/active?session_id=' + sid);
+        if (data && data.vehicles) {
+            document.getElementById('dash-recent').innerHTML = data.vehicles.slice(0,8).map(v => `
+                <div class="vehicle-card photo-tooltip-trigger" onclick="viewVehicleDetail(${v.id})">
+                    <div style="display:flex; justify-content:space-between; align-items:start">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <div style="background:var(--accent); color:white; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px;">#${(v.daily_seq || 0).toString().padStart(5, '0')}</div>
+                            <div class="plate-tag">${v.plate}</div>
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--muted)">${formatTime24h(v.created_at)}</div>
+                    </div>
+                    <div style="margin-top:12px; font-weight:700; color:var(--accent2)">${v.brand || 'Vehículo'}</div>
+                    <div style="font-size:0.85rem; margin-top:4px;">${v.owner_name || 'Sin nombre'}</div>
+                    <div style="font-size:0.75rem; color:var(--muted); margin-top:2px;">${v.owner_phone || ''}</div>
+                    
+                    ${v.first_photo ? `
+                        <div class="photo-tooltip">
+                            <div style="font-size:0.7rem; margin-bottom:5px; color:var(--accent2)">VISTA PREVIA</div>
+                            <img src="/api/photos/${v.first_photo}" style="width:220px; border-radius:8px; display:block">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('') || '<p>No hay vehículos activos</p>';
+        }
+    }
+
+    async function processCheckin() {
+        const body = {
+            plate: document.getElementById('in-plate').value.toUpperCase(),
+            owner_name: document.getElementById('in-owner').value,
+            owner_phone: document.getElementById('in-phone').value,
+            brand: document.getElementById('in-brand').value,
+            model: document.getElementById('in-model').value,
+            color: document.getElementById('in-color').value,
+            owner_email: document.getElementById('in-email').value,
+            damage_json: JSON.stringify(currentDamageMarks),
+            damage_notes: document.getElementById('in-notes').value,
+            photos: photoData,
+            session_id: window.activeSession?.id,
+            vehicle_type: document.getElementById('in-vehicle-type')?.value || 'car'
+        };
+        
+        if (!body.plate) return toast('LA PLACA ES OBLIGATORIA', 'error');
+        if (!body.brand) return toast('LA MARCA ES OBLIGATORIA', 'error');
+        if (!body.model) return toast('EL MODELO ES OBLIGATORIO', 'error');
+        if (!body.color) return toast('EL COLOR ES OBLIGATORIO', 'error');
+        if (!body.owner_name) return toast('EL NOMBRE ES OBLIGATORIO', 'error');
+        if (!body.owner_phone) return toast('EL CONTACTO ES OBLIGATORIO', 'error');
+        if (!body.owner_email) return toast('EL EMAIL ES OBLIGATORIO', 'error');
+        if (!body.session_id) return toast('⚠️ NO HAY SESIÓN ACTIVA. INICIE EVENTO EN ADMIN.', 'error');
+        
+        // Validación básica de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(body.owner_email)) return toast('FORMATO DE EMAIL INVÁLIDO', 'error');
+        
+        showLoading('GUARDANDO REGISTRO Y EVIDENCIA...');
+        const res = await apiFetch('/api/events/checkin', { 
+            method: 'POST', 
+            body: JSON.stringify(body) 
+        });
+        
+        if (res && res.vehicle) {
+            hideLoading();
+            const v = res.vehicle;
+            const ticketUrl = `${window.location.origin}/ticket/${res.ticket_code}?v1=${v.auth_token_1}&v2=${v.auth_token_2}`;
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div style="text-align:center">
+                    <div style="font-size:3rem; margin-bottom:10px">✅</div>
+                    <h2 style="margin:0; color:var(--success)">REGISTRO EXITOSO</h2>
+                    <div style="font-size:1.5rem; font-weight:900; margin:20px 0; letter-spacing:2px; background:var(--surface2); padding:10px; border-radius:12px; border:1px dashed var(--border)">${res.vehicle.plate.toUpperCase()}</div>
+                    
+                    <div style="margin:20px 0; background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(ticketUrl)}" style="width:200px; height:200px; display:block;">
+                    </div>
+                    <div style="font-size:0.9rem; color:var(--text); font-weight:700; margin-bottom:20px;">MUESTRE ESTE CÓDIGO AL CLIENTE</div>
+
+                    <div style="text-align:left; background:var(--surface2); padding:15px; border-radius:12px; margin-bottom:20px; font-size:0.9rem">
+                        <div><strong>NOMBRE:</strong> ${(res.vehicle.owner_name || '—').toUpperCase()}</div>
+                        <div style="margin-top:5px; font-size:1.1rem; color:var(--accent)"><strong>TICKET:</strong> #${String(res.daily_seq).padStart(5, '0')}</div>
+                    </div>
+
+                    <button class="btn btn-accent" style="width:100%; height:60px; font-size:1.2rem; margin-bottom:10px" onclick="window.open('${ticketUrl}', '_blank')">VER TICKET DIGITAL</button>
+                    ${getVolverBtn('MENÚ VALET', 'closeModal(); showTab(\'home\');')}
+                    <div id="redirect-timer" style="margin-top:15px; font-size:0.8rem; color:var(--accent); font-weight:700;">VOLVIENDO AL MENÚ EN 15 SEGUNDOS...</div>
+                </div>
+            `;
+            openModal();
+            
+            // Auto-cerrar y volver al inicio tras 15 seg
+            let timeLeft = 15;
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const timerEl = document.getElementById('redirect-timer');
+                if (timerEl) timerEl.textContent = `VOLVIENDO AL MENÚ EN ${timeLeft} SEGUNDOS...`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    const mc = document.getElementById('modal-container');
+                    if (mc && mc.classList.contains('open')) {
+                        closeModal();
+                        showTab('home');
+                    }
+                }
+            }, 1000);
+            
+            // Limpiar intervalo si se cierra manualmente
+            window.lastTimer = timerInterval;
+        } else {
+            hideLoading();
+        }
+    }
+
+    function showLoading(text) {
+        document.getElementById('loading-text').innerText = text;
+        document.getElementById('loading-overlay').classList.add('active');
+    }
+
+    function updateLoadingText(text) {
+        document.getElementById('loading-text').innerText = text;
+    }
+
+    function hideLoading() {
+        document.getElementById('loading-overlay').classList.remove('active');
+    }
+
+    // --- UTILS ---
+    function getVolverBtn(text, action) {
+        return `<button class="btn btn-volver-ux" onclick="${action}">← VOLVER</button>`;
+    }
+
+    function toast(msg, type = 'info') {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.style.borderLeft = `5px solid ${type === 'error' ? 'var(--accent2)' : 'var(--success)'}`;
+        t.textContent = msg;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    async function showGlobalChat() { toast("Centro de mensajes en mantenimiento", "info"); }
+    async function loadSettings() {
+        const data = await apiFetch('/api/settings');
+        if (data) settings = { ...settings, ...data };
+    }
+
+    function openModal() { document.getElementById('modal-container').classList.add('open'); }
+    function closeModal() { 
+        document.getElementById('modal-container').classList.remove('open'); 
+        if (window.lastTimer) { clearInterval(window.lastTimer); window.lastTimer = null; }
+    }
+    function showModal(html) {
+        const modalBody = document.getElementById('modal-body');
+        if (modalBody) {
+            modalBody.innerHTML = html;
+            openModal();
+        }
+    }
+    function fmtDate(d) { return d ? new Date(d).toLocaleString('es-VE') : '—'; }
+    // --- ADMIN & HISTORY ---
+    let isAdminAuthenticated = false;
+
+    async function renderCaptacion(el) {
+        showLoading('CARGANDO POSTULACIONES...');
+        const res = await apiFetch('/api/admin/applications');
+        hideLoading();
+
+        if (!res || !res.applications) return;
+        const apps = res.applications;
+
+        el.innerHTML = `
+            <div class="view-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 class="view-title">🎓 CAPTACIÓN Y FORMACIÓN</h1>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-sm" onclick="window.open('/join', '_blank')" style="background:#22c55e;">🌐 FORMULARIO PÚBLICO</button>
+                </div>
+            </div>
+
+            <div class="stat-card" style="margin-bottom:20px;">
+                <div style="font-size:0.8rem; color:var(--muted); font-weight:800; margin-bottom:15px;">POSTULACIONES RECIBIDAS (${apps.length})</div>
+                <div class="grid" style="grid-template-columns: 1fr; gap:20px;">
+                    ${(() => {
+                        if (apps.length === 0) return '<div style="color:var(--muted); padding:40px; text-align:center;">NO HAY POSTULACIONES REGISTRADAS</div>';
+                        
+                        const getWeekNumber = (d) => {
+                            const dC = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+                            const dayNum = dC.getUTCDay() || 7;
+                            dC.setUTCDate(dC.getUTCDate() + 4 - dayNum);
+                            const yearStart = new Date(Date.UTC(dC.getUTCFullYear(), 0, 1));
+                            return Math.ceil((((dC.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+                        };
+
+                        const groupedApps = apps.reduce((acc, a) => {
+                            const d = new Date(a.created_at);
+                            const w = getWeekNumber(d);
+                            const key = \`SEMANA \${w} - \${d.getFullYear()}\`;
+                            if (!acc[key]) acc[key] = [];
+                            acc[key].push(a);
+                            return acc;
+                        }, {});
+
+                        return Object.keys(groupedApps).map((week, i) => \`
+                            <div style="margin-bottom: 20px;">
+                                <h2 style="font-size:1rem; color:var(--accent); font-weight:800; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:8px;">\${week} (EN REVISIÓN)</h2>
+                                <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:20px;">
+                                    \${groupedApps[week].map(a => \`
+                                        <div class="card" style="background:var(--surface2); border:1px solid var(--border); display:flex; gap:15px; align-items:start; padding:15px; opacity: \${i === 0 ? '1' : '0.6'}; filter: \${i === 0 ? 'none' : 'grayscale(100%)'}; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.filter='none';" onmouseout="this.style.opacity='\${i === 0 ? '1' : '0.6'}'; this.style.filter='\${i === 0 ? 'none' : 'grayscale(100%)'}';">
+                                            <div style="width:80px; height:80px; border-radius:10px; overflow:hidden; background:var(--surface); border:1px solid var(--border);">
+                                                \${a.photo_url ? \`<img src="/api/photos/\${a.photo_url}" style="width:100%; height:100%; object-fit:cover;">\` : \`<i style="font-size:2rem; display:grid; place-items:center; height:100%;">👤</i>\`}
+                                            </div>
+                                            <div style="flex:1;">
+                                                <div style="display:flex; justify-content:space-between; align-items:start;">
+                                                    <div style="font-weight:900; font-size:1rem; color:white;">\${a.name.toUpperCase()}</div>
+                                                    <span style="font-size:0.6rem; padding:3px 8px; border-radius:5px; background:\${a.status === 'pending' ? 'var(--warning)' : a.status === 'hired' ? 'var(--success)' : 'var(--danger)'}; color:white;">\${a.status === 'pending' ? 'PENDIENTE' : a.status.toUpperCase()}</span>
+                                                </div>
+                                                <div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">C.I: \${a.cedula} | TEL: \${formatPhone(a.phone)}</div>
+                                                <div style="font-size:0.75rem; color:var(--accent); font-weight:700; margin-top:5px;">\${a.email}</div>
+                                                <div style="font-size:0.65rem; color:var(--muted); margin-top:8px; line-height:1.4;">\${a.experience.substring(0, 100)}\${a.experience.length > 100 ? '...' : ''}</div>
+                                                <div style="display:flex; gap:8px; margin-top:15px; align-items:center;">
+                                                    <button class="btn btn-sm btn-secondary" style="font-size:0.6rem;" onclick="viewApplicationDetail(\${a.id})">VER DETALLE</button>
+                                                    <select onchange="updateAppStatus(\${a.id}, this.value)" style="font-size:0.6rem; height:32px; background:var(--surface); border:1px solid var(--border); color:white; border-radius:6px; padding:0 5px;">
+                                                        <option value="pending" \${a.status === 'pending' ? 'selected' : ''}>PENDIENTE</option>
+                                                        <option value="interviewed" \${a.status === 'interviewed' ? 'selected' : ''}>ENTREVISTADO</option>
+                                                        <option value="hired" \${a.status === 'hired' ? 'selected' : ''}>CONTRATADO</option>
+                                                        <option value="rejected" \${a.status === 'rejected' ? 'selected' : ''}>RECHAZADO</option>
+                                                    </select>
+                                                    <button onclick="deleteApplication(\${a.id})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; padding:5px; font-size:1.1rem; display:flex; align-items:center;" title="ELIMINAR REGISTRO">🗑️</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    \`).join('')}
+                                </div>
+                            </div>
+                        \`).join('');
+                    })()}
+                </div>
+            
+
+            <!-- Volver footer -->
+            <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
+                ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+            </div>
+        `;
+    }
+
+    window.deleteApplication = async function(id) {
+        if (!confirm('¿ESTÁS SEGURO DE ELIMINAR ESTA POSTULACIÓN? ESTA ACCIÓN NO SE PUEDE DESHACER.')) return;
+        showLoading('ELIMINANDO...');
+        const res = await apiFetch('/api/admin/applications/' + id, { method: 'DELETE' });
+        hideLoading();
+        if (res && res.success) {
+            toast('REGISTRO ELIMINADO', 'success');
+            renderCaptacion(document.getElementById('current-view'));
+        }
+    };
+
+    window.updateAppStatus = async function(id, status) {
+        if (!confirm('¿CAMBIAR ESTADO DE LA POSTULACIÓN?')) return;
+        const res = await apiFetch('/api/admin/applications/' + id + '/status', {
+            method: 'POST',
+            body: JSON.stringify({ status })
+        });
+        if (res && res.success) {
+            toast('ESTADO ACTUALIZADO', 'success');
+            renderCaptacion(document.getElementById('current-view'));
+        }
+    };
+
+    window.viewApplicationDetail = async function(id) {
+        const apps = (await apiFetch('/api/admin/applications')).applications;
+        const a = apps.find(x => x.id === id);
+        if (!a) return;
+
+        showModal(`
+            <div style="text-align:left;">
+                <div style="display:flex; gap:20px; align-items:start; margin-bottom:20px;">
+                    <div style="width:150px; height:150px; border-radius:15px; overflow:hidden; border:2px solid var(--border);">
+                        ${a.photo_url ? `<img src="/api/photos/${a.photo_url}" style="width:100%; height:100%; object-fit:cover;">` : `<i style="font-size:4rem;">👤</i>`}
+                    </div>
+                    <div>
+                        <h2 style="margin:0">${a.name.toUpperCase()}</h2>
+                        <div style="font-weight:800; color:var(--accent); margin-top:5px;">C.I: ${a.cedula}</div>
+                        <div style="margin-top:10px; font-size:0.8rem; color:var(--muted);">NACIMIENTO: ${a.birth_date}</div>
+                        <div style="margin-top:5px; font-size:0.8rem; color:var(--muted);">REGISTRO: ${new Date(a.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="color:var(--accent); font-weight:800; font-size:0.7rem; letter-spacing:1px;">DATOS DE CONTACTO</label>
+                    <div style="background:var(--surface2); padding:15px; border-radius:12px; margin-top:5px; border:1px solid var(--border);">
+                        <div style="margin-bottom:8px;">📞 ${a.phone}</div>
+                        <div style="margin-bottom:8px; color:var(--accent); font-weight:700;">✉️ ${a.email}</div>
+                        <div style="font-size:0.8rem; line-height:1.4;">📍 ${a.address}</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="color:var(--accent); font-weight:800; font-size:0.7rem; letter-spacing:1px;">EXPERIENCIA LABORAL</label>
+                    <div style="background:var(--surface2); padding:15px; border-radius:12px; margin-top:5px; font-size:0.85rem; line-height:1.6; white-space:pre-wrap; border:1px solid var(--border);">${a.experience}</div>
+                </div>
+
+                <button class="btn" onclick="closeModal()" style="background:var(--surface2); border:1px solid var(--border);">CERRAR</button>
+            </div>
+        `);
+    };
+
+    async function renderVehiculos(el) {
+        showLoading('CARGANDO BASE DE DATOS...');
+        try {
+            const data = await apiFetch('/api/admin/vehicles');
+            const vehicles = data?.vehicles || [];
+            window.fullVehiclesList = vehicles;
+            
+            el.innerHTML = `
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1 class="view-title">🏎️ BBDD DE VEHÍCULOS <small style="font-size:0.7rem; color:var(--muted)" id="veh-count">${vehicles.length} REGISTROS</small></h1>
+                    ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+                </div>
+
+                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
+                    <div style="position:relative;">
+                        <input type="text" id="veh-search" placeholder="🔍 BUSCAR PLACA..." 
+                            style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:15px; padding:15px 20px; color:white; font-weight:900; letter-spacing:1px; text-transform:uppercase;"
+                            oninput="filterVehiculos(this.value)">
+                    </div>
+                </div>
+
+                <div id="veh-grid" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:15px; margin-bottom:40px;">
+                    ${renderVehiculosGrid(vehicles)}
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                    ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR BBDD', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.filterVehiculos = function(q) {
+        const filtered = window.fullVehiclesList.filter(v => v.plate.includes(q.toUpperCase()));
+        document.getElementById('veh-grid').innerHTML = renderVehiculosGrid(filtered);
+        document.getElementById('veh-count').textContent = `${filtered.length} REGISTROS`;
+    }
+
+    window.deleteVehicle = async function(plate) {
+        if (!confirm(`¿ESTÁ SEGURO DE ELIMINAR EL VEHÍCULO ${plate} Y TODO SU HISTORIAL? ESTA ACCIÓN ES IRREVERSIBLE.`)) return;
+        showLoading('ELIMINANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/vehicles/${plate}`, { method: 'DELETE' });
+            if (res) {
+                toast('VEHÍCULO ELIMINADO', 'success');
+                renderVehiculos(document.getElementById('current-view'));
+            }
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL ELIMINAR', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function renderVehiculosGrid(list) {
+        if (!list || list.length === 0) return '<div style="grid-column:1/-1; text-align:center; padding:50px; opacity:0.5;">NO SE ENCONTRARON VEHÍCULOS</div>';
+        return list.map(v => {
+            const photos = v.all_photos ? v.all_photos.split(',') : [];
+            return `
+            <div class="admin-globo" style="padding:15px; border-radius:20px; flex-direction:row; justify-content:space-between; align-items:stretch; gap:15px; height:100%; border-left:4px solid var(--warning); position:relative; cursor:default;" onclick="expandVehicleInfo(${JSON.stringify(v).replace(/"/g, '&quot;')})">
+                <div style="flex:1; display:flex; flex-direction:column; gap:5px; cursor:pointer;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="plate-tag" style="margin:0; font-size:1rem; padding:4px 12px;">${v.plate}</div>
+                    </div>
+                    
+                    <div style="margin-top:5px;">
+                        <div style="font-size:0.85rem; font-weight:900; color:#fff; text-transform:uppercase;">${(v.brand || 'S/M')} ${v.model || ''}</div>
+                        <div style="font-size:0.65rem; color:var(--muted); font-weight:700;">COLOR: <span style="color:var(--accent2)">${(v.color || 'N/A').toUpperCase()}</span></div>
+                        <div style="font-size:0.6rem; color:var(--muted); margin-top:4px;">PROPIETARIO:</div>
+                        <div style="font-size:0.7rem; font-weight:800; color:#fff;">${(v.owner_name || 'NO REGISTRADO').toUpperCase()}</div>
+                    </div>
+                    
+                    <div style="font-size:0.5rem; color:var(--muted); margin-top:auto;">ÚLTIMA VISITA: ${new Date(v.created_at).toLocaleDateString()}</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px; width:100px;">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); deleteVehicle('${v.plate}')" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.2); padding:4px 8px; border-radius:8px; font-size:0.6rem; width:fit-content; font-weight:900;">ELIMINAR</button>
+                    
+                    ${photos.length > 0 ? `
+                        <div style="width:100px; height:70px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+                            <img src="/api/photos/${photos[0]}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    ` : `
+                        <div style="width:100px; height:70px; border-radius:10px; border:1px dashed rgba(255,255,255,0.1); display:grid; place-items:center; font-size:0.5rem; color:var(--muted);">SIN FOTO</div>
+                    `}
+                </div>
+            </div>
+        `;}).join('');
+    }
+
+    window.expandVehicleInfo = function(v) {
+        const photos = v.all_photos ? v.all_photos.split(',') : [];
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:600px; padding:0; overflow:hidden; border-radius:28px; background:var(--bg);">
+                <div style="padding:30px; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div class="plate-tag" style="margin:0; font-size:1.8rem; padding:10px 25px;">${v.plate}</div>
+                        <button class="btn btn-secondary btn-sm" onclick="this.closest('.modal-overlay').remove()" style="border-radius:50%; width:40px; height:40px; display:grid; place-items:center; padding:0;">✕</button>
+                    </div>
+                    
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">MARCA / MODELO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.brand || '-').toUpperCase()} ${v.model || ''}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">COLOR</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.color || '-').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">PROPIETARIO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${(v.owner_name || '-').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px;">TELÉFONO</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff;">${v.owner_phone || '-'}</div>
+                        </div>
+                    </div>
+
+                    ${v.damage_notes ? `
+                        <div style="margin-top:20px; padding:15px; background:rgba(239, 68, 68, 0.05); border:1px solid rgba(239, 68, 68, 0.2); border-radius:12px;">
+                            <div style="font-size:0.6rem; color:var(--danger); font-weight:900; letter-spacing:1px;">NOTAS DE DAÑOS</div>
+                            <div style="font-size:0.85rem; color:#fff; margin-top:5px;">${v.damage_notes}</div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div style="padding:20px; background:rgba(0,0,0,0.2);">
+                    <div style="font-size:0.7rem; color:var(--accent2); font-weight:900; margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">📸 REGISTRO FOTOGRÁFICO</div>
+                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+                        ${photos.map(p => `
+                            <img src="/api/photos/${p}" style="height:200px; border-radius:12px; border:1px solid var(--border); cursor:pointer;" onclick="window.open('/api/photos/${p}', '_blank')">
+                        `).join('') || '<div style="color:var(--muted); font-size:0.75rem; font-style:italic;">No hay fotos disponibles</div>'}
+                    </div>
+                </div>
+
+                <div style="padding:20px; display:flex; justify-content:center;">
+                    <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()" style="width: 100%; max-width: 300px; font-weight: 900; letter-spacing: 1px; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); background: var(--success); color: #fff;">CERRAR DETALLES [X]</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    async function showEventReportDetail(reportId) {
+        showLoading('OBTENIENDO DETALLES DEL EVENTO...');
+        try {
+            const data = await apiFetch(`/api/event-reports/${reportId}/details`);
+            if (!data) throw new Error('No se pudieron obtener los datos.');
+
+            const { report, session, vehicles, staff, timeline } = data;
+
+            // Formatear fechas
+            const startStr = session.started_at ? new Date(session.started_at).toLocaleString('es', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' }) : '—';
+            const endStr = session.ended_at ? new Date(session.ended_at).toLocaleString('es', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' }) : '—';
+            const durationStr = session.ended_at && session.started_at ? `${Math.round((new Date(session.ended_at).getTime() - new Date(session.started_at).getTime()) / 60000)} minutos` : '—';
+
+            // Crear Modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(11,15,25,0.85); backdrop-filter:blur(8px); z-index:11000; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+
+            modal.innerHTML = `
+                <div style="background:#0e1320; border:1px solid rgba(255,255,255,0.08); width:100%; max-width:900px; height:85vh; border-radius:24px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5); font-family:var(--font-main); position:relative;">
+                    
+                    <!-- Decoración Superior -->
+                    <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, var(--brand-red), var(--accent));"></div>
+
+                    <!-- Header -->
+                    <div style="padding:25px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.15);">
+                        <div>
+                            <span style="font-size:0.65rem; background:rgba(239,68,68,0.15); color:var(--brand-red); font-weight:900; padding:4px 8px; border-radius:6px; letter-spacing:1px; text-transform:uppercase;">${(session.type || 'VALET').toUpperCase()}</span>
+                            <h2 style="margin:5px 0 0 0; font-size:1.4rem; font-weight:900; color:#fff; letter-spacing:0.5px;">${session.name}</h2>
+                        </div>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; width:36px; height:36px; border-radius:50%; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--brand-red)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#fff'">✕</button>
+                    </div>
+
+                    <!-- Tabs de Navegación -->
+                    <div style="display:flex; background:rgba(0,0,0,0.1); border-bottom:1px solid rgba(255,255,255,0.05); padding:10px 20px; gap:10px; overflow-x:auto;">
+                        <button onclick="switchReportTab(this, 'resumen')" class="report-tab-btn active-tab" style="padding:10px 18px; border-radius:30px; border:none; font-size:0.75rem; font-weight:900; background:rgba(239,68,68,0.15); color:var(--brand-red); cursor:pointer; transition:all 0.2s; letter-spacing:0.5px; white-space:nowrap;">📈 RESUMEN EJECUTIVO</button>
+                        <button onclick="switchReportTab(this, 'vehiculos')" class="report-tab-btn" style="padding:10px 18px; border-radius:30px; border:none; font-size:0.75rem; font-weight:900; background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; letter-spacing:0.5px; white-space:nowrap;">🚗 CLIENTES Y VEHÍCULOS (${vehicles.length})</button>
+                        <button onclick="switchReportTab(this, 'personal')" class="report-tab-btn" style="padding:10px 18px; border-radius:30px; border:none; font-size:0.75rem; font-weight:900; background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; letter-spacing:0.5px; white-space:nowrap;">👤 PERSONAL (${staff.length})</button>
+                        <button onclick="switchReportTab(this, 'timeline')" class="report-tab-btn" style="padding:10px 18px; border-radius:30px; border:none; font-size:0.75rem; font-weight:900; background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; letter-spacing:0.5px; white-space:nowrap;">⏱️ LÍNEA DE TIEMPO (${timeline.length})</button>
+                    </div>
+
+                    <!-- Contenido Scrollable -->
+                    <div id="report-modal-content" style="flex:1; overflow-y:auto; padding:25px; box-sizing:border-box;">
+                        
+                        <!-- TAB: RESUMEN -->
+                        <div id="tab-resumen" class="report-tab-content">
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:25px;">
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; margin-bottom:5px;">VEHÍCULOS RECIBIDOS</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:var(--success);">${vehicles.length}</div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; margin-bottom:5px;">PERSONAL ASIGNADO</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:var(--accent);">${staff.length}</div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; margin-bottom:5px;">DURACIÓN DEL EVENTO</div>
+                                    <div style="font-size:1.1rem; font-weight:900; color:#fff; line-height:1.8rem;">${durationStr}</div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px;">
+                                    <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:1px; margin-bottom:5px;">TIEMPO PROMEDIO</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">${report.summary_json ? JSON.parse(report.summary_json).avg_stay_mins || 0 : 0} <span style="font-size:0.8rem; color:var(--muted);">MIN</span></div>
+                                </div>
+                            </div>
+
+                            <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.05); padding:20px; border-radius:20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                                <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.02);">
+                                    <h3 style="margin:0 0 15px 0; font-size:0.9rem; color:var(--brand-red); font-weight:900; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">DATOS OPERATIVOS</h3>
+                                    <div style="display:flex; flex-direction:column; gap:12px; font-size:0.8rem;">
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Ubicación:</span><span style="color:#fff; font-weight:800; text-align:right;">${session.address || 'N/A'}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Cliente / Contacto:</span><span style="color:#fff; font-weight:800; text-align:right;">${session.contact_name || 'N/A'}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Teléfono:</span><span style="color:#fff; font-weight:800; text-align:right;">${session.phone || 'N/A'}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Email:</span><span style="color:#fff; font-weight:800; text-align:right;">${session.email || 'N/A'}</span></div>
+                                    </div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.02);">
+                                    <h3 style="margin:0 0 15px 0; font-size:0.9rem; color:var(--brand-red); font-weight:900; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">CRONOLOGÍA</h3>
+                                    <div style="display:flex; flex-direction:column; gap:12px; font-size:0.8rem;">
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Apertura de Evento:</span><span style="color:#fff; font-weight:800; text-align:right;">${startStr}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Cierre de Evento:</span><span style="color:#fff; font-weight:800; text-align:right;">${endStr}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">Vehículos Entregados:</span><span style="color:var(--success); font-weight:800; text-align:right;">${vehicles.filter(v => ['delivered','retrieved'].includes(v.status)).length}</span></div>
+                                        <div style="display:flex; justify-content:space-between; gap:10px;"><span style="color:var(--muted); flex-shrink:0;">En Custodia al Cierre:</span><span style="color:var(--brand-red); font-weight:800; text-align:right;">${vehicles.filter(v => !['delivered','retrieved'].includes(v.status)).length}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${session.observations ? `
+                                <div style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; font-size:0.8rem;">
+                                    <div style="font-weight:900; color:var(--accent2); margin-bottom:5px;">OBSERVACIONES / NOTAS OPERATIVAS</div>
+                                    <div style="color:var(--muted); font-style:italic;">${session.observations}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- TAB: VEHICULOS -->
+                        <div id="tab-vehiculos" class="report-tab-content" style="display:none;">
+                            <div style="background:rgba(255,255,255,0.01); border-radius:16px; border:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
+                                <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left; min-width:600px;">
+                                    <thead>
+                                        <tr style="background:rgba(255,255,255,0.03); color:var(--muted); border-bottom:1px solid rgba(255,255,255,0.05);">
+                                            <th style="padding:12px;">#</th>
+                                            <th style="padding:12px;">PLACA</th>
+                                            <th style="padding:12px;">MARCA/COLOR</th>
+                                            <th style="padding:12px;">CLIENTE</th>
+                                            <th style="padding:12px;">ENTRADA</th>
+                                            <th style="padding:12px;">SALIDA</th>
+                                            <th style="padding:12px;">ESTADO</th>
+                                            <th style="padding:12px; text-align:center;">REC.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${vehicles.map((v, i) => {
+                                            const vIn = v.created_at ? new Date(v.created_at).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '—';
+                                            const vOut = v.check_out_at ? new Date(v.check_out_at).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '—';
+                                            const isOut = ['delivered','retrieved'].includes(v.status);
+                                            return `
+                                                <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                                                    <td style="padding:12px; color:var(--muted); font-weight:700;">${i + 1}</td>
+                                                    <td style="padding:12px; font-weight:900; color:var(--brand-red); font-family:var(--font-mono); letter-spacing:0.5px;">${v.plate}</td>
+                                                    <td style="padding:12px; font-weight:700; color:#fff;">${(v.brand||'').toUpperCase()} <small style="color:var(--muted); font-weight:500;">(${(v.color||'').toUpperCase()})</small></td>
+                                                    <td style="padding:12px; color:#fff;">
+                                                        <div style="font-weight:800;">${(v.owner_name||'Particular').toUpperCase()}</div>
+                                                        ${v.owner_phone ? `<div style="font-size:0.6rem; color:var(--muted);">${v.owner_phone}</div>` : ''}
+                                                    </td>
+                                                    <td style="padding:12px; color:#fff; font-weight:700;">${vIn}</td>
+                                                    <td style="padding:12px; color:#fff; font-weight:700;">${vOut}</td>
+                                                    <td style="padding:12px;">
+                                                        <span style="font-size:0.6rem; font-weight:900; padding:4px 8px; border-radius:6px; background:${isOut ? 'rgba(16,185,129,0.12)' : 'rgba(59,130,246,0.12)'}; color:${isOut ? 'var(--success)' : 'var(--accent)'};">
+                                                            ${isOut ? 'ENTREGADO' : 'CUSTODIA'}
+                                                        </span>
+                                                    </td>
+                                                    <td style="padding:12px; text-align:center; font-weight:800; color:${v.recurrence_count > 0 ? 'var(--brand-red)' : 'var(--muted)'};">${v.recurrence_count > 0 ? 'SÍ' : 'NO'}</td>
+                                                </tr>
+                                            `;
+                                        }).join('') || `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">No se registraron vehículos en este evento.</td></tr>`}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: PERSONAL -->
+                        <div id="tab-personal" class="report-tab-content" style="display:none;">
+                            <div style="background:rgba(255,255,255,0.01); border-radius:16px; border:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
+                                <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left; min-width:550px;">
+                                    <thead>
+                                        <tr style="background:rgba(255,255,255,0.03); color:var(--muted); border-bottom:1px solid rgba(255,255,255,0.05);">
+                                            <th style="padding:12px;">NOMBRE</th>
+                                            <th style="padding:12px;">HORA ENTRADA</th>
+                                            <th style="padding:12px;">HORA SALIDA</th>
+                                            <th style="padding:12px; text-align:center;">DESC. (MIN)</th>
+                                            <th style="padding:12px; text-align:center;">JORNADA (MIN)</th>
+                                            <th style="padding:12px; text-align:center;">VEH. ATENDIDOS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${staff.map(s => {
+                                            const sIn = s.entry_time ? new Date(s.entry_time).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '—';
+                                            const sOut = s.exit_time ? new Date(s.exit_time).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '—';
+                                            return `
+                                                <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                                                    <td style="padding:12px; font-weight:800; color:#fff;">${s.name.toUpperCase()}</td>
+                                                    <td style="padding:12px; color:#fff; font-weight:700;">${sIn}</td>
+                                                    <td style="padding:12px; color:#fff; font-weight:700;">${sOut}</td>
+                                                    <td style="padding:12px; text-align:center; font-weight:800; color:#fff;">${s.break_mins}</td>
+                                                    <td style="padding:12px; text-align:center; font-weight:800; color:var(--success);">${s.total_mins}</td>
+                                                    <td style="padding:12px; text-align:center; font-weight:800; color:var(--accent);">${s.vehicles_attended}</td>
+                                                </tr>
+                                            `;
+                                        }).join('') || `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">No hay registros de personal.</td></tr>`}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: TIMELINE -->
+                        <div id="tab-timeline" class="report-tab-content" style="display:none;">
+                            <div style="display:flex; flex-direction:column; gap:16px; position:relative; padding-left:20px; border-left:2px solid rgba(255,255,255,0.05); margin-left:10px;">
+                                ${timeline.map(item => {
+                                    const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '';
+                                    const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('es', {day:'2-digit', month:'short'}) : '';
+                                    return `
+                                        <div style="position:relative; margin-bottom:5px;">
+                                            <!-- Icono y Punto en la Línea -->
+                                            <div style="position:absolute; left:-31px; top:2px; width:22px; height:22px; border-radius:50%; background:#0e1320; border:2px solid ${item.color || 'var(--border)'}; display:flex; align-items:center; justify-content:center; font-size:0.65rem; z-index:2; box-shadow:0 0 8px rgba(0,0,0,0.5);">
+                                                ${item.icon || '📍'}
+                                            </div>
+
+                                            <!-- Card del Suceso -->
+                                            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:flex-start; gap:20px;">
+                                                <div style="flex:1;">
+                                                    <div style="font-weight:900; font-size:0.8rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                        ${item.title}
+                                                    </div>
+                                                    <div style="font-size:0.7rem; color:var(--muted); margin-top:4px; font-weight:500;">
+                                                        ${item.description}
+                                                    </div>
+                                                </div>
+                                                <div style="text-align:right; flex-shrink:0;">
+                                                    <div style="font-size:0.75rem; font-weight:900; color:var(--accent2);">${timeStr}</div>
+                                                    <div style="font-size:0.55rem; color:var(--muted); font-weight:700; text-transform:uppercase;">${dateStr}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('') || `<div style="text-align:center; padding:30px; color:var(--muted);">No hay eventos en la línea de tiempo.</div>`}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="padding:20px 25px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15); flex-wrap:wrap; gap:10px;">
+                        <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">
+                            SISTEMA EYE STAFF — CIERRE DE EVENTO ID: ${session.id}
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button onclick="openEmailReportModal(${report.id}, '${(session.name || '').replace(/'/g, "\\'")}', \`${report.sent_emails_history || '[]'}\`)" style="padding:8px 18px; background:rgba(14,165,233,0.15); color:#0ea5e9; border:1px solid rgba(14,165,233,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;">✉️ ENVIAR EMAIL</button>
+                            <a href="/api/event-reports/${report.id}/download/pdf" target="_blank" style="padding:8px 18px; background:rgba(239,68,68,0.15); color:var(--brand-red); border:1px solid rgba(239,68,68,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; gap:6px;">📄 DESCARGAR PDF</a>
+                            <a href="/api/event-reports/${report.id}/download/excel" target="_blank" style="padding:8px 18px; background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.25); border-radius:20px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; gap:6px;">📊 DESCARGAR EXCEL</a>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.openEmailReportModal = function(reportId, sessionName, sentEmailsHistoryStr) {
+        let history = [];
+        try {
+            history = typeof sentEmailsHistoryStr === 'string' ? JSON.parse(sentEmailsHistoryStr) : sentEmailsHistoryStr;
+            if (!Array.isArray(history)) history = [];
+        } catch(e) {
+            history = [];
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(11,15,25,0.85); backdrop-filter:blur(8px); z-index:12000; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+
+        const historyHtml = history.length > 0 
+            ? `
+                <div style="margin-top:15px; background:rgba(255,255,255,0.02); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:0.7rem; color:var(--warning); font-weight:900; letter-spacing:1px; margin-bottom:8px; text-transform:uppercase;">📧 ¿Enviar también a destinatarios anteriores?</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; max-height:120px; overflow-y:auto; padding-right:5px;">
+                        ${history.map(email => `
+                            <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="additional-email-chk" value="${email}" checked style="accent-color:var(--brand-red); width:16px; height:16px; cursor:pointer;">
+                                <span>${email}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `
+            : `
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--muted); font-style:italic;">
+                    No hay otros destinatarios registrados previamente para este reporte.
+                </div>
+            `;
+
+        modal.innerHTML = `
+            <div style="background:#0e1320; border:1px solid rgba(255,255,255,0.08); width:100%; max-width:480px; border-radius:24px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5); font-family:var(--font-main); position:relative; animation: modalFadeIn 0.3s ease;">
+                <!-- Decoración Superior -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #0ea5e9, var(--brand-red));"></div>
+
+                <!-- Header -->
+                <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.15);">
+                    <div>
+                        <h2 style="margin:0; font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:0.5px;">✉️ ENVIAR REPORTE POR EMAIL</h2>
+                        <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-top:2px;">${sessionName.toUpperCase()}</div>
+                    </div>
+                    <button onclick="this.closest('.modal-overlay').remove()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; width:30px; height:30px; border-radius:50%; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--brand-red)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#fff'">✕</button>
+                </div>
+
+                <!-- Body -->
+                <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
+                    <div style="background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.2); padding:12px; border-radius:12px; font-size:0.75rem; color:#fff; line-height:1.4;">
+                        📢 De forma predeterminada, el reporte (PDF + Excel) se enviará siempre a: <b>eyestaff.ncarrillo@gmail.com</b>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:0.7rem; color:var(--muted); font-weight:900; letter-spacing:0.5px;">EMAIL ADICIONAL CON COPIA (CC):</label>
+                        <input type="email" id="email-cc-input" placeholder="ejemplo@correo.com" style="width:100%; box-sizing:border-box; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:10px 14px; border-radius:10px; color:#fff; font-size:0.8rem; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--brand-red)'" onblur="this.style.borderColor='var(--border)'">
+                    </div>
+
+                    ${historyHtml}
+                </div>
+
+                <!-- Footer -->
+                <div style="padding:15px 20px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:flex-end; gap:10px; background:rgba(0,0,0,0.15);">
+                    <button onclick="this.closest('.modal-overlay').remove()" style="padding:8px 16px; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:10px; font-size:0.75rem; font-weight:800; cursor:pointer;">CANCELAR</button>
+                    <button onclick="submitSendReportEmail(this, ${reportId})" style="padding:8px 20px; background:var(--brand-red); border:none; color:#fff; border-radius:10px; font-size:0.75rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 0 12px rgba(239,68,68,0.3);">🚀 ENVIAR</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    window.submitSendReportEmail = async function(btn, reportId) {
+        const modal = btn.closest('.modal-overlay');
+        const ccInput = modal.querySelector('#email-cc-input');
+        const ccEmail = ccInput ? ccInput.value.trim() : '';
+
+        // Validar formato de email si se ingresó uno nuevo
+        if (ccEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ccEmail)) {
+            toast('❌ Por favor ingrese un email válido para la copia.', 'error');
+            return;
+        }
+
+        // Obtener adicionales seleccionados de los históricos
+        const checkedBoxes = modal.querySelectorAll('.additional-email-chk:checked');
+        const additionalEmails = Array.from(checkedBoxes).map(cb => cb.value);
+
+        showLoading('ENVIANDO REPORTE POR CORREO...');
+        try {
+            const res = await apiFetch(`/api/event-reports/${reportId}/send-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ccEmail, additionalEmails })
+            });
+
+            if (res && res.success) {
+                toast('🚀 Reporte enviado exitosamente por email.', 'success');
+                modal.remove();
+                
+                // Refrescar listado para actualizar el historial de correos del reporte
+                const currentView = document.getElementById('current-view');
+                if (currentView) {
+                    const titleEl = currentView.querySelector('.view-title');
+                    if (titleEl && titleEl.textContent.includes('BBDD DE EVENTOS')) {
+                        renderEventReports(currentView);
+                    }
+                }
+            } else {
+                throw new Error(res?.error || 'No se pudo enviar el email.');
+            }
+        } catch(e) {
+            toast('❌ Error: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Funciones globales auxiliares para cambiar de Tab en el detalle
+    window.switchReportTab = function(btn, tabId) {
+        // Desactivar todos los botones de tab
+        btn.parentNode.querySelectorAll('.report-tab-btn').forEach(b => {
+            b.style.background = 'transparent';
+            b.style.color = 'var(--muted)';
+            b.classList.remove('active-tab');
+        });
+
+        // Activar el seleccionado
+        btn.style.background = 'rgba(239,68,68,0.15)';
+        btn.style.color = 'var(--brand-red)';
+        btn.classList.add('active-tab');
+
+        // Ocultar todos los contenidos de tab
+        const container = btn.closest('.modal-overlay');
+        container.querySelectorAll('.report-tab-content').forEach(c => {
+            c.style.display = 'none';
+        });
+
+        // Mostrar el seleccionado
+        container.querySelector(`#tab-${tabId}`).style.display = 'block';
+    }
+
+    window.deleteEventReport = async function(id) {
+        if (!confirm('¿Seguro que desea eliminar este reporte de evento permanentemente?')) return;
+        showLoading('BORRANDO REPORTE...');
+        try {
+            const res = await apiFetch(`/api/event-reports/${id}`, { method: 'DELETE' });
+            if (res && res.success) {
+                toast('✅ REPORTE ELIMINADO', 'success');
+                renderEventReports(document.getElementById('current-view'));
+            } else {
+                throw new Error(res?.error || 'Error al eliminar');
+            }
+        } catch(e) {
+            toast('❌ ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.hideEventReportNelson = function(id) {
+        if (!confirm('¿Seguro que deseas quitar este evento de tu listado? (Seguirá guardado en la BBDD general)')) return;
+        let hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
+        if (!hiddenIds.includes(id)) {
+            hiddenIds.push(id);
+            localStorage.setItem('nelson_hidden_reports', JSON.stringify(hiddenIds));
+        }
+        toast('✅ EVENTO OCULTADO', 'success');
+        renderEventReports(document.getElementById('current-view'));
+    }
+
+    async function renderEventReports(el, typeFilter = 'TODOS') {
+        showLoading('CARGANDO REPORTES DE EVENTOS...');
+        try {
+            const url = typeFilter === 'TODOS' ? '/api/event-reports' : `/api/event-reports?type=${encodeURIComponent(typeFilter)}`;
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const data = await apiFetch(url);
+            let reports = data?.reports || [];
+
+            // Filtro local exclusivo para NELSON CARRILLO
+            if (user && user.name && user.name.toUpperCase() === 'ADMIN') {
+                const hiddenIds = JSON.parse(localStorage.getItem('nelson_hidden_reports') || '[]');
+                reports = reports.filter(r => !hiddenIds.includes(r.id));
+            }
+
+            const types = ['TODOS', 'valet parking', 'control de accesos', 'evento logistico', 'alquiler de equipos', 'traslados', 'guardia diurna/nocturna', 'custodia'];
+
+            let html = `
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1 class="view-title">📊 BBDD DE EVENTOS <small style="font-size:0.7rem; color:var(--brand-red)">${reports.length} REPORTES</small></h1>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+                    ${types.map(t => `
+                        <button onclick="renderEventReports(document.getElementById('current-view'), '${t}')" 
+                                style="padding:7px 12px; border-radius:20px; font-size:0.68rem; font-weight:900; cursor:pointer; flex-shrink:0; border:1px solid ${typeFilter === t ? 'var(--brand-red)' : 'var(--border)'}; background:${typeFilter === t ? 'rgba(239,68,68,0.1)' : 'var(--surface)'}; color:${typeFilter === t ? 'var(--brand-red)' : 'var(--muted)'};">
+                            ${t.toUpperCase()}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
+            `;
+
+            if (reports.length === 0) {
+                html += `
+                    <div style="grid-column:1/-1; text-align:center; padding:40px; background:var(--surface); border:1px solid var(--border); border-radius:12px;">
+                        <div style="font-size:3rem; margin-bottom:10px; opacity:0.5;">📁</div>
+                        <h3 style="color:var(--muted); margin:0;">NO HAY REPORTES DE EVENTOS</h3>
+                        <p style="font-size:0.8rem; color:var(--muted); opacity:0.7; margin-top:5px;">Aún no se han cerrado eventos de este tipo o no hay datos disponibles.</p>
+                    </div>
+                `;
+            } else {
+                reports.forEach(r => {
+                    const closedDate = new Date(r.closed_at).toLocaleString('es', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                    html += `
+                        <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--brand-red);"></div>
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer;" onclick="const opts = this.parentElement.querySelector('.evt-opts'); opts.style.display = opts.style.display === 'none' ? 'flex' : 'none';">
+                                <div>
+                                    <h3 style="margin:0; font-size:1rem; font-weight:900; color:var(--brand-white); line-height:1.2;">${r.session_name} <span style="font-size:0.55rem; color:var(--muted); font-weight:400;">▼</span></h3>
+                                    <div style="font-size:0.65rem; color:var(--brand-red); font-weight:900; margin-top:4px;">${(r.event_type||'valet').toUpperCase()}</div>
+                                </div>
+                                <div style="font-size:0.65rem; color:var(--muted); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; white-space:nowrap;">
+                                    ${closedDate}
+                                </div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
+                                <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:1.2rem; font-weight:900; color:var(--success);">${r.total_vehicles}</div>
+                                    <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">${((r.event_type || '').toLowerCase() === 'control de accesos' || (r.event_type || '').toLowerCase() === 'evento logistico') ? 'ASISTENTES' : 'VEHÍCULOS'}</div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:1.2rem; font-weight:900; color:var(--accent);">${r.total_staff}</div>
+                                    <div style="font-size:0.55rem; color:var(--muted); font-weight:700;">PERSONAL</div>
+                                </div>
+                            </div>
+
+                            <div class="evt-opts" style="display:none; gap:8px; flex-wrap:wrap; padding-top:4px;">
+                                <button onclick="showEventReportDetail(${r.id})" style="flex:1.2; text-align:center; padding:8px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:80px;">
+                                    <span>👁️</span> DETALLES
+                                </button>
+                                <a href="/api/event-reports/${r.id}/download/pdf" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; min-width:60px;">
+                                    <span>📄</span> PDF
+                                </a>
+                                <a href="/api/event-reports/${r.id}/download/excel" target="_blank" style="flex:1; text-align:center; padding:8px; background:rgba(16,185,129,0.1); color:var(--success); border:1px solid rgba(16,185,129,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; min-width:65px;">
+                                    <span>📊</span> EXCEL
+                                </a>
+                                <button onclick="openEmailReportModal(${r.id}, '${(r.session_name || '').replace(/'/g, "\\'")}', \`${r.sent_emails_history || '[]'}\`)" style="flex:1.2; text-align:center; padding:8px; background:rgba(14,165,233,0.1); color:#0ea5e9; border:1px solid rgba(14,165,233,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
+                                    <span>✉️</span> EMAIL
+                                </button>
+                                ${user && user.is_superadmin ? `
+                                <button onclick="deleteEventReport(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
+                                    <span>🗑️</span> BORRAR
+                                </button>
+                                ` : ''}
+                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                <button onclick="hideEventReportNelson(${r.id})" style="flex:1; text-align:center; padding:8px; background:rgba(239,68,68,0.1); color:var(--brand-red); border:1px solid rgba(239,68,68,0.2); border-radius:8px; font-size:0.7rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; min-width:70px;">
+                                    <span>👀</span> OCULTAR
+                                </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+            
+            html += `
+                <div style="margin-top:20px; display:flex; justify-content:center;">
+                    ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+                </div>
+            `;
+            el.innerHTML = html;
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+            el.innerHTML = `<div style="text-align:center; padding:40px; color:var(--brand-red);">ERROR CARGANDO REPORTES</div>`;
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderClientes(el) {
+        showLoading('CARGANDO BBDD DE CLIENTES...');
+        try {
+            const data = await apiFetch('/api/admin/clients');
+            const clients = data?.clients || [];
+            window.fullClientsList = clients;
+
+            el.innerHTML = `
+                <div class="view-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1 class="view-title">📑 BBDD DE CLIENTES <small style="font-size:0.7rem; color:var(--muted)" id="cli-count">${clients.length} REGISTROS</small></h1>
+                    ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+                </div>
+
+                <div class="stat-card" style="margin-bottom:20px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:20px; border-radius:20px;">
+                    <div style="position:relative;">
+                        <input type="text" id="cli-search" placeholder="🔍 BUSCAR POR NOMBRE O TELÉFONO..." 
+                            style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:15px; padding:15px 20px; color:white; font-weight:900; letter-spacing:1px; text-transform:uppercase;"
+                            oninput="filterClientes(this.value)">
+                    </div>
+                </div>
+
+                <div id="cli-table-container" style="background:var(--surface); border-radius:20px; border:1px solid var(--border); overflow:hidden;">
+                    ${renderClientesTable(clients)}
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
+                    ${getVolverBtn('MENÚ ADMIN', 'renderAdmin(document.getElementById(\'current-view\'), \'menu\')')}
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+            toast('ERROR AL CARGAR CLIENTES', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.filterClientes = function(q) {
+        const query = q.toUpperCase();
+        const filtered = window.fullClientsList.filter(c => 
+            c.owner_name.toUpperCase().includes(query) || 
+            (c.owner_phone && c.owner_phone.includes(query))
+        );
+        document.getElementById('cli-table-container').innerHTML = renderClientesTable(filtered);
+        document.getElementById('cli-count').textContent = `${filtered.length} REGISTROS`;
+    }
+
+    window.deleteClient = async function(encodedName) {
+        const name = decodeURIComponent(encodedName);
+        if (!confirm(`¿Eliminar al cliente "${name}" y todos sus registros asociados? Esta acción no se puede deshacer.`)) return;
+        showLoading('BORRANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/clients/delete`, { 
+                method: 'POST',
+                body: JSON.stringify({ owner_name: name })
+            });
+            if (res && res.success) {
+                toast('✅ CLIENTE ELIMINADO', 'success');
+                // Refresh list using the current view
+                renderClientes(document.getElementById('current-view'));
+            } else {
+                alert('Error al eliminar cliente: ' + (res.error || 'Error desconocido'));
+            }
+        } catch (e) {
+            alert('Error de conexión.');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function renderClientesTable(list) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!list || list.length === 0) return '<div style="text-align:center; padding:50px; opacity:0.5;">NO SE ENCONTRARON CLIENTES</div>';
+        
+        return `
+            <table style="width:100%; border-collapse: collapse; text-align:left;">
+                <thead>
+                    <tr style="background:rgba(255,255,255,0.03); color:var(--muted); border-bottom:1px solid var(--border);">
+                        <th style="padding:15px;">NOMBRE DEL CLIENTE</th>
+                        <th style="padding:15px;">CONTACTO</th>
+                        <th style="padding:15px;">TIPO DE EVENTO</th>
+                        <th style="padding:15px; text-align:center;">VISITAS</th>
+                        <th style="padding:15px;">ESTADO</th>
+                        <th style="padding:15px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${list.map((c, idx) => `
+                        <tr style="border-bottom:1px solid var(--border); transition:background 0.2s;">
+                            <td style="padding:15px; font-weight:900; color:#fff;">${(c.owner_name || 'SIN NOMBRE').toUpperCase()}</td>
+                            <td style="padding:15px; font-family:var(--font-mono); font-size:0.85rem;">${c.owner_phone || '—'}</td>
+                            <td style="padding:15px;">
+                                <span style="background:rgba(168, 85, 247, 0.2); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:bold;">
+                                    ${c.event_types || 'VALET PARKING'}
+                                </span>
+                            </td>
+                            <td style="padding:15px; text-align:center;">
+                                <span style="background:var(--accent2); color:white; padding:4px 10px; border-radius:20px; font-weight:800; font-size:0.8rem;">
+                                    ${c.total_visits}
+                                </span>
+                            </td>
+                            <td style="padding:15px;">
+                                ${c.total_visits > 1 ? 
+                                    '<span style="color:var(--success); font-weight:900; font-size:0.7rem;">⭐ RECURRENTE</span>' : 
+                                    '<span style="color:var(--muted); font-size:0.7rem;">NUEVO</span>'}
+                            </td>
+                            <td style="padding:15px; text-align:right;">
+                                <button class="btn btn-secondary btn-sm" onclick="toggleClientHistory(${idx})" style="padding:6px 12px; border-radius:8px; font-size:0.7rem;">
+                                    DETALLE EVENTOS ↓
+                                </button>
+                                ${user && user.name && user.name.toUpperCase() === 'ADMIN' ? `
+                                <button class="btn btn-danger btn-sm" onclick="deleteClient('${encodeURIComponent(c.owner_name)}')" style="padding:6px 12px; border-radius:8px; font-size:0.7rem; margin-left:5px; background:var(--accent2); color:white; border:none; cursor:pointer;">
+                                    🗑️ BORRAR
+                                </button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                        <tr id="history-${idx}" style="display:none; background:rgba(0,0,0,0.2);">
+                            <td colspan="5" style="padding:20px; border-bottom:1px solid var(--border);">
+                                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+                                    ${(c.history || []).map(h => {
+                                        const d = h.date ? new Date(h.date) : null;
+                                        const dateStr = d && !isNaN(d) ? d.toLocaleDateString() : 'FECHA N/A';
+                                        const timeStr = d && !isNaN(d) ? formatTime24h(d) : '';
+                                        return `
+                                            <div style="background:var(--surface2); padding:12px; border-radius:12px; border:1px solid var(--border);">
+                                                <div style="font-size:0.6rem; color:var(--accent); font-weight:900; margin-bottom:4px;">${(h.event || 'EVENTO').toUpperCase()}</div>
+                                                <div style="font-size:0.8rem; font-weight:800; color:#fff;">${h.plate || '—'}</div>
+                                                <div style="font-size:0.65rem; color:var(--muted); margin-top:4px;">${dateStr} ${timeStr}</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    window.toggleClientHistory = function(idx) {
+        const el = document.getElementById(`history-${idx}`);
+        if (el.style.display === 'none') {
+            el.style.display = 'table-row';
+            el.style.animation = 'fadeIn 0.3s ease';
+        } else {
+            el.style.display = 'none';
+        }
+    }
+
+
+    window.solicitarPruebaReporte = async function() {
+        const type = confirm("¿Desea probar el REPORTE DE CUMPLEAÑEROS (Aceptar) o la NOTIFICACIÓN DE CONVOCATORIA (Cancelar)?\n\nAmbas pruebas se enviarán al correo corporativo: eyestaff.ncarrillo@gmail.com") ? 'birthday' : 'convocation';
+        
+        showLoading(preview ? 'GENERANDO VISTA PREVIA...' : 'ENVIANDO...');
+        try {
+            const res = await apiFetch('/api/reports/test-request', {
+                method: 'POST',
+                body: JSON.stringify({ type })
+            });
+            if (res && res.success) {
+                toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
+                alert(`📧 PRUEBA ENVIADA CON ÉXITO\n\nEl correo de prueba ha sido despachado correctamente a eyestaff.ncarrillo@gmail.com. Por favor, revise su bandeja de entrada (y la carpeta de Spam si no lo visualiza).`);
+            } else {
+                throw new Error(res.error || 'Error desconocido');
+            }
+        } catch(e) {
+            toast('❌ ERROR AL ENVIAR PRUEBA', 'error');
+            alert('Ocurrió un error al enviar el correo de prueba: ' + e.message);
+        } finally {
+            hideLoading();
+        }
+    };
+
+    
+    window.solicitarPruebaEspecifica = async function(type, sessionId = null, preview = false, channel = 'email') {
+        let title = '';
+        if (type === 'convocation') title = 'NOTIFICACIÓN DE CONVOCATORIA';
+        else if (type === 'birthday') title = 'REPORTE MENSUAL DE CUMPLEAÑEROS';
+        else if (type === 'pdf') title = 'DOSSIER DIGITAL EN PDF';
+        else if (type === 'xlsx') title = 'BASE DE DATOS EN EXCEL (XLSX)';
+        else if (type === 'permissions-matrix') title = 'MATRIZ DE PERMISOS (EXCEL)';
+        else if (type === 'bbdd_eventos') title = 'BBDD DE EVENTOS CERRADOS';
+        else if (type === 'nominas') title = 'RESUMEN CONTABLE DE NÓMINAS';
+        else if (type === 'vehiculos') title = 'BASE DE DATOS DE VEHÍCULOS';
+        else if (type === 'personal') title = 'MATRIZ COMPLETA DE PERSONAL';
+        else if (type === 'cierre_pago') title = 'CIERRE DE CICLO DE PAGO';
+        else if (type === 'credenciales') title = 'CREDENCIALES DE ACCESO';
+        else if (type === 'apertura_evento') title = sessionId ? `CONFIRMACIÓN DE INICIO DE EVENTO #${sessionId}` : 'CONFIRMACIÓN DE INICIO DE EVENTO';
+        if (type === 'cierre_html') title = sessionId ? `REPORTE DE CIERRE DEL EVENTO #${sessionId}` : 'REPORTE DE CIERRE DE JORNADA (HTML)';
+        if (type === 'plantilla_rrhh') title = 'PLANTILLA DE RECURSOS HUMANOS';
+
+        let dest = 'eyestaff.ncarrillo@gmail.com';
+        
+        let reportTypeMap = {
+            'cierre_html': 'cierre_html',
+            'plantilla_rrhh': 'plantilla',
+            'permissions-matrix': 'permisos',
+            'cierre_pago': 'nominas',
+            'birthday': 'cumpleanos',
+            'pdf': 'dossier',
+            'xlsx': 'excel',
+            'nominas': 'nominas',
+            'bbdd_eventos': 'excel',
+            'vehiculos': 'excel',
+            'convocation': 'convocatoria',
+            'credenciales': 'credenciales',
+            'apertura_evento': 'apertura_evento'
+        };
+
+        let matrixId = reportTypeMap[type];
+
+        if (!preview && matrixId) {
+             const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="' + matrixId + '"]:checked');
+             let names = [];
+             cbs.forEach(cb => {
+                 const tr = cb.closest('tr');
+                 if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
+             });
+             if (names.length === 0) {
+                 alert('⚠️ No hay ningún empleado suscrito para recibir este reporte en la matriz.');
+                 return;
+             }
+             dest = names.join(', ');
+        }
+        
+        if (!preview) {
+            let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
+            if (!confirm(`¿Desea solicitar el envío de: "${title}"?\n\nVía: ${chLabel}\n\nDestino: ${dest}`)) return;
+        }
+        
+        showLoading(preview ? 'GENERANDO VISTA PREVIA...' : 'ENVIANDO...');
+        try {
+            const res = await apiFetch('/api/reports/test-request', {
+                method: 'POST',
+                body: JSON.stringify({ type, session_id: sessionId, channel, preview: preview })
+            });
+            
+            if (preview && res && res.success && res.previewData) {
+                toast('✅ VISTA PREVIA GENERADA', 'success');
+                const win = window.open('', '_blank');
+                if (!win) {
+                    alert('⚠️ Por favor permita las ventanas emergentes (pop-ups) para ver la vista previa.');
+                    return;
+                }
+                
+                if (res.previewType === 'html') {
+                    win.document.open();
+                    win.document.write(res.previewData);
+                    win.document.close();
+                } else if (res.previewType === 'pdf' || res.previewType === 'excel') {
+                    // Mime type depends on 'pdf' or 'excel'
+                    const mime = res.previewType === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                    
+                    // Convert base64 to Blob
+                    const byteCharacters = atob(res.previewData);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], {type: mime});
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Add some HTML to the popup so it doesn't just download blindly, though for PDF it opens inline
+                    if (res.previewType === 'pdf') {
+                        win.location.href = url;
+                    } else {
+                        win.document.body.innerHTML = `<div style="font-family:sans-serif; text-align:center; padding:50px;"><h2>Vista Previa de Excel</h2><p>El archivo se está descargando.</p><a href="${url}" download="VistaPrevia.xlsx" style="padding:10px 20px; background:#6366f1; color:white; text-decoration:none; border-radius:5px;">Haga clic aquí si no se descarga</a></div>`;
+                        const a = win.document.createElement('a');
+                        a.href = url;
+                        a.download = `VistaPrevia_${type}.xlsx`;
+                        a.click();
+                    }
+                }
+                return;
+            }
+
+            if (res && res.success) {
+                toast('✅ CORREO DE PRUEBA ENVIADO', 'success');
+                alert(`📧 REPORTE DESPACHADO\n\nEl reporte "${title}" ha sido enviado con éxito.\n\nDetalles: ${res.message}\n\nPor favor revise su bandeja de entrada (y Spam si no lo visualiza).`);
+            } else {
+                throw new Error((res && res.error) || 'Error de servidor (Revise el toast para más detalles)');
+            }
+        } catch(e) {
+            toast('❌ ERROR AL ENVIAR PRUEBA', 'error');
+            alert('Error al enviar la prueba: ' + e.message);
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.solicitarReporteCierre = async function() {
+        const sel = document.getElementById('cierre-evento-select');
+        if (!sel || !sel.value) return alert('Por favor seleccione un evento.');
+        
+        try {
+            showLoading('VERIFICANDO DESTINATARIOS...');
+            const res = await apiFetch('/api/admin/report-subscriptions');
+            hideLoading();
+            
+            let subsList = [];
+            if (res && res.subscriptions) {
+                const subs = res.subscriptions.filter(s => s.cierre_html === 1 || s.bbdd_excel === 1 || s.dossier_pdf === 1);
+                subsList = subs.map(s => s.name);
+            }
+            
+            const eventName = sel.options[sel.selectedIndex].text;
+            let msg = `¿Desea enviar el REPORTE DE CIERRE del:\n"${eventName}"?\n\n`;
+            if (subsList.length === 0) {
+                msg += `Nadie está suscrito a este reporte en la matriz.\nNo se enviará el correo.`;
+            } else {
+                msg += `Destinatarios en matriz (${subsList.length}):\n${subsList.join(', ')}`;
+            }
+            
+            if (!confirm(msg)) return;
+            
+            solicitarPruebaEspecifica('cierre_html', sel.value, true);
+        } catch(e) {
+            hideLoading();
+            solicitarPruebaEspecifica('cierre_html', sel.value);
+        }
+    }
+
+    window.sendDataUpdateRequests = async function(type, channel = 'email') {
+        let dest = 'los empleados';
+        const cbs = document.querySelectorAll('.report-matrix-checkbox[data-report="actualizacion_datos"]:checked');
+        let names = [];
+        cbs.forEach(cb => {
+            const tr = cb.closest('tr');
+            if (tr && tr.dataset.name) names.push(tr.dataset.name.toUpperCase());
+        });
+        if (names.length === 0) {
+            alert('⚠️ No hay ningún empleado suscrito para recibir actualización de datos en la matriz.');
+            return;
+        }
+        dest = names.join(', ');
+
+        let chLabel = channel === 'email' ? 'EMAIL' : (channel === 'whatsapp' ? 'WHATSAPP' : 'AMBOS (EMAIL + WHATSAPP)');
+        if (!confirm(`¿Desea enviar una solicitud de actualización de datos a:\n\n${dest}?\n\nVía: ${chLabel}`)) return;
+        
+        showLoading('ENVIANDO SOLICITUDES...');
+        try {
+            const res = await apiFetch('/api/admin/send-update-requests', {
+                method: 'POST',
+                body: JSON.stringify({ type, channel })
+            });
+            if (res && res.success) {
+                toast(`✅ ${res.sent} CORREOS ENVIADOS`, 'success');
+                const list = res.recipients && res.recipients.length > 0 ? `\n\nDestinatarios:\n- ${res.recipients.join('\n- ')}` : '';
+                alert(`📧 SOLICITUDES ENVIADAS\n\nSe han enviado ${res.sent} correos de solicitud de actualización de datos con éxito.${list}`);
+            } else {
+                throw new Error((res && res.error) || 'Error de servidor');
+            }
+        } catch(e) {
+            toast('❌ ERROR AL ENVIAR', 'error');
+            alert('Error al enviar solicitudes: ' + e.message);
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.sendCredentialsEmail = async function() {
+        const selected = window._selectedCreds || [];
+        if (selected.length === 0) {
+            toast('⚠️ Selecciona al menos un empleado', 'error');
+            return;
+        }
+        
+        const names = selected.map(u => u.name).join(', ');
+        if (!confirm(`¿Enviar credenciales de acceso a ${selected.length} empleado(s)?\n\n${names}`)) return;
+        
+        showLoading('ENVIANDO CREDENCIALES...');
+        try {
+            let sentCount = 0;
+            let errors = 0;
+            for (const user of selected) {
+                const res = await apiFetch('/api/reports/send-credentials', {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: user.id })
+                });
+                if (res && res.success) sentCount++;
+                else errors++;
+            }
+            if (errors === 0) {
+                toast(`✅ SE ENVIARON ${sentCount} CREDENCIALES`, 'success');
+            } else {
+                toast(`⚠️ SE ENVIARON ${sentCount}, ${errors} ERRORES`, 'error');
+            }
+            
+            document.getElementById('credentials-dropdown').style.display = 'none';
+            const dd = document.getElementById('credentials-dropdown');
+            if(dd) {
+                const cbs = dd.querySelectorAll('input[type="checkbox"]');
+                cbs.forEach(cb => cb.checked = false);
+            }
+            window._selectedCreds = [];
+            document.getElementById('credentials-select-label').textContent = 'Seleccionar empleado(s)...';
+        } catch(e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.downloadPermissionsMatrixExcel = async function() {
+        showLoading('GENERANDO EXCEL...');
+        try {
+            const res = await apiFetch('/api/admin/user-permissions');
+            const list = res.permissions || [];
+            
+            let excelData = [
+              ['Empleado', 'Valet Parking Ve', 'Valet Parking Mod', 'Control Accesos Ve', 'Control Accesos Mod', 'Alquiler Equipos Ve', 'Alquiler Equipos Mod', 'Eventos y Listas Ve', 'Eventos y Listas Mod', 'Admin General Ve', 'Admin General Mod', 'VIP Eye Staff Ve', 'VIP Eye Staff Mod', 'Seguridad (Pines) Ve', 'Seguridad (Pines) Mod']
+            ];
+
+            list.forEach(p => {
+              const toMark = (v) => v === 1 ? '✅' : '❌';
+              excelData.push([
+                p.name.toUpperCase(),
+                toMark(p.valet_ve), toMark(p.valet_mod),
+                toMark(p.accesos_ve), toMark(p.accesos_mod),
+                toMark(p.alquiler_ve), toMark(p.alquiler_mod),
+                toMark(p.eventos_ve), toMark(p.eventos_mod),
+                toMark(p.admin_ve), toMark(p.admin_mod),
+                toMark(p.vip_ve), toMark(p.vip_mod),
+                toMark(p.seg_ve), toMark(p.seg_mod)
+              ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const colWidths = excelData.map(() => ({ wch: 15 }));
+            colWidths[0].wch = 30; // Nombre más ancho
+            ws['!cols'] = colWidths;
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Permisos");
+            XLSX.writeFile(wb, `Matriz_Permisos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
+        } catch(e) {
+            toast('❌ ERROR AL GENERAR EXCEL', 'error');
+            console.error(e);
+        } finally {
+            hideLoading();
+        }
+    };
+
+    async function renderInformesYReportes(el) {
+        setTimeout(() => window.scrollTo(0, 0), 100);
+        
+        el.innerHTML = `
+            <div class="view-header" style="margin-bottom:20px;">
+                <h1 class="view-title">📈 INFORMES Y REPORTES <small style="font-size:0.7rem; color:var(--brand-red)">MAPA DE AUTOMATIZACIÓN</small></h1>
+            </div>
+
+            <!-- Introducción explicativa -->
+            <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <h3 style="margin-top:0; color:white; font-size:1.1rem; font-weight:900;">📋 Control y Automatización de Datos</h3>
+                <p style="font-size:0.8rem; color:var(--muted); line-height:1.6; margin:0;">
+                    El ecosistema de <b>Valet Eye</b> recopila y procesa en tiempo real toda la actividad operativa de la flota, el personal y la auditoría de seguridad. A continuación se detallan todos los informes y reportes configurados en el sistema, clasificados por su disparador y método de distribución:
+                </p>
+            </div>
+
+            <!-- MATRIZ DE SUSCRIPCIONES -->
+            <div id="report-matrix-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1); display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">👥 Matriz de Suscripciones a Reportes</h3>
+                    <button class="btn btn-accent" onclick="window.toggleMatrixSection()" style="font-size:0.7rem; white-space:nowrap; display:flex; align-items:center; gap:8px; padding:8px 15px;">
+                        <span id="matrix-toggle-text">MOSTRAR MATRIZ</span>
+                        <div id="matrix-toggle-arrow" style="font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
+                    </button>
+                </div>
+                <div id="matrix-content-wrapper" style="width:100%; display:none;">
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="matrix-search-input" placeholder="🔍 Buscar empleado..." style="width:100%; padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; font-size:0.8rem; outline:none;" oninput="filterMatrixRows(this.value)">
+                    </div>
+                    <div style="width:100%; overflow-x:auto; overflow-y:auto; max-height:350px; scrollbar-width:thin; scrollbar-color:var(--muted) transparent;">
+                        <table id="report-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.7rem; text-align:center;">
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listado de Reportes en Grid -->
+            <div id="report-cards-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:40px;">
+                
+                <!-- NUEVO: CIERRE DIARIO -->
+                <div class="card" data-card-id="c_cierre_diario" style="border-top:4px solid #10b981; background:rgba(16, 185, 129, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_cierre_diario" onclick="toggleReportFav('c_cierre_diario')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🌎</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(16, 185, 129, 0.15); color:#10b981; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Reporte de Cierre Diario</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Compila todos los eventos activos en PDFs individuales y envía un resumen global a los directores suscritos en la matriz.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: CIERRE DIARIO</span>
+                        </p>
+                    </div>
+                        <button onclick="window.enviarReporteCierreDiario(true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="window.enviarReporteCierreDiario()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
+                            🚀 GENERAR Y ENVIAR CIERRE
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 0. BBDD de Eventos Cerrados -->
+                <div class="card" data-card-id="c_bbdd_cerrados" style="border-top:4px solid #ec4899; background:rgba(236, 72, 153, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_bbdd_cerrados" onclick="toggleReportFav('c_bbdd_cerrados')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📊</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(236,72,153,0.15); color:#ec4899; padding:4px 8px; border-radius:6px; text-transform:uppercase;">CONSULTA EN VIVO</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">BBDD de Eventos Cerrados</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Histórico completo de eventos finalizados. Permite auditar ingresos de vehículos, revisar la asistencia del personal y descargar dossiers digitales y hojas de cálculo individuales.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: BBDD EVENTOS CERRADOS</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('bbdd_eventos', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="renderEventReports(document.getElementById('current-view'))" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📊 VER EVENTOS CERRADOS
+                        </button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('bbdd_eventos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(236, 72, 153, 0.12); color:#ec4899; border:1px solid rgba(236, 72, 153, 0.3); cursor:pointer; text-transform:uppercase; margin-top:8px;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Notificación de Convocatoria -->
+                <div class="card" data-card-id="c_convocatoria" style="border-top:4px solid #f59e0b; background:rgba(245, 158, 11, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_convocatoria" onclick="toggleReportFav('c_convocatoria')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🔔</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(245,158,11,0.15); color:#f59e0b; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Notificación de Convocatoria</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Recordatorio automático del inicio de la planificación enviado a los directores cuando se cumple la hora de convocatoria programada para un evento.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: CONVOCATORIA</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('convocation', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('convocation')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(245, 158, 11, 0.12); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Reporte de Cumpleañeros -->
+                <div class="card" data-card-id="c_cumpleanos" style="border-top:4px solid #0ea5e9; background:rgba(14, 165, 233, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_cumpleanos" onclick="toggleReportFav('c_cumpleanos')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🎂</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(14,165,233,0.15); color:#0ea5e9; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Reporte Mensual de Cumpleañeros</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Consolidado automatizado que se ejecuta de forma calendarizada el día 30 de cada mes a las 12:00 PM. Agrupa al personal que cumple años en el mes en curso y genera un documento adjunto.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: CUMPLEAÑOS</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('birthday', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('birthday')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(14, 165, 233, 0.12); color:#0ea5e9; border:1px solid rgba(14, 165, 233, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Cierre de Evento PDF -->
+                <div class="card" data-card-id="c_cierre_pdf" style="border-top:4px solid var(--brand-red); background:rgba(239, 68, 68, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_cierre_pdf" onclick="toggleReportFav('c_cierre_pdf')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📄</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(239,68,68,0.15); color:var(--brand-red); padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DE CIERRE</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Dossier Digital en PDF</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Informe ejecutivo de alta fidelidad generado instantáneamente al cerrar un evento. Contiene portadas, métricas generales de vehículos y personal, gráficos de tiempos y la línea de tiempo de auditoría.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: DOSSIER PDF</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('pdf', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('pdf')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(239, 68, 68, 0.12); color:var(--brand-red); border:1px solid rgba(239, 68, 68, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Cierre de Evento Excel -->
+                <div class="card" data-card-id="c_cierre_xlsx" style="border-top:4px solid var(--success); background:rgba(16, 185, 129, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_cierre_xlsx" onclick="toggleReportFav('c_cierre_xlsx')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📊</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(16,185,129,0.15); color:var(--success); padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DE CIERRE</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Base de Datos en Excel (XLSX)</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Hoja de cálculo consolidada autogenerada en el servidor que compila toda la base de datos de ingresos, vehículos custodiados, tiempos de atención del staff y auditoría de eventos.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: CIERRE EVENTO</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('xlsx', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('xlsx')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:var(--success); border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. Exportación de Nóminas y Pagos -->
+                <div class="card" data-card-id="c_nominas_pagos" style="border-top:4px solid #a855f7; background:rgba(168, 85, 247, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_nominas_pagos" onclick="toggleReportFav('c_nominas_pagos')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">💰</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(168,85,247,0.15); color:#a855f7; padding:4px 8px; border-radius:6px; text-transform:uppercase;">DESCARGA MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Resumen Contable de Nóminas</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Consolidado contable del personal, horas laboradas, bonos y retenciones acumuladas en el portal de Administración para la liquidación directa de haberes.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: NÓMINAS</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('nominas', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('nominas')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(168, 85, 247, 0.12); color:#a855f7; border:1px solid rgba(168, 85, 247, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 6. Historial de Vehículos y Flota -->
+                <div class="card" data-card-id="c_vehiculos_flota" style="border-top:4px solid #6366f1; background:rgba(99, 102, 241, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_vehiculos_flota" onclick="toggleReportFav('c_vehiculos_flota')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🚗</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(99,102,241,0.15); color:#6366f1; padding:4px 8px; border-radius:6px; text-transform:uppercase;">DESCARGA MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Base de Datos de Vehículos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Descarga completa del historial de vehículos ingresados, marcas, dueños y teléfonos de contacto agrupados en la BBDD de vehículos custodiados de la empresa.
+                            <br><br><span style="color:var(--accent); font-weight:bold;">📍 Columna en Matriz: N/A (Envío a Director)</span>
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('vehiculos', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('vehiculos')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- 8. Envío de Credenciales de Acceso -->
+                <div class="card" data-card-id="c_credenciales" style="border-top:4px solid #eab308; background:rgba(234,179,8,0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_credenciales" onclick="toggleReportFav('c_credenciales')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🔑</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(234,179,8,0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ENVÍO MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Credenciales de Acceso</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Envía las instrucciones de acceso y credenciales (usuario + contraseña) a cualquier empleado registrado, directamente a su correo electrónico registrado en el sistema.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('credenciales', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <div style="display:flex; gap:5px; width:100%;">
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ EMAIL
+                            </button>
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
+                                🟢 WAPP
+                            </button>
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('credenciales', null, false, 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
+                                📨 AMBOS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Cierre de Ciclo de Pago -->
+                <div class="card" data-card-id="c_cierre_pago" style="border-top:4px solid #3b82f6; background:rgba(59, 130, 246, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_cierre_pago" onclick="toggleReportFav('c_cierre_pago')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🔒</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(59,130,246,0.15); color:#3b82f6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DEL CFO</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Cierre de Ciclo de Pago</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Consolidado de eventos aprobados que se marcan como PAGADOS por el CFO. Limpia el listado activo de aprobados y archiva el acumulado en el historial de nóminas.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="solicitarPruebaEspecifica('cierre_pago', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('cierre_pago')" style="width:100%; border-radius:10px; padding:8px; font-size:0.7rem; font-weight:900; background:rgba(59, 130, 246, 0.12); color:#3b82f6; border:1px solid rgba(59, 130, 246, 0.3); cursor:pointer; text-transform:uppercase;">
+                            ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 10. Matriz de Permisos -->
+                <div class="card" data-card-id="c_matriz_permisos" style="border-top:4px solid #6366f1; background:rgba(99, 102, 241, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_matriz_permisos" onclick="toggleReportFav('c_matriz_permisos')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">✅</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(99,102,241,0.15); color:#6366f1; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Matriz de Permisos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Consolidado en Excel y visualización en HTML que muestra la matriz de permisos de visualización y modificación por cada módulo para todos los empleados.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('permissions-matrix', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="downloadPermissionsMatrixExcel()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📊 DESCARGAR MATRIZ EXCEL
+                        </button>
+                        <div style="text-align:center; margin-top: 4px;">
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('permissions-matrix')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(99, 102, 241, 0.12); color:#6366f1; border:1px solid rgba(99, 102, 241, 0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. Plantilla RRHH -->
+                <div class="card" data-card-id="c_plantilla_rrhh" style="border-top:4px solid #10b981; background:rgba(16, 185, 129, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_plantilla_rrhh" onclick="toggleReportFav('c_plantilla_rrhh')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📥</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(16, 185, 129, 0.15); color:#10b981; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Plantilla de Recursos Humanos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Base de datos completa del personal en formato Excel para importar o revisar en el sistema.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('plantilla_rrhh', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <button class="btn btn-sm" onclick="downloadRRHHTemplate()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
+                            📥 DESCARGAR PLANTILLA EXCEL
+                        </button>
+                        <div style="text-align:center; margin-top: 4px;">
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('plantilla_rrhh')" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(16, 185, 129, 0.12); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ ENVIAR A SUSCRITOS EN MATRIZ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. Actualización de Datos -->
+                <div class="card" data-card-id="c_actualizacion_datos" style="border-top:4px solid #f43f5e; background:rgba(244, 63, 94, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_actualizacion_datos" onclick="toggleReportFav('c_actualizacion_datos')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📝</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(244, 63, 94, 0.15); color:#f43f5e; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white;">Solicitud de Actualización de Datos</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Envía un enlace seguro y único al empleado para que actualice su información personal (foto, cuenta bancaria, teléfono, etc).
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('actualizacion_datos', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <div style="display:flex; gap:5px; width:100%;">
+                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(244, 63, 94, 0.12); color:#f43f5e; border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ EMAIL
+                            </button>
+                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
+                                🟢 WAPP
+                            </button>
+                            <button class="btn btn-sm" onclick="sendDataUpdateRequests('matrix', 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
+                                📨 AMBOS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 13. Reporte de Cierre de Jornada (HTML) -->
+                <div class="card" data-card-id="c_reporte_html" style="border-top:4px solid #14b8a6; background:rgba(20, 184, 166, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_reporte_html" onclick="toggleReportFav('c_reporte_html')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">📧</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(20, 184, 166, 0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DE CIERRE</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white; text-transform:uppercase;">Reporte de Cierre de Evento</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Cuerpo del correo electrónico generado automáticamente al cierre del evento con un resumen ejecutivo de las operaciones.
+                        </p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px;
+                         display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('cierre_html', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <div style="display:flex; justify-content:flex-end; align-items:center; font-size:0.7rem; margin-bottom: 4px;">
+                            <span style="color:var(--muted); font-weight:700; text-align:right;">Destino: <b style="color:white;">Usuarios suscritos en matriz</b></span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <select id="cierre-evento-select" style="width:100%; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; font-size:0.75rem; outline:none;">
+                                <option value="">Cargando eventos...</option>
+                            </select>
+                            <button class="btn btn-sm" onclick="solicitarReporteCierre()" style="width:100%; border-radius:10px; padding:10px; font-size:0.7rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ ENVIAR REPORTE DE ESTE EVENTO
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 14. Confirmación de Inicio de Evento -->
+                <div class="card" data-card-id="c_apertura_evento" style="border-top:4px solid #22c55e; background:rgba(34, 197, 94, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_apertura_evento" onclick="toggleReportFav('c_apertura_evento')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">🚀</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(34,197,94,0.15); color:#22c55e; padding:4px 8px; border-radius:6px; text-transform:uppercase;">AUTOMÁTICO</span>
+                        </div>
+                        <h3 style="margin:10px 0 5px 0; font-size:1rem; font-weight:900; color:white; text-transform:uppercase;">Confirmación de Inicio de Evento</h3>
+                        <p style="font-size:0.75rem; color:var(--muted); line-height:1.5; margin:0;">
+                            Se envía automáticamente al iniciar una operación. Incluye datos del evento, horarios, ubicación y la lista del personal asignado.
+                        </p>
+                        <p style="font-size:0.65rem; color:#22c55e; font-weight:700; margin:8px 0 0 0;">📌 COLUMNA EN MATRIZ: APERTURA EVENTO</p>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.03); padding-top:12px; display:flex; flex-direction:column; gap:10px;">
+                        <button onclick="solicitarPruebaEspecifica('apertura_evento', null, true)" style="width:100%; border-radius:8px; padding:6px; font-size:0.62rem; font-weight:800; background:rgba(99,102,241,0.1); color:#818cf8; border:1px dashed rgba(99,102,241,0.35); cursor:pointer; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.2)'" onmouseout="this.style.background='rgba(99,102,241,0.1)'">👁 VER VISTA PREVIA</button>
+                        <div style="display:flex; gap:5px; width:100%;">
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('apertura_evento', null, false, 'email')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(20, 184, 166, 0.12); color:#14b8a6; border:1px solid rgba(20, 184, 166, 0.3); cursor:pointer; text-transform:uppercase;">
+                                ✉️ EMAIL
+                            </button>
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('apertura_evento', null, false, 'whatsapp')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); cursor:pointer; text-transform:uppercase;">
+                                🟢 WAPP
+                            </button>
+                            <button class="btn btn-sm" onclick="solicitarPruebaEspecifica('apertura_evento', null, false, 'ambos')" style="flex:1; border-radius:10px; padding:8px; font-size:0.65rem; font-weight:900; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.3); cursor:pointer; text-transform:uppercase;">
+                                📨 AMBOS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <!-- Volver footer -->
+            <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
+                ${getVolverBtn('VOLVER A ADMINISTRACIÓN', 'renderAdmin(document.getElementById(\'current-view\'))')}
+            </div>
+        `;
+
+        // Cargar lista de empleados con email
+        try {
+            const res = await apiFetch('/api/staff');
+            const users = (res.staff || []).filter(u => u.is_active !== 0);
+            const sessions = res.closed_sessions || [];
+            
+            const cierreSelect = document.getElementById('cierre-evento-select');
+            if (cierreSelect) {
+                if (sessions.length === 0) {
+                    cierreSelect.innerHTML = '<option value="">No hay eventos cerrados</option>';
+                } else {
+                    cierreSelect.innerHTML = sessions.map(s => {
+                        const dateStr = s.ended_at ? new Date(s.ended_at).toLocaleDateString('es-ES') : 'Fecha desconocida';
+                        const evtName = s.name ? s.name.toUpperCase() : `EVENTO ${s.id}`;
+                        const evtType = s.type ? s.type.toUpperCase() : 'N/A';
+                        return `<option value="${s.id}">${evtName} (${evtType}) - ${dateStr}</option>`;
+                    }).join('');
+                }
+            }
+            
+            const dd = document.getElementById('credentials-dropdown');
+            if (dd) {
+                window._selectedCreds = [];
+                dd.innerHTML = '';
+                document.getElementById('credentials-select-label').textContent = 'Seleccionar empleado(s)...';
+                const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
+                const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
+                users.sort((a, b) => {
+                    const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
+                    const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
+                    if (activeA !== activeB) return activeB - activeA;
+
+                    const valA = (a.eye_id || '').toString().toUpperCase();
+                    const valB = (b.eye_id || '').toString().toUpperCase();
+                    const prioA = eyePriority[valA] || 99;
+                    const prioB = eyePriority[valB] || 99;
+                    if (prioA !== prioB) return prioA - prioB;
+
+                    const getRolePrio = (u) => {
+                        const pAdmin = (u.profile_admin || '').toString().toUpperCase();
+                        const pOpera = (u.profile_opera || '').toString().toUpperCase();
+                        const prioAdmin = rolePriority[pAdmin] || 99;
+                        const prioOpera = rolePriority[pOpera] || 99;
+                        return Math.min(prioAdmin, prioOpera);
+                    };
+
+                    const rPrioA = getRolePrio(a);
+                    const rPrioB = getRolePrio(b);
+                    if (rPrioA !== rPrioB) return rPrioA - rPrioB;
+
+                    return a.name.localeCompare(b.name);
+                });
+                users.forEach(u => {
+                    const label = document.createElement('label');
+                    label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:8px; cursor:pointer; font-size:0.75rem; color:#fff; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; margin:0;';
+                    label.onmouseover = () => label.style.background='rgba(255,255,255,0.05)';
+                    label.onmouseout = () => label.style.background='transparent';
+                    
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.value = u.id;
+                    cb.style.accentColor = '#eab308';
+                    cb.style.width = '16px';
+                    cb.style.height = '16px';
+                    cb.onchange = function() {
+                        if (this.checked) {
+                            window._selectedCreds.push({id: u.id, name: u.name});
+                        } else {
+                            window._selectedCreds = window._selectedCreds.filter(x => x.id !== u.id);
+                        }
+                        const lbl = document.getElementById('credentials-select-label');
+                        if (window._selectedCreds.length === 0) lbl.textContent = 'Seleccionar empleado(s)...';
+                        else if (window._selectedCreds.length === 1) lbl.textContent = window._selectedCreds[0].name;
+                        else lbl.textContent = `${window._selectedCreds.length} empleados seleccionados`;
+                    };
+                    
+                    const span = document.createElement('span');
+                    span.textContent = u.name;
+                    
+                    label.appendChild(cb);
+                    label.appendChild(span);
+                    dd.appendChild(label);
+                });
+            }
+
+            renderSubscriptionMatrix(users);
+
+        setTimeout(() => {
+            if (window.applyReportFavs) window.applyReportFavs();
+        }, 50);
+
+
+        } catch(e) { console.error('Error cargando matriz de reportes:', e); }
+    }
+
+
+    async function renderAdmin(el, tab = 'menu') {
+        isAdminAuthenticated = true;
+        setTimeout(() => window.scrollTo(0, 0), 100);
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const hasCfoAccess = hasPermission('admin_mod');
+
+        if (tab === 'menu') {
+            el.innerHTML = `
+                <div class="view-header">
+                    <h1 class="view-title">ADMINISTRACIÓN</h1>
+                </div>
+
+
+
+                <div class="menu-grid admin-grid-custom" style="margin-top:20px; gap:12px;">
+                    <!-- GESTIÓN DE PERSONAL -->
+                    <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'personal')" style="border-top: 4px solid var(--accent2);">
+                        <i>👥</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">GESTIÓN DE PERSONAL</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE RRHH Y STAFF</span>
+                        </div>
+                    </div>
+
+                    <!-- CAPTACIÓN DE PERSONAL Y FORMACIÓN -->
+                    <div class="menu-item admin-card-bg" onclick="renderCaptacion(document.getElementById('current-view'))" style="border-top: 4px solid #0ea5e9;">
+                        <i>🎓</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CAPTACIÓN Y FORMACIÓN</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">RECLUTAMIENTO Y CAPACITACIÓN</span>
+                        </div>
+                    </div>
+
+                    <!-- INFORMES Y REPORTES -->
+                    ${hasCfoAccess ? `
+                    <div class="menu-item admin-card-bg" onclick="renderInformesYReportes(document.getElementById('current-view'))" style="border-top: 4px solid #f59e0b;">
+                        <i>📈</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">INFORMES Y REPORTES</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">MAPA DE AUTOMATIZACIÓN</span>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- MANEJO DE INVENTARIOS -->
+                    <div class="menu-item admin-card-bg" onclick="toast('PRÓXIMAMENTE: MÓDULO DE INVENTARIOS', 'info')" style="border-top: 4px solid #8b5cf6;">
+                        <i>📦</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">MANEJO DE INVENTARIOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE ACTIVOS Y MATERIALES</span>
+                        </div>
+                    </div>
+
+
+                    <!-- BBDD DE EVENTOS -->
+                    <div class="menu-item admin-card-bg" onclick="renderEventReports(document.getElementById('current-view'))" style="border-top: 4px solid var(--brand-red);">
+                        <i>📊</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE EVENTOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">REPORTES Y ESTADÍSTICAS</span>
+                        </div>
+                    </div>
+
+                    <!-- CIERRES DE EVENTOS -->
+                    <div class="menu-item admin-card-bg" onclick="renderAdmin(document.getElementById('current-view'), 'cierres')" style="border-top: 4px solid #8b5cf6;">
+                        <i>📂</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">CIERRES DE EVENTOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">EVENTOS PENDIENTES POR RELACIONAR</span>
+                        </div>
+                    </div>
+
+                    <!-- BBDD DE CLIENTES -->
+                    <div class="menu-item admin-card-bg" onclick="renderClientes(document.getElementById('current-view'))" style="border-top: 4px solid #10b981;">
+                        <i>📑</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE CLIENTES</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">HISTORIAL Y RECURRENCIA</span>
+                        </div>
+                    </div>
+
+                    <!-- BBDD DE VEHÍCULOS -->
+                    <div class="menu-item admin-card-bg" onclick="renderVehiculos(document.getElementById('current-view'))" style="border-top: 4px solid var(--warning);">
+                        <i>🚗</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">BBDD DE VEHÍCULOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">HISTORIAL DE FLOTA</span>
+                        </div>
+                    </div>
+
+                    <!-- AUDITORÍA Y PERMISOS -->
+                    <div class="menu-item admin-card-bg" onclick="renderAuditLogs(document.getElementById('current-view'))" style="border-top: 4px solid var(--danger);">
+                        <i>🛡️</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title" style="font-size:1.1rem; font-weight:900;">AUDITORÍA Y PERMISOS</span>
+                            <span class="menu-item-desc" style="font-size:0.65rem; margin-top:2px; opacity:0.7;">CONTROL DE ACCESOS Y LOGS</span>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div style="display: flex; justify-content: center; margin-top: 40px;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                </div>
+                <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+            `;
+            return;
+        }
+
+        if (tab === 'vehiculos') {
+            renderVehiculos(el);
+            return;
+        }
+
+        if (tab === 'cierres') {
+            renderCierresEventos(el);
+            return;
+        }
+
+        el.innerHTML = `
+            <div class="view-header" style="margin-bottom:20px;">
+                <h1 class="view-title">${tab === 'personal' ? '👥 GESTIÓN DE PERSONAL' : '💰 NÓMINA Y PAGOS'}</h1>
+            </div>
+
+            <div id="admin-content" style="margin-top:20px;"></div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
+                ${getVolverBtn('VOLVER A ADMINISTRACIÓN', 'renderAdmin(document.getElementById(\'current-view\'))')}
+            </div>
+            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+        `;
+
+        const content = document.getElementById('admin-content');
+        if (tab === 'personal') {
+            content.innerHTML = '<div id="admin-staff-sub"></div><hr style="border:0; border-top:2px solid var(--border); margin:40px 0;"><div id="admin-general-sub"></div>';
+            renderStaff(document.getElementById('admin-staff-sub'));
+            renderAdminGeneral(document.getElementById('admin-general-sub'));
+        } else if (tab === 'formatos') {
+            if (hasCfoAccess) {
+                renderAdminPayrollDashboard(content);
+            } else {
+                content.innerHTML = '<div style="color:var(--danger); text-align:center; padding:30px; font-weight:800;">ACCESO NO AUTORIZADO</div>';
+            }
+        }
+    }
+
+
+    window.toggleAdminSessionsSection = function() {
+        const content = document.getElementById('admin-sessions-content');
+        const arrow = document.getElementById('admin-sessions-toggle-arrow');
+        const text = document.getElementById('admin-sessions-toggle-text');
+        if (!content) return;
+        
+        const isCollapsed = content.style.display === 'none';
+        if (isCollapsed) {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+            text.textContent = 'OCULTAR HISTORIAL';
+        } else {
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            text.textContent = 'MOSTRAR HISTORIAL';
+        }
+    };
+
+    async function renderAdminGeneral(el) {
+        el.innerHTML = `
+
+            <!-- HISTORIAL DE EVENTOS CERRADOS ELIMINADO -->
+            <div id="admin-detail-container" style="margin-top:30px;"></div>
+        `;
+        loadAdminSessions();
+    }
+
+    async function uploadCSV() {
+        const fileInput = document.getElementById('csv-file');
+        if (!fileInput.files.length) return toast('SELECCIONE UN ARCHIVO', 'error');
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            showLoading('PROCESANDO LISTA...');
+            const res = await apiFetch('/api/admin/preload-csv', {
+                method: 'POST',
+                body: JSON.stringify({ csv: text })
+            });
+            hideLoading();
+            if (res && res.success) {
+                toast('LISTA PREVIA CARGADA: ' + res.count + ' VEHÍCULOS', 'success');
+                fileInput.value = '';
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    async function loadAdminSessions() {
+        const list = document.getElementById('admin-session-list');
+        const sessions = await apiFetch('/api/admin/sessions');
+        if (!sessions || sessions.length === 0) {
+            list.innerHTML = '<p style="color:var(--muted)">No hay eventos cerrados registrados.</p>';
+            return;
+        }
+
+        list.innerHTML = sessions.map(s => {
+            const typeMap = {
+                'valet': 'VALET PARKING',
+                'renta': 'RENTA EQUIPOS',
+                'xpress': 'XPRESS PRO',
+                'kids': 'EYE KIDS',
+                'eventos': 'EVENTOS',
+                'listas': 'LISTAS'
+            };
+            const typeLabel = typeMap[s.type] || s.type.toUpperCase();
+            const fullTitle = `${typeLabel} - ${s.name.toUpperCase()}`;
+
+            return `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="viewAdminDetail(${s.id})">
+                    <div>
+                        <div style="font-weight:700;">${fullTitle}</div>
+                        <div style="font-size:0.8rem; color:var(--muted)">Finalizado: ${new Date(s.ended_at).toLocaleString()}</div>
+                    </div>
+                    <div style="color:var(--accent)">Ver Detalle →</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function viewAdminDetail(id) {
+        showLoading('Cargando detalle del evento...');
+        const data = await apiFetch('/api/admin/sessions/' + id + '/detail');
+        hideLoading();
+        if (!data) return;
+
+        const container = document.getElementById('admin-detail-container');
+        container.innerHTML = `
+            <div class="card" style="border:1px solid var(--accent)">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+                    <div>
+                        <h2 style="margin:0">${data.session.name}</h2>
+                        <p style="color:var(--muted)">Resumen de Auditoría</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="exportSessionCSV(${id})">📥 Exportar CSV (Excel)</button>
+                </div>
+                <div class="grid" style="margin-bottom:20px;">
+                    <div class="stat-card"><h3>TOTAL VEHÍCULOS</h3><div class="stat-value">${data.stats.total_cars}</div></div>
+                    <div class="stat-card"><h3>ENTREGADOS</h3><div class="stat-value">${data.stats.exits}</div></div>
+                    <div class="stat-card"><h3>INGRESOS</h3><div class="stat-value">$${data.stats.revenue || 0}</div></div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="table" style="font-size:0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Placa</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Chofer In</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.vehicles.map(v => `
+                                <tr>
+                                    <td>${v.daily_seq || '—'}</td>
+                                    <td><b>${v.plate}</b></td>
+                                    <td>${formatTime24h(v.check_in_at)}</td>
+                                    <td>${v.check_out_at ? formatTime24h(v.check_out_at) : '—'}</td>
+                                    <td>${v.valet_in || '—'}</td>
+                                    <td style="color:${v.status === 'retrieved' ? 'var(--accent2)' : 'var(--accent)'}">${v.status.toUpperCase()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    window.exportSessionCSV = async function(id) {
+        const data = await apiFetch('/api/admin/sessions/' + id + '/detail');
+        if (!data) return;
+        
+        let csv = 'DailySeq,Plate,Brand,Owner,CheckIn,CheckOut,ValetIn,Status,Revenue\n';
+        data.vehicles.forEach(v => {
+            csv += `${v.daily_seq},${v.plate},${v.brand},${v.owner_name},${v.check_in_at},${v.check_out_at || ''},${v.valet_in},${v.status},${v.fee_amount || 0}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Reporte_${data.session.name}.csv`;
+        a.click();
+    };
+
+    async function closeSession() {
+        if (!window.activeSession) return toast('No hay una sesión activa', 'warning');
+        if (!confirm('¿CONFIRMAR CIERRE DEL EVENTO? ESTO GENERARÁ EL PDF Y EL EXCEL AUTOMÁTICAMENTE.')) return;
+        
+        showLoading('PROCESANDO CIERRE Y REPORTES...');
+        const sid = window.activeSession.id;
+        
+        try {
+            // Un solo llamado que cierra y envía reporte completo (PDF + EXCEL)
+            const res = await apiFetch('/api/sessions/close', { 
+                method: 'POST',
+                body: JSON.stringify({ id: sid })
+            });
+
+            if (res) {
+                toast('✅ EVENTO CERRADO: REPORTES ENVIADOS (PDF + EXCEL)', 'success');
+                window.activeSession = null;
+                await checkActiveSession();
+                showTab('home');
+            }
+        } catch (e) {
+            console.error('Error en cierre:', e);
+            toast('Error al finalizar: ' + e.message, 'danger');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function loadPreListaCheckin() {
+        const res = await apiFetch('/api/events/detail/PRE-LISTA');
+        const container = document.getElementById('pre-lista-checkin');
+        if (!container) return;
+        if (res && res.list && res.list.length > 0) {
+            container.innerHTML = res.list.map(v => `
+                <div class="card" onclick="selectFromPreLista(${v.id})" style="padding:10px; cursor:pointer; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--surface); margin-bottom:5px">
+                    <div>
+                        <div style="font-weight:900; color:var(--accent)">${v.plate}</div>
+                        <div style="font-size:0.75rem; color:var(--muted)">${v.owner_name}</div>
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--accent2); font-weight:800">${v.brand || ''}</div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div style="color:var(--muted); font-size:0.8rem; text-align:center; padding:20px;">NO HAY INVITADOS PENDIENTES</div>';
+        }
+    }
+
+    async function renderActivityMonitor() {
+        const container = document.getElementById('online-users-list');
+        const badge = document.getElementById('active-count-badge');
+        if (!container) return;
+
+        try {
+            const res = await apiFetch('/api/admin/online-now');
+            if (!res || !res.success) {
+                container.innerHTML = '<p style="color:var(--muted)">Error al cargar datos</p>';
+                return;
+            }
+
+            const users = res.users;
+            badge.textContent = `${users.length} CONECTADOS`;
+
+            if (users.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:0.8rem;">No hay empleados conectados en este momento.</p>';
+                return;
+            }
+
+            container.innerHTML = users.map(u => {
+                const lastLogin = new Date(u.last_login);
+                const maxActivity = u.max_activity ? new Date(u.max_activity) : lastLogin;
+                const diffMin = Math.floor((new Date() - maxActivity) / 60000);
+                const activeText = diffMin <= 1 ? 'ACTIVO AHORA' : `ACTIVO HACE ${diffMin} MIN`;
+                const isOnline = diffMin < 15;
+
+                return `
+                    <div style="background:var(--surface2); padding:15px; border-radius:16px; border:1px solid ${isOnline ? 'rgba(34, 197, 94, 0.3)' : 'var(--border)'}; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:900; font-size:0.8rem; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:85%;" title="${u.name.toUpperCase()}">${u.name.toUpperCase()}</span>
+                            <span style="width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow: 0 0 10px #22c55e; flex-shrink:0;"></span>
+                        </div>
+                        ${u.session_name ? `
+                            <div style="background:rgba(99, 102, 241, 0.1); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:0.55rem; font-weight:900; border:1px solid rgba(99, 102, 241, 0.2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${u.session_name}">
+                                📍 ${u.session_name}
+                            </div>
+                        ` : `
+                            <div style="color:var(--muted); font-size:0.55rem; font-weight:600;">SIN EVENTO ASIGNADO</div>
+                        `}
+                        <div style="margin-top:5px; border-top:1px solid rgba(255,255,255,0.03); padding-top:8px; font-size:0.5rem; color:var(--muted); display:flex; justify-content:space-between; align-items:center;">
+                            <span>🕒 ${lastLogin.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}</span>
+                            <span style="color:var(--success); font-weight:900; letter-spacing:0.5px;">${activeText}</span>
+                        </div>
+                        <div style="font-size:0.45rem; color:var(--muted); opacity:0.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${u.last_device || ''}">
+                            💻 ${u.last_device || 'N/A'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (e) {
+            container.innerHTML = '<p style="color:var(--muted)">Error de conexión</p>';
+        }
+    }
+
+    window.toggleUserPermission = async function(userId, field, checked) {
+        try {
+            const res = await apiFetch('/api/admin/user-permissions', {
+                method: 'POST',
+                body: JSON.stringify({ user_id: userId, field: field, value: checked ? 1 : 0 })
+            });
+            if (res && res.success) {
+                toast('PERMISO ACTUALIZADO', 'success');
+                if (window.allPermissionsMatrix) {
+                    const found = window.allPermissionsMatrix.find(p => p.user_id === userId);
+                    if (found) found[field] = checked ? 1 : 0;
+                }
+                const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                if (currentUser.id === userId) {
+                    const myPerms = await apiFetch('/api/my-permissions');
+                    if (myPerms && myPerms.permissions) {
+                        currentUser.permissions = myPerms.permissions;
+                        localStorage.setItem('user', JSON.stringify(currentUser));
+                    }
+                }
+            } else {
+                toast('Error al actualizar permiso', 'error');
+            }
+        } catch (e) {
+            toast('Error de conexión', 'error');
+            console.error(e);
+        }
+    };
+
+    async function loadGpsHistoryMap() {
+        if (window.auditGpsMap) return;
+        try {
+            const res = await apiFetch('/api/reports/gps-history');
+            const history = res.history || [];
+            
+            const mapContainer = document.getElementById('gps-history-map');
+            if (!mapContainer) return;
+            
+            const L = window.L;
+            if (!L) {
+                mapContainer.innerHTML = '<div style="color:var(--danger); text-align:center; padding:40px;">Error: Leaflet no está cargado</div>';
+                return;
+            }
+            
+            const map = L.map('gps-history-map').setView([40.4168, -3.7038], 12);
+            window.auditGpsMap = map;
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+            
+            const bounds = [];
+            history.forEach(log => {
+                if (log.lat && log.lon) {
+                    const date = new Date(log.timestamp + 'Z').toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+                    const marker = L.marker([log.lat, log.lon]).addTo(map);
+                    marker.bindPopup(`<b>${log.name}</b><br>${date}`);
+                    bounds.push([log.lat, log.lon]);
+                }
+            });
+            
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [20, 20] });
+            }
+        } catch (e) {
+            console.error('Error loading map:', e);
+            const c = document.getElementById('gps-history-map');
+            if (c) c.innerHTML = '<div style="color:var(--danger); text-align:center; padding:40px;">Error cargando mapa</div>';
+        }
+    }
+
+    async function loadGpsHistory() {
+        try {
+            const res = await apiFetch('/api/reports/gps-history');
+            const history = res.history || [];
+            let html = '<table class="styled-table" style="width:100%; min-width:600px;">';
+            html += '<thead><tr><th>FECHA / HORA</th><th>EMPLEADO</th><th>PRECISIÓN</th><th>ACCIÓN</th></tr></thead><tbody>';
+            if (history.length === 0) {
+                html += '<tr><td colspan="4" style="text-align:center; padding:20px;">No hay registros de GPS</td></tr>';
+            } else {
+                history.forEach(log => {
+                    const date = new Date(log.timestamp + 'Z').toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+                    html += `<tr>
+                        <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);">${date}</td>
+                        <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); font-weight:bold;">${log.name}</td>
+                        <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--muted);">${log.accuracy ? `±${Math.round(log.accuracy)}m` : 'N/A'}</td>
+                        <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);"><a href="https://www.google.com/maps?q=${log.lat},${log.lon}" target="_blank" style="color:#28A8E9; text-decoration:none; font-weight:bold; background:rgba(40,168,233,0.1); padding:4px 8px; border-radius:6px;">🗺️ Mapa</a></td>
+                    </tr>`;
+                });
+            }
+            html += '</tbody></table>';
+            document.getElementById('gps-history-container').innerHTML = html;
+        } catch(e) {
+            document.getElementById('gps-history-container').innerHTML = '<div style="color:var(--danger); text-align:center; padding:20px;">Error cargando historial de ubicaciones</div>';
+        }
+    }
+
+    async function renderAuditLogs(el) {
+        window.auditGpsMap = null; // Reset map instance
+        el.innerHTML = `
+            <div class="view-header"><h1 class="view-title">🛡️ AUDITORÍA Y PERMISOS</h1></div>
+            
+
+
+            <!-- CONFIGURACIÓN DE PERMISOS POR EMPLEADO -->
+            <div class="card" style="margin-bottom:30px; padding:20px; background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <h3 style="margin-top:0; color:white; font-size:1.1rem; font-weight:900; letter-spacing:1px; display:flex; align-items:center; gap:8px;">
+                    🔐 CONFIGURACIÓN DE PERMISOS POR EMPLEADO
+                </h3>
+                <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px;">
+                    Habilita o deshabilita los permisos de visualización (<b>Ve</b>) y modificación (<b>Mod</b>) para cada módulo en tiempo real.
+                </p>
+                
+                <!-- BÚSQUEDA -->
+                <div style="margin-bottom:15px; position:relative;">
+                    <input type="text" id="search-permissions-input" onkeyup="renderPermissionsMatrixRows()" placeholder="BUSCAR EMPLEADO..." style="width:100%; padding:12px; border-radius:10px; background:var(--surface2); color:white; border:1px solid var(--border); font-size:0.85rem; box-sizing: border-box;">
+                    <span style="position:absolute; right:15px; top:12px; color:var(--muted);">🔍</span>
+                </div>
+
+                <div style="overflow-x:auto; border-radius:12px; border:1px solid var(--border); max-height: 450px; overflow-y: auto;">
+                    <table style="width:100%; border-collapse: collapse; font-size:0.75rem; text-align:center; min-width:850px;">
+                        <thead>
+                            <tr style="background:rgba(255,255,255,0.03); color:white; font-weight:bold; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 10;">
+                                <th rowspan="2" style="padding:12px; text-align:left; border-right: 1px solid var(--border); min-width:180px; background: #161b2c;">Empleado</th>
+                                <th rowspan="2" style="padding:12px; text-align:center; border-right: 1px solid var(--border); min-width:80px; background: #161b2c;">ROL</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Valet Parking</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Control Accesos</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Alquiler Equipos</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Traslados</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Guardia Diurna/Nocturna</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Custodia</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Eventos y Listas</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Admin General</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Dirección Eye Staff</th>
+                                <th colspan="2" style="padding:8px; border-right: 1px solid var(--border); background: #161b2c;">Seguridad (Pines)</th>
+                                <th colspan="2" style="padding:8px; background: #161b2c;">Ubicación en Vivo</th>
+                            </tr>
+                            <tr style="background:rgba(255,255,255,0.02); color:var(--muted); font-size:0.7rem; border-bottom: 1px solid var(--border); position: sticky; top: 38px; z-index: 10;">
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="padding:6px; border-right: 1px solid var(--border); background: #161b2c;">Mod</th>
+                                <th style="padding:6px; border-right: 1px dashed var(--border); background: #161b2c;">Ve</th><th style="background: #161b2c;">Mod</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissions-matrix-tbody">
+                            <tr><td colspan="24" style="padding:30px; color:var(--muted);">Cargando matriz de permisos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="toggle-matrix-btn" onclick="togglePermissionsMatrixCollapse()" style="padding:15px 20px; cursor:pointer; font-weight:900; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.9rem; letter-spacing:1px; border-top:1px solid rgba(255,255,255,0.05); margin-top:15px;">
+                    <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">MOSTRAR TODOS LOS EMPLEADOS ▼</span>
+                </div>
+            </div>
+            
+            <!-- HISTORIAL DE ACTIVIDAD (COLAPSABLE - MÁX 25) -->
+            <details style="margin-bottom:30px; background:var(--surface); border-radius:18px; border:1px solid var(--border); padding:5px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <summary style="padding:15px 20px; cursor:pointer; font-weight:900; color:var(--accent); display:flex; align-items:center; gap:10px; font-size:0.9rem; letter-spacing:1px;">
+                    🛡️ HISTORIAL DE ACTIVIDAD
+                    <span style="font-size:0.6rem; color:var(--muted); font-weight:normal; margin-left:auto;">MÁS RECIENTES ▼</span>
+                </summary>
+                <div id="audit-logs-container" style="padding:0 15px 15px 15px; border-top:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
+                    <div style="text-align:center; padding:40px; color:var(--muted);">CARGANDO REGISTROS...</div>
+                </div>
+            </details>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
+                ${getVolverBtn('VOLVER A ADMINISTRACIÓN', 'renderAdmin(document.getElementById(\'current-view\'))')}
+            </div>
+        `;
+
+        // Cargar matriz de permisos de forma asíncrona (colapsada por defecto con Demo como muestra)
+        window.permissionsMatrixCollapsed = true;
+        window.allPermissionsMatrix = null;
+
+        window.togglePermissionsMatrixCollapse = function() {
+            window.permissionsMatrixCollapsed = !window.permissionsMatrixCollapsed;
+            const btn = document.getElementById('toggle-matrix-btn');
+            if (btn) {
+                btn.innerHTML = window.permissionsMatrixCollapsed 
+                    ? '<span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">MOSTRAR TODOS LOS EMPLEADOS ▼</span>'
+                    : '<span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">CONTRAER MATRIZ DE PERMISOS ▲</span>';
+            }
+            renderPermissionsMatrixRows();
+        };
+
+        function renderPermissionsMatrixRows() {
+            const tbody = document.getElementById('permissions-matrix-tbody');
+            if (!tbody || !window.allPermissionsMatrix) return;
+            
+            let list = window.allPermissionsMatrix;
+            const searchInput = document.getElementById('search-permissions-input');
+            const searchTerm = searchInput ? searchInput.value.trim().toUpperCase() : '';
+
+            if (searchTerm) {
+                list = list.filter(u => u.name.toUpperCase().includes(searchTerm));
+            } else if (window.permissionsMatrixCollapsed) {
+                list = list.filter(u => u.user_id === 999 || u.name.toUpperCase().includes('INVITADO') || u.name.toUpperCase().includes('DEMO'));
+                if (list.length === 0 && window.allPermissionsMatrix.length > 0) {
+                    list = [window.allPermissionsMatrix[0]];
+                }
+            }
+            
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="24" style="padding:20px; color:var(--muted);">No hay empleados activos</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = list.map(u => {
+                const chk = (field, checked) => `
+                    <input type="checkbox" 
+                        style="width:18px; height:18px; accent-color:var(--success); cursor:pointer;" 
+                        ${checked === 1 ? 'checked' : ''} 
+                        onchange="toggleUserPermission(${u.user_id}, '${field}', this.checked)">
+                `;
+                return `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding:10px 12px; text-align:left; font-weight:700; border-right:1px solid var(--border); color:white;">
+                            ${u.name.toUpperCase()}
+                        </td>
+                        <td style="padding:10px 12px; text-align:center; font-weight:900; border-right:1px solid var(--border); color:${(u.eye_id || '').toUpperCase() === 'ORO' ? '#FFD700' : (u.eye_id || '').toUpperCase() === 'PLATA' ? '#E5E4E2' : (u.eye_id || '').toUpperCase() === 'BRONCE' ? '#CD7F32' : 'var(--muted)'};">
+                            ${(u.eye_id || 'LOGÍSTICA').toUpperCase()}
+                        </td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('valet_ve', u.valet_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('valet_mod', u.valet_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('accesos_ve', u.accesos_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('accesos_mod', u.accesos_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('alquiler_ve', u.alquiler_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('alquiler_mod', u.alquiler_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('traslados_ve', u.traslados_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('traslados_mod', u.traslados_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('guardia_ve', u.guardia_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('guardia_mod', u.guardia_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('custodia_ve', u.custodia_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('custodia_mod', u.custodia_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('eventos_ve', u.eventos_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('eventos_mod', u.eventos_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('admin_ve', u.admin_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('admin_mod', u.admin_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('vip_ve', u.vip_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('vip_mod', u.vip_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('seg_ve', u.seg_ve)}</td>
+                        <td style="padding:8px; border-right:1px solid var(--border);">${chk('seg_mod', u.seg_mod)}</td>
+                        <td style="padding:8px; border-right:1px dashed var(--border);">${chk('loc_ve', u.loc_ve)}</td>
+                        <td style="padding:8px;">${chk('loc_mod', u.loc_mod)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        apiFetch('/api/admin/user-permissions').then(res => {
+            if (res && res.permissions) {
+                window.allPermissionsMatrix = res.permissions;
+                renderPermissionsMatrixRows();
+            } else {
+                const tbody = document.getElementById('permissions-matrix-tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="padding:20px; color:var(--danger);">Error al cargar permisos</td></tr>';
+            }
+        }).catch(e => {
+            console.error('Permissions Matrix error:', e);
+            const tbody = document.getElementById('permissions-matrix-tbody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="padding:20px; color:var(--danger);">Error de conexión</td></tr>';
+        });
+
+        
+        const res = await apiFetch('/api/admin/audit-logs');
+        if (res && res.logs) {
+            const container = document.getElementById('audit-logs-container');
+            if (res.logs.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--muted);">NO HAY ACCIONES REGISTRADAS AÚN</div>';
+                return;
+            }
+
+            // Limitamos a los 25 más recientes
+            res.logs.forEach(l => {
+                let extracted = l.user_name;
+                if (!extracted && l.details) {
+                    let upperDetails = l.details.toUpperCase();
+                    if (upperDetails.includes('BYPASS MAESTRO:')) {
+                        extracted = upperDetails.split('BYPASS MAESTRO:')[1].trim();
+                    } else if (upperDetails.includes('BYPASS INVITADO:')) {
+                        extracted = upperDetails.split('BYPASS INVITADO:')[1].trim();
+                    }
+                }
+                l.displayUser = extracted;
+            });
+
+            res.logs.forEach((l, i) => {
+                if (!l.displayUser) {
+                    let match = res.logs.slice(i + 1).find(other => other.device === l.device && other.displayUser);
+                    l.displayUser = match ? match.displayUser : 'ADMIN';
+                }
+            });
+
+            const recentLogs = res.logs.slice(0, 25);
+            
+            container.innerHTML = `
+                <table style="width:100%; border-collapse: collapse; font-size:0.75rem; text-align:left;">
+                    <thead>
+                        <tr style="color:var(--muted); border-bottom:1px solid var(--border);">
+                            <th style="padding:12px;">LOGIN</th>
+                            <th style="padding:12px;">USUARIO</th>
+                            <th style="padding:12px;">DISPOSITIVO</th>
+                            <th style="padding:12px;">ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${recentLogs.map(l => {
+                            const d = new Date(l.timestamp);
+                            const isRecurrent = l.device_usage_count > 3;
+                            
+                            let actionBg = 'rgba(255,255,255,0.05)';
+                            let actionColor = 'inherit';
+                            let actionUpper = (l.action || '').toUpperCase();
+                            if (actionUpper === 'LOGIN') {
+                                actionBg = 'rgba(34,197,94,0.15)';
+                                actionColor = 'var(--success)';
+                            } else if (actionUpper === 'LOGOUT') {
+                                actionBg = 'rgba(239,68,68,0.15)';
+                                actionColor = 'var(--danger)';
+                            }
+                            
+                            return `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
+                                    <td style="padding:12px; white-space:nowrap; font-family:var(--font-mono); color:var(--accent);">${formatDateExplicit(d)} ${formatTime24h(d)}</td>
+                                    <td style="padding:12px; font-weight:800;">${(l.displayUser).toUpperCase()}</td>
+                                    <td style="padding:12px;">
+                                        <div style="font-size:0.6rem; color:var(--muted); display:flex; align-items:center; gap:5px;">
+                                            ${isRecurrent ? '<span title="Dispositivo Recurrente" style="color:var(--accent);">⭐</span>' : '<span title="Nuevo Dispositivo" style="color:var(--warning);">🆕</span>'}
+                                            ${l.device.substring(0, 30)}...
+                                        </div>
+                                    </td>
+                                    <td style="padding:12px;"><span style="background:${actionBg}; color:${actionColor}; padding:3px 8px; border-radius:4px; font-weight:900; font-size:0.6rem;">${l.action}</span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+    }
+
+    async function selectFromPreLista(id) {
+        showLoading('CARGANDO DATOS...');
+        const v = await apiFetch('/api/vehicles/' + id);
+        hideLoading();
+        if (v) {
+            document.getElementById('in-plate').value = v.plate || '';
+            document.getElementById('in-owner').value = v.owner_name || '';
+            document.getElementById('in-phone').value = v.owner_phone || '';
+            document.getElementById('in-brand').value = v.brand || '';
+            document.getElementById('in-model').value = v.model || '';
+            toast('DATOS CARGADOS: ' + v.plate, 'success');
+            document.getElementById('in-plate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    window.downloadTemplate = function() {
+        const csv = 'PLACA,NOMBRE,CONTACTO,MARCA,MODELO\nABC-123,JUAN PEREZ,+584141234567,TOYOTA,COROLLA';
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'plantilla_valet_eye.csv';
+        a.click();
+    };
+
+    async function logout() { 
+        const sessionId = localStorage.getItem('web_session_id');
+        const userStr = localStorage.getItem('user');
+        let userId = null;
+        try { if (userStr) userId = JSON.parse(userStr).id; } catch(e) {}
+
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('web_session_id');
+        localStorage.removeItem('user');
+
+        if (sessionId) {
+            fetch(API_BASE + '/api/staff/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId, user_id: userId })
+            }).catch(() => {});
+        }
+        
+        location.reload(); 
+    }
+
+    window.toggleStaffRegisterSection = function() {
+        const content = document.getElementById('staff-register-content');
+        const arrow = document.getElementById('staff-register-toggle-arrow');
+        const text = document.getElementById('staff-register-toggle-text');
+        if (!content) return;
+        
+        const isCollapsed = content.style.display === 'none';
+        if (isCollapsed) {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+            text.textContent = 'OCULTAR CAMPOS';
+        } else {
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            text.textContent = 'MOSTRAR CAMPOS';
+        }
+    };
+
+    async function renderStaff(el) {
+        el.innerHTML = `
+            <!-- 1. REGISTRO -->
+            <div class="stat-card" style="margin-bottom:30px; border-left:4px solid #6366f1; padding: 20px;">
+                <div onclick="window.toggleStaffRegisterSection()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none;">
+                    <h2 style="margin:0; font-size:1rem; letter-spacing:1px; color:#fff; display:flex; align-items:center; gap:8px;">
+                        Registro de nuevo empleado
+                    </h2>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span id="staff-register-toggle-text" style="font-size:0.65rem; color:var(--muted); font-weight:900; letter-spacing:1px; opacity:0.8;">MOSTRAR CAMPOS</span>
+                        <div id="staff-register-toggle-arrow" style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.05); display:grid; place-items:center; font-size:0.6rem; transition:0.3s; transform:rotate(0deg)">▼</div>
+                    </div>
+                </div>
+                
+                <div id="staff-register-content" style="display:none; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                    <div style="color:#ef4444; font-size:0.75rem; font-weight:800; margin-bottom:20px;">* Obligatorio</div>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <!-- COLUMNA IZQUIERDA (3/4) -->
+                        <div style="flex: 3; min-width: 300px;">
+                            <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom:15px;">
+                                 <div class="field" style="margin-bottom:0;"><label>NOMBRE <span style="color:var(--danger);">*</span></label><input type="text" id="staff-name" placeholder="EJ: JUAN PÉREZ"></div>
+                                 <div class="field" style="margin-bottom:0;"><label>CÉDULA <span style="color:var(--danger);">*</span></label><input type="text" id="staff-cedula" placeholder="EJ: 12345678" inputmode="numeric" oninput="autoFillPin(this.value)"></div>
+                                 <div class="field" style="margin-bottom:0;"><label>EMAIL <span style="color:var(--danger);">*</span></label><input type="email" id="staff-email" placeholder="EJ: CORREO@EJEMPLO.COM"></div>
+                                 <div class="field" style="margin-bottom:0;"><label>FECHA NACIMIENTO <span style="color:var(--danger);">*</span></label><input type="date" id="staff-birth-date" onchange="updateRegistrationAgeDisplay(this.value)" oninput="updateRegistrationAgeDisplay(this.value)" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;"></div>
+                            </div>
+                            <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:15px;">
+                                <div class="field" style="margin-bottom:0;"><label>EYE_ID <span style="color:var(--danger);">*</span></label>
+                                    <select id="staff-eye-id" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                        <option value="">SIN ASIGNAR</option>
+                                        <option value="ORO">ORO</option>
+                                        <option value="PLATA">PLATA</option>
+                                        <option value="BRONCE">BRONCE</option>
+                                        <option value="LOGÍSTICA">LOGÍSTICA</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                    </select>
+                                </div>
+                                <div class="field" style="margin-bottom:0;"><label>PERFIL ADMINISTRATIVO <span style="color:var(--danger);">*</span></label>
+                                    <select id="staff-profile-admin" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                        <option value="">SIN ASIGNAR</option>
+                                        <option value="NO APLICA">NO APLICA</option>
+                                        
+                                        <option value="EMPLEADO">EMPLEADO</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                    </select>
+                                </div>
+                                <div class="field" style="margin-bottom:0;"><label>PERFIL OPERATIVO <span style="color:var(--danger);">*</span></label>
+                                    <select id="staff-profile-opera" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                        <option value="">SIN ASIGNAR</option>
+                                        <option value="JEFE DE GRUPO">JEFE DE GRUPO</option>
+                                        <option value="SUPERVISOR">SUPERVISOR</option>
+                                        <option value="COORDINADOR">COORDINADOR</option>
+                                        <option value="COORDINADOR AUXILIAR">COORDINADOR AUXILIAR</option>
+                                        <option value="LOGÍSTICA">LOGISTICA</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:15px;">
+                                <div class="field" style="margin-bottom:0;"><label>TELÉFONO <span style="color:var(--danger);">*</span></label><input type="text" id="staff-phone" placeholder="XXXX-XXXXXXX"></div>
+                                <div class="field" style="margin-bottom:0;"><label>DIRECCIÓN <span style="color:var(--danger);">*</span></label><input type="text" id="staff-address" placeholder="EJ: AV. BOLIVAR, EDIF 1"></div>
+                                <div class="field" style="margin-bottom:0;"><label>SECTOR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-sector" placeholder="EJ: CHACAO / LAS MERCEDES"></div>
+                            </div>
+                            <div class="grid" style="grid-template-columns: 1fr 1fr 150px; gap:15px; margin-bottom:15px; align-items: end;">
+                                <div class="field" style="margin-bottom:0;"><label>ENTIDAD BANCARIA <span style="color:var(--danger);">*</span></label>
+                                    <select id="staff-bank" style="width:100%; height:45px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:white; padding:0 10px;">
+                                        <option value="">Seleccione un banco...</option>
+                                        <option value="BANCO DE VENEZUELA">Banco de Venezuela</option>
+                                        <option value="BANCO DIGITAL DE LOS TRABAJADORES">Banco Digital de los Trabajadores (antes Bicentenario)</option>
+                                        <option value="BANCO DEL TESORO">Banco del Tesoro</option>
+                                        <option value="BANFANB">BANFANB</option>
+                                        <option value="BANCO AGRÍCOLA DE VENEZUELA">Banco Agrícola de Venezuela</option>
+                                        <option value="BANESCO">Banesco</option>
+                                        <option value="MERCANTIL">Mercantil</option>
+                                        <option value="BBVA PROVINCIAL">BBVA Provincial</option>
+                                        <option value="BANCO NACIONAL DE CRÉDITO (BNC)">Banco Nacional de Crédito (BNC)</option>
+                                        <option value="BANCARIBE">Bancaribe</option>
+                                        <option value="BANCO EXTERIOR">Banco Exterior</option>
+                                        <option value="BANCAMIGA">Bancamiga</option>
+                                        <option value="BANPLUS">Banplus</option>
+                                        <option value="BFC BANCO FONDO COMÚN">BFC Banco Fondo Común</option>
+                                        <option value="BANCO PLAZA">Banco Plaza</option>
+                                        <option value="100% BANCO">100% Banco</option>
+                                        <option value="VENEZOLANO DE CRÉDITO">Venezolano de Crédito</option>
+                                        <option value="BANCO ACTIVO">Banco Activo</option>
+                                        <option value="BANCO CARONÍ">Banco Caroní</option>
+                                        <option value="DELSUR">Delsur</option>
+                                        <option value="BANCO SOFITASA">Banco Sofitasa</option>
+                                        <option value="N58 BANCO DIGITAL">N58 Banco Digital</option>
+                                        <option value="BANCRECER">Bancrecer</option>
+                                        <option value="BANGENTE">Bangente</option>
+                                        <option value="MI BANCO">Mi Banco</option>
+                                        <option value="BANCO INTERNACIONAL DE DESARROLLO">Banco Internacional de Desarrollo</option>
+                                        <option value="INSTITUTO MUNICIPAL DE CRÉDITO POPULAR">Instituto Municipal de Crédito Popular</option>
+                                    </select>
+                                </div>
+                                <div class="field" style="margin-bottom:0;"><label>NÚMERO DE CUENTA</label><input type="text" id="staff-account" placeholder="EJ: 0134..."></div>
+                                <div class="field" style="margin-bottom:0;"><label>TEL. PAGO MÓVIL</label><input type="text" id="staff-pago-movil-phone" placeholder="EJ: 0414..."></div>
+                                <div class="field" style="margin-bottom:0; display:flex; align-items:center; height:45px;">
+                                    <input type="checkbox" id="staff-pago-movil" style="width:20px; height:20px; cursor:pointer;" onchange="document.getElementById('staff-account').disabled = this.checked;">
+                                    <label for="staff-pago-movil" style="margin-left:10px; cursor:pointer; font-weight:bold;">PAGO MÓVIL</label>
+                                </div>
+                            </div>
+                            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:20px;">
+                                <div class="field" style="margin-bottom:0;"><label>FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-e-contact" placeholder="EJ: MARIA PEREZ"></div>
+                                <div class="field" style="margin-bottom:0;"><label>TEL. FAMILIAR <span style="color:var(--danger);">*</span></label><input type="text" id="staff-e-phone" placeholder="EJ: 0412..."></div>
+                                <div class="field" style="margin-bottom:0;"><label>ALERGIAS <span style="color:var(--danger);">*</span></label><input type="text" id="staff-allergies" placeholder="EJ: NINGUNA / PENICILINA"></div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border);">
+                                <label style="display:block; margin-bottom:10px; font-weight:bold; color:var(--accent);">DOCUMENTACIÓN LEGAL</label>
+                                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:10px;">
+                                    <!-- Cédula -->
+                                    <div style="text-align:center;">
+                                        <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-cedula').click()">
+                                            <img id="staff-doc-cedula-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                            <span style="font-size:1.5rem; margin-bottom:5px;">📄</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">CÉDULA</span>
+                                        </div>
+                                        <input type="file" id="staff-doc-cedula" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-cedula-preview')">
+                                    </div>
+                                    <!-- Licencia 2da -->
+                                    <div style="text-align:center;">
+                                        <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-lic2').click()">
+                                            <img id="staff-doc-lic2-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                            <span style="font-size:1.5rem; margin-bottom:5px;">🚗</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">LICENCIA 2DA</span>
+                                        </div>
+                                        <input type="file" id="staff-doc-lic2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-lic2-preview')">
+                                    </div>
+                                    <!-- Certificado 2da -->
+                                    <div style="text-align:center;">
+                                        <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-cert2').click()">
+                                            <img id="staff-doc-cert2-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                            <span style="font-size:1.5rem; margin-bottom:5px;">⚕️</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">CERT MÉD 2DA</span>
+                                        </div>
+                                        <input type="file" id="staff-doc-cert2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-cert2-preview')">
+                                    </div>
+                                    <!-- Licencia 3ra -->
+                                    <div style="text-align:center;">
+                                        <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-lic3').click()">
+                                            <img id="staff-doc-lic3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                            <span style="font-size:1.5rem; margin-bottom:5px;">🚚</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">LICENCIA 3RA</span>
+                                        </div>
+                                        <input type="file" id="staff-doc-lic3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-lic3-preview')">
+                                    </div>
+                                    <!-- Certificado 3ra -->
+                                    <div style="text-align:center;">
+                                        <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-cert3').click()">
+                                            <img id="staff-doc-cert3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                            <span style="font-size:1.5rem; margin-bottom:5px;">⚕️</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">CERT MÉD 3RA</span>
+                                        </div>
+                                        <input type="file" id="staff-doc-cert3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-cert3-preview')">
+                                    </div>
+                                </div>
+                            </div>
+
+<button class="btn" onclick="saveNewStaff()" style="width:100%; height:55px; border-radius:12px; font-size:1.1rem; background:var(--accent); font-weight:900; letter-spacing:1px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: transform 0.2s ease;">GUARDAR EMPLEADO</button>
+                        </div>
+                        
+                        <!-- COLUMNA DERECHA (1/4) -->
+                        <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 10px;">
+                            <div class="field" style="margin-bottom:0; width: 100%; max-width: 280px; display: flex; flex-direction: column;">
+                                <label style="text-align: center; margin-bottom: 12px; font-size:0.85rem; letter-spacing: 1px;">📸 CARNET / FOTO <span style="color:var(--danger);">*</span></label>
+                                <div class="carnet-preview-container" onclick="document.getElementById('staff-carnet').click()" style="width: 100%; height: 310px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); cursor: pointer; position: relative;">
+                                    <span id="carnet-label" style="position: absolute; z-index: 1; font-size: 0.8rem; font-weight: 800; color: var(--muted); text-align: center; display: none;">TAP PARA<br>CARGAR</span>
+                                    <img id="carnet-preview-img" src="eye-staff-carnet-default.png" alt="" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; display: block;">
+                                </div>
+                                <input type="file" id="staff-carnet" hidden accept="image/*" onchange="previewCarnet(this)">
+                                
+                                <div id="staff-age-calc-display" style="text-align: center; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; font-size: 0.85rem; font-weight: 800; color: var(--muted); letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                    <span id="staff-age-icon" style="transition: all 0.3s; display: inline-block;">🎂</span> EDAD: <span id="staff-age-val" style="color: var(--success); font-weight: 900; font-size: 1rem;">--</span> AÑOS
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="staff-pin" value="">
+            </div>
+
+            <!-- 2. INDICADORES Y LISTA -->
+            <div style="margin-bottom:40px;">
+                <div id="staff-stats-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:10px; margin-bottom:25px;">
+                    <!-- Se llena con updateStaffStats() -->
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:20px;">
+                    <div class="field" style="max-width:400px; margin-bottom:0; flex:1;">
+                        <label>🔍 BUSCAR POR NOMBRE...</label>
+                        <input type="text" id="staff-search-input" placeholder="ESCRIBA PARA FILTRAR..." oninput="filterStaffList()" style="background:var(--surface2); border:2px solid var(--accent2);">
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                        <button class="btn btn-success" onclick="downloadRRHHTemplate()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
+                        <button class="btn btn-accent" onclick="toggleStaffList()" style="font-size:0.7rem; white-space:nowrap; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
+                    </div>
+                </div>
+
+                <div id="staff-list-container" style="display:block; overflow-x:auto; overflow-y:auto; max-height:65vh; background:var(--surface); border-radius:16px; border:1px solid var(--border);">
+                    <div style="text-align:center; padding:20px;">Cargando matriz de personal...</div>
+                </div>
+            </div>
+
+            <!-- SOLICITUDES PENDIENTES DE ACTUALIZACIÓN -->
+            <div id="pending-updates-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">📝 Solicitudes de Actualización Pendientes</h3>
+                    <button class="btn btn-secondary" onclick="loadPendingUpdates()" style="font-size:0.7rem; padding:8px 15px;">🔄 REFRESCAR</button>
+                </div>
+                <div id="pending-updates-content">
+                    <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.85rem;">Cargando solicitudes...</div>
+                </div>
+            </div>
+
+
+
+            <!-- 3. IMPORTACIÓN (ELIMINADA) -->
+
+        `;
+        loadStaffList();
+        loadPendingUpdates();
+    }
+
+    let fullStaffData = [];
+    let availableSessions = [];
+    let showInactive = false;
+    window.showAllStaff = false;
+    window.cardFilter = 'all';
+
+    window.setCardFilter = function(filterValue) {
+        if (filterValue === 'all') {
+            window.cardFilter = 'all';
+            window.showAllStaff = true;
+            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
+            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
+        } else if (window.cardFilter === filterValue) {
+            window.cardFilter = 'all'; // Toggle off if clicked again
+            window.showAllStaff = true;
+            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
+            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
+        } else {
+            window.cardFilter = filterValue;
+            window.showAllStaff = true;
+            const btn = document.querySelector('button[onclick="toggleStaffList()"]');
+            if (btn) btn.innerHTML = "📊 COLAPSAR MATRIZ (PRINCIPALES)";
+        }
+        updateStaffStats(); // To update active styles if needed, though not strictly required
+        renderFilteredStaff();
+    };
+
+    function toggleStaffList() {
+        window.showAllStaff = !window.showAllStaff;
+        const btn = document.querySelector('button[onclick="toggleStaffList()"]');
+        if (btn) {
+            btn.innerHTML = window.showAllStaff ? "📊 COLAPSAR MATRIZ (PRINCIPALES)" : "📊 MOSTRAR MATRIZ COMPLETA";
+        }
+        renderFilteredStaff();
+    }
+
+    function updateStaffStats() {
+        const adminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN');
+        const nonAdminStaff = fullStaffData.filter(u => (u.eye_id || '').toUpperCase() !== 'ADMIN');
+
+        const stats = {
+            total: nonAdminStaff.length,
+            active: nonAdminStaff.filter(u => u.is_active !== 0).length,
+            inactive: nonAdminStaff.filter(u => u.is_active === 0).length,
+            adminCount: adminStaff.length,
+            profiles: {}
+        };
+        
+        nonAdminStaff.forEach(u => {
+            const prof = (u.profile_opera || 'SIN ASIGNAR').toUpperCase();
+            stats.profiles[prof] = (stats.profiles[prof] || 0) + 1;
+        });
+
+        const container = document.getElementById('staff-stats-container');
+        if (!container) return;
+
+        const baseCardStyle = `flex: 1; min-width:55px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:4px 2px; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px); min-height:55px; text-align:center; cursor:pointer; transition:0.2s; overflow:hidden;`;
+        
+        const getStyle = (filter) => window.cardFilter === filter ? baseCardStyle + 'box-shadow: 0 0 15px rgba(255,255,255,0.2); transform:scale(1.02);' : baseCardStyle + 'opacity:0.9;';
+
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        const isAuthorizedPinQuery = (currentUser && (
+            false || 
+            currentUser.role === 'director'
+        ));
+
+        let pinQueryCardHtml = '';
+        if (isAuthorizedPinQuery) {
+            pinQueryCardHtml = `
+                <div style="${baseCardStyle} border-top:3px solid var(--warning);" onclick="verifyAdminPinAndOpenConsole()">
+                    <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">AUTORIZACIONES</div>
+                    <div style="font-size:0.7rem; font-weight:900; color:var(--warning); display:flex; align-items:center; justify-content:center; gap:2px; height:100%; min-height:20px;">
+                        🔑 PIN
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = `
+            <div style="${getStyle('all')}" onclick="setCardFilter('all')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">TOTAL PERSONAL</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.total}</div>
+            </div>
+            <div style="${getStyle('active')} border-top:3px solid var(--success);" onclick="setCardFilter('active')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ACTIVOS</div>
+                <div style="font-size:1.1rem; font-weight:900; color:var(--success);">${stats.active}</div>
+            </div>
+            <div style="${getStyle('inactive')} border-top:3px solid var(--danger);" onclick="setCardFilter('inactive')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">INACTIVOS</div>
+                <div style="font-size:1.1rem; font-weight:900; color:var(--danger);">${stats.inactive}</div>
+            </div>
+            <div style="${getStyle('admin')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('admin')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">ADMIN</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.adminCount}</div>
+            </div>
+            <div style="${getStyle('JEFE DE GRUPO')} border-top:3px solid #FFD700;" onclick="setCardFilter('JEFE DE GRUPO')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">JEFES DE GRUPO</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#FFD700;">${stats.profiles['JEFE DE GRUPO'] || 0}</div>
+            </div>
+            <div style="${getStyle('SUPERVISOR')} border-top:3px solid #E5E4E2;" onclick="setCardFilter('SUPERVISOR')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">SUPERVISORES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#E5E4E2;">${stats.profiles['SUPERVISOR'] || 0}</div>
+            </div>
+            <div style="${getStyle('COORDINADOR')} border-top:3px solid #CD7F32;" onclick="setCardFilter('COORDINADOR')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">COORDINADORES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#CD7F32;">${stats.profiles['COORDINADOR'] || 0}</div>
+            </div>
+            <div style="${getStyle('COORDINADOR AUXILIAR')} border-top:3px solid #fff;" onclick="setCardFilter('COORDINADOR AUXILIAR')">
+                <div style="font-size:0.4rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">COORD. AUXILIARES</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#fff;">${stats.profiles['COORDINADOR AUXILIAR'] || 0}</div>
+            </div>
+            <div style="${getStyle('LOGÍSTICA')} border-top:3px solid #8B5CF6;" onclick="setCardFilter('LOGÍSTICA')">
+                <div style="font-size:0.45rem; color:var(--muted); font-weight:800; letter-spacing:0.5px; white-space:nowrap;">LOGÍSTICAS</div>
+                <div style="font-size:1.1rem; font-weight:900; color:#8B5CF6;">${stats.profiles['LOGÍSTICA'] || 0}</div>
+            </div>
+            ${pinQueryCardHtml}
+        `;
+    }
+
+    async function loadStaffList() {
+        const res = await apiFetch('/api/staff');
+        if (res) {
+            fullStaffData = res.staff || [];
+            availableSessions = res.sessions || [];
+            
+            const cierreSelect = document.getElementById('cierre-evento-select');
+            if (cierreSelect) {
+                if (availableSessions.length === 0) {
+                    cierreSelect.innerHTML = '<option value="">No hay eventos cerrados</option>';
+                } else {
+                    cierreSelect.innerHTML = availableSessions.map(s => {
+                        const dateStr = s.end_time ? new Date(s.end_time).toLocaleString() : 'Fecha desconocida';
+                        return `<option value="${s.id}">ID: ${s.id} - ${s.type || 'Evento'} - ${dateStr}</option>`;
+                    }).join('');
+                }
+            }
+
+            updateStaffStats();
+            renderFilteredStaff();
+        }
+    }
+
+    function renderSubscriptionMatrix(users) {
+        const matrixContainer = document.getElementById('report-matrix-container');
+        const matrixTable = document.getElementById('report-matrix-table');
+        if (matrixContainer && matrixTable && users.length > 0) {
+            const reports = [
+                { id: 'convocatoria', name: 'Convocatoria' },
+                { id: 'cumpleanos', name: 'Cumpleaños' },
+                { id: 'dossier', name: 'Dossier PDF' },
+                { id: 'excel', name: 'BBDD Eventos Cerrados' },
+                { id: 'nominas', name: 'Nóminas' },
+                { id: 'permisos', name: 'Permisos' },
+                { id: 'plantilla', name: 'Plantilla RRHH' },
+                { id: 'actualizacion_datos', name: 'Actualización Datos' },
+                { id: 'apertura_evento', name: 'Apertura Evento' },
+                { id: 'cierre_html', name: 'Cierre Evento' },
+                { id: 'credenciales', name: 'Cred. Acceso' },
+                { id: 'cierre_diario', name: 'Cierre Diario' },
+                { id: 'postulacion_empleo', name: 'Postulación Empleo' }
+            ];
+            
+            let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;">';
+            thead += '<th style="padding:10px 5px; text-align:left; position:sticky; left:0; top:0; background:#0f111a; z-index:10; min-width:100px; max-width:100px; width:100px;">EMPLEADO</th>';
+            thead += '<th style="padding:10px 5px; text-align:left; position:sticky; left:100px; top:0; background:#0f111a; z-index:10; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:90px; width:90px;">PERFIL</th>';
+            
+            reports.forEach(r => {
+                const parts = r.name.split(' ');
+                const formattedName = parts.length > 1 ? parts.join('<br>') : r.name;
+                thead += `<th style="padding:10px 2px; position:sticky; top:0; background:#0f111a; z-index:9; box-shadow:0 1px 0 rgba(255,255,255,0.1); min-width:50px; line-height:1.2;">${formattedName}</th>`;
+            });
+            thead += '</tr></thead>';
+
+            let tbody = '<tbody>';
+            
+            const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5, 'LOGISTICA': 5 };
+            const sortedUsers = [...users].sort((a, b) => {
+                const pA = rolePriority[(a.profile_opera || '').toUpperCase()] || 99;
+                const pB = rolePriority[(b.profile_opera || '').toUpperCase()] || 99;
+                if (pA !== pB) return pA - pB;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+
+            sortedUsers.forEach(u => {
+                const nameParts = u.name.toUpperCase().split(' ');
+                const displayName = nameParts.length > 2 ? `${nameParts[0]}<br>${nameParts[1]} ${nameParts[2]}` : (nameParts.length === 2 ? `${nameParts[0]}<br>${nameParts[1]}` : nameParts[0]);
+                const perfil = (u.profile_opera || 'N/A').toUpperCase();
+                
+                tbody += `<tr class="matrix-row" data-name="${u.name.toLowerCase()}" style="border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">`;
+                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:900; color:white; font-size:0.7rem; position:sticky; left:0; background:#0f111a; z-index:8; min-width:100px; max-width:100px; width:100px; line-height:1.2;">${displayName}</td>`;
+                tbody += `<td style="padding:8px 5px; text-align:left; font-weight:700; color:var(--muted); font-size:0.6rem; position:sticky; left:100px; background:#0f111a; z-index:8; box-shadow:2px 0 5px rgba(0,0,0,0.3); min-width:90px; max-width:90px; width:90px; line-height:1.2;">${perfil}</td>`;
+                
+                reports.forEach(r => {
+                    tbody += `<td style="padding:8px 2px;"><input type="checkbox" class="report-matrix-checkbox" data-user="${u.id}" data-report="${r.id}" style="width:16px; height:16px; accent-color:#ec4899; cursor:pointer;" onchange="toggleReportSubscription(this, ${u.id}, '${r.id}')"></td>`;
+                });
+                tbody += '</tr>';
+            });
+            tbody += '</tbody>';
+            
+            matrixTable.innerHTML = thead + tbody;
+            matrixContainer.style.display = 'block';
+            
+            // Fetch and check subscriptions
+            apiFetch('/api/admin/report-subscriptions').then(res => {
+                if (res && res.success && res.subscriptions) {
+                    res.subscriptions.forEach(sub => {
+                        let fieldMap = {
+                            'convocatoria': 'convocatoria',
+                            'cumpleanos': 'cumpleanos',
+                            'dossier_pdf': 'dossier',
+                            'bbdd_excel': 'excel',
+                            'nominas': 'nominas',
+                            'permisos': 'permisos',
+                            'plantilla_rrhh': 'plantilla',
+                            'actualizacion_datos': 'actualizacion_datos',
+                            'apertura_evento': 'apertura_evento',
+                            'cierre_html': 'cierre_html',
+                            'credenciales': 'credenciales',
+                            'cierre_diario': 'cierre_diario'
+                        };
+                        for (const [dbField, uiField] of Object.entries(fieldMap)) {
+                            const checkbox = document.querySelector(`.report-matrix-checkbox[data-user="${sub.user_id}"][data-report="${uiField}"]`);
+                            if (checkbox) {
+                                checkbox.checked = sub[dbField] === 1;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    window.toggleMatrixSection = function() {
+        const content = document.getElementById('matrix-content-wrapper');
+        const arrow = document.getElementById('matrix-toggle-arrow');
+        const text = document.getElementById('matrix-toggle-text');
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+            text.textContent = 'OCULTAR MATRIZ';
+        } else {
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            text.textContent = 'MOSTRAR MATRIZ';
+        }
+    }
+
+    window.staffSortColumn = null;
+    window.staffSortAsc = true;
+
+    window.setStaffSort = function(col) {
+        if (window.staffSortColumn === col) {
+            window.staffSortAsc = !window.staffSortAsc;
+        } else {
+            window.staffSortColumn = col;
+            window.staffSortAsc = true;
+        }
+        renderFilteredStaff();
+    };
+
+    function filterStaffList() {
+        renderFilteredStaff();
+    }
+
+    function renderFilteredStaff() {
+        const query = document.getElementById('staff-search-input').value.toLowerCase();
+        let list = [...fullStaffData]; // Copia para no mutar original
+
+        const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
+        const rolePriority = { 'JEFE DE GRUPO': 1, 'SUPERVISOR': 2, 'COORDINADOR': 3, 'COORDINADOR AUXILIAR': 4, 'LOGÍSTICA': 5 };
+
+        if (window.staffSortColumn) {
+            list.sort((a, b) => {
+                let valA = '', valB = '';
+                if (window.staffSortColumn === 'NOMBRE') {
+                    valA = (a.name || '').toUpperCase();
+                    valB = (b.name || '').toUpperCase();
+                } else if (window.staffSortColumn === 'EYE ID') {
+                    valA = (a.eye_id || '').toUpperCase();
+                    valB = (b.eye_id || '').toUpperCase();
+                } else if (window.staffSortColumn === 'PERFIL OPERATIVO') {
+                    valA = (a.profile_opera || '').toUpperCase();
+                    valB = (b.profile_opera || '').toUpperCase();
+                } else if (window.staffSortColumn === 'ESTADO') {
+                    valA = a.is_active === 0 ? 'INACTIVO' : 'ACTIVO';
+                    valB = b.is_active === 0 ? 'INACTIVO' : 'ACTIVO';
+                }
+                
+                if (valA < valB) return window.staffSortAsc ? -1 : 1;
+                if (valA > valB) return window.staffSortAsc ? 1 : -1;
+                return 0;
+            });
+        } else {
+            list.sort((a, b) => {
+                // 1. Activos primero
+                const activeA = (a.is_active === 1 || a.is_active === true) ? 1 : 0;
+                const activeB = (b.is_active === 1 || b.is_active === true) ? 1 : 0;
+                if (activeA !== activeB) return activeB - activeA;
+
+                // 2. Prioridad EYE_ID
+                const valA = (a.eye_id || '').toString().toUpperCase();
+                const valB = (b.eye_id || '').toString().toUpperCase();
+                const prioA = eyePriority[valA] || 99;
+                const prioB = eyePriority[valB] || 99;
+                if (prioA !== prioB) return prioA - prioB;
+
+                // 3. Prioridad de Rol
+                const getRolePrio = (u) => {
+                    const pAdmin = (u.profile_admin || '').toString().toUpperCase();
+                    const pOpera = (u.profile_opera || '').toString().toUpperCase();
+                    const prioAdmin = rolePriority[pAdmin] || 99;
+                    const prioOpera = rolePriority[pOpera] || 99;
+                    return Math.min(prioAdmin, prioOpera);
+                };
+
+                const rPrioA = getRolePrio(a);
+                const rPrioB = getRolePrio(b);
+                if (rPrioA !== rPrioB) return rPrioA - rPrioB;
+
+                // 4. Ordenar alfabéticamente
+                return a.name.localeCompare(b.name);
+            });
+        }
+
+        // Filtrar permanentemente el perfil INVITADO_ELIMINADO
+        list = list.filter(u => !u.name.toUpperCase().includes('INVITADO_ELIMINADO'));
+
+        // 2. Filtrar por texto
+        if (query) {
+            list = list.filter(u => u.name.toLowerCase().includes(query) || (u.eye_id && u.eye_id.toLowerCase().includes(query)));
+        }
+
+        // 3. Filtrar por tarjeta (cardFilter)
+        if (window.cardFilter && window.cardFilter !== 'all') {
+            if (window.cardFilter === 'active') {
+                list = list.filter(u => u.is_active !== 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+            } else if (window.cardFilter === 'inactive') {
+                list = list.filter(u => u.is_active === 0 && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+            } else if (window.cardFilter === 'admin') {
+                list = list.filter(u => (u.eye_id || '').toUpperCase() === 'ADMIN' || (u.profile_admin || '').toUpperCase() === 'ADMIN' || (u.profile_opera || '').toUpperCase() === 'ADMIN');
+            } else {
+                // Perfil operativo (JEFE DE GRUPO, SUPERVISOR, etc.)
+                list = list.filter(u => (u.profile_opera || '').toUpperCase() === window.cardFilter && (u.eye_id || '').toUpperCase() !== 'ADMIN');
+            }
+        }
+
+
+
+        const totalFiltered = list.length;
+        if (!window.showAllStaff && !query && window.cardFilter === 'all') {
+            list = list.filter(u => {
+                const eyeId = (u.eye_id || '').toUpperCase();
+                const profileOpera = (u.profile_opera || '').toUpperCase();
+                
+                if (eyeId === 'ORO' || eyeId === 'PLATA' || eyeId === 'BRONCE') {
+                    return true;
+                }
+                
+                if (eyeId === 'LOGÍSTICA' && profileOpera === 'COORDINADOR AUXILIAR') {
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        window.currentFilteredStaff = list;
+
+        const container = document.getElementById('staff-list-container');
+        if (!container) return;
+
+        if (list.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted);">
+                NO SE ENCONTRARON EMPLEADOS
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <table style="width:100%; border-collapse: collapse; font-size:0.8rem; text-align:left;">
+                <thead>
+                    <tr style="background:var(--surface2); color:var(--muted); border-bottom:1px solid var(--border);">
+                        <th style="padding:12px 4px; position:sticky; top:0; background:var(--surface2); z-index:10; width:40px; text-align:center;">🚘</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10; cursor:pointer;" onclick="setStaffSort('NOMBRE')">NOMBRE ${window.staffSortColumn === 'NOMBRE' ? (window.staffSortAsc ? '▲' : '▼') : ''}</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10; cursor:pointer;" onclick="setStaffSort('EYE ID')">EYE ID ${window.staffSortColumn === 'EYE ID' ? (window.staffSortAsc ? '▲' : '▼') : ''}</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10; cursor:pointer;" onclick="setStaffSort('PERFIL OPERATIVO')">PERFIL OPERATIVO ${window.staffSortColumn === 'PERFIL OPERATIVO' ? (window.staffSortAsc ? '▲' : '▼') : ''}</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10; cursor:pointer;" onclick="setStaffSort('ESTADO')">ESTADO ${window.staffSortColumn === 'ESTADO' ? (window.staffSortAsc ? '▲' : '▼') : ''}</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">CÉDULA</th>
+                        <th style="padding:12px; position:sticky; top:0; background:var(--surface2); z-index:10;">TELÉFONO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${list.map(u => {
+                        const eyeId = (u.eye_id || '').toString().toUpperCase();
+                        const color = eyeId === 'ORO' ? '#FFD700' :
+                                      eyeId === 'PLATA' ? '#E5E4E2' :
+                                      eyeId === 'BRONCE' ? '#CD7F32' :
+                                      eyeId === 'LOGÍSTICA' ? '#FFFFFF' : 'var(--accent)';
+                        
+                        return `
+                        <tr style="border-bottom:1px solid var(--border); ${u.is_active === 0 ? 'opacity:0.7; background:rgba(239,68,68,0.02);' : ''}">
+                            <td style="padding:4px; text-align:center; vertical-align:middle; width:40px;">
+                                <span onclick="updateStaffField(${u.id}, 'is_chofer', ${u.is_chofer ? 0 : 1})" title="${u.is_chofer ? 'Quitar Chofer' : 'Asignar Chofer'}" style="font-size:1.1rem; cursor:pointer; opacity:${u.is_chofer ? '1' : '0.1'}; transition:0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='${u.is_chofer ? '1' : '0.1'}'; this.style.transform='scale(1)'">🚗</span>
+                            </td>
+                            <td style="padding:4px 12px; cursor:pointer; white-space:nowrap;" onclick="openStaffEditModal(${u.id})">
+                                <span style="font-weight:800; color:var(--brand-white); border-bottom:1px dashed var(--accent);">${u.name}</span>
+                            </td>
+                            <td style="padding:4px 8px; min-width:105px;">
+                                <select class="table-control" style="font-weight:900; color:${color}; font-size:0.72rem; padding:4px 4px;" 
+                                    onchange="updateStaffField(${u.id}, 'eye_id', this.value); setTimeout(() => loadStaffList(), 500);">
+                                    <option value="" ${u.eye_id === '' ? 'selected' : ''}>---</option>
+                                    <option value="ORO" ${eyeId === 'ORO' ? 'selected' : ''}>ORO</option>
+                                    <option value="PLATA" ${eyeId === 'PLATA' ? 'selected' : ''}>PLATA</option>
+                                    <option value="BRONCE" ${eyeId === 'BRONCE' ? 'selected' : ''}>BRONCE</option>
+                                    <option value="LOGÍSTICA" ${eyeId === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
+                                    <option value="ADMIN" ${eyeId === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                                </select>
+                            </td>
+                            <td style="padding:4px 8px; min-width: 125px;">
+                                <select class="table-control" style="font-weight:700; color:var(--muted); font-size:0.7rem; padding:4px 0px;" 
+                                    onchange="updateStaffField(${u.id}, 'profile_opera', this.value)">
+                                    <option value="" ${!u.profile_opera ? 'selected' : ''}>SIN ASIGNAR</option>
+                                    <option value="JEFE DE GRUPO" ${u.profile_opera === 'JEFE DE GRUPO' ? 'selected' : ''}>JEFE DE GRUPO</option>
+                                    <option value="SUPERVISOR" ${u.profile_opera === 'SUPERVISOR' ? 'selected' : ''}>SUPERVISOR</option>
+                                    <option value="COORDINADOR" ${u.profile_opera === 'COORDINADOR' ? 'selected' : ''}>COORDINADOR</option>
+                                    <option value="COORDINADOR AUXILIAR" ${u.profile_opera === 'COORDINADOR AUXILIAR' ? 'selected' : ''}>COORDINADOR AUX</option>
+                                    <option value="LOGÍSTICA" ${u.profile_opera === 'LOGÍSTICA' ? 'selected' : ''}>LOGÍSTICA</option>
+                                    <option value="ADMIN" ${u.profile_opera === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                                </select>
+                            </td>
+                            <td style="padding:4px 12px; width:70px;">
+                                <select class="table-control" style="font-weight:900; color:${u.is_active === 0 ? 'var(--danger)' : 'var(--success)'}; width:100%; text-align:center;" 
+                                    onchange="updateStaffStatus(${u.id}, this.value === '0')">
+                                    <option value="1" ${u.is_active !== 0 ? 'selected' : ''}>ACT</option>
+                                    <option value="0" ${u.is_active === 0 ? 'selected' : ''}>INA</option>
+                                </select>
+                            </td>
+                            <td style="padding:4px 12px;">
+                                <input type="text" class="table-control" value="${u.cedula ? u.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ''}" style="font-weight:700;"
+                                    onchange="updateStaffField(${u.id}, 'cedula', this.value)">
+                            </td>
+                            <td style="padding:4px 12px;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <input type="text" class="table-control" value="${formatPhone(u.phone)}" style="font-weight:700; flex:1;"
+                                        onchange="updateStaffField(${u.id}, 'phone', this.value)">
+                                    <button class="btn btn-sm" onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="padding:0; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#25D366; border:none; color:white; cursor:pointer; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        💬
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+            ${!window.showAllStaff && !query ? `
+                <div style="padding:15px; text-align:center; color:var(--muted); font-size:0.75rem; border-top:1px solid var(--border); font-weight:700; background:rgba(255,255,255,0.01);">
+                    💡 MOSTRANDO PERSONAL PRINCIPAL (ORO, PLATA, BRONCE Y COORD. AUXILIARES). HAGA CLIC EN EL BOTÓN SUPERIOR PARA MOSTRAR LA MATRIZ COMPLETA.
+                </div>
+            ` : ''}
+        `;
+    }
+
+    async function updateStaffStatus(id, isChecked) {
+        // isChecked true significa que queremos ponerlo INACTIVO (is_active = 0)
+        const status = isChecked ? 0 : 1;
+        showLoading('ACTUALIZANDO...');
+        try {
+            await apiFetch('/api/staff/update-status', {
+                method: 'POST',
+                body: JSON.stringify({ id, is_active: status })
+            });
+            toast(status === 1 ? 'EMPLEADO RE-ACTIVADO' : 'EMPLEADO DEPURADO (INACTIVO)', 'success');
+            loadStaffList();
+        } catch (e) {
+            toast('ERROR AL ACTUALIZAR', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function updateStaffField(id, field, value) {
+        let finalValue = value;
+        // Limpiar formato antes de enviar al servidor
+        if (field === 'cedula') finalValue = value.toString().replace(/\./g, '');
+        if (field === 'phone') finalValue = value.toString().replace(/-/g, '');
+
+        const res = await apiFetch('/api/staff/update', {
+            method: 'POST',
+            body: JSON.stringify({ id, field, value: finalValue })
+        });
+        if (res && res.success) {
+            toast('CAMBIO GUARDADO', 'success');
+            if (field === 'eye_id' || field === 'is_chofer') {
+                await loadStaffList();
+                document.getElementById('staff-list-container').style.display = 'block';
+            }
+        }
+    }
+
+    window.downloadStaffMatrixExcel = function() {
+        if (!window.currentFilteredStaff || window.currentFilteredStaff.length === 0) {
+            toast('NO HAY DATOS PARA DESCARGAR', 'warning');
+            return;
+        }
+
+        showLoading('GENERANDO EXCEL...');
+        try {
+            let excelData = [
+                ['CHOFER', 'NOMBRE', 'EYE ID', 'PERFIL OPERATIVO', 'PERFIL ADMIN', 'ESTADO', 'CÉDULA', 'TELÉFONO']
+            ];
+
+            window.currentFilteredStaff.forEach(u => {
+                excelData.push([
+                    u.is_chofer ? 'SÍ' : 'NO',
+                    u.name || '',
+                    u.eye_id || '',
+                    u.profile_opera || '',
+                    u.profile_admin || '',
+                    (u.is_active === 1 || u.is_active === true) ? 'ACTIVO' : 'INACTIVO',
+                    u.cedula || '',
+                    u.phone || ''
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const colWidths = [
+                { wch: 8 },  // CHOFER
+                { wch: 30 }, // NOMBRE
+                { wch: 15 }, // EYE ID
+                { wch: 25 }, // PERFIL OPERATIVO
+                { wch: 15 }, // PERFIL ADMIN
+                { wch: 10 }, // ESTADO
+                { wch: 15 }, // CÉDULA
+                { wch: 15 }  // TELÉFONO
+            ];
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Matriz Personal");
+
+            let fileName = 'matriz_personal';
+            if (window.cardFilter && window.cardFilter !== 'all') fileName += '_' + window.cardFilter.toLowerCase().replace(/ /g, '_');
+            const searchInput = document.getElementById('staff-search-input');
+            if (searchInput && searchInput.value) fileName += '_filtro_' + searchInput.value.toLowerCase().replace(/ /g, '_');
+            fileName += '.xlsx';
+
+            XLSX.writeFile(wb, fileName);
+            toast('✅ EXCEL DESCARGADO CON ÉXITO', 'success');
+        } catch (e) {
+            console.error(e);
+            toast('❌ ERROR AL GENERAR EXCEL', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    // --- MODAL EDICIÓN FICHA ---
+    async function openStaffEditModal(id) {
+        const u = fullStaffData.find(x => x.id === id);
+        if (!u) return;
+
+        document.getElementById('edit-staff-id').value = u.id;
+        document.getElementById('edit-staff-name').value = u.name;
+        document.getElementById('edit-staff-active').value = u.is_active;
+        document.getElementById('edit-staff-eye-id').value = u.eye_id || '';
+        document.getElementById('edit-staff-profile-admin').value = u.profile_admin || 'NO APLICA';
+        document.getElementById('edit-staff-profile-opera').value = u.profile_opera || 'LOGÍSTICA';
+        document.getElementById('edit-staff-cedula').value = u.cedula ? u.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
+        document.getElementById('edit-staff-phone').value = formatPhone(u.phone);
+        document.getElementById('edit-staff-email').value = u.email || '';
+        document.getElementById('edit-staff-birth-date').value = u.birth_date || '';
+        document.getElementById('edit-staff-address').value = u.address || '';
+        document.getElementById('edit-staff-sector').value = u.sector || '';
+        document.getElementById('edit-staff-bank').value = u.bank_name || '';
+        document.getElementById('edit-staff-account').value = u.bank_account || '';
+        if(document.getElementById('edit-staff-pago-movil-phone')) document.getElementById('edit-staff-pago-movil-phone').value = u.pago_movil_phone || '';
+        
+        // Reset previews
+        const docIds = ['cedula', 'lic2', 'cert2', 'lic3', 'cert3'];
+        docIds.forEach(id => {
+            const preview = document.getElementById('edit-staff-doc-' + id + '-preview');
+            const icon = document.getElementById('edit-staff-doc-' + id + '-icon');
+            const link = document.getElementById('edit-staff-doc-' + id + '-link');
+            if (preview) preview.style.display = 'none';
+            if (icon) {
+                icon.style.display = 'flex';
+                icon.innerHTML = '<span style="font-size:1.5rem; margin-bottom:5px;">' + (id === 'cedula' ? '📄' : (id.includes('lic') ? '🚗' : '⚕️')) + '</span><span style="font-size:0.55rem; font-weight:bold;">' + id.toUpperCase() + '</span>';
+            }
+            if (link) link.style.display = 'none';
+            if(document.getElementById('edit-staff-doc-' + id)) document.getElementById('edit-staff-doc-' + id).value = '';
+        });
+
+        // Setup links and previews
+        const docMap = {
+            'cedula': u.cedula_photo_url,
+            'lic2': u.licencia_photo_url,
+            'cert2': u.certificado_medico_url,
+            'lic3': u.licencia_3ra_photo_url,
+            'cert3': u.certificado_medico_3ra_url
+        };
+        for(let id in docMap) {
+            if(docMap[id]) {
+                const link = document.getElementById('edit-staff-doc-' + id + '-link');
+                const icon = document.getElementById('edit-staff-doc-' + id + '-icon');
+                if (link) {
+                    link.href = docMap[id];
+                    link.style.display = 'block';
+                }
+                if (icon) {
+                    icon.innerHTML = '<span style="font-size:1.5rem; margin-bottom:5px;">✅</span><span style="font-size:0.55rem; font-weight:bold;">SUBIDO</span>';
+                }
+            }
+        }
+
+        document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
+        document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
+        document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+
+        // Calcular edad
+        const age = calculateAge(u.birth_date);
+        const valSpan = document.getElementById('edit-staff-age-val');
+        valSpan.textContent = age !== null ? age : '--';
+        
+        const iconSpan = document.getElementById('edit-staff-age-icon');
+        if (iconSpan) {
+            if (age !== null && age < 18) {
+                iconSpan.classList.add('blink-red-icon');
+                valSpan.style.color = '#ff4d4d';
+            } else {
+                iconSpan.classList.remove('blink-red-icon');
+                valSpan.style.color = 'var(--success)';
+            }
+        }
+
+        const modal = document.getElementById('staff-edit-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+    }
+
+    function closeStaffEditModal() {
+        const modal = document.getElementById('staff-edit-modal');
+        modal.classList.remove('open');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    window.previewEditCarnet = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('edit-carnet-img').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    async function saveStaffEdit() {
+        const id = document.getElementById('edit-staff-id').value;
+        const updates = {
+            name: document.getElementById('edit-staff-name').value,
+            is_active: parseInt(document.getElementById('edit-staff-active').value),
+            eye_id: document.getElementById('edit-staff-eye-id').value,
+            profile_admin: document.getElementById('edit-staff-profile-admin').value,
+            profile_opera: document.getElementById('edit-staff-profile-opera').value,
+            cedula: document.getElementById('edit-staff-cedula').value.replace(/\./g, ''),
+            phone: document.getElementById('edit-staff-phone').value.replace(/-/g, ''),
+            email: document.getElementById('edit-staff-email').value,
+            birth_date: document.getElementById('edit-staff-birth-date').value,
+            address: document.getElementById('edit-staff-address').value,
+            sector: document.getElementById('edit-staff-sector').value,
+            bank_name: document.getElementById('edit-staff-bank').value,
+            bank_account: document.getElementById('edit-staff-account').value,
+            emergency_contact: document.getElementById('edit-staff-e-contact').value,
+            emergency_phone: document.getElementById('edit-staff-e-phone').value,
+            is_allergic: document.getElementById('edit-staff-allergies').value
+        };
+
+        const fileInput = document.getElementById('edit-staff-carnet');
+        if (fileInput.files && fileInput.files[0]) {
+            showLoading('SUBIENDO FOTO...');
+            const file = fileInput.files[0];
+            const base64 = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+            try {
+                const uploadRes = await apiFetch(`/api/staff/${id}/photo`, {
+                    method: 'POST',
+                    body: JSON.stringify({ image: base64 })
+                });
+                if (uploadRes && uploadRes.url) {
+                    updates.carnet_url = uploadRes.url;
+                }
+            } catch (e) {
+                console.error('Error subiendo foto:', e);
+            }
+        }
+
+        showLoading('GUARDANDO CAMBIOS...');
+        const res = await apiFetch('/api/staff/update-bulk', {
+            method: 'POST',
+            body: JSON.stringify({ id, updates })
+        });
+        hideLoading();
+
+        if (res && res.success) {
+            toast('FICHA ACTUALIZADA', 'success');
+            closeStaffEditModal();
+            await loadStaffList();
+            document.getElementById('staff-list-container').style.display = 'block';
+            // Limpiar búsqueda para asegurar que aparezca
+            document.getElementById('staff-search-input').value = '';
+            renderFilteredStaff();
+        }
+    }
+
+    function getCarnetUrl(url) {
+        if (!url) return '/logo-eye-staff.jpeg';
+        if (url.startsWith('data:') || url.startsWith('http:') || url.startsWith('https:') || url.startsWith('/api/')) {
+            return url;
+        }
+        return '/api/photos/' + url;
+    }
+
+    function calculateAge(birthDateString) {
+        if (!birthDateString) return null;
+        const birth = new Date(birthDateString);
+        if (isNaN(birth.getTime())) return null;
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    window.updateRegistrationAgeDisplay = function(val) {
+        const valSpan = document.getElementById('staff-age-val');
+        if (!valSpan) return;
+        const age = calculateAge(val);
+        valSpan.textContent = age !== null ? age : '--';
+
+        const iconSpan = document.getElementById('staff-age-icon');
+        if (iconSpan) {
+            if (age !== null && age < 18) {
+                iconSpan.classList.add('blink-red-icon');
+                valSpan.style.color = '#ff4d4d';
+                toast('⚠️ SE REQUIERE PERMISO DE TRABAJO Y AUTORIZACIÓN PARA MENORES DE EDAD', 'warning');
+            } else {
+                iconSpan.classList.remove('blink-red-icon');
+                valSpan.style.color = 'var(--success)';
+            }
+        }
+    }
+
+    window.updateEditAgeDisplay = function(val) {
+        const valSpan = document.getElementById('edit-staff-age-val');
+        if (!valSpan) return;
+        const age = calculateAge(val);
+        valSpan.textContent = age !== null ? age : '--';
+
+        const iconSpan = document.getElementById('edit-staff-age-icon');
+        if (iconSpan) {
+            if (age !== null && age < 18) {
+                iconSpan.classList.add('blink-red-icon');
+                valSpan.style.color = '#ff4d4d';
+                toast('⚠️ SE REQUIERE PERMISO DE TRABAJO Y AUTORIZACIÓN PARA MENORES DE EDAD', 'warning');
+            } else {
+                iconSpan.classList.remove('blink-red-icon');
+                valSpan.style.color = 'var(--success)';
+            }
+        }
+    }
+
+    window.previewCarnet = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('carnet-preview-img').src = e.target.result;
+                document.getElementById('carnet-preview-img').style.display = 'block';
+                document.getElementById('carnet-label').style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    window.autoFillPin = function(val) {
+        document.getElementById('staff-pin').value = val;
+    }
+
+    async function saveNewStaff() {
+        let name = document.getElementById('staff-name').value.trim();
+        const pin = document.getElementById('staff-pin').value.trim();
+        const cedula = document.getElementById('staff-cedula').value.trim();
+        const phone = document.getElementById('staff-phone').value.trim();
+        const address = document.getElementById('staff-address').value.trim();
+        const sector = document.getElementById('staff-sector').value.trim();
+        const bankName = document.getElementById('staff-bank')?.value.trim() || '';
+        const bankAccount = document.getElementById('staff-account')?.value.trim() || '';
+        const pagoMovil = document.getElementById('staff-pago-movil')?.checked ? 1 : 0;
+        const profileAdmin = document.getElementById('staff-profile-admin')?.value || '';
+        const profileOpera = document.getElementById('staff-profile-opera')?.value || '';
+        const eyeId = document.getElementById('staff-eye-id')?.value || '';
+        const email = document.getElementById('staff-email')?.value.trim() || '';
+        const birthDate = document.getElementById('staff-birth-date')?.value || '';
+        const eContact = document.getElementById('staff-e-contact')?.value.trim() || '';
+        const ePhone = document.getElementById('staff-e-phone')?.value.trim() || '';
+        const allergies = document.getElementById('staff-allergies')?.value.trim() || '';
+
+        const carnetFile = document.getElementById('staff-carnet').files[0];
+
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName || (!pagoMovil && !bankAccount) || !carnetFile) {
+            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        }
+        
+        if (!pin) return toast('ERROR: PIN NO GENERADO', 'danger');
+
+        // Inferir ROL para el sistema legacy (driver, supervisor, director)
+        let role = 'driver';
+        if (false) role = 'director';
+        else if (profileAdmin === 'COORDINADOR' || ['JEFE DE GRUPO', 'SUPERVISOR', 'COORDINADOR GENERAL'].includes(profileOpera)) role = 'supervisor';
+        
+        // Limpieza de nombre (LAST, FIRST -> FIRST LAST) y MAYÚSCULAS
+        if (name.includes(',')) {
+            const parts = name.split(',').map(p => p.trim());
+            name = (parts[1] + ' ' + parts[0]);
+        }
+        name = name.toUpperCase();
+
+        showLoading('REGISTRANDO...');
+        
+        let carnetBase64 = null;
+        if (carnetFile) {
+            carnetBase64 = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.readAsDataURL(carnetFile);
+            });
+        }
+
+        const res = await apiFetch('/api/staff', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                name, 
+                role, 
+                pin_hash: pin, 
+                cedula,
+                phone,
+                address,
+                sector,
+                bank_name: bankName,
+                bank_account: bankAccount,
+                pago_movil: pagoMovil,
+                profile_admin: profileAdmin,
+                profile_opera: profileOpera,
+                eye_id: eyeId,
+                carnet: carnetBase64,
+                email: email,
+                birth_date: birthDate,
+                emergency_contact: eContact,
+                emergency_phone: ePhone,
+                is_allergic: allergies
+            })
+        });
+        hideLoading();
+        
+        if (res) {
+            toast('EMPLEADO REGISTRADO: ' + name, 'success');
+            document.getElementById('staff-name').value = '';
+            document.getElementById('staff-cedula').value = '';
+            document.getElementById('staff-pin').value = '';
+            document.getElementById('staff-phone').value = '';
+            document.getElementById('staff-address').value = '';
+            document.getElementById('staff-email').value = '';
+            document.getElementById('staff-birth-date').value = '';
+            document.getElementById('staff-account').value = '';
+            document.getElementById('staff-e-contact').value = '';
+            document.getElementById('staff-e-phone').value = '';
+            document.getElementById('staff-allergies').value = '';
+            document.getElementById('staff-bank').value = '';
+            document.getElementById('staff-bank').disabled = false;
+            document.getElementById('staff-account').disabled = false;
+            if (document.getElementById('staff-pago-movil')) document.getElementById('staff-pago-movil').checked = false;
+            document.getElementById('staff-profile-admin').value = '';
+            document.getElementById('staff-profile-opera').value = '';
+            document.getElementById('staff-eye-id').value = '';
+            document.getElementById('staff-carnet').value = '';
+            if (document.getElementById('staff-sector')) document.getElementById('staff-sector').value = '';
+            document.getElementById('carnet-preview-img').src = 'eye-staff-carnet-default.png';
+            document.getElementById('carnet-preview-img').style.display = 'block';
+            document.getElementById('carnet-label').style.display = 'none';
+            loadStaffList();
+        }
+    }
+
+
+    async function deleteStaff(id, isPermanent) {
+        const msg = isPermanent 
+            ? '¿ESTÁ SEGURO DE ELIMINAR DEFINITIVAMENTE A ESTE EMPLEADO DE LA BASE DE DATOS?\nEsta acción intentará borrar todo su historial.' 
+            : '¿DESEA DESACTIVAR A ESTE EMPLEADO?\nPasará a estado INACTIVO pero conservará su historial.';
+            
+        if (!confirm(msg)) return;
+        
+        showLoading(isPermanent ? 'ELIMINANDO...' : 'DESACTIVANDO...');
+        const res = await apiFetch('/api/staff/' + id + (isPermanent ? '?force=true' : ''), { method: 'DELETE' });
+        hideLoading();
+        
+        if (res) {
+            toast(isPermanent ? 'Registro eliminado físicamente' : 'Empleado desactivado', 'success');
+            loadStaffList();
+        }
+    }
+
+    window.loadPendingUpdates = async function() {
+        const container = document.getElementById('pending-updates-content');
+        if (!container) return;
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const canDelete = currentUser.profile_admin === 'ADMIN' || currentUser.profile_admin === 'RRHH' || currentUser.role === 'director' || false;
+        try {
+            const res = await apiFetch('/api/admin/pending-updates');
+            if (!res || res.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted); font-size:0.85rem;">No hay solicitudes pendientes.</div>';
+                return;
+            }
+            window.pendingUpdatesData = res; // Guardar para acceder desde el modal
+            let html = '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:15px;">';
+            res.forEach(update => {
+                html += `
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:white; font-size:1.1rem; font-weight:900;">${update.user_name}</span>
+                        <button class="btn btn-sm" onclick="showPendingUpdateModal(${update.id})" style="background:#28A8E9; color:white; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">VER DETALLES</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html + '</div>';
+        } catch(e) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; font-size:0.85rem;">Error al cargar solicitudes.</div>';
+        }
+    };
+    window.showPendingUpdateModal = function(id) {
+        if (!window.pendingUpdatesData) return;
+        const update = window.pendingUpdatesData.find(u => u.id === id);
+        if (!update) return;
+
+        const d = JSON.parse(update.proposed_data || '{}');
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const canDelete = currentUser.profile_admin === 'ADMIN' || currentUser.profile_admin === 'RRHH' || currentUser.role === 'director' || false;
+
+        const renderDoc = (title, base64) => {
+            if (!base64) return `<div style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;"><b>${title}:</b> No adjuntado</div>`;
+            return `
+                <div style="margin-bottom:15px;">
+                    <div style="color:white; font-size:0.85rem; margin-bottom:5px;"><b>${title}:</b></div>
+                    <img src="${base64}" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid var(--border); object-fit:contain;">
+                </div>
+            `;
+        };
+
+        const resolvePhotoUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('http') || url.startsWith('/')) return url;
+            return '/api/photos/' + url;
+        };
+
+        const photoToShow = update.photo_base64 || (update.current_photo ? resolvePhotoUrl(update.current_photo) : null) || '/user_icon.png';
+
+        const html = `
+            <div style="padding:10px;">
+                <h2 style="color:white; margin-top:0; border-bottom:1px solid var(--border); padding-bottom:10px;">Revisar Actualización</h2>
+                <div style="display:flex; justify-content:center; margin-bottom:20px;">
+                    <img src="${photoToShow}" style="width:120px; height:120px; object-fit:cover; border-radius:50%; border:3px solid var(--brand-blue);">
+                </div>
+                <h3 style="color:white; text-align:center; margin-top:0;">${update.user_name}</h3>
+                <p style="color:var(--muted); text-align:center; font-size:0.9rem; margin-bottom:20px;">Cédula: ${update.user_cedula || 'N/A'}</p>
+
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4 style="color:var(--brand-blue); margin-top:0;">Datos Personales</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:white;">
+                        <div><b>Teléfono:</b><br>${d.phone || update.user_phone || 'N/A'}</div>
+                        <div><b>Email:</b><br>${d.email || 'N/A'}</div>
+                        <div><b>F. Nacimiento:</b><br>${d.birth_date || 'N/A'}</div>
+                        <div><b>Alergias:</b><br>${d.is_allergic || 'N/A'}</div>
+                        <div style="grid-column:1 / -1;"><b>Dirección:</b><br>${d.address || 'N/A'}</div>
+                        <div style="grid-column:1 / -1;"><b>Sector:</b><br>${d.sector || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4 style="color:var(--brand-blue); margin-top:0;">Datos Bancarios</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:white;">
+                        <div><b>Banco:</b><br>${d.bank_name || 'N/A'}</div>
+                        <div><b>Pago Móvil:</b><br>${d.pago_movil ? 'SÍ' : 'NO'}</div>
+                        <div style="grid-column:1 / -1;"><b>Cuenta / Telf PM:</b><br>${d.pago_movil ? (d.pago_movil_phone || 'N/A') : (d.bank_account || 'N/A')}</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4 style="color:var(--brand-blue); margin-top:0;">Contacto de Emergencia</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:white;">
+                        <div><b>Nombre:</b><br>${d.emergency_contact || 'N/A'}</div>
+                        <div><b>Teléfono:</b><br>${d.emergency_phone || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <h4 style="color:var(--brand-blue); margin-top:0;">Documentos Adjuntos</h4>
+                    ${renderDoc('Cédula de Identidad', d.doc_cedula_base64)}
+                    ${renderDoc('Licencia de 2da', d.doc_licencia2_base64)}
+                    ${renderDoc('Certificado Médico de 2da', d.doc_certificado2_base64)}
+                    ${renderDoc('Licencia de 3ra', d.doc_licencia3_base64)}
+                    ${renderDoc('Certificado Médico de 3ra', d.doc_certificado3_base64)}
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+                    <button class="btn" onclick="approveUpdate(${update.id}); closeModal();" style="flex:1; background:#10b981; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">APROBAR</button>
+                    <button class="btn" onclick='modifyPendingUpdate(${update.id}, ${JSON.stringify(d).replace(/'/g, "\\'")}); closeModal();' style="flex:1; background:#f59e0b; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">MODIFICAR</button>
+                    ${canDelete ? `<button class="btn" onclick="deleteUpdate(${update.id}); closeModal();" style="flex:1; background:#ef4444; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">ELIMINAR</button>` : ''}
+                </div>
+            </div>
+        `;
+        showModal(html);
+    };
+
+
+    window.approveUpdate = async function(id) {
+        if (!confirm('¿Está seguro de que desea APROBAR esta solicitud de actualización?')) return;
+        showLoading('APROBANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/approve-data-update/${id}`, {
+                method: 'POST',
+                body: JSON.stringify({})
+            });
+            if (res && res.success) {
+                toast('Cambios aprobados correctamente', 'success');
+                loadPendingUpdates();
+                loadStaffList();
+            } else {
+                toast(res.error || 'Error al aprobar', 'error');
+            }
+        } catch(e) {
+            toast('Error de conexión', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.deleteUpdate = async function(id) {
+        if (!confirm('¿Está seguro de eliminar esta solicitud de actualización permanentemente sin notificar al empleado?')) return;
+        showLoading('ELIMINANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/delete-data-update/${id}`, { method: 'DELETE' });
+            if (res && res.success) {
+                toast('Solicitud eliminada correctamente', 'success');
+                loadPendingUpdates();
+            } else {
+                toast(res.error || 'Error al eliminar', 'error');
+            }
+        } catch(e) {}
+        hideLoading();
+    };
+
+    window.modifyPendingUpdate = async function(id, d) {
+        const newPhone = prompt('Teléfono propuesto:', d.phone || '');
+        if (newPhone === null) return;
+        const newAddress = prompt('Dirección propuesta:', d.address || '');
+        if (newAddress === null) return;
+        const newBank = prompt('Banco propuesto (o escribir PAGO MOVIL):', d.pago_movil ? 'PAGO MOVIL' : (d.bank_name || ''));
+        if (newBank === null) return;
+        const newAccount = prompt('Cuenta propuesta (dejar vacío si es Pago Móvil):', d.pago_movil ? '' : (d.bank_account || ''));
+        if (newAccount === null) return;
+        
+        if (!confirm('¿Está seguro de que desea GUARDAR y APROBAR estos datos modificados?')) return;
+
+        d.phone = newPhone;
+        d.address = newAddress;
+        
+        if (newBank.toUpperCase().includes('PAGO MOVIL') || newBank.toUpperCase().includes('PAGO MÓVIL')) {
+            d.pago_movil = 1;
+            d.bank_name = '';
+            d.bank_account = '';
+        } else {
+            d.pago_movil = 0;
+            d.bank_name = newBank;
+            d.bank_account = newAccount;
+        }
+
+        showLoading('GUARDANDO MODIFICACIONES...');
+        try {
+            // Modify the proposed_data in the database and automatically approve it
+            const res = await apiFetch('/api/admin/approve-data-update/' + id, {
+                method: 'POST',
+                body: JSON.stringify({ modifiedData: d })
+            });
+            if (res) {
+                toast('Datos modificados y aprobados con éxito', 'success');
+                loadPendingUpdates();
+            }
+        } catch(e) {}
+        hideLoading();
+    };
+
+    window.rejectUpdate = async function(id) {
+        if (!confirm('¿Está seguro de rechazar esta solicitud de actualización?')) return;
+        showLoading('RECHAZANDO...');
+        try {
+            const res = await apiFetch(`/api/admin/reject-data-update/${id}`, {
+                method: 'POST'
+            });
+            if (res && res.success) {
+                toast('Solicitud rechazada', 'success');
+                loadPendingUpdates();
+            } else {
+                toast(res.error || 'Error al rechazar', 'error');
+            }
+        } catch(e) {
+            toast('Error de conexión', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    async function importStaffCSV() {
+        const fileInput = document.getElementById('staff-csv-file');
+        if (!fileInput.files.length) return toast('SELECCIONE UN ARCHIVO EXCEL (.XLSX)', 'warning');
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convertimos a CSV para mantener compatibilidad con el backend existente
+                const csvText = XLSX.utils.sheet_to_csv(worksheet);
+                
+                showLoading('IMPORTANDO PERSONAL...');
+                const res = await apiFetch('/api/staff/import', {
+                    method: 'POST',
+                    body: JSON.stringify({ csv: csvText })
+                });
+                hideLoading();
+                if (res && res.success) {
+                    toast('IMPORTACIÓN EXITOSA: ' + res.count + ' EMPLEADOS', 'success');
+                    fileInput.value = ''; // Limpiar selector
+                    loadStaffList();
+                } else {
+                    toast('ERROR: ' + (res.error || 'ERROR EN IMPORTACIÓN'), 'error');
+                }
+            } catch (err) {
+                hideLoading();
+                toast('ERROR AL LEER EL ARCHIVO EXCEL', 'error');
+                console.error(err);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    async function purgeInactiveDuplicates() {
+        if (!confirm('¿DESEA ELIMINAR TODOS LOS REGISTROS INACTIVOS QUE TENGAN UNA CÉDULA DUPLICADA CON UN REGISTRO ACTIVO?\\n\\nEsta acción es irreversible.')) return;
+        
+        showLoading('DEPURANDO DUPLICADOS...');
+        const res = await apiFetch('/api/staff/purge-duplicates', { method: 'POST' });
+        hideLoading();
+        
+        if (res && res.success) {
+            toast('DEPURACIÓN EXITOSA: ' + res.message, 'success');
+            loadStaffList();
+        }
+    }
+
+    async function downloadStaffCSV() {
+        const res = await apiFetch('/api/staff');
+        if (res && res.staff) {
+            const csvRows = [
+                ['ID', 'NOMBRE', 'ROL', 'FECHA REGISTRO', 'PERFIL_ADMIN', 'PERFIL_OPERA', 'EYE_ID'].join(','),
+                ...res.staff.map(u => [u.id, `"${u.name}"`, u.role, u.created_at, u.profile_admin, u.profile_opera, u.eye_id].join(','))
+            ];
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'staff_eye_staff.csv');
+            a.click();
+        }
+    }
+    async function downloadRRHHTemplate() {
+        const pin = prompt(`🔑 AUTORIZACIÓN DE SEGURIDAD\n\nPara descargar la plantilla de RRHH (Base de Datos del Personal), ingrese su clave personal de seguridad:`);
+        if (pin === null) return;
+        if (!pin.trim()) return toast('❌ DEBE INGRESAR SU CLAVE', 'error');
+
+        showLoading('VERIFICANDO CLAVE...');
+        try {
+            const verifyRes = await apiFetch('/api/admin/verify-pin-and-query', {
+                method: 'POST',
+                body: JSON.stringify({ admin_pin: pin.trim() })
+            });
+            if (!verifyRes || !verifyRes.success) {
+                hideLoading();
+                return; // Error shown by apiFetch
+            }
+        } catch (e) {
+            hideLoading();
+            return toast('ERROR AL VERIFICAR CLAVE', 'error');
+        }
+
+        showLoading('GENERANDO PLANTILLA...');
+        try {
+            const res = await apiFetch('/api/staff');
+            if (res && res.staff) {
+                // 1. Ordenar datos por EYE ID (Prioridad) y luego alfabéticamente
+                const list = [...res.staff];
+                const eyePriority = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
+                list.sort((a, b) => {
+                    const prioA = eyePriority[(a.eye_id || '').toUpperCase()] || 99;
+                    const prioB = eyePriority[(b.eye_id || '').toUpperCase()] || 99;
+                    if (prioA !== prioB) return prioA - prioB;
+                    return a.name.localeCompare(b.name);
+                });
+
+                const data = [
+                    ['Item', 'Status', 'Nombre', 'Cedula', 'Email', 'Perfil Admin', 'Perfil Opera', 'EYE ID', 'Telefono', 'Telefono Pago Movil', 'Direccion', 'Sector', 'Entidad Bancaria', 'Numero de Cuenta', 'Familiar', 'TelFamiliar', 'Alergias', 'Edad'],
+                    ...list.map((u, i) => {
+                        let age = '';
+                        if (u.birth_date) {
+                            const birth = new Date(u.birth_date);
+                            if (!isNaN(birth.getTime())) {
+                                const today = new Date();
+                                age = today.getFullYear() - birth.getFullYear();
+                                const m = today.getMonth() - birth.getMonth();
+                                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                                    age--;
+                                }
+                            }
+                        }
+                        return [
+                            i + 1, 
+                            u.is_active === 0 ? 'INACTIVO' : 'ACTIVO', 
+                            u.name, 
+                            u.cedula || '', 
+                            u.email || '',
+                            u.profile_admin || '',
+                            u.profile_opera || '', 
+                            u.eye_id || '',
+                            u.phone || '', 
+                            u.pago_movil_phone || '',
+                            u.address || '', 
+                            u.sector || '', 
+                            (u.bank_name || ''),
+                            u.pago_movil ? 'N/A' : (u.bank_account || ''),
+                            u.emergency_contact || '',
+                            u.emergency_phone || '',
+                            u.is_allergic || '',
+                            age
+                        ];
+                    })
+                ];
+
+                // 2. Generar nombre de archivo PLANTILLA_RRHH_AAMMDD_HHMM
+                const nowVE = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+                const yy = nowVE.getFullYear().toString().slice(-2);
+                const mm = (nowVE.getMonth() + 1).toString().padStart(2, '0');
+                const dd = nowVE.getDate().toString().padStart(2, '0');
+                const hh = nowVE.getHours().toString().padStart(2, '0');
+                const min = nowVE.getMinutes().toString().padStart(2, '0');
+                const filename = `PLANTILLA_RRHH_${yy}${mm}${dd}_${hh}${min}.xlsx`;
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                
+                // Ajustar el ancho de las columnas dinámicamente según el contenido
+                const colWidths = [];
+                data.forEach(row => {
+                    row.forEach((val, colIdx) => {
+                        const strVal = val !== undefined && val !== null ? val.toString() : '';
+                        const len = strVal.length;
+                        if (!colWidths[colIdx] || len > colWidths[colIdx]) {
+                            colWidths[colIdx] = len;
+                        }
+                    });
+                });
+                ws['!cols'] = colWidths.map(w => ({ wch: Math.max(w + 4, 10) }));
+
+                // Añadir autofiltro en la fila 1 para todas las columnas que tienen datos
+                const maxColLetter = XLSX.utils.encode_col(data[0].length - 1);
+                ws['!autofilter'] = { ref: `A1:${maxColLetter}${data.length}` };
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Personal");
+                XLSX.writeFile(wb, filename);
+                
+                toast('✅ PLANTILLA DESCARGADA', 'success');
+            }
+        } catch (error) {
+            console.error(error);
+            toast('❌ ERROR AL GENERAR PLANTILLA', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderPermissionsView() {
+        const view = document.getElementById('current-view');
+        showLoading('CARGANDO PERMISOS...');
+        const data = await apiFetch('/api/admin/permissions');
+        hideLoading();
+
+        if (!data) return;
+
+        const roles = ['driver', 'supervisor', 'director'];
+        const roleLabels = { 'driver': 'OPERADOR VALET', 'supervisor': 'SUPERVISOR', 'director': 'ADMINISTRADOR' };
+
+        view.innerHTML = `
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                ${getVolverBtn('ADMINISTRACIÓN', 'showTab(\'admin\')')}
+            </div>
+            <div class="view-header">
+                <h1 class="view-title">🔐 GESTIÓN DE PERMISOS</h1>
+            </div>
+
+            <div class="stat-card" style="margin-bottom:20px;">
+                <label>SELECCIONAR PERFIL:</label>
+                <select id="rbac-role-selector" class="input" style="margin-top:10px;" onchange="updatePermissionsTable(this.value)">
+                    ${roles.map(r => `<option value="${r}">${roleLabels[r]}</option>`).join('')}
+                </select>
+            </div>
+
+            <div id="permissions-table-container"></div>
+        `;
+
+        window.rbacData = data;
+        updatePermissionsTable('driver');
+    }
+
+    function updatePermissionsTable(role) {
+        const container = document.getElementById('permissions-table-container');
+        const modules = window.rbacData.modules;
+        const perms = window.rbacData.permissions;
+
+        container.innerHTML = `
+            <div class="stat-card">
+                <h3 style="margin-top:0">MÓDULOS PERMITIDOS</h3>
+                <div style="display:grid; gap:15px;">
+                    ${modules.map(m => {
+                        const isChecked = perms.find(p => p.role === role && p.module_id === m.id && p.can_view === 1);
+                        return `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--surface2); border-radius:10px;">
+                                <div>
+                                    <div style="font-weight:700;">${m.display_name}</div>
+                                    <div style="font-size:0.7rem; color:var(--muted)">${m.category}</div>
+                                </div>
+                                <input type="checkbox" style="width:25px; height:25px; accent-color:var(--success);" 
+                                    ${isChecked ? 'checked' : ''} 
+                                    onchange="togglePermission('${role}', '${m.id}', this.checked)">
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    async function togglePermission(role, moduleId, canView) {
+        const res = await apiFetch('/api/admin/permissions', {
+            method: 'POST',
+            body: JSON.stringify({ role, module_id: moduleId, can_view: canView })
+        });
+        if (res && res.success) {
+            toast('PERMISO ACTUALIZADO', 'success');
+            // Actualizar caché local de permisos
+            const data = await apiFetch('/api/admin/permissions');
+            if (data) window.rbacData = data;
+        }
+    }
+
+    async function renderAlquiler(el) {
+        if (!el) return;
+        el.innerHTML = `
+
+            <div id="alquiler-view">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+                    <h1 class="view-title" style="color:var(--warning);">🏗️ ALQUILER DE EQUIPOS</h1>
+                </div>
+                <div id="alquiler-loading" style="text-align:center; color:var(--muted); padding:20px; font-weight:800; letter-spacing:2px;">CARGANDO LOGÍSTICA DE EQUIPOS...</div>
+                <div id="alquiler-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:15px;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 40px; margin-bottom: 60px;">
+                ${getVolverBtn('VOLVER AL HOME', 'renderPortal(document.getElementById(\'current-view\'))')}
+                <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+            </div>
+        `;
+        
+        try {
+            const res = await apiFetch('/api/rentals');
+            document.getElementById('alquiler-loading').style.display = 'none';
+            if (res && res.success && res.rentals && res.rentals.length > 0) {
+                window.currentRentals = res.rentals;
+                const activeRentals = res.rentals.filter(r => r.status !== 'completed');
+                const list = document.getElementById('alquiler-list');
+                
+                if (activeRentals.length > 0) {
+                    list.innerHTML = activeRentals.map(r => {
+                    const statusColors = {
+                        'planning': 'var(--muted)',
+                        'delivering': 'var(--warning)',
+                        'delivered': '#3b82f6',
+                        'retrieving': '#a855f7',
+                        'completed': 'var(--success)'
+                    };
+                    const statusLabels = {
+                        'planning': 'PLANIFICACIÓN',
+                        'delivering': 'EN TRÁNSITO (ENTREGA)',
+                        'delivered': 'ENTREGADO EN SITIO',
+                        'retrieving': 'EN TRÁNSITO (RETIRO)',
+                        'completed': 'COMPLETADO'
+                    };
+                    const color = statusColors[r.status] || 'var(--muted)';
+                    const label = statusLabels[r.status] || r.status.toUpperCase();
+                    
+                    let form = {};
+                    try { if(r.form_data) form = JSON.parse(r.form_data); } catch(e){}
+                    
+                    return `
+                        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:15px; position:relative; overflow:hidden;">
+                            <div style="position:absolute; left:0; top:0; bottom:0; width:4px; background:${color};"></div>
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; padding-left:10px;">
+                                <div>
+                                    <div style="font-weight:900; font-size:1.1rem; color:#fff;">${(r.evento || 'S/N').toUpperCase()}</div>
+                                    <div style="color:var(--muted); font-size:0.8rem; font-weight:700;">${(r.empresa || 'PARTICULAR').toUpperCase()} | ${form.atencion || 'N/A'}</div>
+                                    <div style="color:var(--accent); font-size:0.75rem; font-weight:900; margin-top:4px;">PRESUPUESTO #${r.budget_id}</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="background:rgba(255,255,255,0.05); border:1px solid ${color}; color:${color}; padding:4px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; margin-bottom:5px; text-align:center;">${label}</div>
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">${r.fecha} ${form.inicio ? '- ' + form.inicio : ''}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="font-size:0.8rem; color:#fff; margin-bottom:15px; padding-left:10px;">
+                                <div style="margin-bottom:5px;"><b>📍 DIRECCIÓN:</b> ${form.direccion || 'N/A'}</div>
+                                <div><b>🏢 LUGAR:</b> ${form.lugar || 'N/A'} ${form.ciudad ? '- ' + form.ciudad : ''}</div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:10px;">
+                                <select onchange="updateAlquilerStatus('${r.budget_id}', this.value)" style="width:100%; padding:8px; border-radius:8px; background:var(--background); color:#fff; border:1px solid var(--border); font-weight:bold; font-size:0.7rem; outline:none;">
+                                    <option value="planning" ${r.status==='planning'?'selected':''}>PLANIFICACIÓN</option>
+                                    <option value="delivering" ${r.status==='delivering'?'selected':''}>INICIAR ENTREGA</option>
+                                    <option value="delivered" ${r.status==='delivered'?'selected':''}>MARCAR ENTREGADO</option>
+                                    <option value="retrieving" ${r.status==='retrieving'?'selected':''}>INICIAR RETIRO</option>
+                                    <option value="completed" ${r.status==='completed'?'selected':''}>COMPLETADO</option>
+                                </select>
+                                <button onclick="viewRentalSupports('${r.budget_id}')" style="width:100%; padding:8px; border-radius:8px; background:var(--accent); color:#000; border:none; font-weight:900; font-size:0.75rem; cursor:pointer;">
+                                    📸 SOPORTES
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                document.getElementById('alquiler-list').innerHTML = '<div style="text-align:center; color:var(--muted); padding:20px; grid-column:1/-1;">No hay alquileres activos en este momento.</div>';
+            }
+            } // Cierra if
+        } catch (e) {
+            document.getElementById('alquiler-loading').innerText = 'Error al cargar logística de alquileres';
+        }
+    }
+    
+    window.updateAlquilerStatus = async function(budgetId, newStatus) {
+        if (newStatus === 'delivered' || newStatus === 'completed') {
+            const rental = (window.currentRentals || []).find(r => r.budget_id === budgetId);
+            if (rental) {
+                window.promptRentalVerification(rental, newStatus);
+                // Reset select visually until confirmed
+                renderAlquiler(document.getElementById('current-view'));
+                return;
+            }
+        }
+        
+        const res = await apiFetch('/api/rentals/' + budgetId + '/status', {
+            method: 'POST',
+            body: JSON.stringify({ status: newStatus, notes: '' })
+        });
+        if(res2 && res2.success) {
+            toast('Estado actualizado a ' + newStatus, 'success');
+            renderAlquiler(document.getElementById('current-view'));
+        } else {
+            toast('Error al actualizar estado', 'error');
+        }
+    }
+
+    window.promptRentalVerification = function(rental, newStatus) {
+        const type = newStatus === 'delivered' ? 'delivery' : 'retrieval';
+        const typeLabel = type === 'delivery' ? 'ENTREGA' : 'RETIRO';
+        
+        let itemsHTML = '';
+        try {
+            const items = JSON.parse(rental.items_data || '[]');
+            if (items.length > 0) {
+                items.forEach((it, idx) => {
+                    itemsHTML += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:10px; margin-bottom:5px; border-radius:8px;">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold; font-size:0.8rem;">${it.producto}</div>
+                                <div style="font-size:0.7rem; color:var(--muted);">Cantidad: ${it.cantidad}</div>
+                            </div>
+                            <input type="checkbox" id="chk_item_${idx}" value="${it.producto} (x${it.cantidad})" style="width:20px; height:20px; cursor:pointer;">
+                        </div>
+                    `;
+                });
+            } else {
+                itemsHTML = '<div style="color:var(--muted); font-size:0.8rem;">No se encontraron ítems en el presupuesto.</div>';
+            }
+        } catch(e) {
+            itemsHTML = '<div style="color:var(--muted); font-size:0.8rem;">Error al leer ítems.</div>';
+        }
+
+        const modalId = 'rental-verify-modal';
+        const existing = document.getElementById(modalId);
+        if(existing) existing.remove();
+
+        const modal = document.createElement('div');
+        modal.id = modalId;
+        modal.style.position = 'fixed';
+        modal.style.top = '0'; modal.style.left = '0'; modal.style.width = '100%'; modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.85)';
+        modal.style.zIndex = '9999';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'flex-start';
+        modal.style.padding = '20px';
+        modal.style.overflowY = 'auto';
+
+        modal.innerHTML = `
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; width:100%; max-width:500px; padding:20px; position:relative; margin-top:20px; margin-bottom:20px; font-family:var(--font-family);">
+                <button onclick="document.getElementById('${modalId}').remove()" style="position:absolute; right:15px; top:15px; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                <h2 style="margin-top:0; color:var(--accent); text-align:center;">📋 VERIFICACIÓN DE ${typeLabel}</h2>
+                <div style="text-align:center; color:var(--muted); font-size:0.8rem; margin-bottom:20px;">PRESUPUESTO #${rental.budget_id}</div>
+                
+                <h3 style="font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">1. Verificación de Equipos</h3>
+                <div id="rental-verify-items" style="max-height:200px; overflow-y:auto; margin-bottom:20px;">
+                    ${itemsHTML}
+                </div>
+
+                <h3 style="font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">2. Datos del Receptor</h3>
+                <input type="text" id="rental-verify-name" placeholder="Nombre completo" style="width:100%; padding:12px; border-radius:8px; background:var(--background); color:white; border:1px solid var(--border); margin-bottom:10px; box-sizing:border-box; font-size:0.9rem;">
+                <input type="text" id="rental-verify-id" placeholder="Cédula de Identidad" style="width:100%; padding:12px; border-radius:8px; background:var(--background); color:white; border:1px solid var(--border); margin-bottom:20px; box-sizing:border-box; font-size:0.9rem;">
+
+                <h3 style="font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">3. Firma Digital</h3>
+                <div style="background:white; border-radius:8px; overflow:hidden; margin-bottom:10px; border:2px dashed #ccc;">
+                    <canvas id="rental-verify-canvas" style="width:100%; height:200px; touch-action:none; display:block;"></canvas>
+                </div>
+                <div style="text-align:right; margin-bottom:20px;">
+                    <button onclick="window.rentalSignaturePad.clear()" style="background:var(--surface2); color:white; border:1px solid var(--border); padding:5px 10px; border-radius:6px; font-size:0.7rem; cursor:pointer;">Limpiar Firma</button>
+                </div>
+
+                <h3 style="font-size:0.9rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">4. Registro Fotográfico</h3>
+                <input type="file" id="rental-verify-photos" multiple accept="image/*" style="width:100%; margin-bottom:10px; color:var(--muted); font-size:0.8rem;">
+                <div style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">(Máximo 4 fotos. Opcional)</div>
+
+                <button id="rental-verify-submit" style="width:100%; background:var(--accent); color:black; padding:15px; border-radius:10px; font-weight:900; border:none; cursor:pointer; font-size:1rem; letter-spacing:1px;">
+                    GUARDAR Y CONFORMAR
+                </button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Init SignaturePad
+        setTimeout(() => {
+            const canvas = document.getElementById('rental-verify-canvas');
+            if(canvas) {
+                function resizeCanvas() {
+                    const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    const ctx = canvas.getContext("2d");
+                    ctx.scale(ratio, ratio);
+                }
+                resizeCanvas();
+                window.rentalSignaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
+            }
+        }, 100);
+
+        document.getElementById('rental-verify-submit').onclick = async function() {
+            const btn = this;
+            const name = document.getElementById('rental-verify-name').value.trim();
+            const cedula = document.getElementById('rental-verify-id').value.trim();
+            
+            if (!name || !cedula) return toast('Debe ingresar nombre y cédula', 'error');
+            if (!window.rentalSignaturePad || window.rentalSignaturePad.isEmpty()) return toast('Debe ingresar la firma', 'error');
+
+            const verifiedItems = [];
+            const container = document.getElementById('rental-verify-items');
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(chk => {
+                if(chk.checked) verifiedItems.push(chk.value);
+            });
+
+            btn.disabled = true;
+            btn.innerText = 'GUARDANDO...';
+
+            // Read photos
+            const photoInput = document.getElementById('rental-verify-photos');
+            const photoFiles = Array.from(photoInput.files).slice(0, 4); // Max 4
+            const photoBase64 = [];
+            for (let f of photoFiles) {
+                const b64 = await new Promise(res => {
+                    const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(f);
+                });
+                photoBase64.push(b64);
+            }
+
+            const signatureData = window.rentalSignaturePad.toDataURL('image/png');
+
+            const payload = {
+                status: newStatus,
+                type: type,
+                receiver_name: name,
+                receiver_id: cedula,
+                signature: signatureData,
+                photos: photoBase64,
+                verified_items: verifiedItems,
+                notes: ''
+            };
+
+            const res = await apiFetch('/api/rentals/' + rental.budget_id + '/status', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (res && res.success) {
+                toast('Conformidad guardada exitosamente', 'success');
+                modal.remove();
+                renderAlquiler(document.getElementById('current-view'));
+            } else {
+                toast('Error al guardar conformidad', 'error');
+                btn.disabled = false;
+                btn.innerText = 'GUARDAR Y CONFORMAR';
+            }
+        };
+    };
+
+    window.viewRentalSupports = function(budgetId) {
+        const rental = (window.currentRentals || []).find(r => r.budget_id === budgetId);
+        if (!rental) return toast('No se encontró información del evento', 'error');
+
+        let deliveryPhotos = [], retrievalPhotos = [];
+        try { if(rental.delivery_photos) deliveryPhotos = JSON.parse(rental.delivery_photos); } catch(e){}
+        try { if(rental.retrieval_photos) retrievalPhotos = JSON.parse(rental.retrieval_photos); } catch(e){}
+
+        const modalId = 'rental-supports-modal';
+        const existing = document.getElementById(modalId);
+        if(existing) existing.remove();
+
+        const modal = document.createElement('div');
+        modal.id = modalId;
+        modal.style.position = 'fixed';
+        modal.style.top = '0'; modal.style.left = '0'; modal.style.width = '100%'; modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.85)';
+        modal.style.zIndex = '9999';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'flex-start';
+        modal.style.padding = '20px';
+        modal.style.overflowY = 'auto';
+
+        const photoHtml = (url) => `<img src="/api/r2/valet-parking-photos/${url}" style="width:100%; border-radius:8px; margin-bottom:10px; max-height:200px; object-fit:contain; background:rgba(0,0,0,0.5);">`;
+
+        modal.innerHTML = `
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; width:100%; max-width:600px; padding:20px; position:relative; margin-top:20px; margin-bottom:20px;">
+                <button onclick="document.getElementById('${modalId}').remove()" style="position:absolute; right:15px; top:15px; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+                <h2 style="margin-top:0; color:var(--accent); text-align:center;">📸 SOPORTES DE ALQUILER</h2>
+                <div style="text-align:center; color:var(--muted); font-size:0.8rem; margin-bottom:20px;">PRESUPUESTO #${rental.budget_id}</div>
+                
+                <div style="display:grid; grid-template-columns:1fr; gap:20px;">
+                    <!-- ENTREGA -->
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px;">
+                        <h3 style="margin-top:0; color:var(--brand-white); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">SOPORTES DE ENTREGA</h3>
+                        <p style="font-size:0.8rem; color:var(--muted);">Receptor: ${rental.delivery_receiver_name || 'N/A'} (C.I. ${rental.delivery_receiver_id || 'N/A'})</p>
+                        ${rental.delivery_signature ? `<div><h4 style="font-size:0.75rem; margin:10px 0 5px;">Firma Digital</h4><img src="/api/r2/valet-parking-photos/${rental.delivery_signature}" style="max-height:100px; background:white; border-radius:8px;"></div>` : '<p style="font-size:0.75rem; color:var(--muted);">No hay firma de entrega</p>'}
+                        ${deliveryPhotos.length > 0 ? `<div><h4 style="font-size:0.75rem; margin:10px 0 5px;">Fotografías (${deliveryPhotos.length})</h4><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${deliveryPhotos.map(photoHtml).join('')}</div></div>` : '<p style="font-size:0.75rem; color:var(--muted);">No hay fotos de entrega</p>'}
+                    </div>
+
+                    <!-- RETIRO -->
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px;">
+                        <h3 style="margin-top:0; color:var(--brand-white); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">SOPORTES DE RETIRO</h3>
+                        <p style="font-size:0.8rem; color:var(--muted);">Receptor: ${rental.retrieval_receiver_name || 'N/A'} (C.I. ${rental.retrieval_receiver_id || 'N/A'})</p>
+                        ${rental.retrieval_signature ? `<div><h4 style="font-size:0.75rem; margin:10px 0 5px;">Firma Digital</h4><img src="/api/r2/valet-parking-photos/${rental.retrieval_signature}" style="max-height:100px; background:white; border-radius:8px;"></div>` : '<p style="font-size:0.75rem; color:var(--muted);">No hay firma de retiro</p>'}
+                        ${retrievalPhotos.length > 0 ? `<div><h4 style="font-size:0.75rem; margin:10px 0 5px;">Fotografías (${retrievalPhotos.length})</h4><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${retrievalPhotos.map(photoHtml).join('')}</div></div>` : '<p style="font-size:0.75rem; color:var(--muted);">No hay fotos de retiro</p>'}
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    function renderAccessControl(el) {
+        if (!el) return;
+        
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isAdmin = isUserAdminOrStaff(user) || false;
+
+        let filteredSessions = (window.allSessions || []).filter(s => {
+            const isAcceso = s.type && (s.type.toUpperCase().includes('ACCESOS') || s.type.toUpperCase().includes('LOGISTICO'));
+            if (!isAcceso) return false;
+            if (s.status !== 'active' && s.status !== 'planning') return false;
+            
+            const isStrictAdmin = user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+
+        if (filteredSessions.length === 0) {
+            renderAccessControlPresentation(el);
+            return;
+        }
+
+        let session = null;
+        if (window.currentAccesosSessionId) {
+            session = filteredSessions.find(s => s.id === window.currentAccesosSessionId);
+        }
+        if (!session && filteredSessions.length > 0) {
+            session = filteredSessions[0];
+            window.currentAccesosSessionId = session.id;
+        }
+
+        if (!session) {
+            session = filteredSessions[0];
+            window.currentAccesosSessionId = session.id;
+        }
+
+        window.activeSession = session;
+
+        const headerHtml = `
+            <div id="access-control-view" style="animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 EVENTOS LOGÍSTICOS 🚧</h1>
+                </div>
+
+                <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">EVENTO SELECCIONADO</label>
+                        <select onchange="window.currentAccesosSessionId = parseInt(this.value); renderAccessControl(document.getElementById('current-view'));" 
+                            style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
+                            ${filteredSessions.map(s => 
+                                `<option value="${s.id}" ${session.id == s.id ? 'selected' : ''} style="color:${s.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
+                                    ${s.name.toUpperCase()} (${s.status === 'active' ? 'ACTIVO' : 'PLANIFICADO'})
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DETALLE DEL EVENTO ACTIVO -->
+                ${session.status === 'active' ? `
+                <div class="stat-card" style="max-width: 500px; margin: 0 auto 20px; background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.3); padding: 18px; border-radius: 18px; border-top: 3px solid #a855f7;">
+                    <div style="font-size:1rem; font-weight:900; color:#fff; margin-bottom:8px; text-transform:uppercase;">${(session.type || 'EVENTO').toUpperCase()} - ${(session.name || '').toUpperCase()}</div>
+                    <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-bottom:12px;">DETALLES DEL SERVICIO</div>
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:14px;"><span style="width:8px; height:8px; border-radius:50%; background:var(--success); display:inline-block;"></span><span style="font-size:0.7rem; color:var(--success); font-weight:900;">ACTIVO</span></div>
+                    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:14px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+                        <div style="display:flex; flex-direction:column; gap:3px;">
+                            <span style="font-size:0.5rem; color:var(--success); font-weight:900; letter-spacing:0.5px;">📢 CONVOCATORIA</span>
+                            <span style="font-size:1.1rem; font-weight:900; color:#fff;">${session.convocation_time || '--:--'}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:3px;">
+                            <span style="font-size:0.5rem; color:#a855f7; font-weight:900; letter-spacing:0.5px;">🚀 INICIO EVENTO</span>
+                            <span style="font-size:1.1rem; font-weight:900; color:#fff;">${session.event_start_time || '--:--'}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:3px;">
+                            <span style="font-size:0.5rem; color:var(--muted); font-weight:900; letter-spacing:0.5px;">🏁 FIN (EST.)</span>
+                            <span style="font-size:1.1rem; font-weight:900; color:#fff;">${session.event_end_time || '--:--'}</span>
+                            ${session.event_end_date ? `<span style="font-size:0.55rem; color:var(--muted); font-weight:700;">📅 ${session.event_end_date}</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <span style="font-size:0.55rem; color:var(--muted); font-weight:800;">📍 DIRECCIÓN</span>
+                        ${session.address ? `
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start;">
+                                ${session.address.toUpperCase()} 🔗
+                            </a>
+                        ` : '<span style="color:var(--muted); font-style:italic; font-size:0.65rem;">NO ESPECIFICADA</span>'}
+                    </div>
+                </div>
+                ` : ''}
+        `;
+
+        if (session.status === 'planning') {
+            const rawDate = session.started_at || session.created_at;
+            let yyyy, mm, dd;
+            if (typeof rawDate === 'string' && rawDate.length >= 10 && rawDate.includes('-')) {
+                const parts = rawDate.substring(0, 10).split('-');
+                yyyy = parts[0]; mm = parts[1]; dd = parts[2];
+            } else {
+                const d = new Date(rawDate);
+                yyyy = d.getFullYear(); mm = String(d.getMonth() + 1).padStart(2, '0'); dd = String(d.getDate()).padStart(2, '0');
+            }
+            const [hh, mm_time] = (session.event_start_time || '00:00').split(':');
+            const schedDate = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${hh.padStart(2, '0')}:${mm_time.padStart(2, '0')}:00-04:00`);
+
+            const isAuthorizedSupervisor = (user && (
+                user.id === session.supervisor_id || 
+                user.role === 'director' ||
+                false ||
+                isUserAdminOrStaff(user)
+            ));
+
+            const diffMs = schedDate.getTime() - Date.now();
+            const diffHours = diffMs / (1000 * 60 * 60);
+
+            let actionHtml = '';
+            if (isAuthorizedSupervisor) {
+                if (diffHours > 3) {
+                    actionHtml = `
+                        <div style="margin-top:20px;">
+                            <button class="btn" style="background:var(--surface2); color:var(--muted); width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:0.8rem; border:1px solid rgba(255,255,255,0.05); cursor:not-allowed;" disabled>
+                                🛑 DISPONIBLE 3 HORAS ANTES
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div style="margin-top:20px;">
+                            <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
+                        </div>
+                    `;
+                }
+            } else {
+                actionHtml = `
+                    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                        <div style="font-size:0.8rem; font-weight:900; color:var(--warning); margin-bottom:5px;">🕒 ESPERANDO INICIO DE OPERACIÓN</div>
+                        <div style="font-size:0.6rem; color:var(--muted); font-weight:700;">EL SUPERVISOR O ADMINISTRADOR DEBE INICIAR EL EVENTO PARA PODER EMPEZAR.</div>
+                    </div>
+                `;
+            }
+
+            el.innerHTML = headerHtml + `
+                <div class="stat-card" style="margin: 20px auto; max-width: 500px; text-align:center; background:rgba(245, 158, 11, 0.05); border:1px solid var(--warning); padding:25px; border-radius:24px;">
+                    <i style="font-size:2.5rem; display:block; margin-bottom:15px;">🕒</i>
+                    <h2 style="color:var(--warning); margin:0 0 5px 0; font-size:1.2rem; font-weight:900;">EVENTO PLANIFICADO</h2>
+                    <div style="font-size:1.1rem; font-weight:900; color:#fff; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${session.name}</div>
+                    <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px; font-weight:700;">EL EVENTO ESTÁ EN LISTA PERO AÚN NO HA INICIADO OPERATIVAMENTE.</p>
+                    
+                    <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
+                        <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                        <div id="countdown-timer-${session.id}" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
+                            FALTAN ${diffMs > 0 ? Math.floor(diffHours) + 'H ' + Math.floor((diffMs % 3600000) / 60000) + 'M' : '0H 0M'}
+                        </div>
+                        ${actionHtml}
+                    </div>
+                </div>
+                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+            </div>`;
+        } else {
+            el.innerHTML = headerHtml + '<div id="ac-dashboard-container" style="padding: 20px; text-align:center; color:var(--muted);">Cargando módulo de operación...</div></div>';
+            
+            apiFetch(`/api/accesos/${session.id}/guests`).then(res => {
+                let guests = [];
+                if (res && res.success) guests = res.data;
+                window._currentAccessGuests = guests;
+                renderAccessControlDashboard(document.getElementById('ac-dashboard-container'), session, guests);
+            });
+        }
+    }
+
+    function renderAccessControlDashboard(el, session, guests) {
+        const total = guests.length;
+        const checkedIn = guests.filter(g => g.status === 'CHECKED_IN').length;
+        const showUpRate = total > 0 ? Math.round((checkedIn / total) * 100) : 0;
+        
+        el.innerHTML = `
+            <div style="animation: fadeIn 0.3s ease;">
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom:40px; display:none;">
+                    <!-- DASHBOARD -->
+                    <div class="stat-card" style="padding: 25px;">
+                        <div class="stat-label" style="color:#22c55e; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">DASHBOARD EN TIEMPO REAL</div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Show-up Rate</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">${showUpRate}%</div>
+                                </div>
+                                <div style="background:rgba(34, 197, 94, 0.1); padding:20px 10px; border-radius:12px; text-align:center;">
+                                    <div style="font-size:0.65rem; color:#22c55e; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aforo Actual</div>
+                                    <div style="font-size:1.8rem; font-weight:900; color:#fff;">${checkedIn} / ${total}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OPERACION DE ESCANEO -->
+                    <div class="stat-card" style="padding: 25px; border-left:4px solid #a855f7;">
+                        <div class="stat-label" style="color:#a855f7; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 20px;">ESCANEO Y VALIDACIÓN (QR)</div>
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <input type="text" id="ac-scanner-input" class="input" placeholder="Escanea o escribe el código QR aquí..." style="font-size:1.2rem; padding:15px; text-align:center; background:rgba(0,0,0,0.2); border:1px solid rgba(168,85,247,0.5); color:#fff;" autofocus onkeypress="if(event.key === 'Enter') handleAccessScan(this.value)">
+                            <button class="btn" style="background:var(--accent); color:white; font-weight:bold; padding:15px; border-radius:8px;" onclick="handleAccessScan(document.getElementById('ac-scanner-input').value)">✅ VALIDAR INGRESO</button>
+                        </div>
+                        <p style="color:var(--muted); font-size:0.7rem; text-align:center; margin-top:15px;">Usa una pistola de escáner configurada con "Enter" automático o digita el ID manual.</p>
+                    </div>
+                </div>
+
+                <!-- LISTADO DE INVITADOS -->
+                <div class="stat-card" style="margin-bottom:40px; padding: 25px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div class="stat-label" style="font-size: 0.85rem; letter-spacing: 1px;">LISTADO DE INVITADOS</div>
+                        <button class="btn btn-sm" style="background:#a855f7; color:#fff;" onclick="openAddGuestModal()">➕ AGREGAR INVITADO</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left; text-transform:uppercase;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--border);">
+                                    <th style="padding:15px 10px; font-weight:900;">NOMBRE</th>
+                                    <th style="padding:15px 10px; font-weight:900;">TIPO</th>
+                                    <th style="padding:15px 10px; font-weight:900;">CÓDIGO QR</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ESTATUS</th>
+                                    <th style="padding:15px 10px; font-weight:900;">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${guests.map(g => `
+                                    <tr style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:15px 10px; font-weight:900; color:#fff;">${g.name}</td>
+                                        <td style="padding:15px 10px; color:var(--muted);">${g.guest_type}</td>
+                                        <td style="padding:10px;">
+                                            <div style="background:white; padding:4px; border-radius:8px; display:inline-block;">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(g.qr_code_id)}" style="width:50px; height:50px; display:block;">
+                                            </div>
+                                        </td>
+                                        <td style="padding:15px 10px; font-weight:bold; color:${g.status === 'CHECKED_IN' ? '#22c55e' : '#eab308'};">${g.status}</td>
+                                        <td style="padding:15px 10px;">
+                                            ${g.status !== 'CHECKED_IN' ? `<button class="btn btn-sm" style="background:#22c55e; color:#fff;" onclick="handleAccessScan('${g.qr_code_id}')">CHECK-IN</button>` : `<span style="color:var(--muted); font-size:0.7rem;">${new Date(g.checked_in_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>`}
+                                            <button class="btn btn-sm" style="background:#ef4444; color:#fff; margin-left:5px; padding: 4px 8px;" onclick="handleDeleteGuest(${g.id})">❌</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                                ${guests.length === 0 ? '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">No hay invitados registrados. Usa el botón superior para agregar.</td></tr>' : ''}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                        <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                ${(window.activeSession && window.activeSession.status === 'active' && (() => {
+                    const cu = JSON.parse(localStorage.getItem('user') || '{}');
+                    return (cu.id === window.activeSession.supervisor_id || cu.role === 'director' || false || window.isUserAdminOrStaff(cu));
+                })()) ? `
+                <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = true;
+                        
+                        const filteredStaffList = isAuthorizedSupervisor 
+                            ? (window.activeSession.assigned_staff_list || [])
+                            : (window.activeSession.assigned_staff_list || []).filter(u => u.id === currentUser.id);
+                            
+                        const isEventActive = window.activeSession.status === 'active';
+
+                        return `
+                            <div style="text-align:center; margin-bottom:25px;">
+                                <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                                <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
+                                    ${isAuthorizedSupervisor ? 'REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO' : 'REGISTRE SUS HORAS INDIVIDUALES PARA EL EVENTO'}
+                                </div>
+                            </div>
+                            
+                            <div class="staff-grid" style="display:grid; ${isAuthorizedSupervisor ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr; max-width: 380px; margin: 0 auto;'} gap:15px;">
+                                ${filteredStaffList.map(u => {
+                                    const isSupervisor = u.id === window.activeSession.supervisor_id;
+                                    const att = u.attendance || [];
+                                    const entry = att.find(a => a.type === 'entry')?.timestamp;
+                                    const exit = att.find(a => a.type === 'exit')?.timestamp;
+                                    
+                                    let totalTime = '0:00h';
+                                    if (entry) {
+                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        let workedMs = 0;
+                                        const refTime = exit ? new Date(exit) : new Date();
+
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            const current = sorted[i];
+                                            const currentType = current.type;
+                                            const currentT = new Date(current.timestamp);
+
+                                            const next = sorted[i + 1];
+                                            const nextT = next ? new Date(next.timestamp) : refTime;
+
+                                            if (currentType === 'entry') {
+                                                workedMs += (nextT - currentT);
+                                            }
+                                        }
+                                        
+                                        const hours = Math.floor(workedMs / 3600000);
+                                        const mins = Math.floor((workedMs % 3600000) / 60000);
+                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                    }
+
+                                    const formatTime = formatTime24h;
+
+                                    const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                                    const hasExited = exit !== undefined;
+                                    const isAbsent = lastAction === 'absent';
+
+                                    // Botones: sin descanso
+                                    const canEntry = isEventActive && (!lastAction || lastAction === 'exit');
+                                    const canExit = isEventActive && (!lastAction || lastAction === 'entry');
+
+                                    // Si está inasistente, ocultar la tarjeta del control de asistencia
+                                    if (isAbsent) {
+                                        return `
+                                        <div class="stat-card" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; opacity:0.5;">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:var(--danger); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid rgba(239,68,68,0.3);">
+                                                    INASISTENTE
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    }
+
+                                    let statusText = 'INACTIVO';
+                                    let statusColor = 'var(--muted)';
+                                    if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                                    else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
+
+                                    let buttonsHtml = `
+                                        <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
+                                        <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                    `;
+
+                                    return `
+                                        <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                                    ${statusText}
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                            </div>
+
+                                            <div style="display:flex; gap:6px;">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    })()}
+                </div>
+
+                <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            false ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        if (!isAuthorizedSupervisor) return '';
+                        
+                        const staff = window.activeSession.assigned_staff_list || [];
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
+                        
+                        return `
+                            <button class="btn" 
+                                    onclick="finalizeEvent()" 
+                                    ${!allExited ? 'disabled' : ''} 
+                                    style="background:${allExited ? 'var(--brand-red)' : 'rgba(255,255,255,0.05)'}; color:white; padding:18px 50px; border-radius:50px; font-weight:900; font-size:1.1rem; border:1px solid ${allExited ? 'var(--brand-red)' : 'var(--border)'}; cursor:${allExited ? 'pointer' : 'not-allowed'}; opacity:${allExited ? '1' : '0.4'}; box-shadow: ${allExited ? '0 10px 30px rgba(239,68,68,0.3)' : 'none'}; transition:0.3s;">
+                                🏁 FINALIZAR EVENTO
+                            </button>
+                        `;
+                    })()}
+                </div>
+                ` : ''}
+                <div style="display:flex; flex-direction: column; align-items: center; margin-bottom:40px;">
+                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                        VOLVER
+                    </button>
+                    <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+                </div>
+            </div>
+        `;
+        setTimeout(updateClock, 50);
+    }
+
+    window.handleAccessScan = async function(qrOrId) {
+        if (!qrOrId) return;
+        const res = await apiFetch('/api/accesos/checkin/' + qrOrId, { method: 'PUT' });
+        if (res && res.success) {
+            toast('Invitado validado correctamente: ' + res.guest.name, 'success');
+            renderAccessControl(document.getElementById('current-view'));
+        } else {
+            toast(res?.error || 'Error al validar código', 'error');
+            document.getElementById('ac-scanner-input').value = '';
+            document.getElementById('ac-scanner-input').focus();
+        }
+    };
+
+    window.openAddGuestModal = function() {
+        const name = prompt('Nombre del Invitado:');
+        if (!name) return;
+        const type = prompt('Tipo (INVITADO, VIP, STAFF, PROVEEDOR):', 'INVITADO') || 'INVITADO';
+        
+        apiFetch('/api/accesos/' + window.currentAccesosSessionId + '/guests', {
+            method: 'POST',
+            body: JSON.stringify({ name, guest_type: type.toUpperCase() })
+        }).then(res => {
+            if (res && res.success) {
+                toast('Invitado agregado con éxito', 'success');
+                renderAccessControl(document.getElementById('current-view'));
+            } else {
+                toast('Error al agregar el invitado', 'error');
+            }
+        });
+    };
+
+    window.handleDeleteGuest = async function(id) {
+        if(!confirm('¿Seguro que deseas eliminar a este invitado?')) return;
+        const res = await apiFetch('/api/accesos/guests/' + id, { method: 'DELETE' });
+        if (res && res.success) {
+            toast('Invitado eliminado', 'success');
+            // Check if we are in Pre-Event or Live Dashboard
+            if (document.getElementById('pre-event-access-control-container')) {
+                const s = (window.allSessions || []).find(s => s.id === window.currentAccesosSessionId);
+                if(s) renderAccessControlPreEvent(s);
+            } else {
+                renderAccessControl(document.getElementById('current-view'));
+            }
+        }
+    };
+
+    window.renderAccessControlPreEvent = async function(session) {
+        const container = document.getElementById('pre-event-access-control-container');
+        if (!container) return;
+        
+        window.currentAccesosSessionId = session.id;
+        container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted);">Cargando lista de invitados...</div>';
+        
+        const res = await apiFetch('/api/accesos/' + session.id + '/guests');
+        const guests = (res && res.success) ? res.data : [];
+        
+        container.innerHTML = `
+            <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <i style="font-size:1.1rem; opacity:0.6;">🎟️</i>
+                        <span style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Gestión de Invitados (${guests.length})</span>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-sm" style="background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid #a855f7;" onclick="openAddGuestModal()">➕ INDIVIDUAL</button>
+                        <button class="btn btn-sm" style="background:#a855f7; color:#fff;" onclick="openBulkImportModal()">📋 CARGA MASIVA</button>
+                    </div>
+                </div>
+                
+                <div style="overflow-x:auto; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left; text-transform:uppercase;">
+                        <thead>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <th style="padding:12px 15px; font-weight:900;">NOMBRE</th>
+                                <th style="padding:12px 15px; font-weight:900;">TIPO</th>
+                                <th style="padding:12px 15px; font-weight:900;">CÓDIGO QR</th>
+                                <th style="padding:12px 15px; font-weight:900; text-align:right;">ACCIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${guests.map(g => {
+                                const qrUrl = `https://eye-staff.app/acceso/qr/${g.qr_code_id}`;
+                                const wpMessage = `Hola ${g.name}, aquí tienes tu pase de acceso para el evento ${session.name}. Presenta este código QR en la entrada: ${qrUrl}`;
+                                return `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding:12px 15px; font-weight:900; color:#fff;">${g.name}</td>
+                                    <td style="padding:12px 15px; color:var(--muted);">${g.guest_type}</td>
+                                    <td style="padding:12px 15px; color:var(--muted); font-family:monospace;">${g.qr_code_id}</td>
+                                    <td style="padding:12px 15px; text-align:right;">
+                                        <a href="https://wa.me/?text=${encodeURIComponent(wpMessage)}" target="_blank" class="btn btn-sm" style="background:rgba(34, 197, 94, 0.15); color:#22c55e; border:1px solid #22c55e; padding:4px 8px; text-decoration:none;">📲 ENVIAR PASE</a>
+                                        <button class="btn btn-sm" style="background:#ef4444; color:#fff; padding:4px 8px; margin-left:5px;" onclick="handleDeleteGuest(${g.id})">❌</button>
+                                    </td>
+                                </tr>
+                                `;
+                            }).join('')}
+                            ${guests.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--muted);">No hay invitados registrados. Usa los botones superiores para agregar.</td></tr>' : ''}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    };
+
+    window.openBulkImportModal = function() {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.id = 'bulk-import-modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:600px;">
+                <h3 style="margin-top:0; color:#a855f7;">📋 Carga Masiva de Invitados</h3>
+                <p style="font-size:0.8rem; color:var(--muted); margin-bottom:15px; line-height:1.5;">
+                    Copia las filas desde tu Excel y pégalas en el cuadro de abajo.<br>
+                    <strong>Formato esperado (1 invitado por línea):</strong> Nombre, Tipo, Teléfono (opcional), Email (opcional).<br>
+                    <em>Separados por tabulación (por defecto al copiar de Excel) o comas.</em>
+                </p>
+                <textarea id="bulk-guests-input" class="input" style="height:200px; font-size:0.8rem; font-family:monospace; white-space:pre;" placeholder="Ejemplo:
+Juan Perez    VIP
+Maria Gomez   INVITADO   04141234567"></textarea>
+                
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button class="btn" style="background:var(--surface2);" onclick="document.getElementById('bulk-import-modal').remove()">Cancelar</button>
+                    <button class="btn" style="background:#a855f7; color:white;" onclick="processBulkImport()">Importar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    };
+
+    window.processBulkImport = async function() {
+        const text = document.getElementById('bulk-guests-input').value;
+        if (!text.trim()) return toast('El cuadro de texto está vacío', 'warning');
+        
+        const lines = text.trim().split('\\n');
+        const guestsToImport = [];
+        
+        for (const line of lines) {
+            if (!line.trim()) continue;
+            // Split by tab or comma
+            const parts = line.split(/[\\t,]+/).map(p => p.trim());
+            if (parts.length > 0 && parts[0]) {
+                guestsToImport.push({
+                    name: parts[0],
+                    guest_type: parts[1] || 'INVITADO',
+                    phone: parts[2] || '',
+                    email: parts[3] || ''
+                });
+            }
+        }
+        
+        if (guestsToImport.length === 0) return toast('No se detectaron invitados válidos', 'warning');
+        
+        showLoading('Importando ' + guestsToImport.length + ' invitados...');
+        try {
+            const res = await apiFetch('/api/accesos/' + window.currentAccesosSessionId + '/guests/bulk', {
+                method: 'POST',
+                body: JSON.stringify({ guests: guestsToImport })
+            });
+            
+            if (res && res.success) {
+                toast(`Se agregaron ${res.added} invitados exitosamente`, 'success');
+                document.getElementById('bulk-import-modal').remove();
+                
+                if (document.getElementById('pre-event-access-control-container')) {
+                    const s = (window.allSessions || []).find(s => s.id === window.currentAccesosSessionId);
+                    if(s) renderAccessControlPreEvent(s);
+                } else {
+                    renderAccessControl(document.getElementById('current-view'));
+                }
+            } else {
+                toast('Error en la importación masiva', 'error');
+            }
+        } catch(e) {
+            toast('Error de conexión', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+
+    function renderAccessControlPresentation(el) {
+        if (!el) return;
+        el.innerHTML = `
+            <div id="access-control-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
+                    <h1 class="view-title" style="color:#a855f7; font-size: 1.8rem; letter-spacing: 1px;">🆔 EVENTOS LOGÍSTICOS</h1>
+                </div>
+                <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(168, 85, 247, 0.05); border:1px solid #a855f7; padding:35px; border-radius:24px;">
+                    <i style="font-size:3rem; display:block; margin-bottom:15px;">🚧</i>
+                    <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN EVENTO ASIGNADO</h2>
+                    <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
+                        No tiene ningún evento de control de accesos asignado actualmente o planificado.
+                    </p>
+                </div>
+                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
+                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                        ⬅ VOLVER
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+
+    function renderGuardiaPresentation(el) {
+        el.innerHTML = `
+            <div id="guardia-view" style="padding-top:20px; animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
+                    <h1 class="view-title" style="color:#6366f1; font-size: 1.8rem; letter-spacing: 1px;">🌙 GUARDIA DIURNA/NOCTURNA</h1>
+                </div>
+                <div class="stat-card" style="margin: 40px auto; max-width: 500px; text-align:center; background:rgba(99, 102, 241, 0.05); border:1px solid #6366f1; padding:35px; border-radius:24px;">
+                    <i style="font-size:3rem; display:block; margin-bottom:15px;">🌙</i>
+                    <h2 style="font-size:1.1rem; color:#fff; font-weight:900; margin-bottom:10px;">SIN GUARDIA ASIGNADA</h2>
+                    <p style="font-size:0.8rem; color:var(--muted); font-weight:bold; line-height:1.5;">
+                        No tiene ninguna guardia asignada actualmente o planificada.
+                    </p>
+                </div>
+                <div style="display:flex; justify-content:center; width:100%; margin-top:40px; margin-bottom:40px;">
+                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                        ⬅ VOLVER
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderGuardia(el) {
+        if (!el) return;
+        
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isAdmin = isUserAdminOrStaff(user) || false;
+
+        let filteredSessions = (window.allSessions || []).filter(s => {
+            const isGuardia = s.type && s.type.toLowerCase().includes('guardia');
+            if (!isGuardia) return false;
+            if (s.status !== 'active' && s.status !== 'planning') return false;
+            
+            const isStrictAdmin = user && user.profile_admin === 'ADMIN' && user.profile_opera === 'ADMIN' && user.eye_id === 'ADMIN';
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+        });
+
+        if (filteredSessions.length === 0) {
+            renderGuardiaPresentation(el);
+            return;
+        }
+
+        let session = null;
+        if (window.currentGuardiaSessionId) {
+            session = filteredSessions.find(s => s.id === window.currentGuardiaSessionId);
+        }
+        if (!session && filteredSessions.length > 0) {
+            session = filteredSessions[0];
+            window.currentGuardiaSessionId = session.id;
+        }
+
+        if (!session) {
+            session = filteredSessions[0];
+            window.currentGuardiaSessionId = session.id;
+        }
+
+        window.activeSession = session;
+
+        const headerHtml = `
+            <div id="guardia-view" style="animation: fadeIn 0.3s ease;">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+                    <h1 class="view-title" style="color:#6366f1; font-size: 1.8rem; letter-spacing: 1px;">🌙 GUARDIA DIURNA/NOCTURNA</h1>
+                </div>
+
+                <div class="stat-card" style="margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 0.6rem; color: var(--muted); font-weight: 800; letter-spacing: 1px;">GUARDIA SELECCIONADA</label>
+                        <select onchange="window.currentGuardiaSessionId = parseInt(this.value); renderGuardia(document.getElementById('current-view'));" 
+                            style="width: 100%; background: var(--surface2); border: 1px solid var(--border); padding: 8px; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem;">
+                            ${filteredSessions.map(s => 
+                                `<option value="${s.id}" ${session.id == s.id ? 'selected' : ''} style="color:${s.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
+                                    ${s.name.toUpperCase()} (${s.status === 'active' ? 'ACTIVO' : 'PLANIFICADO'})
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div id="guardia-dashboard-container">
+                    <div style="padding: 20px; text-align:center; color:var(--muted);">Cargando detalles...</div>
+                </div>
+            </div>
+        `;
+
+        el.innerHTML = headerHtml;
+        renderGuardiaDashboard(document.getElementById('guardia-dashboard-container'), session);
+    }
+
+    async function renderGuardiaDashboard(el, session) {
+        if (!el || !session) return;
+        try {
+            const staffRes = await apiFetch('/api/staff');
+            const allStaff = staffRes?.staff || [];
+            const sessionStaffRaw = allStaff.filter(u => String(u.current_session_id || '').split(',').includes(String(session.id)));
+            
+            const supervisors = sessionStaffRaw.filter(u => u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase()));
+            const employees = sessionStaffRaw.filter(u => !(u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase())));
+            
+            supervisors.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            employees.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+            
+            const sessionStaff = [...supervisors, ...employees];
+
+            el.innerHTML = `
+                <div style="max-width:1200px; margin:0 auto; padding:0 15px;">
+                    <div class="stat-card" style="border-top:4px solid #6366f1; padding:25px; background: rgba(255, 255, 255, 0.02); border-radius:24px; position:relative; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; gap:10px;">
+                            <div>
+                                <h2 style="margin:0; font-size:1.4rem; color:white; font-weight:900; letter-spacing:-0.5px;">${(session.type || 'EVENTO').toUpperCase()} - ${(session.name || '').toUpperCase()}</h2>
+                                <div style="font-size:0.8rem; color:#6366f1; font-weight:900; margin-top:10px; display:flex; align-items:flex-start; gap:8px; background:rgba(99,102,241,0.08); padding:10px 14px; border-radius:12px; border:1px solid rgba(99,102,241,0.2);">
+                                    <span style="font-size:1.1rem; margin-top:2px;">📅</span>
+                                    <span style="display:flex; flex-direction:column; gap:2px;">
+                                        <span style="color:white; font-size:0.85rem; font-weight:900;">${(() => {
+                                            try {
+                                                const d = new Date(session.started_at || session.created_at);
+                                                if (isNaN(d.getTime())) return 'S/F';
+                                                return d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                            } catch(e) {
+                                                return 'S/F';
+                                            }
+                                        })()}</span>
+                                        <span style="font-size:0.7rem; color:var(--muted); font-weight:800; display:flex; gap:12px; margin-top:2px; flex-wrap:wrap;">
+                                            <span>📢 CONVOCATORIA: <b style="color:#6366f1;">${session.convocation_time || '00:00'} H</b></span>
+                                            <span>🚀 INICIO: <b style="color:white;">${session.event_start_time || '00:00'} H</b></span>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:15px; width:100%;">
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">👤 CLIENTE / CONTACTO</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">${(session.contact_name || session.client || 'NO ESPECIFICADO').toUpperCase()}</span>
+                                    </div>
+                                    <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; display:flex; flex-direction:column; gap:4px;">
+                                        <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🏁 FINALIZACIÓN ESTIMADA</span>
+                                        <span style="color:white; font-size:0.8rem; font-weight:700;">
+                                            ${(() => {
+                                                try {
+                                                    if (!session.event_end_date) return 'NO ESPECIFICADA';
+                                                    const d = new Date(session.event_end_date + 'T00:00:00');
+                                                    if (isNaN(d.getTime())) return 'NO ESPECIFICADA';
+                                                    const datePart = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+                                                    const timePart = session.event_end_time ? ` - ${session.event_end_time} H` : '';
+                                                    return `${datePart}${timePart}`;
+                                                } catch(e) {
+                                                    return 'NO ESPECIFICADA';
+                                                }
+                                            })()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="font-size:0.7rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-top:12px; display:flex; flex-direction:column; gap:4px; max-width:100%; word-break:break-word;">
+                                    <span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📍 DIRECCIÓN</span>
+                                    ${session.address ? `
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.75rem; border-bottom:1px dashed var(--accent); align-self:flex-start; line-height:1.2;">
+                                            ${session.address.toUpperCase()} 🔗
+                                        </a>
+                                    ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:20px;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                                <i style="font-size:1.1rem; opacity:0.6;">📋</i>
+                                <span style="font-size:0.75rem; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Control de Personal</span>
+                            </div>
+                            
+                            <div class="scheduled-staff-grid">
+                                ${(() => {
+                                    if (sessionStaff.length > 0) {
+                                        return sessionStaff.map(u => {
+
+                                            const isSupervisor = u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase());
+                                            const hasApiKey = !!u.callmebot_api_key;
+                                            return `
+                                                <div class="admin-globo" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px;">
+                                                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+                                                        <div style="font-size:0.82rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                                                            ${u.name.toUpperCase()}
+                                                            ${isSupervisor ? `
+                                                                <span style="font-size:0.55rem; background:rgba(99,102,241,0.12); color:#6366f1; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(99,102,241,0.25); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0;">
+                                                                    SUPERVISOR
+                                                                </span>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>
+                                                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                                        ${hasApiKey ? `
+                                                            <button class="btn btn-sm btn-primary" class="btn btn-sm" style="background:#0088cc; color:white; border:none; padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="triggerTelegramConvocation(${u.id}, '${u.name}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Notificar por Telegram (Directo)" style="padding:6px 12px; font-size:0.65rem; font-weight:900; border-radius:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                                                                📲 AUTO
+                                                            </button>
+                                                        ` : ''}
+                                                        <button class="btn btn-sm btn-secondary" onclick="openDirectConvocationLink('${u.name}', '${u.phone || ''}', '${session.name}', '${session.convocation_time || ''}', '${session.event_start_time || ''}', '${session.event_end_time || ''}', '${session.address || ''}')" title="Enviar enlace de Telegram pre-redactado" style="padding:6px 10px; font-size:0.75rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(34, 197, 94, 0.12); color:#22c55e; border:1px solid rgba(34, 197, 94, 0.3); cursor:pointer;">
+                                                            💬
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('');
+                                    }
+                                    return '<div style="font-size:0.65rem; color:var(--muted); font-style:italic; text-align:center; padding:20px;">SIN PERSONAL ASIGNADO</div>';
+                                })()}
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                ${(window.activeSession && window.activeSession.status === 'active' && (() => {
+                    const cu = JSON.parse(localStorage.getItem('user') || '{}');
+                    return (cu.id === window.activeSession.supervisor_id || cu.role === 'director' || false || window.isUserAdminOrStaff(cu));
+                })()) ? `
+                <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = true;
+                        
+                        const filteredStaffList = isAuthorizedSupervisor 
+                            ? (window.activeSession.assigned_staff_list || [])
+                            : (window.activeSession.assigned_staff_list || []).filter(u => u.id === currentUser.id);
+                            
+                        const isEventActive = window.activeSession.status === 'active';
+
+                        return `
+                            <div style="text-align:center; margin-bottom:25px;">
+                                <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                                <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
+                                    ${isAuthorizedSupervisor ? 'REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO' : 'REGISTRE SUS HORAS INDIVIDUALES PARA EL EVENTO'}
+                                </div>
+                            </div>
+                            
+                            <div class="staff-grid" style="display:grid; ${isAuthorizedSupervisor ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr; max-width: 380px; margin: 0 auto;'} gap:15px;">
+                                ${filteredStaffList.map(u => {
+                                    const isSupervisor = u.id === window.activeSession.supervisor_id;
+                                    const att = u.attendance || [];
+                                    const entry = att.find(a => a.type === 'entry')?.timestamp;
+                                    const exit = att.find(a => a.type === 'exit')?.timestamp;
+                                    
+                                    let totalTime = '0:00h';
+                                    if (entry) {
+                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        let workedMs = 0;
+                                        const refTime = exit ? new Date(exit) : new Date();
+
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            const current = sorted[i];
+                                            const currentType = current.type;
+                                            const currentT = new Date(current.timestamp);
+
+                                            const next = sorted[i + 1];
+                                            const nextT = next ? new Date(next.timestamp) : refTime;
+
+                                            if (currentType === 'entry') {
+                                                workedMs += (nextT - currentT);
+                                            }
+                                        }
+                                        
+                                        const hours = Math.floor(workedMs / 3600000);
+                                        const mins = Math.floor((workedMs % 3600000) / 60000);
+                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                    }
+
+                                    const formatTime = formatTime24h;
+
+                                    const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                                    const hasExited = exit !== undefined;
+                                    const isAbsent = lastAction === 'absent';
+
+                                    // Botones: sin descanso
+                                    const canEntry = isEventActive && (!lastAction || lastAction === 'exit');
+                                    const canExit = isEventActive && (!lastAction || lastAction === 'entry');
+
+                                    // Si está inasistente, ocultar la tarjeta del control
+                                    if (isAbsent) {
+                                        return `
+                                        <div class="stat-card" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; opacity:0.5;">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:var(--danger); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid rgba(239,68,68,0.3);">
+                                                    INASISTENTE
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    }
+
+                                    let statusText = 'INACTIVO';
+                                    let statusColor = 'var(--muted)';
+                                    if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                                    else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
+
+                                    let buttonsHtml = `
+                                        <button onclick="logStaffAttendance(${u.id}, 'entry')" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}" title="${!isEventActive ? 'El evento no está activo' : ''}">ENTRADA</button>
+                                        <button onclick="handleExitClick(this, ${u.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                    `;
+
+                                    return `
+                                        <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                                    ${statusText}
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                            </div>
+
+                                            <div style="display:flex; gap:6px;">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    })()}
+                </div>
+
+                <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            false ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        if (!isAuthorizedSupervisor) return '';
+                        
+                        const staff = window.activeSession.assigned_staff_list || [];
+                        const allExited = staff.length > 0 && staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
+                        
+                        return `
+                            <button class="btn" 
+                                    onclick="finalizeEvent()" 
+                                    ${!allExited ? 'disabled' : ''} 
+                                    style="background:${allExited ? 'var(--brand-red)' : 'rgba(255,255,255,0.05)'}; color:white; padding:18px 50px; border-radius:50px; font-weight:900; font-size:1.1rem; border:1px solid ${allExited ? 'var(--brand-red)' : 'var(--border)'}; cursor:${allExited ? 'pointer' : 'not-allowed'}; opacity:${allExited ? '1' : '0.4'}; box-shadow: ${allExited ? '0 10px 30px rgba(239,68,68,0.3)' : 'none'}; transition:0.3s;">
+                                🏁 FINALIZAR EVENTO
+                            </button>
+                        `;
+                    })()}
+                </div>
+                ` : ''}
+                
+                <div style="display:flex; flex-direction: column; align-items: center; margin-bottom:40px;">
+                    <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                        VOLVER
+                    </button>
+                    <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+                </div>
+            `;
+        } catch (e) {
+            console.error('Render Guardia Error:', e);
+            el.innerHTML = '<div style="color:var(--danger); padding:20px;">ERROR AL CARGAR DETALLES</div>';
+        }
+    }
+
+    function renderRentaEquipos(el) {
+        if (!el) return;
+        el.innerHTML = `
+            <div id="renta-view">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom: 20px;">
+                    <h1 class="view-title" style="color:#6366f1;">🏗️ RENTA DE EQUIPOS PRO</h1>
+                    <div style="background:#6366f120; color:#6366f1; padding:5px 15px; border-radius:20px; font-size:0.7rem; font-weight:900; margin-top:5px;">WORKFLOW RENTMAN</div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom:30px;">
+                    <!-- 1. PLANIFICACIÓN -->
+                    <div class="stat-card" style="border-top: 4px solid #6366f1;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div class="stat-label">PLANIFICACIÓN Y FALTANTES</div>
+                            <span style="background:#ef444420; color:#ef4444; padding:2px 8px; border-radius:10px; font-size:0.6rem; font-weight:800;">4 SHORTAGES</span>
+                        </div>
+                        <p style="font-size:0.7rem; color:var(--muted); margin:10px 0;">Espejo estratégico de Rentman. Gestiona traslados y sub-alquileres.</p>
+                        <div style="background:var(--surface2); padding:10px; border-radius:8px; font-size:0.7rem; margin-top:10px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <span>LED Screen P2.6</span>
+                                <span style="color:#ef4444; font-weight:800;">-12 m²</span>
+                            </div>
+                            <div style="display:flex; gap:5px;">
+                                <button class="btn btn-sm" style="font-size:0.6rem; padding:4px 8px; background:var(--accent);">SOLICITAR SUB-ALQUILER</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ALMACÉN -->
+                    <div class="stat-card" style="border-top: 4px solid #22c55e;">
+                        <div class="stat-label">ALMACÉN: PACK & PREP</div>
+                        <p style="font-size:0.7rem; color:var(--muted); margin:10px 0;">Digital Packing List. Escaneo obligatorio de salida y retorno.</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                            <button class="btn" style="background:#22c55e; font-size:0.7rem; padding:12px;">📤 SALIDA (CHECK-OUT)</button>
+                            <button class="btn" style="background:var(--surface2); border:1px solid #22c55e; color:#22c55e; font-size:0.7rem; padding:12px;">📥 RETORNO (CHECK-IN)</button>
+                        </div>
+                        <div style="margin-top:10px; font-size:0.6rem; color:#22c55e; font-weight:700;">● 2 PROYECTOS LISTOS PARA CARGA</div>
+                    </div>
+
+                    <!-- 3. LOGÍSTICA -->
+                    <div class="stat-card" style="border-top: 4px solid #f59e0b;">
+                        <div class="stat-label">LOGÍSTICA: ON-SITE</div>
+                        <p style="font-size:0.7rem; color:var(--muted); margin:10px 0;">Entrega, montaje y conformidad. Reporte de incidencias in-situ.</p>
+                        <div style="background:var(--surface2); padding:12px; border-radius:10px; margin-top:10px;">
+                            <div style="font-size:0.7rem; font-weight:800; margin-bottom:5px;">📍 HOTEL RITZ - SALÓN REAL</div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
+                                <span style="color:var(--muted);">Estado: Montaje</span>
+                                <span style="color:#f59e0b;">Ver Hoja de Ruta →</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ACTIVOS -->
+                    <div class="stat-card" style="border-top: 4px solid #3b82f6;">
+                        <div class="stat-label">GESTIÓN DE ACTIVOS</div>
+                        <p style="font-size:0.7rem; color:var(--muted); margin:10px 0;">Base de datos física y estado de inventario por semáforo.</p>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                            <div style="display:flex; align-items:center; gap:8px; font-size:0.7rem;">
+                                <span style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></span>
+                                <span>820 DISPONIBLES</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; font-size:0.7rem;">
+                                <span style="width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>
+                                <span>145 ALQUILADOS</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; font-size:0.7rem;">
+                                <span style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>
+                                <span>12 EN REPARACIÓN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE SEGURIDAD RENTMAN -->
+                <div class="stat-card" style="background:rgba(99, 102, 241, 0.05); border:1px dashed #6366f1; margin-bottom:40px;">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div style="font-size:2rem;">🛡️</div>
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:900; color:#6366f1; text-transform:uppercase;">Protocolo de Seguridad Rentman</div>
+                            <p style="font-size:0.7rem; color:var(--muted); margin:5px 0;">No se permite cerrar un servicio si el escaneo no coincide al 100% con la lista de empaque (Digital Packing List).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction: column; align-items: center; margin-bottom:40px;">
+                    ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
+                    <div class="footer-info" style="margin-top:20px; text-align:center;"></div>
+                </div>
+            </div>
+        `;
+        setTimeout(updateClock, 50);
+    }
+
+    async function renderCierresEventos(el) {
+        showLoading('CARGANDO EVENTOS PENDIENTES...');
+        const pendingRes = await apiFetch('/api/admin/pending-payroll-events');
+        hideLoading();
+
+        const pendingEvents = pendingRes?.events || [];
+
+        const groupedPending = {};
+        const eventsByMonth = { '01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0 };
+        const monthNames = { '01':'Ene', '02':'Feb', '03':'Mar', '04':'Abr', '05':'May', '06':'Jun', '07':'Jul', '08':'Ago', '09':'Sep', '10':'Oct', '11':'Nov', '12':'Dic' };
+        
+        pendingEvents.forEach(e => {
+            if (!groupedPending[e.staff_name]) {
+                groupedPending[e.staff_name] = [];
+            }
+            groupedPending[e.staff_name].push(e);
+            
+            if (e.ended_at) {
+                const parts = e.ended_at.split(/[- ]/);
+                if (parts.length > 1) {
+                    const month = parts[1];
+                    if (eventsByMonth[month] !== undefined) eventsByMonth[month]++;
+                }
+            }
+        });
+        
+        const totalPending = pendingEvents.length;
+        const totalEmployees = Object.keys(groupedPending).length;
+        const avgPending = totalEmployees > 0 ? (totalPending / totalEmployees).toFixed(1) : 0;
+        const maxEventsMonth = Math.max(...Object.values(eventsByMonth), 1);
+        
+        el.innerHTML = `
+            <div class="view-header" style="margin-bottom:20px;">
+                <h1 class="view-title">CIERRES DE EVENTOS</h1>
+            </div>
+
+            <div class="stat-card" style="border-top:4px solid var(--accent); background:rgba(255,255,255,0.02); margin-top:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('pending-events-content-cierres'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('pending-events-icon-cierres'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                    <h3 style="margin:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
+                        <span>📂 EVENTOS PENDIENTES POR RELACIONAR</span>
+                        <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(POR EMPLEADO - BASE DE DATOS)</small>
+                    </h3>
+                    <span id="pending-events-icon-cierres" style="color:var(--accent); font-size:0.8rem;">▼</span>
+                </div>
+                
+                <div style="margin-top:15px;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-bottom:20px;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL EVENTOS PENDIENTES</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--warning); margin-top:5px;">${totalPending}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">EMPLEADOS AFECTADOS</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--accent); margin-top:5px;">${totalEmployees}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">PROMEDIO POR EMPLEADO</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--brand-green); margin-top:5px;">${avgPending}</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:15px; padding:15px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.7rem; color:var(--accent); font-weight:900; letter-spacing:1px; margin-bottom:15px; text-align:center;">ANTIGÜEDAD DE EVENTOS (POR MES)</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; height:100px; gap:5px; padding:0 10px;">
+                            ${Object.entries(eventsByMonth).map(([month, count]) => {
+                                const height = (count / maxEventsMonth) * 100;
+                                const isZero = count === 0;
+                                return `
+                                    <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:5px;" title="${monthNames[month]}: ${count} eventos">
+                                        <div style="font-size:0.55rem; color:var(--text); font-weight:bold; opacity:${isZero ? 0.3 : 1};">${count}</div>
+                                        <div style="width:100%; max-width:25px; height:${isZero ? 2 : height}px; background:${isZero ? 'rgba(255,255,255,0.1)' : 'var(--accent)'}; border-radius:4px 4px 0 0; transition:height 0.5s;"></div>
+                                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800;">${monthNames[month]}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="pending-events-content-cierres" style="display:block; margin-top:10px;">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    ${Object.keys(groupedPending).length === 0 ? `
+                        <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.75rem; font-style:italic;">
+                            No hay eventos pendientes por relacionar.
+                        </div>
+                    ` : Object.entries(groupedPending).map(([staffName, events], index) => {
+                        const collapseId = `pending-collapse-cierres-${index}`;
+                        return `
+                            <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+                                <div onclick="togglePendingCollapse('${collapseId}')" style="padding:15px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:rgba(255,255,255,0.01); user-select:none; transition:0.2s;" class="hover-bg-opacity">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <span style="font-weight:900; color:#fff; font-size:0.85rem;">👤 ${staffName.toUpperCase()}</span>
+                                        <span style="background:rgba(99,102,241,0.15); color:var(--accent); font-size:0.6rem; font-weight:800; padding:2px 8px; border-radius:10px;">
+                                            ${events.length} ${events.length === 1 ? 'EVENTO PENDIENTE' : 'EVENTOS PENDIENTES'}
+                                        </span>
+                                    </div>
+                                    <span id="icon-${collapseId}" style="font-size:0.8rem; color:var(--muted); transition: transform 0.2s;">▼</span>
+                                </div>
+                                
+                                <div id="${collapseId}" style="display:none; border-top:1px solid rgba(255,255,255,0.03); overflow-x:auto;">
+                                    <table class="table" style="font-size:0.7rem; width:100%; margin:0;">
+                                        <thead>
+                                            <tr style="background:rgba(255,255,255,0.02); color:var(--muted);">
+                                                <th style="padding:12px 15px;">FECHA FIN</th>
+                                                <th>EVENTO</th>
+                                                <th>ROL / FUNCIÓN</th>
+                                                <th style="text-align:right; padding-right:15px;">ID EVENTO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${events.map(e => `
+                                                <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
+                                                    <td style="padding:12px 15px; opacity:0.8;">${new Date(e.ended_at).toLocaleDateString()}</td>
+                                                    <td style="font-weight:700; color:#fff;">${e.event_name.toUpperCase()}</td>
+                                                    <td>
+                                                        <span style="color:var(--accent2); font-weight:700; text-transform:uppercase;">
+                                                            ${(e.role || 'Empleado').toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td style="text-align:right; font-family:var(--font-mono); opacity:0.6; padding-right:15px;">
+                                                        #${e.session_id}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; margin-top: 30px; margin-bottom: 40px;">
+                ${getVolverBtn('VOLVER A ADMINISTRACIÓN', 'renderAdmin(document.getElementById(\\'current-view\\'))')}
+            </div>
+            <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
+        \`;
+    }
+
+    async function renderAdminPayrollDashboard(el) {
+        showLoading('CARGANDO NÓMINA PENDIENTE...');
+        const [res, pendingRes] = await Promise.all([
+            apiFetch('/api/admin/payroll-submissions'),
+            apiFetch('/api/admin/pending-payroll-events')
+        ]);
+        hideLoading();
+
+        if (!res || !res.submissions) return;
+        const pendingEvents = pendingRes?.events || [];
+
+        const groupedPending = {};
+        const eventsByMonth = { '01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0 };
+        const monthNames = { '01':'Ene', '02':'Feb', '03':'Mar', '04':'Abr', '05':'May', '06':'Jun', '07':'Jul', '08':'Ago', '09':'Sep', '10':'Oct', '11':'Nov', '12':'Dic' };
+        
+        pendingEvents.forEach(e => {
+            if (!groupedPending[e.staff_name]) {
+                groupedPending[e.staff_name] = [];
+            }
+            groupedPending[e.staff_name].push(e);
+            
+            if (e.ended_at) {
+                const parts = e.ended_at.split(/[- ]/);
+                if (parts.length > 1) {
+                    const month = parts[1];
+                    if (eventsByMonth[month] !== undefined) eventsByMonth[month]++;
+                }
+            }
+        });
+        
+        const totalPending = pendingEvents.length;
+        const totalEmployees = Object.keys(groupedPending).length;
+        const avgPending = totalEmployees > 0 ? (totalPending / totalEmployees).toFixed(1) : 0;
+        
+        // Calcular máximo para la gráfica
+        const maxEventsMonth = Math.max(...Object.values(eventsByMonth), 1);
+        
+
+        // Consolidado por empleado - SOLO APROBADOS (pendiente de cobro)
+        let totalGeneral = 0;
+        const consolidated = {};
+        res.submissions.filter(s => s.status === 'approved').forEach(s => {
+            if (!consolidated[s.staff_name]) {
+                consolidated[s.staff_name] = { total: 0, events: 0, bank: (s.bank_name || 'N/A'), account: (s.bank_account || 'N/A'), items: [], user_id: s.user_id };
+            }
+            const amt = s.amount || 0;
+            consolidated[s.staff_name].total += amt;
+            consolidated[s.staff_name].events += 1;
+            consolidated[s.staff_name].items.push(s);
+            totalGeneral += amt;
+        });
+
+        // Solo pendientes para el Detalle
+        const pendingSubmissions = res.submissions.filter(s => s.status === 'pending');
+
+        el.innerHTML = `
+            <div class="stat-card" style="margin-bottom:30px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:none; color:white; border-radius:20px; padding:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800; letter-spacing:1px; text-transform:uppercase;">MONTO APROBADO POR PAGAR</div>
+                        <div style="font-size:3rem; font-weight:900; margin-top:5px; color:var(--success);">$${totalGeneral.toLocaleString()}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:0.8rem; opacity:0.8; font-weight:800;">PENDIENTES EN COLA</div>
+                        <div style="font-size:2rem; font-weight:800;">${pendingSubmissions.length}</div>
+                    </div>
+                </div>
+                <button class="btn" style="margin-top:20px; background:var(--accent); font-weight:800;" onclick="window.print()">🖨️ GENERAR REPORTE PARA DIRECCIÓN</button>
+            </div>
+
+            <div class="stat-card" style="margin-bottom:30px; border-top:4px solid var(--accent); background:rgba(255,255,255,0.02);">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
+                    <span>📊 RESUMEN POR EMPLEADO</span>
+                    <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(CONSOLIDADO DE TODOS LOS EVENTOS)</small>
+                </h3>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                    ${Object.keys(consolidated).length === 0 ? `
+                        <div style="text-align:center; padding:30px; color:var(--muted); font-size:0.85rem; font-style:italic;">✅ No hay montos aprobados pendientes de cobro.</div>
+                    ` : Object.entries(consolidated).map(([name, data], idx) => {
+                        const detailId = `emp-detail-${idx}`;
+                        return `
+                        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; cursor:pointer;" onclick="const c=document.getElementById('${detailId}'); c.style.display=c.style.display==='none'?'block':'none'; const i=document.getElementById('icon-${detailId}'); i.innerText=c.style.display==='none'?'\u25b6':'\u25bc';">
+                                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                                    <span style="font-weight:900; color:#fff; font-size:0.9rem;">\uD83D\uDC64 ${name}</span>
+                                    <span style="background:var(--surface); padding:2px 8px; border-radius:10px; font-size:0.65rem; font-weight:800;">${data.events} EVENTO${data.events !== 1 ? 'S' : ''} APROBADO${data.events !== 1 ? 'S' : ''}</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <span style="color:var(--success); font-weight:900; font-size:1.1rem;">$${data.total.toLocaleString()}</span>
+                                    <button class="btn btn-sm" onclick="event.stopPropagation(); closeCycleCFO(${data.user_id}, '${name}')" style="background:rgba(34,197,94,0.15); border:1px solid var(--brand-green); color:var(--brand-green); font-size:0.6rem; font-weight:800; padding:5px 10px; border-radius:8px;">💰 CERRAR CICLO</button>
+                                    <span id="icon-${detailId}" style="color:var(--muted); font-size:0.8rem;">\u25bc</span>
+                                </div>
+                            </div>
+                            <div id="${detailId}" style="display:none; border-top:1px solid rgba(255,255,255,0.04); padding:15px;">
+                                <div style="font-size:0.65rem; color:var(--muted); font-weight:800; margin-bottom:10px;">BANCO: <span style="color:#fff;">${data.bank}</span> &nbsp;|&nbsp; CUENTA: <span style="font-family:monospace; color:#fff;">${data.account}</span></div>
+                                <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+                                    <thead>
+                                        <tr style="background:rgba(255,255,255,0.03); text-align:left;">
+                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">FECHA</th>
+                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">EVENTO</th>
+                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800;">ROL</th>
+                                            <th style="padding:8px 10px; color:var(--muted); font-weight:800; text-align:right;">MONTO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.items.map(s => `
+                                            <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                                                <td style="padding:8px 10px; opacity:0.7;">${new Date(s.created_at).toLocaleDateString()}</td>
+                                                <td style="padding:8px 10px; font-weight:700; color:#fff;">${s.event_name || 'N/A'}</td>
+                                                <td style="padding:8px 10px; font-size:0.65rem;">${s.user_id == s.supervisor_id ? '<span style="color:var(--warning); font-weight:800;">\u2B50 SUPERVISOR</span>' : 'VALET'}</td>
+                                                <td style="padding:8px 10px; color:var(--success); font-weight:900; text-align:right;">$${(s.amount||0).toLocaleString()}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background:rgba(34,197,94,0.05);">
+                                            <td colspan="3" style="padding:10px; font-weight:900; font-size:0.8rem;">TOTAL A PAGAR — ${name.toUpperCase()}</td>
+                                            <td style="padding:10px; color:var(--success); font-weight:900; font-size:1rem; text-align:right;">$${data.total.toLocaleString()}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+
+                </div> <!-- Cierra pending-events-content -->
+            </div>
+
+            <div class="stat-card" style="border-top:4px solid var(--warning); background:rgba(255,255,255,0.02);">
+                <h3 style="margin-top:0; font-size:1.1rem; color:#fff;">📝 DETALLE INDIVIDUAL DE REPORTES — EN REVISIÓN</h3>
+                <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px;">Reportes enviados por el personal que están <b>PENDIENTES</b> de aprobación. Asigne monto y cambie estado a APROBADO para que pasen al Resumen por Empleado.</p>
+                <div style="overflow-x:auto;">
+                    <table class="table" style="font-size:0.75rem; width:100%;">
+                        <thead>
+                            <tr style="background:rgba(255,255,255,0.05);">
+                                <th style="padding:15px;">FECHA</th>
+                                <th>EMPLEADO</th>
+                                <th>EVENTO</th>
+                                <th>MONTO ($)</th>
+                                <th>ESTADO</th>
+                                <th>GESTIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${pendingSubmissions.length === 0 ? `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted); font-style:italic;">✅ No hay reportes pendientes de revisión.</td></tr>` : pendingSubmissions.map(s => `
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:15px; opacity:0.7;">${new Date(s.created_at).toLocaleDateString()}</td>
+                                    <td style="font-weight:700; color:#fff;">${s.staff_name}</td>
+                                    <td>
+                                        <div style="font-weight:600;">${s.event_name}</div>
+                                        ${s.user_id == s.supervisor_id ? `
+                                            <div style="font-size:0.6rem; color:var(--warning); font-weight:800; text-transform:uppercase; margin-top:2px;">⭐ SUPERVISOR</div>
+                                        ` : ''}
+                                    </td>
+                                    <td>
+                                        <input type="number" value="${s.amount}" id="amount-${s.id}" 
+                                            style="width:90px; background:var(--surface2); border:1px solid var(--border); padding:8px; border-radius:8px; color:var(--success); font-weight:800; font-size:0.9rem;">
+                                    </td>
+                                    <td>
+                                        <select id="status-${s.id}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.7rem; padding:8px; border-radius:8px; width:120px;">
+                                            <option value="pending" ${s.status === 'pending' ? 'selected' : ''}>⏳ PENDIENTE</option>
+                                            <option value="approved" ${s.status === 'approved' ? 'selected' : ''}>✅ APROBADO</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm" onclick="updatePayrollSubmission(${s.id})" style="background:var(--accent); color:#fff; font-weight:800; border-radius:8px; padding:8px 12px;">💾 GUARDAR</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="stat-card" style="border-top:4px solid var(--accent); background:rgba(255,255,255,0.02); margin-top:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('pending-events-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('pending-events-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                    <h3 style="margin:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:10px;">
+                        <span>📂 EVENTOS PENDIENTES POR RELACIONAR</span>
+                        <small style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">(POR EMPLEADO - BASE DE DATOS)</small>
+                    </h3>
+                    <span id="pending-events-icon" style="color:var(--accent); font-size:0.8rem;">▼</span>
+                </div>
+                
+                <!-- INDICADORES Y GRÁFICA (siempre visibles) -->
+                <div style="margin-top:15px;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-bottom:20px;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">TOTAL EVENTOS PENDIENTES</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--warning); margin-top:5px;">${totalPending}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">EMPLEADOS AFECTADOS</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--accent); margin-top:5px;">${totalEmployees}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:12px; text-align:center;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px;">PROMEDIO POR EMPLEADO</div>
+                            <div style="font-size:1.8rem; font-weight:900; color:var(--brand-green); margin-top:5px;">${avgPending}</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:15px; padding:15px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.7rem; color:var(--accent); font-weight:900; letter-spacing:1px; margin-bottom:15px; text-align:center;">ANTIGÜEDAD DE EVENTOS (POR MES)</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; height:100px; gap:5px; padding:0 10px;">
+                            ${Object.entries(eventsByMonth).map(([month, count]) => {
+                                const height = (count / maxEventsMonth) * 100;
+                                const isZero = count === 0;
+                                return `
+                                    <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:5px;" title="${monthNames[month]}: ${count} eventos">
+                                        <div style="font-size:0.55rem; color:var(--text); font-weight:bold; opacity:${isZero ? 0.3 : 1};">${count}</div>
+                                        <div style="width:100%; max-width:25px; height:${isZero ? 2 : height}px; background:${isZero ? 'rgba(255,255,255,0.1)' : 'var(--accent)'}; border-radius:4px 4px 0 0; transition:height 0.5s;"></div>
+                                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800;">${monthNames[month]}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="pending-events-content" style="display:none; margin-top:10px;">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    ${Object.keys(groupedPending).length === 0 ? `
+                        <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.75rem; font-style:italic;">
+                            No hay eventos pendientes por relacionar.
+                        </div>
+                    ` : Object.entries(groupedPending).map(([staffName, events], index) => {
+                        const collapseId = `pending-collapse-${index}`;
+                        return `
+                            <div style="background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+                                <!-- Header Desplegable -->
+                                <div onclick="togglePendingCollapse('${collapseId}')" style="padding:15px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:rgba(255,255,255,0.01); user-select:none; transition:0.2s;" class="hover-bg-opacity">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <span style="font-weight:900; color:#fff; font-size:0.85rem;">👤 ${staffName.toUpperCase()}</span>
+                                        <span style="background:rgba(99,102,241,0.15); color:var(--accent); font-size:0.6rem; font-weight:800; padding:2px 8px; border-radius:10px;">
+                                            ${events.length} ${events.length === 1 ? 'EVENTO PENDIENTE' : 'EVENTOS PENDIENTES'}
+                                        </span>
+                                    </div>
+                                    <span id="icon-${collapseId}" style="font-size:0.8rem; color:var(--muted); transition: transform 0.2s;">▼</span>
+                                </div>
+                                
+                                <!-- Content Desplegable (colapsado por defecto) -->
+                                <div id="${collapseId}" style="display:none; border-top:1px solid rgba(255,255,255,0.03); overflow-x:auto;">
+                                    <table class="table" style="font-size:0.7rem; width:100%; margin:0;">
+                                        <thead>
+                                            <tr style="background:rgba(255,255,255,0.02); color:var(--muted);">
+                                                <th style="padding:12px 15px;">FECHA FIN</th>
+                                                <th>EVENTO</th>
+                                                <th>ROL / FUNCIÓN</th>
+                                                <th style="text-align:right; padding-right:15px;">ID EVENTO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${events.map(e => `
+                                                <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
+                                                    <td style="padding:12px 15px; opacity:0.8;">${new Date(e.ended_at).toLocaleDateString()}</td>
+                                                    <td style="font-weight:700; color:#fff;">${e.event_name.toUpperCase()}</td>
+                                                    <td>
+                                                        <span style="color:var(--accent2); font-weight:700; text-transform:uppercase;">
+                                                            ${(e.role || 'Empleado').toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td style="text-align:right; font-family:var(--font-mono); opacity:0.6; padding-right:15px;">
+                                                        #${e.session_id}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    window.togglePendingCollapse = function(id) {
+        const el = document.getElementById(id);
+        const icon = document.getElementById('icon-' + id);
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            if (icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+            el.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+    };
+
+
+    async function updatePayrollSubmission(id) {
+        const amount = parseFloat(document.getElementById('amount-' + id).value);
+        const status = document.getElementById('status-' + id).value;
+        
+        showLoading('GUARDANDO CAMBIOS...');
+        const res = await apiFetch('/api/admin/update-payroll-submission', {
+            method: 'POST',
+            body: JSON.stringify({ id, amount, status })
+        });
+        hideLoading();
+        
+        if (res && res.success) {
+            toast('FORMATO ACTUALIZADO', 'success');
+            renderAdmin(document.getElementById('current-view'), 'formatos');
+        }
+    }
+
+    window.closeCycleCFO = async function(userId, staffName) {
+        if (!confirm(`¿Cerrar ciclo de pago para ${staffName}?\n\nTodos sus eventos APROBADOS pasarán a PAGADO y desaparecerán del Resumen. El empleado deberá relacionar nuevos eventos para volver a aparecer.`)) return;
+        showLoading('CERRANDO CICLO DE PAGO...');
+        const res = await apiFetch('/api/admin/payroll/close-cycle', {
+            method: 'POST',
+            body: JSON.stringify({ user_id: userId })
+        });
+        hideLoading();
+        if (res && res.success) {
+            toast(`💰 CICLO CERRADO: ${res.closed} registro(s) marcados como PAGADO para ${staffName}`, 'success');
+            renderAdmin(document.getElementById('current-view'), 'formatos');
+        }
+    };
+
+    window.editEventFromCalendar = function(id) {
+        const s = (window.allSessions || []).find(x => x.id == id);
+        if (!s) return;
+        
+        // Cerrar detalle
+        document.getElementById('calendar-detail-overlay')?.remove();
+        
+        // Poblar formulario
+        document.getElementById('lista-fecha').value = s.started_at ? s.started_at.split('T')[0] : '';
+        
+        // Mapeo robusto de tipo
+        const typeSelect = document.getElementById('lista-tipo');
+        if (typeSelect) {
+            const val = (s.type || '').toLowerCase();
+            if (val.includes('valet')) typeSelect.value = 'valet parking';
+            else if (val.includes('boda')) typeSelect.value = 'boda';
+            else if (val.includes('cumple')) typeSelect.value = 'cumpleaños';
+            else if (val.includes('corpo')) typeSelect.value = 'corporativo';
+            else if (val.includes('conci')) typeSelect.value = 'concierto';
+            else typeSelect.value = val;
+        }
+        
+        document.getElementById('lista-nombre').value = s.name || '';
+        document.getElementById('lista-correlativo').value = s.correlativo || '';
+        document.getElementById('lista-direccion').value = s.address || '';
+        document.getElementById('lista-contacto').value = s.contact_name || '';
+        document.getElementById('lista-empresa').value = s.client || '';
+        if(document.getElementById('lista-presupuesto')) document.getElementById('lista-presupuesto').value = s.budget_id || '';
+        document.getElementById('lista-telefono').value = s.phone || '';
+        document.getElementById('lista-observaciones').value = s.observations || '';
+        
+        // Horas y Fechas Fin
+        if (document.getElementById('lista-hora-convocatoria')) document.getElementById('lista-hora-convocatoria').value = s.convocation_time || '';
+        if (document.getElementById('lista-hora-inicio')) document.getElementById('lista-hora-inicio').value = s.event_start_time || '';
+        if (document.getElementById('lista-hora-fin')) document.getElementById('lista-hora-fin').value = s.event_end_time || '';
+        if (document.getElementById('lista-fecha-fin')) document.getElementById('lista-fecha-fin').value = s.event_end_date ? s.event_end_date.split('T')[0] : '';
+        
+        // Actualizar mapa
+        handleAddressChange(s.address || '');
+        
+        // Personal
+        window.staffSelection = { supervisors: [], employees: [] };
+        
+        if (s.assigned_staff_list && s.assigned_staff_list.length > 0) {
+            window.staffSelection.supervisors = s.assigned_staff_list
+                .filter(x => x.role === 'supervisor' || x.role === 'director' || x.id == s.supervisor_id)
+                .map(x => x.id);
+            window.staffSelection.employees = s.assigned_staff_list
+                .filter(x => x.role !== 'supervisor' && x.role !== 'director' && x.id != s.supervisor_id)
+                .map(x => x.id);
+        } else {
+            // Fallback para registros huérfanos o antiguos
+            if (s.supervisor_id) window.staffSelection.supervisors = [s.supervisor_id];
+            
+            // Si el backend envió el string assigned_staff, intentamos buscar por nombre (muy básico)
+            if (s.assigned_staff && window.allStaffData) {
+                const names = s.assigned_staff.split(',').map(n => n.trim().toLowerCase());
+                window.allStaffData.forEach(st => {
+                    if (names.includes(st.name.toLowerCase())) {
+                        if (st.role === 'supervisor' || st.role === 'director' || st.id == s.supervisor_id) {
+                            if (!window.staffSelection.supervisors.includes(st.id)) window.staffSelection.supervisors.push(st.id);
+                        } else {
+                            if (!window.staffSelection.employees.includes(st.id)) window.staffSelection.employees.push(st.id);
+                        }
+                    }
+                });
+            }
+        }
+
+        updateStaffList('supervisor');
+        updateStaffList('employee');
+        
+        window.editingSessionId = id;
+
+        if (window.toggleGuardiaFields) {
+            window.toggleGuardiaFields();
+            if ((s.type || '').toLowerCase() === 'guardia diurna/nocturna') {
+                apiFetch(`/api/guardia/${id}/details`).then(res => {
+                    if (res && res.success && res.data) {
+                        const d = res.data;
+                        if(document.getElementById('lista-guardia-transporte')) document.getElementById('lista-guardia-transporte').value = d.transport || '';
+                        if(document.getElementById('lista-guardia-desayunos')) document.getElementById('lista-guardia-desayunos').value = d.desayunos || 0;
+                        if(document.getElementById('lista-guardia-almuerzos')) document.getElementById('lista-guardia-almuerzos').value = d.almuerzos || 0;
+                        if(document.getElementById('lista-guardia-cenas')) document.getElementById('lista-guardia-cenas').value = d.cenas || 0;
+                        if(document.getElementById('lista-guardia-materiales')) document.getElementById('lista-guardia-materiales').value = d.materials || '';
+                    }
+                });
+            }
+        }
+        
+        // Scroll al inicio del panel
+        document.querySelector('.vehicle-card')?.scrollIntoView({ behavior: 'smooth' });
+        toast('📝 MODO EDICIÓN: ' + s.name.toUpperCase(), 'warning');
+        
+        // Cambiar texto del botón guardar
+        const saveBtn = document.querySelector('button[onclick="saveListaEvento()"]');
+        if (saveBtn) {
+            saveBtn.innerText = '📝 ACTUALIZAR EVENTO';
+            saveBtn.style.background = 'var(--accent)';
+        }
+    }
+
+    window.DEFAULT_MAP_ADDRESS = 'F4PG+F97, Calle Garcilazo, Caracas 1080, Miranda, Venezuela';
+    
+    window.updatePresupuestoMap = function() {
+        const val = document.getElementById('pres-direccion').value;
+        const addr = val.trim() || window.DEFAULT_MAP_ADDRESS;
+        const iframe = document.getElementById('pres-map-iframe');
+        if (iframe) {
+            iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed`;
+        }
+    };
+    
+    window.handleAddressChange = function(val) {
+        const addr = val.trim() || window.DEFAULT_MAP_ADDRESS;
+        const iframe = document.getElementById('planning-map-iframe');
+        const label = document.getElementById('map-label');
+        if (iframe) {
+            iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed`;
+        }
+        if (label) {
+            label.innerText = val.trim() ? '📍 UBICACIÓN DEL EVENTO (CLICK PARA AMPLIAR)' : '📍 OFICINA EYE STAFF';
+        }
+    }
+
+    window.showExpandedMap = function() {
+        const addr = document.getElementById('lista-direccion')?.value.trim() || window.DEFAULT_MAP_ADDRESS;
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay open';
+        modal.style.zIndex = '9999';
+        modal.onclick = function(e) {
+            if (e.target === modal) modal.remove();
+        };
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:95vw; width:1000px; height:85vh; padding:0; overflow:hidden; position:relative; border:2px solid var(--border);">
+                <div style="position:absolute; top:0; left:0; width:100%; background:rgba(15,23,42,0.95); padding:15px; z-index:100; border-bottom:1px solid var(--border); display:flex; justify-content:center; align-items:center;">
+                    <span style="font-weight:900; font-size:0.8rem; letter-spacing:1px; color:var(--accent);">🗺️ DETALLE DE UBICACIÓN</span>
+                </div>
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    style="border:0; margin-top:0;" 
+                    src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    window.handleStaffSearch = function(type, query) {
+        const resultsEl = document.getElementById(`results-${type}`);
+        if (!query || query.length < 2) {
+            resultsEl.style.display = 'none';
+            return;
+        }
+
+        const targetDate = document.getElementById('lista-fecha')?.value;
+
+        const filtered = window.allStaffData.filter(s => 
+            s.name.toLowerCase().includes(query.toLowerCase()) && 
+            !window.staffSelection.supervisors.includes(s.id)
+        ).slice(0, 10);
+
+        if (filtered.length === 0) {
+            resultsEl.style.display = 'none';
+            return;
+        }
+
+        resultsEl.innerHTML = filtered.map(s => {
+            const busySession = isStaffMemberBusy(s.id, s.current_session_id);
+
+            const isBusy = !!busySession;
+            const statusColor = isBusy ? 'var(--brand-red)' : 'var(--muted)';
+            const statusText = isBusy ? ` - OCUPADO EN: ${busySession.name.toUpperCase()}` : '';
+            const action = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `selectStaffForEvent('${type}', ${s.id}, '${s.name}')`;
+            
+            return `
+                <div class="search-item" onclick="${action}" style="${isBusy ? 'opacity:0.6; cursor:not-allowed;' : ''}">
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:800;">${s.name.toUpperCase()}</span>
+                        ${isBusy ? `<span style="font-size:0.55rem; color:${statusColor}; font-weight:700;">${statusText}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        resultsEl.style.display = 'block';
+    }
+
+    window.selectStaffForEvent = function(type, id, name) {
+        const targetList = window.staffSelection.supervisors;
+        targetList.push(id);
+        
+        document.getElementById(`search-${type}`).value = '';
+        document.getElementById(`results-${type}`).style.display = 'none';
+        
+        renderStaffTags(type);
+        updateStaffList('employee');
+    }
+
+    window.updateStaffList = function(type) {
+        const query = document.getElementById(`filter-${type}`)?.value.toLowerCase() || '';
+        const listEl = document.getElementById(`list-${type}`);
+        if (!listEl) return;
+        
+        const staff = (window.allStaffData || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+        const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        const otherSelection = type === 'supervisor' ? window.staffSelection.employees : window.staffSelection.supervisors;
+
+        // Ya no actualizamos la visual para bloquear la sección de empleados
+        
+        const targetDate = document.getElementById('lista-fecha')?.value;
+
+        listEl.innerHTML = staff.filter(s => 
+            s.name.toLowerCase().includes(query) && 
+            !otherSelection.includes(s.id)
+        ).map(s => {
+            const isSelected = selection.includes(s.id);
+            const busySession = isStaffMemberBusy(s.id, s.current_session_id);
+            
+            const isBusy = !!busySession;
+            const onclick = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `toggleStaffSelection('${type}', ${s.id})`;
+            
+            const checkboxColor = type === 'supervisor' ? 'var(--warning)' : 'var(--accent)';
+            const nameColor = isSelected ? (type === 'supervisor' ? 'var(--warning)' : 'var(--accent)') : (isBusy ? 'var(--brand-red)' : '#fff');
+            
+            return `
+                <div style="display:flex; align-items:center; padding:8px 12px; gap:12px; border-bottom:1px solid rgba(255,255,255,0.03); cursor:${isBusy ? 'not-allowed' : 'pointer'}; transition:0.2s; background:${isSelected ? (type === 'supervisor' ? 'rgba(245, 158, 11, 0.05)' : 'rgba(99, 102, 241, 0.05)') : (isBusy ? 'rgba(239, 68, 68, 0.02)' : 'transparent')}; opacity:${isBusy && !isSelected ? '0.5' : '1'};" onclick="${onclick}">
+                    <input type="checkbox" ${isSelected ? 'checked' : ''} ${isBusy && !isSelected ? 'disabled' : ''} style="width:16px; height:16px; cursor:pointer; accent-color:${checkboxColor};">
+                    <div style="flex:1;">
+                        <div style="color:${nameColor}; font-weight:${isSelected ? '900' : '600'}; font-size:0.75rem; display:flex; align-items:center; gap:5px;">
+                            ${s.name.toUpperCase()}
+                            ${isBusy ? `<span style="font-size:0.5rem; background:rgba(239, 68, 68, 0.1); color:var(--brand-red); padding:2px 6px; border-radius:4px;">OCUPADO</span>` : ''}
+                        </div>
+                        ${isBusy ? `<div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">• EN: ${busySession.name.toUpperCase()}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.toggleStaffSelection = function(type, id) {
+        const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        const index = selection.indexOf(id);
+        if (index > -1) selection.splice(index, 1);
+        else selection.push(id);
+        
+        updateStaffList(type);
+        const otherType = type === 'supervisor' ? 'employee' : 'supervisor';
+        updateStaffList(otherType);
+    }
+
+    window.removeStaffFromEvent = function(type, id) {
+        const targetList = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        const index = targetList.indexOf(id);
+        if (index > -1) targetList.splice(index, 1);
+        renderStaffTags(type);
+        updateStaffList('employee');
+    }
+
+    window.renderStaffTags = function(type) {
+        const container = document.getElementById(`selected-${type}s`);
+        const targetList = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
+        
+        container.innerHTML = targetList.map(id => {
+            const staff = window.allStaffData.find(s => s.id == id);
+            return `
+                <div class="staff-tag">
+                    ${staff ? staff.name.split(' ')[0].toUpperCase() : 'ID:'+id}
+                    <span class="tag-remove" onclick="removeStaffFromEvent('${type}', ${id})">×</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Reemplazamos la función anterior por compatibilidad si se llama
+    window.updateStaffAssignmentUI = function() { };
+
+    window.showDayDetails = function(dateIso) {
+        const date = new Date(dateIso);
+        date.setHours(0,0,0,0);
+        
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isDirector = isUserAdminOrStaff(user);
+
+        const sessions = (window.allSessions || []).filter(s => {
+            if (s.status === 'budgeted') return false;
+            
+            if (!isDirector) {
+                const isAssigned = s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+                if (!isAssigned) return false;
+            }
+            const rawDate = s.started_at || s.created_at;
+            let sDate;
+            if (typeof rawDate === 'string' && rawDate.length === 10 && rawDate.includes('-')) {
+                const parts = rawDate.split('-');
+                sDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            } else {
+                sDate = new Date(rawDate);
+            }
+            sDate.setHours(0,0,0,0);
+            return sDate.getTime() === date.getTime();
+        });
+
+        const wrapper = document.body;
+        const detailOverlay = document.createElement('div');
+        detailOverlay.id = 'calendar-detail-overlay';
+        detailOverlay.style = `
+            position: fixed; top:0; left:0; width:100vw; height:100vh; 
+            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px);
+            z-index: 9999; padding: 5vw; box-sizing: border-box;
+            display: flex; flex-direction: column; animation: fadeIn 0.3s ease-out;
+        `;
+
+        let dateHeader = date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+        if (sessions.length > 0) {
+            dateHeader += ` (${sessions.length})`;
+        }
+        
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        let eventsHtml = sessions.length > 0 ? sessions.map(s => {
+            const isClosed = s.status === 'closed' || s.status === 'concluded';
+            const isActive = s.status === 'active';
+            return `
+            <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
+                    ${(currentUser.name === 'ADMIN' || currentUser.name === 'RRHH' || currentUser.profile_admin === 'ADMIN' || currentUser.profile_admin === 'RRHH') ? `<button onclick="deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div style="grid-column:span 2; display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="flex:1;">
+                            <div style="font-size:0.5rem; color:var(--warning); font-weight:800; text-transform:uppercase;">🕗 CONVOCATORIA</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.convocation_time || '--:--'}</div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:0.5rem; color:var(--accent); font-weight:800; text-transform:uppercase;">🚀 INICIO EVENTO</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff;">${s.event_start_time || '--:--'}</div>
+                        </div>
+                        <div style="flex:1.2;">
+                            <div style="font-size:0.5rem; color:var(--muted); font-weight:800; text-transform:uppercase;">🏁 FIN (EST.)</div>
+                            <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; flex-direction:column;">
+                                <span>${s.event_end_time || '--:--'}</span>
+                                ${s.event_end_date ? `<span style="font-size:0.65rem; color:var(--muted); margin-top:2px; font-weight:500;">📅 ${s.event_end_date.split('T')[0].split('-').reverse().join('/')}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📞 Contacto / Tel</div>
+                        <div style="font-size:0.8rem; font-weight:700; color:#fff;">${s.contact_name || 'N/A'} - ${s.phone || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📍 Dirección</div>
+                        <div class="address-tooltip-trigger" style="font-size:0.8rem; font-weight:700; color:#fff; cursor:pointer;">
+                            ${s.address || 'N/A'}
+                            <div class="address-tooltip">
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    style="border:0;" 
+                                    src="https://www.google.com/maps?q=${encodeURIComponent(s.address)}&output=embed">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="grid-column:span 2;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">👤 Personal Asignado</div>
+                            ${s.assigned_staff ? `<button class="btn btn-sm" onclick="openSmartRoute('${(s.address||'').replace(/'/g, "\\'")}', '${s.assigned_staff.replace(/'/g, "\\'")}')" style="background:rgba(168, 85, 247, 0.15); color:#a855f7; border:1px solid #a855f7; border-radius:12px; padding:6px 12px; font-size:0.6rem; font-weight:900;">🚌 RUTA INTELIGENTE</button>` : ''}
+                        </div>
+                        <div style="font-size:0.8rem; font-weight:700; color:var(--warning); margin-top:5px;">${s.assigned_staff || 'SIN ASIGNAR'}</div>
+                    </div>
+                    <div style="grid-column:span 2;">
+                        <div style="font-size:0.55rem; color:var(--muted); font-weight:800; text-transform:uppercase;">📝 Notas / Observaciones</div>
+                        <div style="font-size:0.75rem; font-weight:500; color:#cbd5e1; font-style:italic;">"${s.observations || 'Sin notas'}"</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join('') : `
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0.5;">
+                <i style="font-size:3rem; margin-bottom:15px;">📅</i>
+                <div style="font-weight:800; letter-spacing:1px;">NO HAY EVENTOS PROGRAMADOS</div>
+            </div>
+        `;
+
+        detailOverlay.innerHTML = `
+            <div style="margin-bottom:25px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+                <div style="font-size:0.6rem; color:var(--muted); font-weight:900; letter-spacing:2px; margin-bottom:5px;">DETALLE DE JORNADA</div>
+                <div style="font-size:1.4rem; font-weight:900; color:#fff;">${dateHeader}</div>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding-right:10px;">
+                ${eventsHtml}
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="document.getElementById('calendar-detail-overlay').remove()" style="width: 100%; max-width: 300px; font-weight: 900; letter-spacing: 1px; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); background: var(--success); color: #fff;">CERRAR [X]</button>
+            </div>
+        `;
+
+        wrapper.appendChild(detailOverlay);
+    }
+
+    window.deleteEventFromCalendar = async function(id) {
+        if (!confirm('⚠️ ¿ESTÁ SEGURO DE ELIMINAR ESTE EVENTO POR COMPLETO? Esta acción es irreversible.')) return;
+        showLoading('ELIMINANDO EVENTO...');
+        try {
+            const res = await apiFetch(`/api/sessions/${id}`, { method: 'DELETE' });
+            if (res && res.success) {
+                toast('🗑️ EVENTO ELIMINADO', 'success');
+                document.getElementById('calendar-detail-overlay')?.remove();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (view) renderListas(view);
+            } else throw new Error(res.error || 'Error');
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.confirmEventFromCalendar = async function(id) {
+        if (!confirm('¿DESEA INICIAR LA OPERACIÓN DE ESTE EVENTO AHORA MISMO?')) return;
+        showLoading('CONFIRMANDO EVENTO...');
+        try {
+            const res = await apiFetch('/api/sessions/activate', {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            if (res && res.success) {
+                toast('✅ EVENTO CONFIRMADO Y ACTIVADO', 'success');
+                document.getElementById('calendar-detail-overlay')?.remove();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (view) renderListas(view);
+            } else throw new Error(res.error || 'Error');
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.budgetEventFromCalendar = async function(id) {
+        if (!confirm('¿DESEA ELIMINAR ESTE EVENTO Y MOVERLO A PRESUPUESTADOS?')) return;
+        showLoading('MOVIENDO A PRESUPUESTADOS...');
+        try {
+            const res = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id, status: 'budgeted' })
+            });
+            if (res && res.success) {
+                toast('📂 EVENTO MOVIDO A PRESUPUESTADOS', 'success');
+                document.getElementById('calendar-detail-overlay')?.remove();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (view) renderListas(view);
+            } else throw new Error(res.error || 'Error');
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+    window.openSmartRoute = async function(eventAddress, staffNamesString) {
+        if (!eventAddress || eventAddress === 'N/A') {
+            toast('El evento no tiene una dirección válida.', 'error');
+            return;
+        }
+        showLoading('GENERANDO RUTA INTELIGENTE...');
+        try {
+            const res = await apiFetch('/api/staff');
+            const allStaff = res.staff || [];
+            
+            const assignedNames = staffNamesString.split(',').map(n => n.trim().toUpperCase());
+            const waypoints = [];
+            
+            for (const name of assignedNames) {
+                const user = allStaff.find(u => u.name.toUpperCase().includes(name) || name.includes(u.name.toUpperCase()));
+                if (user && (user.sector || user.address)) {
+                    waypoints.push(user.sector || user.address);
+                }
+            }
+            
+            if (waypoints.length === 0) {
+                toast('No se encontró sector/dirección para el personal asignado.', 'warning');
+                return;
+            }
+            
+            const limitedWaypoints = waypoints.slice(0, 9);
+            const destinationAddress = 'F4PG+F97, Calle Garcilazo, Caracas 1080, Miranda, Venezuela';
+            const url = `https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=${encodeURIComponent(eventAddress)}&destination=${encodeURIComponent(destinationAddress)}&waypoints=${limitedWaypoints.map(w => encodeURIComponent(w)).join('|')}`;
+            
+            window.open(url, '_blank');
+            toast('Ruta abierta en Google Maps.', 'success');
+            
+        } catch (e) {
+            console.error(e);
+            toast('Error al generar la ruta.', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
+
+
+    window.handleExitClick = function(btn, userId) {
+        const isSelected = btn.getAttribute('data-selected') === 'true';
+        if (!isSelected) {
+            // Primer clic: pasar a verde brillante
+            btn.setAttribute('data-selected', 'true');
+            btn.style.background = 'var(--success)'; // verde vivo
+            btn.style.color = '#fff';
+            btn.style.border = 'none';
+            btn.style.transform = 'scale(1.05)';
+            btn.textContent = 'CONFIRMAR?';
+            toast('👉 Vuelva a presionar para dar salida', 'info');
+            
+            // Auto-restaurar después de 4 segundos si no vuelve a presionar
+            setTimeout(() => {
+                if (btn && btn.getAttribute('data-selected') === 'true') {
+                    btn.setAttribute('data-selected', 'false');
+                    btn.style.background = 'rgba(16, 185, 129, 0.15)'; // verde apagado
+                    btn.style.color = '#10b981';
+                    btn.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                    btn.style.transform = 'scale(1)';
+                    btn.textContent = 'SALIDA';
+                }
+            }, 4000);
+        } else {
+            // Segundo clic: hacer la confirmación
+             logStaffAttendance(userId, 'exit');
+        }
+    };
+
+    window.logStaffAttendance = async function(userId, type) {
+        if (!window.activeSession) return toast('⚠️ SELECCIONE UN EVENTO', 'warning');
+
+        if (type === 'exit') {
+            const staff = window.activeSession.assigned_staff_list || [];
+            const emp = staff.find(u => u.id === userId);
+            const nombre = emp ? emp.name.toUpperCase() : 'ESTE EMPLEADO';
+            const att = emp ? (emp.attendance || []) : [];
+            const hasEntry = att.some(a => a.type === 'entry');
+
+            if (!hasEntry) {
+                if (!confirm(`⚠️ ¿REALMENTE DESEA MARCAR COMO INASISTENTE A:\n\n👉 ${nombre}?\n\nAl no tener registro de entrada, esta acción bloqueará su acceso a este evento y quedará registrado en el reporte de cierre.`)) {
+                    return;
+                }
+            } else {
+                if (!confirm(`⚠️ ¿ESTÁ SEGURO QUE DESEA REGISTRAR LA SALIDA DE:\n\n👉 ${nombre}?`)) {
+                    return;
+                }
+                if (!confirm(`⚠️ RECONFIRMACIÓN:\n¿Confirma definitivamente la salida de ${nombre}?\n\nEsta acción no se puede deshacer.`)) {
+                    return;
+                }
+            }
+        }
+
+        if (type === 'absent') {
+            const staff = window.activeSession.assigned_staff_list || [];
+            const emp = staff.find(u => u.id === userId);
+            const nombre = emp ? emp.name.toUpperCase() : 'ESTE EMPLEADO';
+            if (!confirm(`⚠️ ¿REALMENTE DESEA MARCAR COMO INASISTENTE A:\n\n👉 ${nombre}?\n\nEsta acción bloqueará su acceso a este evento y quedará registrado en el reporte de cierre.`)) {
+                return;
+            }
+        }
+
+        showLoading('REGISTRANDO ASISTENCIA...');
+        try {
+            let res = await apiFetch('/api/attendance/log', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user_id: userId,
+                    session_id: window.activeSession.id,
+                    type: type
+                })
+            });
+            if (res && res.error_code === 'TRIGGER_FINISH_EVENT') {
+                hideLoading();
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (window.currentValetTab && window.currentValetTab !== 'home' && window.currentValetTab !== 'valet-menu') {
+                    showTab(window.currentValetTab);
+                } else {
+                    renderHome(view);
+                }
+                
+                setTimeout(() => {
+                    if (confirm('TODO EL EQUIPO HA FINALIZADO SU JORNADA.\\n\\n¿DESEA FINALIZAR EL EVENTO Y GENERAR EL REPORTE DE CIERRE AHORA?')) {
+                        if (typeof window.finalizeEvent === 'function') {
+                            window.finalizeEvent(true);
+                        } else {
+                            const btn = document.getElementById('btn-finalizar-evento');
+                            if (btn) btn.click();
+                        }
+                    } else {
+                        const btn = document.getElementById('btn-finalizar-evento');
+                        if (btn) btn.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 500);
+                return;
+            }
+
+            if (res && res.success) {
+                toast('✅ ASISTENCIA REGISTRADA', 'success');
+                
+                if (type === 'exit') {
+                    const staff = window.activeSession.assigned_staff_list || [];
+                    const emp = staff.find(u => u.id === userId);
+                    const nombre = emp ? emp.name.toUpperCase() : 'EL EMPLEADO';
+                    alert(`📤 SALIDA REGISTRADA CON ÉXITO\n\n👉 El empleado ${nombre} ha finalizado su jornada de trabajo de forma correcta.`);
+                }
+
+                await checkActiveSession();
+                const view = document.getElementById('current-view');
+                if (window.currentModule && window.currentModule !== 'valet') {
+                    enterModule(window.currentModule);
+                } else {
+                    if (window.currentValetTab && window.currentValetTab !== 'home' && window.currentValetTab !== 'valet-menu') {
+                        showTab(window.currentValetTab);
+                    } else {
+                        renderHome(view);
+                    }
+                }
+
+                // Verificar si todo el personal está inactivo para sugerir cierre
+                if (type === 'exit' && window.activeSession) {
+                    const staff = window.activeSession.assigned_staff_list || [];
+                    const allInactive = staff.every(u => {
+                        const att = u.attendance || [];
+                        const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                        return lastAction === 'exit' || !lastAction;
+                    });
+
+                    if (staff.length > 0 && allInactive) {
+                        setTimeout(() => {
+                            if (confirm('TODO EL PERSONAL HA FINALIZADO SU JORNADA.\n\n¿DESEA FINALIZAR EL EVENTO Y ENVIAR EL REPORTE DE CIERRE?')) {
+                                if (typeof window.finalizeEvent === 'function') {
+                                    window.finalizeEvent(true);
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+            } else {
+                throw new Error(res.error || 'Error desconocido');
+            }
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function renderMarketing(el) {
+        if (!el) return;
+        el.innerHTML = `
+            <div id="marketing-view" style="width:90%; margin:0 auto; padding-top:20px; padding-bottom:10vh;">
+                <div class="view-header" style="text-align:center; margin-bottom:30px;">
+                    <h1 class="view-title" style="font-size:2rem; letter-spacing:-1px; color:var(--brand-white);">📊 ESTRATEGIA <span style="color:var(--accent);">PUBLICIDAD</span></h1>
+                    <p style="color:var(--muted); font-size:0.8rem; margin-top:5px;">PLAN DE TRABAJO Y DASHBOARD GERENCIAL</p>
+                </div>
+
+                <div class="stat-card" style="margin-bottom:30px; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:0; overflow:hidden; border-radius:24px;">
+                    <div style="background:var(--accent); padding:10px 20px; color:white; font-weight:900; font-size:0.7rem; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>DASHBOARD EJECUTIVO (BETA)</span>
+                        <span style="opacity:0.7;">DATOS EN TIEMPO REAL</span>
+                    </div>
+                    <img src="img/marketing_dashboard.png" style="width:100%; display:block; filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.1));">
+                </div>
+
+                <div class="grid" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
+                    <div class="stat-card" style="border-left:4px solid var(--success);">
+                        <h3 style="font-size:0.9rem; color:var(--brand-white); margin-bottom:15px; font-weight:900;">🎯 OBJETIVOS DE MARKETING</h3>
+                        <ul style="color:var(--muted); font-size:0.75rem; line-height:1.6; padding-left:20px; margin:0;">
+                            <li>Auditoría diaria de sentimiento en TikTok e Instagram.</li>
+                            <li>Conversión de "Seguidores" a "Leads de Venta" mediante CTA dirigidos.</li>
+                            <li>Monitoreo de calidad operativa basado en reseñas de clientes reales.</li>
+                        </ul>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning);">
+                        <h3 style="font-size:0.9rem; color:var(--brand-white); margin-bottom:15px; font-weight:900;">🔄 CRUCE OPERATIVO</h3>
+                        <ul style="color:var(--muted); font-size:0.75rem; line-height:1.6; padding-left:20px; margin:0;">
+                            <li>Ajuste de staff basado en reportes de fallas detectadas en RRSS.</li>
+                            <li>Promoción de servicios más consultados en canales digitales.</li>
+                            <li>Identificación de Super-Fans para fidelización y ventas recurrentes.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align:center;">
+                    ${getVolverBtn('VOLVER A DIRECCIÓN EYE STAFF', 'renderVipEyeStaff(document.getElementById(\'current-view\'))')}
+                </div>
+            </div>
+        `;
+    }
+
+    async function promptChoferLocationRequest(id, name) {
+        const { value: duration } = await Swal.fire({
+            title: '⏱️ SOLICITAR UBICACIÓN',
+            html: `Indícale a <b>${name}</b> cuánto tiempo debe compartir su ubicación en tiempo real:`,
+            input: 'select',
+            inputOptions: {
+                '1 hora': '1 hora',
+                '8 horas': '8 horas',
+                '12 horas': '12 horas',
+                '24 horas': '24 horas'
+            },
+            inputPlaceholder: 'Selecciona tiempo estimado',
+            showCancelButton: true,
+            confirmButtonText: 'SOLICITAR',
+            cancelButtonText: 'CANCELAR',
+            confirmButtonColor: '#28A8E9',
+            cancelButtonColor: 'var(--danger)',
+            background: 'var(--surface)',
+            color: '#fff'
+        });
+
+        if (duration) {
+            const msg = `🚗 *SOLICITUD DE UBICACIÓN*\n\nHola ${name}, se requiere que actives tu ubicación en tiempo real (*Share Live Location*) a través de este chat durante el servicio.\n\nTiempo estimado requerido: *${duration}*\n\nPor favor, actívala ahora.`;
+            
+            showLoading('ENVIANDO...');
+            try {
+                const res = await apiFetch('/api/telegram/send-direct', {
+                    method: 'POST',
+                    body: JSON.stringify({ targetUserId: id, text: msg })
+                });
+                hideLoading();
+                if (res && res.success) {
+                    toast('Solicitud enviada a ' + name);
+                } else {
+                    Swal.fire('Error', res?.error || 'No se pudo enviar el mensaje. Verifica si el empleado vinculó su Telegram.', 'error');
+                }
+            } catch (e) {
+                hideLoading();
+                Swal.fire('Error', 'Hubo un problema de conexión al enviar.', 'error');
+            }
+        }
+    }
+
+    async function renderGeolocalizacion(view) {
+        window.scrollTo(0, 0);
+        showLoading('INICIALIZANDO MAPA...');
+        try {
+            const res = await apiFetch('/api/location/latest');
+            const locations = res || { staff: [], assets: [] };
+            
+            const staffRes = await apiFetch('/api/staff');
+            if (staffRes && staffRes.staff) window.allStaffData = staffRes.staff;
+            const choferes = (staffRes?.staff || []).filter(u => u.is_chofer).sort((a, b) => a.name.localeCompare(b.name));
+            
+            let choferesHtml = '';
+            
+            view.innerHTML = `
+                ${choferesHtml}
+                
+                <div class="tracking-grid" style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; height: 65vh;">
+                    <!-- PANEL DE MAPA -->
+                    <div style="display:flex; flex-direction:column; gap:15px; min-height:0;">
+                        <div id="map-container" style="background:var(--surface); border-radius:24px; border:1px solid var(--border); overflow:hidden; position:relative; flex-grow:1;">
+                            <div id="map" style="width:100%; height:100%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- PANEL LATERAL: ACTIVOS Y PERSONAL -->
+                    <div style="display:flex; flex-direction:column; gap:10px; overflow-y:auto; overflow-x:hidden;">
+                        <!-- SECCIÓN GPS EN VIVO (Telegram) -->
+                        <div class="vehicle-card" id="live-gps-card" style="padding:12px; border-radius:15px; background:rgba(40,168,233,0.05); border:1px solid rgba(40,168,233,0.2);">
+                            <h3 style="font-size:0.75rem; color:#28A8E9; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('live-gps-list'); const icon = document.getElementById('live-gps-icon'); if(content.style.display==='none'){content.style.display='flex'; icon.textContent='▲';}else{content.style.display='none'; icon.textContent='▼';}">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <input type="checkbox" id="cb-liveloc" onchange="if(window.toggleMapLayer) window.toggleMapLayer('liveLoc', this.checked)" style="accent-color:#28A8E9; width:14px; height:14px; cursor:pointer;" onclick="event.stopPropagation()">
+                                    <span>📍 UBICACIÓN EN VIVO</span>
+                                </div>
+                                <div>
+                                    <span id="live-gps-badge" style="font-size:0.6rem; background:#28A8E9; color:white; padding:2px 8px; border-radius:10px; display:none;">0</span>
+                                    <span id="live-gps-icon">▲</span>
+                                </div>
+                            </h3>
+                            <div id="live-gps-list" style="display:flex; flex-direction:column; gap:6px; max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                                <div style="font-size:0.55rem; color:var(--muted); text-align:center; padding:6px;">Sin ubicaciones activas</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div style="display:flex; justify-content:center; margin-top:20px; margin-bottom:20px;">
+                    ${getVolverBtn('VOLVER A DIRECCIÓN EYE STAFF', 'renderVipEyeStaff(document.getElementById(\'current-view\'))')}
+                </div>
+            `;
+
+            // Inicializar Leaflet
+            setTimeout(async () => {
+                const map = L.map('map', { zoomControl: false }).setView([10.4806, -66.9036], 11); // Área de Caracas
+                window.leafletMap = map;
+                
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO'
+                }).addTo(map);
+
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                // Capas Globales para los filtros
+                window.assetsMarkersLayer = L.layerGroup();
+
+                // Agregar markers de Personal (Azules)
+                locations.staff.forEach(s => {
+                    const marker = L.circleMarker([s.latitude, s.longitude], {
+                        radius: 8,
+                        fillColor: "#6366f1",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                    marker.bindPopup(`<b>${s.name.toUpperCase()}</b><br>${s.role}`);
+                    window.assetsMarkersLayer.addLayer(marker);
+                });
+
+
+
+                /*
+                if (locations.staff.length > 0 || locations.assets.length > 0) {
+                    const group = new L.featureGroup([...locations.staff, ...locations.assets].map(x => L.marker([x.latitude, x.longitude])));
+                    map.fitBounds(group.getBounds().pad(0.2));
+                }
+                */
+
+                window.toggleMapLayer = function(layerName, show) {
+                    if (!window.leafletMap) return;
+                    let targetLayer = null;
+                    if (layerName === 'liveLoc') targetLayer = window.liveLocLayer;
+                    if (layerName === 'home') targetLayer = window.homeMarkersLayer;
+                    
+                    if (targetLayer) {
+                        if (show) {
+                            window.leafletMap.addLayer(targetLayer);
+                        } else {
+                            window.leafletMap.removeLayer(targetLayer);
+                        }
+                    }
+
+                    // Ajustar mapa a los marcadores visibles
+                    const visibleLayers = [];
+                    if (window.leafletMap.hasLayer(window.liveLocLayer)) visibleLayers.push(window.liveLocLayer);
+                    if (window.leafletMap.hasLayer(window.homeMarkersLayer)) visibleLayers.push(window.homeMarkersLayer);
+
+                    let bounds = new L.LatLngBounds();
+                    let hasVisible = false;
+
+                    visibleLayers.forEach(layer => {
+                        layer.eachLayer(m => {
+                            if (m.getLatLng) {
+                                bounds.extend(m.getLatLng());
+                                hasVisible = true;
+                            }
+                        });
+                    });
+
+                    if (hasVisible) {
+                        window.leafletMap.flyToBounds(bounds.pad(0.15), { duration: 1.0 });
+                    } else {
+                        // Vista por defecto Caracas
+                        window.leafletMap.setView([10.4806, -66.9036], 11);
+                    }
+                };
+
+                // Helper: activa domicilios cuando ambas condiciones se cumplen
+                // (live-locations resuelto Y domDiv en DOM)
+                window._homeLayerShouldActivate = null; // null=pendiente, true=activar, false=no activar
+                window.tryActivateHomeLayer = function() {
+                    if (window._homeLayerShouldActivate !== true) return;
+                    const cbHome = document.getElementById('cb-home');
+                    if (!cbHome) return; // domDiv aún no está en el DOM
+                    window._homeLayerShouldActivate = false;
+                    cbHome.checked = true;
+                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
+                };
+
+                // ── DOMICILIOS: Geocodificar direcciones del personal ──
+                // ── DOMICILIOS: Geocodificar direcciones del personal con caché local y reintentos inteligentes ──
+                window.homeMarkersLayer = L.layerGroup();
+                const homeMarkersLayer = window.homeMarkersLayer;
+                window._staffHomeMarkers = [];
+
+                // ── UBICACIONES EN TIEMPO REAL (vía Telegram) ──
+                window.liveLocLayer = L.layerGroup();
+                const liveLocLayer = window.liveLocLayer;
+                window._liveLocMarkers = {};
+                window._hasLiveLocationsAtStart = false;
+
+                async function refreshLiveLocations(isInitialLoad = false) {
+                    try {
+                        const res = await apiFetch('/api/staff/live-locations');
+                        const locs = res.locations || [];
+                        const prevCount = window._prevLiveCount || 0;
+
+                        // Limpiar pines anteriores
+                        liveLocLayer.clearLayers();
+                        window._liveLocMarkers = {};
+
+                        locs.forEach(loc => {
+                            const isChofer = (window.allStaffData || []).some(s => ((s.phone && loc.phone && s.phone === loc.phone) || (s.name && loc.name && s.name.trim().toLowerCase() === loc.name.trim().toLowerCase())) && s.is_chofer);
+                            const choferIcon = isChofer ? ' <span title="Chofer Autorizado" style="font-size:0.8rem; margin-left:3px; cursor:help;">🚗</span>' : '';
+                            const liveIcon = L.divIcon({
+                                html: `
+                                    <div style="position:relative; width:16px; height:16px;">
+                                        <div style="width:16px; height:16px; background:#eab308; border:2px solid #fff; border-radius:50%; box-shadow:0 0 8px rgba(234,179,8,0.9); z-index:2; position:absolute; left:0; top:0; display:flex; align-items:center; justify-content:center; font-size:8px;">📍</div>
+                                        <div style="position:absolute; left:-5px; top:-5px; width:26px; height:26px; border-radius:50%; border:2px solid #eab308; background:transparent; opacity:0; z-index:1; animation: marker-pulse 1.4s infinite ease-out;"></div>
+                                    </div>
+                                `,
+                                iconSize: [16, 16],
+                                iconAnchor: [8, 8],
+                                className: ''
+                            });
+
+                            const minutesAgo = Math.round((Date.now() - new Date(loc.updated_at + 'Z').getTime()) / 60000);
+                            const timeLabel = minutesAgo < 1 ? 'Ahora mismo' : `hace ${minutesAgo} min`;
+
+                            const marker = L.marker([loc.lat, loc.lon], { icon: liveIcon }).addTo(liveLocLayer);
+                            marker.bindTooltip(`
+                                <div style="min-width:180px; font-family:var(--font-main);">
+                                    <div style="font-weight:900; font-size:0.75rem; color:#4285f4; margin-bottom:5px;">📍 ${loc.name}${choferIcon}</div>
+                                    <div style="font-size:0.6rem; color:#cbd5e1;"><b>GPS en vivo</b> · ${timeLabel}</div>
+                                    ${loc.accuracy ? `<div style="font-size:0.55rem; color:var(--muted);">Precisión: ±${Math.round(loc.accuracy)}m</div>` : ''}
+                                </div>
+                            `, { direction: 'top', className: 'premium-leaflet-tooltip', opacity: 0.98 });
+
+                            window._liveLocMarkers[loc.phone] = marker;
+                        });
+
+                        // ── LÓGICA DE INICIO DINÁMICA ──
+                        if (isInitialLoad) {
+                            if (locs.length > 0) {
+                                // Hay ubicaciones en vivo -> Activar solo "Ubicación en vivo"
+                                const cbLive = document.getElementById('cb-liveloc');
+                                if (cbLive) { cbLive.checked = true; if(window.toggleMapLayer) window.toggleMapLayer('liveLoc', true); }
+                            } else {
+                                // No hay ubicaciones en vivo -> activar domicilios cuando el panel esté en el DOM
+                                window._homeLayerShouldActivate = true;
+                                window.tryActivateHomeLayer();
+                            }
+                        } else {
+                            // ── CAMBIO DINÁMICO DURANTE POLLING ──
+                            const prev = window._prevLiveCount || 0;
+                            if (prev === 0 && locs.length > 0) {
+                                // Apareció ubicación en vivo: activar live, desactivar domicilios
+                                const cbLive = document.getElementById('cb-liveloc');
+                                const cbHome = document.getElementById('cb-home');
+                                if (cbHome && cbHome.checked) {
+                                    cbHome.checked = false;
+                                    if (window.toggleMapLayer) window.toggleMapLayer('home', false);
+                                }
+                                if (cbLive && !cbLive.checked) {
+                                    cbLive.checked = true;
+                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', true);
+                                }
+                            } else if (prev > 0 && locs.length === 0) {
+                                // Desapareció la última ubicación en vivo: desactivar live, activar domicilios
+                                const cbLive = document.getElementById('cb-liveloc');
+                                const cbHome = document.getElementById('cb-home');
+                                if (cbLive && cbLive.checked) {
+                                    cbLive.checked = false;
+                                    if (window.toggleMapLayer) window.toggleMapLayer('liveLoc', false);
+                                }
+                                if (cbHome && !cbHome.checked) {
+                                    cbHome.checked = true;
+                                    if (window.toggleMapLayer) window.toggleMapLayer('home', true);
+                                }
+                            }
+                        }
+
+                        window._prevLiveCount = locs.length;
+
+                        // Actualizar badge en el panel de Personal en Campo
+                        const livePanel = document.getElementById('live-gps-badge');
+                        if (livePanel) {
+                            livePanel.textContent = locs.length;
+                            livePanel.style.display = locs.length > 0 ? 'inline-block' : 'none';
+                        }
+                        
+                        const headerLocBtn = document.getElementById('btn-header-location');
+                        if (headerLocBtn) {
+                            headerLocBtn.style.animation = locs.length > 0 ? 'blinkHeaderLocation 1s infinite alternate' : '';
+                        }
+
+                        // Actualizar sección GPS en vivo del panel lateral
+                        const liveListEl = document.getElementById('live-gps-list');
+                        if (liveListEl) {
+                            if (locs.length === 0) {
+                                liveListEl.innerHTML = '<div style="font-size:0.6rem; color:var(--muted); text-align:center; padding:8px;">Sin ubicaciones activas</div>';
+                            } else {
+                                liveListEl.innerHTML = locs.map(loc => {
+                                    const minutesAgo = Math.round((Date.now() - new Date(loc.updated_at + 'Z').getTime()) / 60000);
+                                    const timeLabel = minutesAgo < 1 ? 'Ahora' : `${minutesAgo}m`;
+                                    const isChofer = (window.allStaffData || []).some(s => ((s.phone && loc.phone && s.phone === loc.phone) || (s.name && loc.name && s.name.trim().toLowerCase() === loc.name.trim().toLowerCase())) && s.is_chofer);
+                                    const choferIcon = isChofer ? ' <span title="Chofer Autorizado" style="font-size:0.8rem; margin-left:3px; cursor:help;">🚗</span>' : '';
+                                    return `<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(66,133,244,0.08); padding:8px 10px; border-radius:10px; border:1px solid rgba(66,133,244,0.2); gap:8px; cursor:pointer;" onclick="window._liveLocMarkers['${loc.phone}'] && (window.leafletMap.setView([${loc.lat},${loc.lon}],16), window._liveLocMarkers['${loc.phone}'].openTooltip())">
+                                        <div style="min-width:0;">
+                                            <div style="font-size:0.7rem; font-weight:900; color:#4285f4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${loc.name}${choferIcon}</div>
+                                            <div style="font-size:0.55rem; color:var(--muted);">GPS · ${timeLabel}</div>
+                                        </div>
+                                        <button style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#4285f4; color:#fff; flex-shrink:0; border:none; cursor:pointer;">VER</button>
+                                    </div>`;
+                                }).join('');
+                            }
+                        }
+                    } catch(e) { console.warn('Error cargando ubicaciones en vivo:', e); }
+                }
+
+                // Polling cada 15 segundos
+                refreshLiveLocations(true);
+                const liveLocInterval = setInterval(() => refreshLiveLocations(false), 15000);
+                window._liveLocInterval = liveLocInterval;
+
+
+                // Diccionario estático de sectores para geocodificación instantánea (0ms) sin límites
+                const sectorCoordinates = {
+                    "petare": [10.4800, -66.8200],
+                    "la pastora": [10.5180, -66.9180],
+                    "ocumare del tuy": [10.1250, -66.7760],
+                    "santa teresa del tuy": [10.2370, -66.6620],
+                    "santa teresa": [10.2370, -66.6620],
+                    "santa lucia": [10.3020, -66.6600],
+                    "san francisco de yare": [10.1760, -66.7440],
+                    "san antonio de yare": [10.1760, -66.7440],
+                    "los teques": [10.3440, -67.0420],
+                    "los salias": [10.3750, -66.9600],
+                    "el valle": [10.4680, -66.9150],
+                    "el cementerio": [10.4820, -66.9080],
+                    "charallave": [10.2420, -66.8620],
+                    "caricuao": [10.4350, -66.9750],
+                    "ud3": [10.4350, -66.9750],
+                    "ruiz pineda": [10.4350, -66.9750],
+                    "valles del tuy": [10.1800, -66.7500],
+                    "propatria": [10.5150, -66.9530],
+                    "los caobos": [10.5000, -66.8900],
+                    "fuerzas armadas": [10.5080, -66.8980],
+                    "catia": [10.5210, -66.9450],
+                    "23 de enero": [10.5110, -66.9290],
+                    "los samanes": [10.4350, -66.8740],
+                    "san bernardino": [10.5180, -66.8970],
+                    "minas de baruta": [10.4330, -66.8620],
+                    "maripérez": [10.5040, -66.8890],
+                    "el marquez": [10.4950, -66.8280],
+                    "san antonio de los altos": [10.3750, -66.9600],
+                    "las minitas": [10.4420, -66.8400],
+                    "bello monte": [10.4850, -66.8780],
+                    "caracas": [10.4850, -66.8780],
+                    "la dolorita": [10.4820, -66.7950],
+                    "antímano": [10.4720, -66.9640],
+                    "antimano": [10.4720, -66.9640],
+                    "carapita": [10.4720, -66.9640],
+                    "la acequia el sol": [10.4720, -66.9640],
+                    "valencia": [10.1620, -68.0070],
+                    "chacao": [10.4900, -66.8500],
+                    "los palos grandes": [10.4900, -66.8500],
+                    "altamira": [10.4900, -66.8500],
+                    "los ruices": [10.4900, -66.8500],
+                    "la urbina": [10.4900, -66.8500],
+                    "av romulo gallegos": [10.4900, -66.8500],
+                    "jardines del valle": [10.4630, -66.9110],
+                    "catia la mar": [10.6010, -67.0300],
+                    "puente hierro": [10.4930, -66.9110],
+                    "san jose del avila": [10.5180, -66.9070],
+                    "cruz de la vega": [10.4970, -66.9380],
+                    "la vega": [10.4780, -66.9400],
+                    "la candelaria": [10.5040, -66.9020],
+                    "miami": [25.7616, -80.1917],
+                    "madrid": [40.4167, -3.7037]
+                };
+
+                function addHomeMarker(lat, lon, name, address, sector) {
+                    // Evitar duplicación exacta agregando un micro-jitter muy sutil (±30 metros) para agrupar visualmente
+                    const jitterLat = lat + (Math.random() - 0.5) * 0.004;
+                    const jitterLon = lon + (Math.random() - 0.5) * 0.004;
+
+                    // Icono verde titilante (pulsante) que va creciendo
+                    const customHomeIcon = L.divIcon({
+                        html: `
+                            <div style="position:relative; width:12px; height:12px;">
+                                <div style="width:12px; height:12px; background:#22c55e; border:2px solid #fff; border-radius:50%; box-shadow:0 0 6px rgba(34,197,94,0.8); z-index:2; position:absolute; left:0; top:0;"></div>
+                                <div style="position:absolute; left:-4px; top:-4px; width:20px; height:20px; border-radius:50%; border:2px solid #22c55e; background:transparent; opacity:0; z-index:1; animation: marker-pulse 1.8s infinite ease-out;"></div>
+                            </div>
+                        `,
+                        iconSize: [12, 12],
+                        iconAnchor: [6, 6],
+                        className: ''
+                    });
+
+                    const marker = L.marker([jitterLat, jitterLon], { icon: customHomeIcon }).addTo(homeMarkersLayer);
+                    
+                    // Globo premium interactivo al pasar el cursor (tooltip)
+                    marker.bindTooltip(`
+                        <div style="min-width:180px; font-family:var(--font-main);">
+                            <div style="font-weight:900; font-size:0.75rem; color:#22c55e; margin-bottom:5px; display:flex; align-items:center; gap:4px;">
+                                🏠 ${name}
+                            </div>
+                            <div style="font-size:0.6rem; color:#cbd5e1; line-height:1.3;"><b>Dirección:</b> ${address}</div>
+                            ${sector ? `<div style="font-size:0.6rem; color:#cbd5e1; margin-top:2px;"><b>Sector:</b> ${sector}</div>` : ''}
+                        </div>
+                    `, {
+                        direction: 'top',
+                        className: 'premium-leaflet-tooltip',
+                        opacity: 0.98
+                    });
+
+                    window._staffHomeMarkers.push({ name, lat: jitterLat, lon: jitterLon, marker });
+
+                    // Actualizar el botón VER en la lista lateral
+                    const btn = document.getElementById(`home-btn-${name.replace(/\s/g,'_')}`);
+                    if (btn) {
+                        btn.onclick = () => { 
+                            map.setView([jitterLat, jitterLon], 16); 
+                            marker.openTooltip(); 
+                        };
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }
+                }
+
+                async function geocodeAddress(address, name, sector) {
+                    if (!address) return;
+
+                    const queriesToTry = [];
+                    
+                    // 1. Limpieza de la dirección para optimizar Nominatim
+                    let cleanedAddr = address
+                        .replace(/Edif\.\s+[^,]+/gi, '')
+                        .replace(/Edificio\s+[^,]+/gi, '')
+                        .replace(/Res\.\s+[^,]+/gi, '')
+                        .replace(/Residencias\s+[^,]+/gi, '')
+                        .replace(/Bloque\s+\d+/gi, '')
+                        .replace(/Casa\s+["']?[a-zA-Z0-9_-]+["']?/gi, '')
+                        .replace(/Casa\s+\d+/gi, '')
+                        .replace(/Piso\s+\d+/gi, '')
+                        .replace(/Apto\.\s+\d+/gi, '')
+                        .replace(/Apto\s+\d+/gi, '')
+                        .replace(/Apartamento\s+\d+/gi, '')
+                        .replace(/Local\s+\d+/gi, '')
+                        .replace(/Km\s+\d+/gi, '')
+                        .replace(/#/gi, '')
+                        .replace(/,\s*,+/g, ',')
+                        .trim();
+                    
+                    cleanedAddr = cleanedAddr.replace(/^,|,$/g, '').trim();
+
+                    // Query 1: Dirección limpia completa + Sector + Venezuela
+                    if (cleanedAddr && cleanedAddr.length > 5) {
+                        queriesToTry.push(`${cleanedAddr}, ${sector || ''}, Venezuela`);
+                        queriesToTry.push(`${cleanedAddr}, Venezuela`);
+                    }
+
+                    // Query 2: Si tiene comas, intentar con la última parte útil de la dirección (suele ser calle + sector)
+                    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+                    if (parts.length > 1) {
+                        const lastPart = parts[parts.length - 1];
+                        const prevPart = parts[parts.length - 2];
+                        queriesToTry.push(`${prevPart}, ${lastPart}, Venezuela`);
+                    }
+
+                    // Query 3: Sector + Caracas, Venezuela (o Sector + Venezuela)
+                    if (sector) {
+                        const sec = sector.trim();
+                        if (sec.toLowerCase().includes('teques') || sec.toLowerCase().includes('guaira') || sec.toLowerCase().includes('catia')) {
+                            queriesToTry.push(`${sec}, Venezuela`);
+                        } else {
+                            queriesToTry.push(`${sec}, Caracas, Venezuela`);
+                            queriesToTry.push(`${sec}, Venezuela`);
+                        }
+                    }
+
+                    // Realizar intentos de geocodificación
+                    let data = null;
+
+                    for (let q of queriesToTry) {
+                        q = q.replace(/,\s*,+/g, ',').trim();
+                        try {
+                            const queryUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`;
+                            const r = await fetch(queryUrl, {
+                                headers: { 'Accept-Language': 'es', 'User-Agent': 'GrupoEyeStaff/1.0' }
+                            });
+                            const res = await r.json();
+                            if (res && res[0]) {
+                                data = res[0];
+                                break;
+                            }
+                        } catch (err) {
+                            console.warn(`Error buscando query "${q}":`, err);
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+
+                    if (data) {
+                        const lat = parseFloat(data.lat);
+                        const lon = parseFloat(data.lon);
+                        
+                        // Guardar en caché
+                        try {
+                            const cached = JSON.parse(localStorage.getItem('_staffHomeCoordinates') || '{}');
+                            cached[address] = { lat, lon };
+                            localStorage.setItem('_staffHomeCoordinates', JSON.stringify(cached));
+                        } catch (e) { console.error('Error guardando en caché:', e); }
+                        
+                        // Agregar marcador a la UI
+                        addHomeMarker(lat, lon, name, address, sector);
+                    } else {
+                        console.warn(`No se pudo geocodificar dirección para ${name}: "${address}"`);
+                    }
+                }
+
+                // Cargar personal activo para geocodificar
+                try {
+                    const staffRes = await apiFetch('/api/staff');
+                    const allStaff = (staffRes.staff || []);
+
+                    
+                    // Cargar caché local
+                    let cachedCoords = {};
+                    try {
+                        cachedCoords = JSON.parse(localStorage.getItem('_staffHomeCoordinates') || '{}');
+                    } catch(e) {}
+
+                    // Agregar sección DOMICILIOS al panel lateral
+                    const sidePanel = document.querySelector('.tracking-grid > div:last-child');
+                    if (sidePanel) {
+                        
+                        // --- INICIO PERSONAL CONECTADO EN EL CHAT ---
+                        const chatDiv = document.createElement('div');
+                        chatDiv.className = 'vehicle-card';
+                        chatDiv.id = 'panel-personal-conectado';
+                        chatDiv.style.cssText = 'padding:12px; border-radius:15px; background:rgba(251, 191, 36, 0.05); border:1px solid rgba(251, 191, 36, 0.2); margin-bottom:10px;';
+                        
+                        function renderChatDiv() {
+                            let onlineUsers = typeof window.getOnlineChatUsers === 'function' ? window.getOnlineChatUsers() : [];
+                            const cu = JSON.parse(localStorage.getItem('user') || '{}');
+                            
+                            if (cu && cu.id) {
+                                onlineUsers = onlineUsers.filter(u => u && u.id != cu.id);
+                                onlineUsers.unshift(cu);
+                            }
+                            onlineUsers = onlineUsers.filter(u => u && u.name);
+                            
+                            let totalSessions = 0;
+                            onlineUsers.forEach(u => totalSessions += (u.active_sessions || 1));
+                            
+                            const userIconUrl = '/user_icon.png';
+                            
+                            chatDiv.innerHTML = `
+                                <h3 style="font-size:0.75rem; color:#fbbf24; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('personal-conectado-content'); const icon = document.getElementById('personal-conectado-icon'); if(content.style.display==='none'){content.style.display='flex'; icon.textContent='▲';}else{content.style.display='none'; icon.textContent='▼';}">
+                                    <span style="display:flex; align-items:center; gap:8px;">
+                                        <img src="${userIconUrl}" style="width:18px; height:18px; filter: invert(0.8) sepia(1) saturate(3) hue-rotate(350deg);">
+                                        PERSONAL CONECTADO
+                                    </span>
+                                    <div>
+                                        <span style="font-size:0.6rem; background:#fbbf24; color:#000; padding:2px 8px; border-radius:10px; margin-right:5px; font-weight:bold;">${totalSessions}</span>
+                                        <span id="personal-conectado-icon" style="color:#fbbf24;">▲</span>
+                                    </div>
+                                </h3>
+                                <div id="personal-conectado-content" style="display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto; padding-right:5px;">
+                                    ${onlineUsers.length === 0 ? '<div style="font-size:0.6rem;color:var(--muted);text-align:center;">NADIE CONECTADO AHORA</div>' :
+                                        onlineUsers.map(u => {
+                                            const isMe = cu && u.id == cu.id;
+                                            const sessionsText = u.active_sessions > 1 ? ' (' + u.active_sessions + ')' : '';
+                                            return '<div style="display:flex; align-items:center; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); gap:8px;">' +
+                                                '<span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; box-shadow:0 0 5px #fbbf24;"></span>' +
+                                                '<div style="font-size:0.7rem; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">' + u.name + (isMe ? ' (Tú)' : '') + sessionsText + '</div>' +
+                                            '</div>';
+                                        }).join('')
+                                    }
+                                </div>
+                            `;
+                        }
+                        renderChatDiv();
+                        // Actualizar panel cada 10 segundos
+                        const chatInterval = setInterval(() => {
+                            if (!document.getElementById('panel-personal-conectado')) clearInterval(chatInterval);
+                            else renderChatDiv();
+                        }, 10000);
+                        // La inserción se hará después de domDiv
+                        // --- FIN PERSONAL CONECTADO EN EL CHAT ---
+
+                        const domDiv = document.createElement('div');
+                        domDiv.className = 'vehicle-card';
+                        domDiv.style.cssText = 'padding:12px; border-radius:15px; background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2);';
+                        domDiv.innerHTML = `
+                            <h3 style="font-size:0.75rem; color:#22c55e; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const content = document.getElementById('domicilios-content'); const icon = document.getElementById('domicilios-icon'); if(content.style.display==='none'){content.style.display='block'; icon.textContent='▲';}else{content.style.display='none'; icon.textContent='▼';}">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <input type="checkbox" id="cb-home" onchange="if(window.toggleMapLayer) window.toggleMapLayer('home', this.checked)" style="accent-color:#22c55e; width:14px; height:14px; cursor:pointer;" onclick="event.stopPropagation()">
+                                    <span>🏠 DOMICILIOS DEL PERSONAL</span>
+                                </div>
+                                <div>
+                                    <span style="font-size:0.6rem; background:#22c55e; color:white; padding:2px 8px; border-radius:10px; margin-right:5px;">${allStaff.length}</span>
+                                    <span id="domicilios-icon">▼</span>
+                                </div>
+                            </h3>
+                            <div id="domicilios-content" style="display:none;">
+                            <div style="position:relative; margin-bottom:12px;">
+                                <input type="text" id="staff-home-search" placeholder="Buscar empleado o sector..." 
+                                    style="width:100%; padding:8px 12px 8px 30px; font-size:0.65rem; color:#fff; background:rgba(255,255,255,0.03); border:1px solid rgba(34,197,94,0.15); border-radius:10px; outline:none; transition:all 0.3s ease; box-sizing:border-box;"
+                                    onfocus="this.style.border='1px solid #22c55e'; this.style.background='rgba(255,255,255,0.06)'; this.style.boxShadow='0 0 8px rgba(34,197,94,0.2)';"
+                                    onblur="this.style.border='1px solid rgba(34,197,94,0.15)'; this.style.background='rgba(255,255,255,0.03)'; this.style.boxShadow='none';" />
+                                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:0.65rem; color:rgba(34,197,94,0.6); pointer-events:none;">🔍</span>
+                            </div>
+                            <div id="staff-home-list" style="display:flex; flex-direction:column; gap:6px; max-height:150px; overflow-y:auto; padding-right:5px;">
+                                ${allStaff.length === 0 ? '<div style="font-size:0.6rem;color:var(--muted);text-align:center;">SIN DIRECCIONES REGISTRADAS</div>' :
+                                    allStaff.map(s => {
+                                        const cleanSearchText = `${s.name} ${s.address} ${s.sector || ''}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                        return `
+                                            <div class="staff-home-row" data-search-text="${cleanSearchText}" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); gap:8px; transition:all 0.2s ease;">
+                                                <div style="min-width:0;">
+                                                    <div style="font-size:0.7rem; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div>
+                                                    <div style="font-size:0.55rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.address ? s.address : 'SIN DIRECCIÓN REGISTRADA'}</div>
+                                                </div>
+                                                <button id="home-btn-${s.name.replace(/\s/g,'_')}" class="btn btn-sm" disabled style="padding:4px 8px; font-size:0.6rem; border-radius:6px; background:#22c55e; color:#fff; opacity:0.4; flex-shrink:0;">VER</button>
+                                            </div>
+                                        `;
+                                    }).join('')
+                                }
+                            </div>
+                            <div id="geocoding-status-indicator" style="font-size:0.55rem; color:var(--muted); margin-top:10px; text-align:center;">📍 Procesando direcciones...</div>
+                            </div>
+                        `;
+                        const liveGpsCard = document.getElementById('live-gps-card');
+                        if (liveGpsCard) {
+                            sidePanel.insertBefore(chatDiv, liveGpsCard);
+                        } else {
+                            sidePanel.insertBefore(chatDiv, sidePanel.firstChild);
+                        }
+                        sidePanel.appendChild(domDiv);
+
+                        // Intentar activar domicilios si live-locations ya resolvió sin vivos
+                        window.tryActivateHomeLayer();
+
+                        // Inicializar el filtro de búsqueda interactivo en tiempo real
+                        const searchInput = domDiv.querySelector('#staff-home-search');
+                        searchInput.addEventListener('input', (e) => {
+                            const term = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                            const rows = domDiv.querySelectorAll('.staff-home-row');
+                            let visibleCount = 0;
+                            rows.forEach(row => {
+                                const searchText = row.getAttribute('data-search-text') || '';
+                                if (searchText.includes(term)) {
+                                    row.style.display = 'flex';
+                                    visibleCount++;
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+                            
+                            // Actualizar dinámicamente el badge de cantidad del personal visible
+                            const badge = domDiv.querySelector('h3 span');
+                            if (badge) {
+                                badge.textContent = visibleCount;
+                            }
+                        });
+                    }
+
+                    // Procesar domicilios con caché o geocodificación instantánea por sector
+                    let uncachedCount = 0;
+                    for (let i = 0; i < allStaff.length; i++) {
+                        const s = allStaff[i];
+                        if (!s.address) continue;
+                        
+                        const addressKey = s.address;
+                        const sectorKey = (s.sector || '').trim().toLowerCase();
+                        
+                        // 1. Intentar desde la caché del navegador
+                        if (cachedCoords[addressKey]) {
+                            const { lat, lon } = cachedCoords[addressKey];
+                            addHomeMarker(lat, lon, s.name, s.address, s.sector);
+                        } 
+                        // 2. Intentar buscar en el diccionario estático de sectores (coincidencia parcial/completa)
+                        else {
+                            let mappedCoords = null;
+                            for (const [key, coords] of Object.entries(sectorCoordinates)) {
+                                if (sectorKey.includes(key) || key.includes(sectorKey)) {
+                                    mappedCoords = coords;
+                                    break;
+                                }
+                            }
+                            
+                            if (mappedCoords) {
+                                const [lat, lon] = mappedCoords;
+                                // Guardar en caché del navegador para consultas futuras instantáneas
+                                cachedCoords[addressKey] = { lat, lon };
+                                localStorage.setItem('_staffHomeCoordinates', JSON.stringify(cachedCoords));
+                                addHomeMarker(lat, lon, s.name, s.address, s.sector);
+                            } 
+                            // 3. Fallback: Consultar Nominatim con delay progresivo
+                            else {
+                                const currentUncachedIndex = uncachedCount;
+                                uncachedCount++;
+                                setTimeout(() => {
+                                    geocodeAddress(s.address, s.name, s.sector);
+                                }, currentUncachedIndex * 1200);
+                            }
+                        }
+                    }
+
+                    // Ajustar vista del mapa a los domicilios si no hay ubicaciones en vivo
+                    setTimeout(() => {
+                        const hasLiveLoc = window._prevLiveCount && window._prevLiveCount > 0;
+                        if (!hasLiveLoc && window.homeMarkersLayer) {
+                            const bounds = new L.LatLngBounds();
+                            let hasMarkers = false;
+                            window.homeMarkersLayer.eachLayer(m => {
+                                if (m.getLatLng) { bounds.extend(m.getLatLng()); hasMarkers = true; }
+                            });
+                            if (hasMarkers && window.leafletMap) {
+                                window.leafletMap.flyToBounds(bounds.pad(0.15), { duration: 1.2 });
+                            }
+                        }
+                    }, 800);
+
+                    // Ocultar o actualizar indicador si todo está en caché
+                    setTimeout(() => {
+                        const statusInd = document.getElementById('geocoding-status-indicator');
+                        if (statusInd) {
+                            if (uncachedCount === 0) {
+                                statusInd.innerHTML = '✅ Todos los domicilios cargados y posicionados';
+                            } else {
+                                statusInd.innerHTML = `📍 Geocodificando ${uncachedCount} nuevas direcciones...`;
+                            }
+                        }
+                    }, 1500);
+
+                } catch(e) { console.warn('Error cargando domicilios:', e); }
+
+            }, 100);
+
+
+        } catch (e) {
+            toast('❌ ERROR AL CARGAR MAPA: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.centerMapOn = function(lat, lon) {
+        if (window.leafletMap) {
+            window.leafletMap.setView([lat, lon], 17);
+        }
+    }
+
+    window.showAddAssetForm = async function() {
+        const name = prompt('NOMBRE DEL EQUIPO (EJ. RADIO #04):');
+        if (!name) return;
+        const type = prompt('TIPO (EQUIPMENT, VEHICLE, OTHER):', 'equipment');
+        if (!type) return;
+
+        showLoading('REGISTRANDO EQUIPO...');
+        try {
+            await apiFetch('/api/admin/assets', {
+                method: 'POST',
+                body: JSON.stringify({ name, type })
+            });
+            toast('✅ EQUIPO REGISTRADO EXITOSAMENTE', 'success');
+            renderGeolocalizacion(document.getElementById('current-view'));
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // --- MODAL EDICIÓN FICHA EMPLEADO ---
+    async function openStaffEditModal(id) {
+        const u = fullStaffData.find(x => x.id === id);
+        if (!u) return;
+
+        document.getElementById('edit-staff-id').value = u.id;
+        document.getElementById('edit-staff-name').value = u.name;
+        document.getElementById('edit-staff-active').value = u.is_active;
+        document.getElementById('edit-staff-eye-id').value = u.eye_id || '';
+        document.getElementById('edit-staff-profile-admin').value = u.profile_admin || 'NO APLICA';
+        document.getElementById('edit-staff-profile-opera').value = u.profile_opera || 'LOGÍSTICA';
+        document.getElementById('edit-staff-cedula').value = u.cedula ? u.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
+        document.getElementById('edit-staff-phone').value = formatPhone(u.phone);
+        document.getElementById('edit-staff-email').value = u.email || '';
+        document.getElementById('edit-staff-birth-date').value = u.birth_date || '';
+        document.getElementById('edit-staff-address').value = u.address || '';
+        document.getElementById('edit-staff-sector').value = u.sector || '';
+        document.getElementById('edit-staff-bank').value = u.bank_name || '';
+        document.getElementById('edit-staff-account').value = u.bank_account || '';
+        document.getElementById('edit-staff-pago-movil').checked = !!u.pago_movil;
+        if(document.getElementById('edit-staff-pago-movil-phone')) document.getElementById('edit-staff-pago-movil-phone').value = u.pago_movil_phone || '';
+        // document.getElementById('edit-staff-bank').disabled is no longer manipulated based on pago_movil
+        document.getElementById('edit-staff-account').disabled = !!u.pago_movil;
+        document.getElementById('edit-staff-e-contact').value = u.emergency_contact || '';
+        document.getElementById('edit-staff-e-phone').value = u.emergency_phone || '';
+        document.getElementById('edit-staff-allergies').value = u.is_allergic || '';
+
+        document.getElementById('edit-staff-chofer').checked = !!u.is_chofer;
+        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
+
+        // Calcular edad
+        const age = calculateAge(u.birth_date);
+        const valSpan = document.getElementById('edit-staff-age-val');
+        valSpan.textContent = age !== null ? age : '--';
+        
+        const iconSpan = document.getElementById('edit-staff-age-icon');
+        if (iconSpan) {
+            if (age !== null && age < 18) {
+                iconSpan.classList.add('blink-red-icon');
+                valSpan.style.color = '#ff4d4d';
+            } else {
+                iconSpan.classList.remove('blink-red-icon');
+                valSpan.style.color = 'var(--success)';
+            }
+        }
+
+        const modal = document.getElementById('staff-edit-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+    }
+
+    function closeStaffEditModal() {
+        const modal = document.getElementById('staff-edit-modal');
+        modal.classList.remove('open');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    async function saveStaffEdit() {
+        const id = document.getElementById('edit-staff-id').value;
+        const name = document.getElementById('edit-staff-name').value.trim();
+        const cedula = document.getElementById('edit-staff-cedula').value.trim();
+        const email = document.getElementById('edit-staff-email').value.trim();
+        const birthDate = document.getElementById('edit-staff-birth-date').value;
+        const eyeId = document.getElementById('edit-staff-eye-id').value;
+        const profileAdmin = document.getElementById('edit-staff-profile-admin').value;
+        const profileOpera = document.getElementById('edit-staff-profile-opera').value;
+        const phone = document.getElementById('edit-staff-phone').value.trim();
+        const address = document.getElementById('edit-staff-address').value.trim();
+        const sector = document.getElementById('edit-staff-sector').value.trim();
+        const bankName = document.getElementById('edit-staff-bank').value;
+        const bankAccount = document.getElementById('edit-staff-account').value.trim();
+        const pagoMovil = document.getElementById('edit-staff-pago-movil').checked ? 1 : 0;
+        const pagoMovilPhone = document.getElementById('edit-staff-pago-movil-phone')?.value.trim() || '';
+        const eContact = document.getElementById('edit-staff-e-contact').value.trim();
+        const ePhone = document.getElementById('edit-staff-e-phone').value.trim();
+        const allergies = document.getElementById('edit-staff-allergies').value.trim();
+
+        if (!name || !cedula || !email || !birthDate || !eyeId || !profileAdmin || !profileOpera || !phone || !address || !sector || !bankName) {
+            return toast('TODOS LOS CAMPOS PRINCIPALES SON OBLIGATORIOS', 'warning');
+        }
+
+        const updates = {
+            name: name,
+            is_active: parseInt(document.getElementById('edit-staff-active').value),
+            eye_id: eyeId,
+            profile_admin: profileAdmin,
+            profile_opera: profileOpera,
+            cedula: cedula.replace(/\./g, ''),
+            phone: phone.replace(/-/g, ''),
+            email: email,
+            birth_date: birthDate,
+            address: address,
+            sector: sector,
+            bank_name: bankName,
+            bank_account: bankAccount,
+            pago_movil: pagoMovil,
+            pago_movil_phone: pagoMovilPhone,
+            emergency_contact: eContact,
+            emergency_phone: ePhone,
+            is_allergic: allergies,
+            is_chofer: document.getElementById('edit-staff-chofer')?.checked ? 1 : 0
+        };
+
+        const fileInput = document.getElementById('edit-staff-carnet');
+        if (fileInput.files && fileInput.files[0]) {
+            showLoading('SUBIENDO FOTO...');
+            const file = fileInput.files[0];
+            const base64 = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            try {
+                const uploadRes = await apiFetch(`/api/staff/${id}/photo`, {
+                    method: 'POST',
+                    body: JSON.stringify({ image: base64 })
+                });
+                if (uploadRes && uploadRes.url) {
+                    updates.carnet_url = uploadRes.url;
+                }
+            } catch (e) {
+                console.error('Error subiendo foto:', e);
+            }
+        }
+
+        showLoading('GUARDANDO CAMBIOS...');
+        const res = await apiFetch('/api/staff/update-bulk', {
+            method: 'POST',
+            body: JSON.stringify({ id, updates })
+        });
+
+        // Upload 5 documents if files were selected
+        if (res && res.success) {
+            const docUploads = [
+                { inputId: 'edit-staff-doc-cedula',  docType: 'cedula_photo_url' },
+                { inputId: 'edit-staff-doc-lic2',    docType: 'licencia_photo_url' },
+                { inputId: 'edit-staff-doc-cert2',   docType: 'certificado_medico_url' },
+                { inputId: 'edit-staff-doc-lic3',    docType: 'licencia_3ra_photo_url' },
+                { inputId: 'edit-staff-doc-cert3',   docType: 'certificado_medico_3ra_url' }
+            ];
+
+            for (const doc of docUploads) {
+                const fileInput = document.getElementById(doc.inputId);
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    showLoading('SUBIENDO DOCUMENTOS...');
+                    const file = fileInput.files[0];
+                    const base64 = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                    try {
+                        await apiFetch(`/api/staff/${id}/document`, {
+                            method: 'POST',
+                            body: JSON.stringify({ document_type: doc.docType, image: base64 })
+                        });
+                    } catch(e) {
+                        console.error('Error subiendo documento ' + doc.docType + ':', e);
+                    }
+                }
+            }
+        }
+
+        hideLoading();
+
+        if (res && res.success) {
+            toast('FICHA ACTUALIZADA', 'success');
+            closeStaffEditModal();
+            // Limpiar búsqueda y recargar
+            const searchInput = document.getElementById('staff-search-input');
+            if (searchInput) searchInput.value = '';
+            await loadStaffList();
+            document.getElementById('staff-list-container').style.display = 'block';
+        }
+    }
+
+    async function deleteCurrentStaff() {
+        const id = document.getElementById('edit-staff-id').value;
+        const name = document.getElementById('edit-staff-name').value.trim();
+        
+        if (!id) {
+            toast('NO SE DETECTÓ ID DE EMPLEADO', 'error');
+            return;
+        }
+
+        // Alerta de Verificación 1
+        if (!confirm(`⚠️ CONTROL DE SEGURIDAD ⚠️\n\n¿Está completamente seguro de que desea ELIMINAR el registro de:\n"${name.toUpperCase()}"?\n\nEsta acción es irreversible.`)) {
+            return;
+        }
+
+        // Alerta de Verificación 2: Tipo de Borrado
+        const force = confirm(`⚙️ TIPO DE DEPURACIÓN ⚙️\n\nPresione ACEPTAR para una "Depuración Completa" (borrará físicamente al empleado y TODO su historial de eventos, nóminas y logs de auditoría de la base de datos).\n\nPresione CANCELAR para una "Baja Segura" (borrará al empleado físicamente de no tener historial, o lo desactivará y depurará para preservar la integridad de reportes pasados).`);
+
+        showLoading('ELIMINANDO REGISTRO...');
+        try {
+            const url = `/api/staff/${id}` + (force ? '?force=true' : '');
+            const res = await apiFetch(url, {
+                method: 'DELETE'
+            });
+            hideLoading();
+
+            if (res && res.success) {
+                toast('REGISTRO ELIMINADO', 'success');
+                alert(`✅ PROCESO COMPLETADO\n\nEl empleado "${name.toUpperCase()}" ha sido procesado con éxito:\n\n${res.message || 'Registro eliminado.'}`);
+                closeStaffEditModal();
+                
+                // Recargar listados
+                const searchInput = document.getElementById('staff-search-input');
+                if (searchInput) searchInput.value = '';
+                await loadStaffList();
+                document.getElementById('staff-list-container').style.display = 'block';
+            } else {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const isAdmin = user.role === 'director' || user.role === 'supervisor';
+                const errorMsg = (res && res.error) ? res.error : (isAdmin ? 'Error en el servidor al procesar la eliminación. Verifique dependencias o logs.' : 'No tiene permisos para realizar esta acción (Usuario Invitado / Solo Lectura).');
+                throw new Error(errorMsg);
+            }
+        } catch(e) {
+            hideLoading();
+            toast('❌ ERROR AL ELIMINAR', 'error');
+            alert('Error: ' + e.message);
+        }
+    }
+
+    window.openStaffEditModal = openStaffEditModal;
+    window.closeStaffEditModal = closeStaffEditModal;
+    window.saveStaffEdit = saveStaffEdit;
+    window.deleteCurrentStaff = deleteCurrentStaff;
+
+    // ── WHATSAPP CLICK-TO-CHAT: Chat directo con empleado ──
+    window.openDirectTelegram = function(phone, name) {
+        if (!phone) {
+            toast('⚠️ ' + name + ' no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const msg = `Hola ${name}, te contactamos desde EYE STAFF.`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+        toast('✅ Abriendo Telegram con ' + name, 'success');
+    };
+
+    window.openWhatsappDirectMessage = function(phone, userName) {
+        if (!phone) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sin teléfono',
+                    text: `⚠️ ${userName} no tiene un número de teléfono registrado.`
+                });
+            } else {
+                alert(`⚠️ ${userName} no tiene un número de teléfono registrado.`);
+            }
+            return;
+        }
+        let cleanPhone = phone.replace(/[^\d+]/g, '');
+        if (cleanPhone.startsWith('+')) {
+            cleanPhone = cleanPhone.substring(1);
+        } else if (cleanPhone.startsWith('0')) {
+            cleanPhone = '58' + cleanPhone.substring(1);
+        } else if (cleanPhone.length <= 10) {
+            cleanPhone = '58' + cleanPhone;
+        }
+        
+        const url = `whatsapp://send?phone=${cleanPhone}`;
+        window.location.href = url;
+    };
+
+    window.openTelegramDirectMessage = async function(userId, userName, hasTelegram) {
+        if (!hasTelegram || hasTelegram === 'false' || hasTelegram === 'null' || hasTelegram === '0') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No vinculado',
+                text: `⚠️ ${userName} no ha vinculado su cuenta de Telegram. Por favor indícale que ingrese a eye-staff.app y haga clic en el botón azul de CHAT para vincularse.`
+            });
+            return;
+        }
+
+        const { value: text } = await Swal.fire({
+            title: `Mensaje a ${userName}`,
+            input: 'textarea',
+            inputLabel: 'Escribe el mensaje oficial:',
+            inputPlaceholder: 'Escribe aquí tu mensaje...',
+            showCancelButton: true,
+            confirmButtonText: 'Enviar 💬',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#28A8E9'
+        });
+
+        if (text) {
+            try {
+                toast('Enviando mensaje...', 'info');
+                const data = await apiFetch('/api/telegram/send-direct', {
+                    method: 'POST',
+                    body: JSON.stringify({ targetUserId: userId, message: text })
+                });
+                if (data && data.success) {
+                    toast('✅ Mensaje enviado a ' + userName, 'success');
+                } else if (data && data.error) {
+                    Swal.fire('Error', data.error, 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Error de red al enviar', 'error');
+            }
+        }
+    };
+
+
+    // ── WHATSAPP CLICK-TO-CHAT: Enlace de convocatoria pre-redactado ──
+    window.openDirectConvocationLink = function(name, phone, sessionName, convocationTime, startTime, endTime, address) {
+        if (!phone) {
+            toast('⚠️ ' + name + ' no tiene teléfono registrado', 'warning');
+            return;
+        }
+        const cleanPhone = phone.replace(/\D/g, '');
+        const msg =
+            `📋 *CONVOCATORIA EYE STAFF*\n\n` +
+            `Hola *${name}*, tienes una asignación confirmada:\n\n` +
+            `🎯 *Evento:* ${sessionName}\n` +
+            `⏰ *Convocatoria:* ${convocationTime || 'Por confirmar'}\n` +
+            `🕐 *Inicio evento:* ${startTime || 'Por confirmar'}\n` +
+            `🏁 *Fin evento:* ${endTime || 'Por confirmar'}\n` +
+            `📍 *Dirección:* ${address || 'Por confirmar'}\n\n` +
+            `_Confirma tu asistencia respondiendo este mensaje._`;
+        const url = `https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+        toast('✅ Abriendo Telegram con convocatoria para ' + name, 'success');
+    };
+
+    // ── CALLMEBOT: Notificación automática vía servidor (requiere API Key del empleado) ──
+    window.triggerTelegramConvocation = async function(userId, name, sessionName, convocationTime, startTime, endTime, address) {
+        try {
+            showLoading('ENVIANDO POR TELEGRAM...');
+            const msg = `📢 *CONVOCATORIA*\nHola ${name}, estás convocado/a:\n\n🎫 *Evento:* ${sessionName}\n🕒 *Cita:* ${convocationTime || startTime}\n🏁 *Fin est.:* ${endTime || 'N/A'}\n📍 *Lugar:* ${address || 'No especificada'}`;
+            const res = await apiFetch('/api/telegram/send-direct', {
+                method: 'POST',
+                body: JSON.stringify({ targetUserId: userId, message: msg })
+            });
+            hideLoading();
+            if (res && res.success) {
+                toast('✅ Telegram enviado a ' + name, 'success');
+            } else {
+                // Fallback a Click-to-Chat si no tiene API Key
+                const staffData = fullStaffData ? fullStaffData.find(u => u.id === userId) : null;
+                if (staffData && staffData.phone) {
+                    toast('⚠️ Sin Telegram — Abriendo manual para ' + name, 'warning');
+                    window.openDirectConvocationLink(name, staffData.phone, sessionName, convocationTime, startTime, endTime, address);
+                } else {
+                    toast('❌ ' + (res && res.error ? res.error : 'Error al enviar por Telegram'), 'error');
+                }
+            }
+        } catch(e) {
+            hideLoading();
+            toast('❌ Error al enviar: ' + e.message, 'error');
+        }
+    };
+
+    // ==========================================
+    // MENSAJERÍA DESACTIVADA POR REFACTORIZACIÓN
+    window.previewEditCarnet = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) { document.getElementById('edit-carnet-img').src = e.target.result; };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    window.openChangePinModal = function() {
+        document.getElementById('pin-actual').value = '';
+        document.getElementById('pin-nuevo').value = '';
+        document.getElementById('pin-confirmar').value = '';
+        const modal = document.getElementById('change-pin-modal');
+        modal.style.display = 'flex';
+    }
+
+    window.closeChangePinModal = function() {
+        document.getElementById('change-pin-modal').style.display = 'none';
+    }
+
+    window.saveNewPin = async function() {
+        const pinActual = document.getElementById('pin-actual').value.trim().toLowerCase();
+        const pinNuevo = document.getElementById('pin-nuevo').value.trim().toLowerCase();
+        const pinConfirmar = document.getElementById('pin-confirmar').value.trim().toLowerCase();
+
+        if (!pinActual || !pinNuevo || !pinConfirmar) {
+            return toast('⚠️ TODOS LOS CAMPOS SON OBLIGATORIOS', 'warning');
+        }
+        if (pinNuevo !== pinConfirmar) {
+            return toast('⚠️ LOS PINES NUEVOS NO COINCIDEN', 'warning');
+        }
+
+        showLoading('ACTUALIZANDO PIN...');
+        try {
+            const res = await apiFetch('/api/auth/change-pin', {
+                method: 'POST',
+                body: JSON.stringify({
+                    current_pin: pinActual,
+                    new_pin: pinNuevo
+                })
+            });
+            if (res && res.success) {
+                toast('✅ PIN ACTUALIZADO CON ÉXITO. Inicia sesión nuevamente.', 'success');
+                setTimeout(() => {
+                    logout();
+                }, 2000);
+            } else {
+                throw new Error(res.error || 'Error al actualizar el PIN');
+            }
+        } catch (e) {
+            toast('❌ ERROR: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    let pinQueryConsoleStaff = [];
+
+    window.openPinVerificationModal = function() {
+        document.getElementById('verification-admin-pin').value = '';
+        const modal = document.getElementById('pin-verification-modal');
+        modal.style.display = 'flex';
+    }
+
+    window.closePinVerificationModal = function() {
+        document.getElementById('pin-verification-modal').style.display = 'none';
+    }
+
+    window.closePinQueryConsoleModal = function() {
+        document.getElementById('pin-query-console-modal').style.display = 'none';
+    }
+
+    window.verifyAdminPinAndOpenConsole = async function() {
+        showLoading('CARGANDO CONSOLA DE PINES...');
+        try {
+            const res = await apiFetch('/api/admin/verify-pin-and-query', {
+                method: 'POST',
+                body: JSON.stringify({ admin_pin: 'bypass' })
+            });
+            if (res && res.success) {
+                // Cargar datos en grilla
+                pinQueryConsoleStaff = res.staff || [];
+                renderPinConsoleGrid(pinQueryConsoleStaff);
+                
+                // Reset buscador
+                document.getElementById('pin-console-search').value = '';
+                
+                // Mostrar consola modal
+                document.getElementById('pin-query-console-modal').style.display = 'flex';
+            } else {
+                throw new Error(res.error || 'Error de verificación');
+            }
+        } catch (e) {
+            toast('❌ CONTROL ACCESO: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function renderPinConsoleGrid(list) {
+        const tbody = document.getElementById('pin-query-tbody');
+        if (!tbody) return;
+        
+        if (list.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="padding:20px; text-align:center; color:var(--muted); font-weight:bold;">
+                        No se encontraron registros.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = list.map(u => {
+            const statusBadge = u.is_active 
+                ? '<span style="background:rgba(76,175,80,0.1); color:var(--success); padding:3px 8px; border-radius:6px; font-weight:bold; font-size:0.65rem;">ACTIVO</span>'
+                : '<span style="background:rgba(244,67,54,0.1); color:var(--danger); padding:3px 8px; border-radius:6px; font-weight:bold; font-size:0.65rem;">INACTIVO</span>';
+
+            return `
+                <tr class="pin-console-row" style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                    <td class="search-name" style="padding:10px 15px; font-weight:bold; color:#fff;">${u.name}</td>
+                    <td class="search-cedula" style="padding:10px 15px; color:var(--muted); font-weight:bold;">${u.cedula || '---'}</td>
+                    <td style="padding:10px 15px; color:#fff; font-weight:bold;">${u.eye_id || '---'}</td>
+                    <td style="padding:10px 15px; color:var(--muted);">${u.profile_admin || '---'} / ${u.profile_opera || '---'}</td>
+                    <td style="padding:10px 15px; text-align:center;">${statusBadge}</td>
+                    <td style="padding:10px 15px; text-align:center; font-family:monospace; font-weight:900; font-size:1.05rem; color:var(--warning); background:rgba(255,193,7,0.03);">${u.pin_hash || '---'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    window.filterPinConsoleGrid = function() {
+        const query = document.getElementById('pin-console-search').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.pin-console-row');
+        
+        rows.forEach(row => {
+            const name = row.querySelector('.search-name').textContent.toLowerCase();
+            const cedula = row.querySelector('.search-cedula').textContent.toLowerCase();
+            
+            if (name.includes(query) || cedula.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }

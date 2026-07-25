@@ -42,7 +42,6 @@
 
         .field { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; }
-        label::after { content: " *"; color: var(--accent); }
         
         input, textarea, select {
             width: 100%;
@@ -201,7 +200,13 @@
 
         <div class="card">
             <form id="apply-form">
-                <div style="font-size: 0.75rem; color: var(--accent); margin-bottom: 20px; font-weight: 600; letter-spacing: 1px; text-align: center;">* TODOS LOS CAMPOS SON OBLIGATORIOS</div>
+                <div style="font-size: 0.75rem; color: var(--accent); margin-bottom: 20px; font-weight: 600; letter-spacing: 1px; text-align: center;">* CAMPO OBLIGATORIO</div>
+                
+                <div class="field">
+                    <label>CÉDULA DE IDENTIDAD <span style="color:var(--danger);">*</span></label>
+                    <input type="text" id="cedula" required placeholder="EJ: 10456987" inputmode="numeric">
+                </div>
+
                 <div class="field">
                     <label>FOTO TIPO CARNET / PERFIL</label>
                     <div class="photo-upload" onclick="document.getElementById('photo-input').click()" id="photo-preview">
@@ -212,42 +217,170 @@
                     <input type="file" id="photo-input" hidden accept="image/*">
                 </div>
 
-                <div class="field">
-                    <label>NOMBRE COMPLETO</label>
-                    <input type="text" id="name" required placeholder="EJ: JUAN PÉREZ">
+                <div class="field" style="margin-top:30px; border-top:1px solid var(--border); padding-top:20px;">
+                    <h3 style="color:var(--accent); font-size:0.9rem; margin-bottom:15px; letter-spacing:1px;">DOCUMENTOS REQUERIDOS</h3>
+                    <label>FOTO CÉDULA DE IDENTIDAD</label>
+                    <div class="photo-upload" onclick="document.getElementById('cedula-photo').click()" id="cedula-preview">
+                        <i>📄</i>
+                        <span>TOCA PARA SUBIR FOTO/PDF</span>
+                        <img id="cedula-display" style="display:none">
+                    </div>
+                    <input type="file" id="cedula-photo" hidden accept="image/*,application/pdf">
+
+                    <label style="margin-top:10px;">¿POSEE LICENCIA DE CONDUCIR?</label>
+                    <select id="posee-licencia" style="margin-bottom: 15px;" onchange="toggleLicenciaSection()">
+                        <option value="">SELECCIONE...</option>
+                        <option value="SI">SÍ</option>
+                        <option value="NO">NO</option>
+                    </select>
+
+                    <div id="seccion-grados" style="display:none;">
+                        <label>GRADOS DE LICENCIA QUE POSEE</label>
+                        <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:15px;" id="grados-container">
+                        <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; font-size:0.8rem; color:#fff;"><input type="checkbox" value="Segunda" class="grado-check" onchange="toggleLicenciaDocs()"> Segunda <span id="badge-Segunda" style="display:none; color:var(--success); font-size:1rem;">✅</span></label>
+                        <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; font-size:0.8rem; color:#fff;"><input type="checkbox" value="Tercera" class="grado-check" onchange="toggleLicenciaDocs()"> Tercera <span id="badge-Tercera" style="display:none; color:var(--success); font-size:1rem;">✅</span></label>
+                        <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; font-size:0.8rem; color:#fff;"><input type="checkbox" value="Cuarta" class="grado-check" onchange="toggleLicenciaDocs()"> Cuarta <span id="badge-Cuarta" style="display:none; color:var(--success); font-size:1rem;">✅</span></label>
+                        <label style="display:flex; align-items:center; gap:5px; margin:0; text-transform:none; font-size:0.8rem; color:#fff;"><input type="checkbox" value="Quinta" class="grado-check" onchange="toggleLicenciaDocs()"> Quinta <span id="badge-Quinta" style="display:none; color:var(--success); font-size:1rem;">✅</span></label>
+                    </div>
+
+                    <div id="licencia-docs-container" style="display:none; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:15px;">
+                        <div id="docs-Segunda" style="display:none; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:15px;">
+                            <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">GRADO SEGUNDA</h4>
+                            <div style="display:flex; gap:15px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">LICENCIA</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('licencia-photo-segunda').click()">
+                                        <div id="preview-licencia-Segunda" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="licencia-photo-segunda" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-licencia-Segunda')">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">CERTIFICADO</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('certificado-photo-segunda').click()">
+                                        <div id="preview-certificado-Segunda" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="certificado-photo-segunda" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-certificado-Segunda')">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="docs-Tercera" style="display:none; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:15px;">
+                            <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">GRADO TERCERA</h4>
+                            <div style="display:flex; gap:15px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">LICENCIA</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('licencia-photo-tercera').click()">
+                                        <div id="preview-licencia-Tercera" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="licencia-photo-tercera" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-licencia-Tercera')">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">CERTIFICADO</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('certificado-photo-tercera').click()">
+                                        <div id="preview-certificado-Tercera" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="certificado-photo-tercera" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-certificado-Tercera')">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="docs-Cuarta" style="display:none; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:15px;">
+                            <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">GRADO CUARTA</h4>
+                            <div style="display:flex; gap:15px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">LICENCIA</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('licencia-photo-cuarta').click()">
+                                        <div id="preview-licencia-Cuarta" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="licencia-photo-cuarta" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-licencia-Cuarta')">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">CERTIFICADO</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('certificado-photo-cuarta').click()">
+                                        <div id="preview-certificado-Cuarta" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="certificado-photo-cuarta" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-certificado-Cuarta')">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="docs-Quinta" style="display:none; margin-bottom:15px; padding-bottom:15px;">
+                            <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">GRADO QUINTA</h4>
+                            <div style="display:flex; gap:15px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">LICENCIA</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('licencia-photo-quinta').click()">
+                                        <div id="preview-licencia-Quinta" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="licencia-photo-quinta" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-licencia-Quinta')">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:0.65rem;">CERTIFICADO</label>
+                                    <div style="border:2px dashed var(--border); padding:10px; border-radius:10px; cursor:pointer; background:var(--surface2);" onclick="document.getElementById('certificado-photo-quinta').click()">
+                                        <div id="preview-certificado-Quinta" style="display:flex; gap:10px; overflow-x:auto; min-height:60px; align-items:center; justify-content:center;">
+                                            <img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">
+                                        </div>
+                                        <div style="font-size:0.6rem; color:var(--info); margin-top:5px; text-align:center;">Haga clic para seleccionar</div>
+                                    </div>
+                                    <input type="file" multiple id="certificado-photo-quinta" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelectPreview(this, 'preview-certificado-Quinta')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
                 </div>
 
                 <div class="field">
-                    <label>CÉDULA DE IDENTIDAD</label>
-                    <input type="text" id="cedula" required placeholder="EJ: 10456987" inputmode="numeric">
+                    <label>NOMBRE COMPLETO</label>
+                    <input type="text" id="name" placeholder="EJ: JUAN PÉREZ">
                 </div>
 
                 <div class="field">
                     <label>CORREO ELECTRÓNICO</label>
-                    <input type="email" id="email" required placeholder="CORREO@EJEMPLO.COM">
+                    <input type="email" id="email" placeholder="CORREO@EJEMPLO.COM">
                 </div>
 
                 <div class="field">
                     <label>TELÉFONO DE CONTACTO</label>
-                    <input type="tel" id="phone" required placeholder="EJ: 04121234567">
+                    <input type="tel" id="phone" placeholder="EJ: 04121234567">
                 </div>
 
                 <div class="field">
                     <label>DIRECCIÓN DE HABITACIÓN</label>
-                    <textarea id="address" rows="3" required placeholder="AV. PRINCIPAL, EDIF..."></textarea>
+                    <textarea id="address" rows="3" placeholder="AV. PRINCIPAL, EDIF..."></textarea>
                 </div>
 
                 <div class="field">
                     <label>FECHA DE NACIMIENTO</label>
-                    <input type="date" id="birth_date" required>
+                    <input type="date" id="birth_date">
                 </div>
 
                 <div class="field">
                     <label>RESUMEN DE EXPERIENCIA</label>
-                    <textarea id="experience" rows="5" required placeholder="CUÉNTANOS BREVEMENTE TU EXPERIENCIA LABORAL..."></textarea>
+                    <textarea id="experience" rows="5" placeholder="CUÉNTANOS BREVEMENTE TU EXPERIENCIA LABORAL..."></textarea>
                 </div>
 
                 <button type="submit" class="btn" id="submit-btn">ENVIAR POSTULACIÓN</button>
+                <button type="button" class="btn" style="background: transparent; color: var(--muted); border: 1px solid var(--border); box-shadow: none; margin-top: 15px;" onclick="window.location.href='https://eye-staff.com'">← VOLVER</button>
             </form>
         </div>
 
@@ -285,6 +418,100 @@
             }
         }
 
+        function toggleLicenciaSection() {
+            const val = document.getElementById('posee-licencia').value;
+            const seccion = document.getElementById('seccion-grados');
+            if (val === 'SI') {
+                seccion.style.display = 'block';
+            } else {
+                seccion.style.display = 'none';
+                document.querySelectorAll('.grado-check').forEach(c => c.checked = false);
+                toggleLicenciaDocs();
+            }
+        }
+
+        function toggleLicenciaDocs() {
+            const checks = Array.from(document.querySelectorAll('.grado-check'));
+            const isChecked = checks.some(c => c.checked);
+            const container = document.getElementById('licencia-docs-container');
+            if (isChecked) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+            checks.forEach(c => {
+                const docDiv = document.getElementById('docs-' + c.value);
+                const licInput = document.getElementById('licencia-photo-' + c.value.toLowerCase());
+                const certInput = document.getElementById('certificado-photo-' + c.value.toLowerCase());
+                if (c.checked) {
+                    docDiv.style.display = 'block';
+                    licInput.required = false;
+                    certInput.required = false;
+                    if (typeof window.checkGradeCompletion === 'function') window.checkGradeCompletion(c.value);
+                } else {
+                    docDiv.style.display = 'none';
+                    licInput.required = false;
+                    certInput.required = false;
+                    licInput.value = '';
+                    certInput.value = '';
+                    const badge = document.getElementById('badge-' + c.value);
+                    if (badge) badge.style.display = 'none';
+                    const preLic = document.getElementById('preview-licencia-' + c.value);
+                    if (preLic) preLic.innerHTML = '<img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">';
+                    const preCert = document.getElementById('preview-certificado-' + c.value);
+                    if (preCert) preCert.innerHTML = '<img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">';
+                }
+            });
+        }
+        
+        function handleFileSelectPreview(input, previewDivId) {
+            const previewDiv = document.getElementById(previewDivId);
+            if(!previewDiv) return;
+            
+            if (input.files && input.files.length > 0) {
+                previewDiv.innerHTML = '';
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '50px';
+                        img.style.height = '50px';
+                        img.style.objectFit = 'contain';
+                        img.style.borderRadius = '8px';
+                        img.style.background = 'rgba(0,0,0,0.5)';
+                        img.style.border = '1px solid var(--border)';
+                        previewDiv.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewDiv.innerHTML = '<img src="/img/logo-eyestaff.png" style="width:50px; height:50px; object-fit:contain; opacity:0.3;">';
+            }
+            
+            setTimeout(() => {
+                if (typeof window.checkGradeCompletion === 'function' && previewDivId.includes('-')) {
+                    const parts = previewDivId.split('-');
+                    const grade = parts[parts.length - 1];
+                    window.checkGradeCompletion(grade);
+                }
+            }, 100);
+        }
+        
+        window.checkGradeCompletion = function(grade) {
+            const badgeId = 'badge-' + grade;
+            const previewLic = document.getElementById('preview-licencia-' + grade);
+            const previewCert = document.getElementById('preview-certificado-' + grade);
+            
+            const hasLic = (previewLic && previewLic.innerHTML && !previewLic.innerHTML.includes('logo-eyestaff.png'));
+            const hasCert = (previewCert && previewCert.innerHTML && !previewCert.innerHTML.includes('logo-eyestaff.png'));
+            
+            const badge = document.getElementById(badgeId);
+            if (badge) {
+                badge.style.display = (hasLic && hasCert) ? 'inline' : 'none';
+            }
+        };
+
         photoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -301,9 +528,66 @@
             }
         });
 
+        const cedulaInput = document.getElementById('cedula-photo');
+        const cedulaPreview = document.getElementById('cedula-preview');
+        const cedulaDisplay = document.getElementById('cedula-display');
+
+        cedulaInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.includes('pdf')) {
+                    cedulaDisplay.style.display = 'none';
+                    cedulaPreview.querySelector('i').textContent = '✅';
+                    cedulaPreview.querySelector('span').textContent = file.name;
+                    cedulaPreview.classList.add('filled');
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (re) => {
+                        cedulaDisplay.src = re.target.result;
+                        cedulaDisplay.style.display = 'block';
+                        cedulaPreview.classList.add('filled');
+                        cedulaPreview.querySelector('i').style.display = 'none';
+                        cedulaPreview.querySelector('span').style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
         document.getElementById('apply-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!photoBase64) return alert('POR FAVOR, SUBE UNA FOTO.');
+
+            const getBase64 = (file) => new Promise((resolve) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = (re) => resolve(re.target.result);
+                reader.readAsDataURL(file);
+            });
+
+            const getBase64Array = async (files) => {
+                if (!files || files.length === 0) return [];
+                const arr = [];
+                for (let i = 0; i < files.length; i++) {
+                    const b64 = await getBase64(files[i]);
+                    if (b64) arr.push(b64);
+                }
+                return arr;
+            };
+
+            const cedulaPhoto = document.getElementById('cedula-photo').files[0];
+            const poseeLicencia = document.getElementById('posee-licencia').value;
+            let licenciaMap = {};
+            let certificadoMap = {};
+            const checks = Array.from(document.querySelectorAll('.grado-check')).filter(c => c.checked);
+
+            for(let c of checks) {
+                let licFiles = document.getElementById('licencia-photo-' + c.value.toLowerCase()).files;
+                if(licFiles && licFiles.length > 0) licenciaMap[c.value] = await getBase64Array(licFiles);
+                let certFiles = document.getElementById('certificado-photo-' + c.value.toLowerCase()).files;
+                if(certFiles && certFiles.length > 0) certificadoMap[c.value] = await getBase64Array(certFiles);
+            }
+
+            const gradosSeleccionados = checks.map(c => c.value).join(', ');
 
             const data = {
                 name: document.getElementById('name').value,
@@ -313,7 +597,11 @@
                 address: document.getElementById('address').value,
                 birth_date: document.getElementById('birth_date').value,
                 experience: document.getElementById('experience').value,
-                photo: photoBase64
+                photo: photoBase64,
+                cedula_photo: await getBase64(cedulaPhoto),
+                licencia_map: licenciaMap,
+                certificado_map: certificadoMap,
+                licencia_grados: gradosSeleccionados
             };
 
             document.getElementById('loading-overlay').style.display = 'flex';

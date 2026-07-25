@@ -1,18 +1,34 @@
 
-            if (window.location.hostname.includes('staging') || window.location.hostname.includes('smart-group.workers.dev')) {
-                const lEye = document.getElementById('logo-eye-staff');
-                const lDev = document.getElementById('logo-desarrollo');
-                lDev.style.display = 'flex';
-                let showDev = false;
-                setInterval(() => {
-                    showDev = !showDev;
-                    if (showDev) {
-                        lEye.style.opacity = '0';
-                        setTimeout(() => lDev.style.opacity = '1', 600);
-                    } else {
-                        lDev.style.opacity = '0';
-                        setTimeout(() => lEye.style.opacity = '1', 600);
-                    }
-                }, 3000);
-            }
+    window.toggleReportFav = function(cardId) {
+        let favs = JSON.parse(localStorage.getItem('valet_report_favs') || '[]');
+        if (favs.includes(cardId)) {
+            favs = favs.filter(id => id !== cardId);
+        } else {
+            favs.push(cardId);
+        }
+        localStorage.setItem('valet_report_favs', JSON.stringify(favs));
+        if (window.applyReportFavs) window.applyReportFavs();
+    };
+
+    window.applyReportFavs = function() {
+        let favs = JSON.parse(localStorage.getItem('valet_report_favs') || '[]');
+        const container = document.getElementById('report-cards-grid');
+        if (!container) return;
         
+        const cards = Array.from(container.children);
+        cards.forEach((card, index) => {
+            const id = card.getAttribute('data-card-id');
+            if (!id) return;
+            
+            const favIndex = favs.indexOf(id);
+            if (favIndex !== -1) {
+                card.style.order = favIndex - favs.length; 
+                const icon = card.querySelector('.report-fav-btn');
+                if (icon) icon.textContent = '❤️';
+            } else {
+                card.style.order = index; 
+                const icon = card.querySelector('.report-fav-btn');
+                if (icon) icon.textContent = '🤍';
+            }
+        });
+    };

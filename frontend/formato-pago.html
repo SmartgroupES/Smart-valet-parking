@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FORMATO DE PAGO — EYE STAFF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #161b2c;
+            --accent: #10b981;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; background: var(--bg); color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 20px 10px;
+            text-transform: uppercase;
+        }
+
+        .container { width: 100%; max-width: 800px; }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo-text { font-weight: 800; font-size: 2.5rem; letter-spacing: -1px; }
+        .brand-eye { color: #ef4444; }
+        .brand-staff { color: #fff; }
+        .subtitle { color: var(--muted); font-size: 0.8rem; letter-spacing: 4px; margin-top: 10px; }
+
+        .card {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        .grid-header {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .grid-header { grid-template-columns: 1fr; }
+        }
+
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; }
+        label.required::after { content: " *"; color: var(--accent); }
+        
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+            outline: none;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .event-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+        .event-number {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 10px;
+        }
+        .event-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .event-grid-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 50px;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: end;
+        }
+        @media (max-width: 600px) {
+            .event-grid, .event-grid-row-2 { grid-template-columns: 1fr; gap: 10px; }
+            .event-grid-row-2 { margin-top: 10px; }
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .btn:hover { background: #059669; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-add {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border: 1px dashed var(--accent);
+            margin-bottom: 20px;
+        }
+        .btn-add:hover { background: rgba(16, 185, 129, 0.2); }
+
+        .btn-del {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-del:hover { background: rgba(239, 68, 68, 0.2); }
+
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(11, 15, 25, 0.9);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .success-msg {
+            display: none; text-align: center;
+            padding: 40px 20px;
+        }
+        .success-msg i { font-size: 4rem; color: var(--accent); display: block; margin-bottom: 20px; }
+
+        /* Estilo para simular recibo */
+        .receipt-header {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;
+            border-bottom: 2px dashed rgba(255,255,255,0.1); padding-bottom: 20px;
+        }
+        .correlativo-box {
+            background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; letter-spacing: 2px;">ENVIANDO FORMATO...</div>
+    </div>
+
+    <div class="container" id="form-container">
+        <div class="header">
+            <div class="logo-text">
+                <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
+            </div>
+            <div class="subtitle">HOJA DE EVENTOS DEL PERSONAL</div>
+        </div>
+
+        <div class="card">
+            <form id="payment-form">
+                
+                <div class="receipt-header">
+                    <div style="flex:1; display: flex; gap: 10px; align-items: flex-end;">
+                        <div class="field" style="margin:0; width:150px;">
+                            <label class="required">FECHA DE REPORTE</label>
+                            <input type="date" id="fecha" required>
+                        </div>
+                    </div>
+                    <div class="correlativo-box">
+                        <label style="margin:0 0 5px 0;">CORRELATIVO</label>
+                        <div style="font-size:1.2rem; font-weight:800; color:var(--accent); font-family:monospace;"># AUTO</div>
+                    </div>
+                </div>
+
+                <div class="grid-header">
+                    <div class="field">
+                        <label class="required">CÉDULA DE IDENTIDAD (SOLO LECTURA)</label>
+                        <input type="text" id="cedula" required placeholder="EJ: 10456987" inputmode="numeric" readonly style="background: rgba(255,255,255,0.02); color: var(--muted); cursor: not-allowed; opacity: 0.8;">
+                    </div>
+                    <div class="field">
+                        <label>NOMBRE COMPLETO (SOLO LECTURA)</label>
+                        <input type="text" id="nombre" placeholder="EJ: JUAN PÉREZ" readonly style="background: rgba(255,255,255,0.02); color: var(--muted); cursor: not-allowed; opacity: 0.8;">
+                    </div>
+                    <div class="field">
+                        <label>TELÉFONO CELULAR (SOLO LECTURA)</label>
+                        <input type="tel" id="telefono_celular" placeholder="EJ: 04121234567" readonly style="background: rgba(255,255,255,0.02); color: var(--muted); cursor: not-allowed; opacity: 0.8;">
+                    </div>
+
+                </div>
+
+                <h3 style="color:var(--accent); font-size:0.9rem; margin:30px 0 15px 0; letter-spacing:1px; border-bottom:1px solid var(--border); padding-bottom:10px;">DETALLE DE EVENTOS</h3>
+                
+                <div id="events-tbody" class="events-container">
+                    <!-- Filas dinámicas aquí -->
+                </div>
+                
+                <button type="button" class="btn btn-add" onclick="addRow()">+ AGREGAR EVENTO</button>
+
+                <div class="field" style="margin-top:20px;">
+                    <label>OBSERVACIÓN</label>
+                    <textarea id="observacion" rows="3" placeholder="COMENTARIOS O NOTAS ADICIONALES..."></textarea>
+                </div>
+                
+                <div class="field checkbox-field" style="display:flex; align-items:center; margin-bottom:10px; background: rgba(16, 185, 129, 0.05); padding:10px; border-radius:8px; border-left: 3px solid var(--brand-green);">
+                    <input type="checkbox" id="enviarCopia" checked style="width:18px; height:18px; margin-right:10px; accent-color:var(--brand-green);">
+                    <label for="enviarCopia" style="margin:0; font-size:0.8rem; cursor:pointer; font-weight:600; color:#fff;">ENVIAR COPIA EN PDF A MI CORREO ELECTRÓNICO</label>
+                </div>
+
+                <div class="field checkbox-field" style="display:flex; align-items:center; margin-bottom:20px; background: rgba(16, 185, 129, 0.05); padding:10px; border-radius:8px; border-left: 3px solid var(--brand-green);">
+                    <input type="checkbox" id="enviarRRHH" checked style="width:18px; height:18px; margin-right:10px; accent-color:var(--brand-green);">
+                    <label for="enviarRRHH" style="margin:0; font-size:0.8rem; cursor:pointer; font-weight:600; color:#fff;">ENVIAR COPIA A RRHH PARA CONTROL Y SEGUIMIENTO</label>
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; flex:1;" onclick="if(window.history.length > 1 && !document.referrer.includes('formato-pago')) { window.history.back(); } else { window.close(); setTimeout(()=>window.location.href='/', 300); }">CERRAR</button>
+                    <button type="submit" class="btn" id="submit-btn" style="flex:2;">ENVIAR FORMATO</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; color: var(--muted); font-size: 0.6rem; letter-spacing: 1px;">
+            GRUPO EYE STAFF &copy; 2026 — TODOS LOS DERECHOS RESERVADOS
+        </div>
+    </div>
+
+    <div class="container success-msg" id="success-container">
+        <i>✅</i>
+        <h2 style="font-weight: 800;">¡FORMATO ENVIADO!</h2>
+        <p style="color: var(--muted); line-height: 1.6; margin-bottom: 20px;">TU HOJA DE EVENTOS HA SIDO REGISTRADA CORRECTAMENTE EN EL SISTEMA.</p>
+        <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:12px; border:1px solid var(--border); margin-bottom:30px;">
+            <p style="margin:0 0 10px 0; font-size:0.8rem; color:var(--muted); font-weight:600;">TU NÚMERO DE CORRELATIVO ES:</p>
+            <div id="correlativo-number" style="font-size:2.5rem; font-weight:900; color:var(--accent); font-family:monospace; letter-spacing:2px;">#000</div>
+        </div>
+        <p id="redirect-text" style="color: var(--accent); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 20px;">REDIRECCIONANDO EN 10 SEGUNDOS...</p>
+        <button id="redirect-btn" class="btn" onclick="window.location.href='https://eye-staff.com/'">VOLVER AHORA</button>
+    </div>
+
+    <script>
+        // Check login first
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        if (!token || !userStr) {
+            alert('DEBES INICIAR SESIÓN EN EYE STAFF PARA ENVIAR FORMATOS DE PAGO.');
+            window.location.href = '/';
+        } else {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.cedula) document.getElementById('cedula').value = user.cedula;
+                if (user.name) document.getElementById('nombre').value = user.name;
+                if (user.phone) document.getElementById('telefono_celular').value = user.phone;
+
+                // Cargar datos frescos desde el servidor para rellenar campos que puedan faltar en localStorage
+                fetch('/api/staff/profile/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                }).then(res => res.json()).then(data => {
+                    if(data && data.user) {
+                        if (data.user.cedula) document.getElementById('cedula').value = data.user.cedula;
+                        if (data.user.name) document.getElementById('nombre').value = data.user.name;
+                        if (data.user.phone) document.getElementById('telefono_celular').value = data.user.phone;
+                    }
+                }).catch(err => console.error('Error fetching fresh profile', err));
+                
+            } catch(e) {
+                console.error('Error parseando usuario', e);
+            }
+        }
+
+        // Set today's date
+        document.getElementById('fecha').valueAsDate = new Date();
+        
+        let rowCount = 0;
+        
+        function addRow() {
+            rowCount++;
+            const tbody = document.getElementById('events-tbody');
+            const div = document.createElement('div');
+            div.className = 'event-card';
+            div.innerHTML = `
+                <div class="event-number">EVENTO N° <span class="num">${rowCount}</span></div>
+                <div class="event-grid">
+                    <div class="field" style="margin:0;">
+                        <label class="required">EVENTO</label>
+                        <input type="text" class="ev-evento" required placeholder="NOMBRE EVENTO">
+                    </div>
+                    <div class="field" style="margin:0;">
+                        <label class="required">FECHA INICIO</label>
+                        <input type="date" class="ev-fecha" required>
+                    </div>
+                    <div class="field" style="margin:0;">
+                        <label class="required">FECHA FIN</label>
+                        <input type="date" class="ev-fecha-fin" required>
+                    </div>
+                </div>
+                <div class="event-grid-row-2">
+                    <div class="field" style="margin:0;">
+                        <label class="required">LUGAR</label>
+                        <input type="text" class="ev-lugar" required placeholder="LUGAR">
+                    </div>
+                    <div class="field" style="margin:0;">
+                        <label>ACTIVIDAD</label>
+                        <input type="text" class="ev-actividad" placeholder="ACTIVIDAD (OPCIONAL)">
+                    </div>
+                    <div style="margin:0;">
+                        <button type="button" class="btn-del" onclick="deleteRow(this)" title="Eliminar fila" style="width:100%; height:45px; display:flex; align-items:center; justify-content:center;">🗑️</button>
+                    </div>
+                </div>
+            `;
+            tbody.appendChild(div);
+            
+            const fechaInput = div.querySelector('.ev-fecha');
+            const fechaFinInput = div.querySelector('.ev-fecha-fin');
+            fechaInput.addEventListener('change', (e) => {
+                if (!fechaFinInput.value || fechaFinInput.value === '') {
+                    fechaFinInput.value = e.target.value;
+                }
+            });
+            
+            updateRowNumbers();
+        }
+
+        function deleteRow(btn) {
+            const card = btn.closest('.event-card');
+            card.remove();
+            updateRowNumbers();
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#events-tbody .event-card');
+            rowCount = 0;
+            rows.forEach((row) => {
+                rowCount++;
+                row.querySelector('.event-number .num').textContent = rowCount;
+            });
+        }
+
+        // Init with 1 row
+        addRow();
+
+        async function handleScan(input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64Str = e.target.result;
+                
+                document.getElementById('loading-overlay').style.display = 'flex';
+                document.querySelector('#loading-overlay div:nth-child(2)').textContent = 'ANALIZANDO IMAGEN...';
+                
+                try {
+                    const res = await fetch('/api/scan-formato', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64Str })
+                    });
+                    
+                    const result = await res.json();
+                    
+                    if (result.success && result.data) {
+                        const data = result.data;
+                        if (data.nombre) document.getElementById('nombre').value = data.nombre;
+                        if (data.cedula) document.getElementById('cedula').value = data.cedula;
+                        if (data.telefono_celular) document.getElementById('telefono_celular').value = data.telefono_celular;
+                        if (data.observacion) document.getElementById('observacion').value = data.observacion;
+                        
+                        if (data.events && Array.isArray(data.events) && data.events.length > 0) {
+                            document.getElementById('events-tbody').innerHTML = '';
+                            rowCount = 0;
+                            
+                            data.events.forEach(ev => {
+                                addRow();
+                                const row = document.querySelector('#events-tbody .event-card:last-child');
+                                if (ev.evento) row.querySelector('.ev-evento').value = ev.evento;
+                                if (ev.fecha) row.querySelector('.ev-fecha').value = ev.fecha;
+                                if (ev.fecha_fin) row.querySelector('.ev-fecha-fin').value = ev.fecha_fin;
+                                if (ev.lugar) row.querySelector('.ev-lugar').value = ev.lugar;
+                                if (ev.actividad) row.querySelector('.ev-actividad').value = ev.actividad;
+                            });
+                        }
+                    } else {
+                        alert('ERROR AL ANALIZAR IMAGEN: ' + (result.error || 'No se pudieron extraer datos.'));
+                    }
+                } catch (err) {
+                    alert('ERROR DE CONEXIÓN AL ANALIZAR IMAGEN');
+                    console.error(err);
+                } finally {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    document.querySelector('#loading-overlay div:nth-child(2)').textContent = 'ENVIANDO FORMATO...';
+                    input.value = ''; 
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const rows = document.querySelectorAll('#events-tbody .event-card');
+            if(rows.length === 0) {
+                alert("DEBES AGREGAR AL MENOS UN EVENTO.");
+                return;
+            }
+
+            const events = [];
+            rows.forEach((row, idx) => {
+                events.push({
+                    numero: idx + 1,
+                    evento: row.querySelector('.ev-evento').value,
+                    fecha: row.querySelector('.ev-fecha').value,
+                    fecha_fin: row.querySelector('.ev-fecha-fin').value,
+                    lugar: row.querySelector('.ev-lugar').value,
+                    actividad: row.querySelector('.ev-actividad').value,
+                    monto: 0
+                });
+            });
+
+            const payload = {
+                fecha: document.getElementById('fecha').value,
+                nombre: document.getElementById('nombre').value,
+                cedula: document.getElementById('cedula').value,
+                telefono_celular: document.getElementById('telefono_celular').value,
+                telefono_fijo: '',
+                observacion: document.getElementById('observacion').value,
+                enviarCopia: document.getElementById('enviarCopia').checked,
+                enviarRRHH: document.getElementById('enviarRRHH').checked,
+                events: events
+            };
+
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('submit-btn').disabled = true;
+
+            try {
+                const res = await fetch('/api/payment-formats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById('form-container').style.display = 'none';
+                    document.getElementById('correlativo-number').textContent = "#" + result.correlativo;
+                    document.getElementById('success-container').style.display = 'block';
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const isFromApp = urlParams.get('from') === 'app';
+                    const redirectUrl = isFromApp ? 'https://eye-staff.app/' : 'https://eye-staff.com/';
+                    
+                    document.getElementById('redirect-btn').setAttribute('onclick', `window.location.href='${redirectUrl}'`);
+                    
+                    let secondsLeft = 10;
+                    document.getElementById('redirect-text').textContent = (isFromApp ? 'VOLVIENDO A TU PERFIL EN ' : 'REDIRECCIONANDO A EYE-STAFF.COM EN ') + secondsLeft + ' SEGUNDOS...';
+                    
+                    const timerInterval = setInterval(() => {
+                        secondsLeft--;
+                        if (secondsLeft > 0) {
+                            document.getElementById('redirect-text').textContent = (isFromApp ? 'VOLVIENDO A TU PERFIL EN ' : 'REDIRECCIONANDO A EYE-STAFF.COM EN ') + secondsLeft + ' SEGUNDOS...';
+                        } else {
+                            clearInterval(timerInterval);
+                            window.location.href = redirectUrl;
+                        }
+                    }, 1000);
+                } else {
+                    alert('ERROR AL ENVIAR: ' + result.error);
+                }
+            } catch (err) {
+                alert('ERROR DE CONEXIÓN');
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

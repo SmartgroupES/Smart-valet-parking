@@ -1,0 +1,9 @@
+ALTER TABLE user_report_subscriptions ADD COLUMN plantilla_rrhh INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN actualizacion_datos INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN credenciales INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN apertura_evento INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN pre_inicio_evento INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN cierre_diario INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN postulacion_empleo INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN inventarios INTEGER DEFAULT 0;
+ALTER TABLE user_report_subscriptions ADD COLUMN backup INTEGER DEFAULT 0;

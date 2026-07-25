@@ -36,7 +36,7 @@ async function logEvent(env: any, vehicleId: number, userId: number | null, even
   } catch (e) { console.error('Log Error:', e); }
 }
 
-async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]> {
+async function getSubscribedEmails(env: Env, reportId: string, sessionId?: number): Promise<string[]> {
   try {
     let fieldMap: any = {
         'convocatoria': 'convocatoria',
@@ -50,17 +50,51 @@ async function getSubscribedEmails(env: Env, reportId: string): Promise<string[]
         'backup': 'backup'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'backup'];
+    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup'];
     if (!validFields.includes(field)) return [];
+
+    let emailSet = new Set<string>();
 
     const subs = await env.DB.prepare(`
       SELECT u.email FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.${field} = 1 AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
+      WHERE rs.${field} IN (2, 3) AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
     `).all();
     if (subs && subs.results) {
-      return subs.results.map((r: any) => r.email);
+      subs.results.forEach((r: any) => emailSet.add(r.email));
     }
+
+    if (sessionId) {
+      const settingsRes = await env.DB.prepare("SELECT key, value FROM settings WHERE key IN (?, ?)").bind(`filter_sup_${field}`, `filter_reg_${field}`).all();
+      let supEnabled = true;
+      let regEnabled = true;
+      if (settingsRes && settingsRes.results) {
+         settingsRes.results.forEach((s: any) => {
+             if (s.key === `filter_sup_${field}`) supEnabled = s.value === '1';
+             if (s.key === `filter_reg_${field}`) regEnabled = s.value === '1';
+         });
+      }
+
+      if (supEnabled || regEnabled) {
+          const rolesToInclude = [];
+          if (supEnabled) rolesToInclude.push("'supervisor'", "'director'");
+          if (regEnabled) rolesToInclude.push("'employee'", "'logistics'");
+          if (rolesToInclude.length > 0) {
+              const eventStaff = await env.DB.prepare(`
+                  SELECT DISTINCT u.email 
+                  FROM staff_attendance sa
+                  JOIN users u ON sa.user_id = u.id
+                  WHERE sa.session_id = ? AND u.email IS NOT NULL AND u.email != '' AND u.is_active = 1
+                  AND u.role IN (${rolesToInclude.join(',')})
+              `).bind(sessionId).all();
+              if (eventStaff && eventStaff.results) {
+                  eventStaff.results.forEach((r: any) => emailSet.add(r.email));
+              }
+          }
+      }
+    }
+
+    return Array.from(emailSet);
   } catch (e) {
     console.error('Error fetching subscriptions for ' + reportId, e);
   }
@@ -209,6 +243,7 @@ async function initDatabase(db: D1Database) {
   try { await db.prepare('ALTER TABLE user_report_subscriptions ADD COLUMN apertura_evento INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE user_report_subscriptions ADD COLUMN pre_inicio_evento INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE user_report_subscriptions ADD COLUMN inventarios INTEGER DEFAULT 0').run(); } catch (e) { }
+  try { await db.prepare('ALTER TABLE user_report_subscriptions ADD COLUMN formato_pago INTEGER DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE payment_format_events ADD COLUMN monto REAL DEFAULT 0').run(); } catch (e) { }
   try { await db.prepare('ALTER TABLE sessions ADD COLUMN pre_start_notified INTEGER DEFAULT 0').run(); } catch (e) { }
 
@@ -226,6 +261,21 @@ async function initDatabase(db: D1Database) {
       last_updated_by INTEGER,
       last_updated_by_name TEXT,
       last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS inventory_movements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      session_id INTEGER,
+      quantity_change INTEGER NOT NULL,
+      type TEXT NOT NULL CHECK(type IN ('assignment', 'return', 'manual_adjustment')),
+      user_name TEXT,
+      notes TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(item_id) REFERENCES inventory_items(id),
+      FOREIGN KEY(session_id) REFERENCES sessions(id)
     )
   `).run();
 
@@ -288,7 +338,7 @@ async function initDatabase(db: D1Database) {
   } catch (e) { }
 }
 
-async function getSubscribedPhones(env: Env, reportId: string): Promise<string[]> {
+async function getSubscribedPhones(env: Env, reportId: string, sessionId?: number): Promise<string[]> {
   try {
     let fieldMap: any = {
         'convocatoria': 'convocatoria',
@@ -302,15 +352,51 @@ async function getSubscribedPhones(env: Env, reportId: string): Promise<string[]
         'backup': 'backup'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'backup'];
+    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup'];
     if (!validFields.includes(field)) return [];
+
+    let phoneSet = new Set<string>();
 
     const subs = await env.DB.prepare(`
       SELECT u.phone FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.${field} = 1 AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
+      WHERE rs.${field} IN (1, 3) AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
     `).all();
-    return (subs.results || []).map((row: any) => row.phone);
+    if (subs && subs.results) {
+        subs.results.forEach((r: any) => phoneSet.add(r.phone));
+    }
+
+    if (sessionId) {
+      const settingsRes = await env.DB.prepare("SELECT key, value FROM settings WHERE key IN (?, ?)").bind(`filter_sup_${field}`, `filter_reg_${field}`).all();
+      let supEnabled = true;
+      let regEnabled = true;
+      if (settingsRes && settingsRes.results) {
+         settingsRes.results.forEach((s: any) => {
+             if (s.key === `filter_sup_${field}`) supEnabled = s.value === '1';
+             if (s.key === `filter_reg_${field}`) regEnabled = s.value === '1';
+         });
+      }
+
+      if (supEnabled || regEnabled) {
+          const rolesToInclude = [];
+          if (supEnabled) rolesToInclude.push("'supervisor'", "'director'");
+          if (regEnabled) rolesToInclude.push("'employee'", "'logistics'");
+          if (rolesToInclude.length > 0) {
+              const eventStaff = await env.DB.prepare(`
+                  SELECT DISTINCT u.phone 
+                  FROM staff_attendance sa
+                  JOIN users u ON sa.user_id = u.id
+                  WHERE sa.session_id = ? AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
+                  AND u.role IN (${rolesToInclude.join(',')})
+              `).bind(sessionId).all();
+              if (eventStaff && eventStaff.results) {
+                  eventStaff.results.forEach((r: any) => phoneSet.add(r.phone));
+              }
+          }
+      }
+    }
+
+    return Array.from(phoneSet);
   } catch (e) {
     console.error('Error fetching subscribed phones', e);
     return [];
@@ -327,13 +413,13 @@ async function logAudit(env: Env, userId: number | null, action: string, details
   } catch (e) { console.error('Audit Error:', e); }
 }
 
-function mapRole(role: string): 'driver' | 'supervisor' | 'director' | 'logistics' {
+function mapRole(role: string): 'employee' | 'supervisor' | 'director' | 'logistics' {
   const r = role.toLowerCase().trim();
   if (r.includes('logistica') || r === 'logistics') return 'logistics';
-  if (r.includes('valet') || r.includes('operador') || r === 'driver') return 'driver';
+  if (r.includes('valet') || r.includes('operador') || r === 'driver' || r === 'employee') return 'employee';
   if (r.includes('supervisor')) return 'supervisor';
   if (r.includes('director') || r.includes('admin') || r.includes('administrativo')) return 'director';
-  return 'driver';
+  return 'employee';
 }
 
 async function standardizeValue(env: Env, category: string, value: string): Promise<string> {
@@ -523,12 +609,16 @@ REGLAS ESTRICTAS:
 
 app.post('/api/payment-formats', async (c) => {
   try {
-    const { fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion, events } = await c.req.json();
+    const { fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion, events, enviarCopia, enviarRRHH } = await c.req.json();
     
+    // Fetch active period
+    const periodRes = await c.env.DB.prepare("SELECT id FROM payroll_periods WHERE status = 'OPEN' ORDER BY id DESC LIMIT 1").first<{id: number}>();
+    const period_id = periodRes ? periodRes.id : null;
+
     // Insert into payment_formats
     const formatRes = await c.env.DB.prepare(
-      'INSERT INTO payment_formats (fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion) VALUES (?, ?, ?, ?, ?, ?) RETURNING id'
-    ).bind(fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion).first<{id: number}>();
+      'INSERT INTO payment_formats (fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion, period_id) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id'
+    ).bind(fecha, nombre, cedula, telefono_celular, telefono_fijo, observacion, period_id).first<{id: number}>();
     
     if (!formatRes || !formatRes.id) {
       throw new Error('Failed to create payment format record');
@@ -544,7 +634,198 @@ app.post('/api/payment-formats', async (c) => {
       }
     }
 
-    return c.json({ success: true, correlativo: formatId });
+    // Fetch user email
+    const userRec = await c.env.DB.prepare('SELECT email FROM users WHERE cedula = ? AND email IS NOT NULL AND email != ""').bind(cedula).first<{email: string}>();
+    
+    // Calculate Correlativo String based on User's requested format: AAMMDD-XXX
+    let yy = '';
+    let mo = '';
+    let day = '';
+    if (fecha && fecha.includes('-')) {
+        const parts = fecha.split('-');
+        if (parts.length >= 3) {
+            yy = parts[0].slice(-2);
+            mo = parts[1].padStart(2, '0');
+            day = parts[2].padStart(2, '0');
+        }
+    }
+    // Fallback if fecha is invalid
+    if (!yy) {
+        const d = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Caracas"}));
+        yy = String(d.getFullYear()).slice(-2);
+        mo = String(d.getMonth() + 1).padStart(2, '0');
+        day = String(d.getDate()).padStart(2, '0');
+    }
+    
+    // Calculate daily sequence by counting records of the same date having ID <= formatId
+    const seqRes = await c.env.DB.prepare('SELECT COUNT(*) as count FROM payment_formats WHERE fecha = ? AND id <= ?').bind(fecha, formatId).first<{count: number}>();
+    const seq = seqRes ? seqRes.count : 1;
+    
+    const correlativoStr = `${yy}${mo}${day}-${String(seq).padStart(3, '0')}`;
+
+    // Generate PDF
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    
+    // Fetch logo
+    let logoImage;
+    try {
+        const logoRes = await fetch('https://eye-staff.com/wp-content/uploads/2024/02/LOGO-EYE-STAFF-150x150.png');
+        const logoBytes = await logoRes.arrayBuffer();
+        logoImage = await pdfDoc.embedPng(logoBytes);
+    } catch (e) { console.error('Logo error', e); }
+
+    const drawHeader = (p: any) => {
+        const { width, height } = p.getSize();
+        if (logoImage) {
+            p.drawImage(logoImage, { x: 40, y: height - 80, width: 50, height: 50 });
+        }
+        p.drawText('FORMATO DE COBRO - EYE STAFF', { x: 105, y: height - 48, size: 14, font: bold, color: rgb(0.1, 0.1, 0.1) });
+        p.drawText(`CORRELATIVO: ${correlativoStr}`, { x: 105, y: height - 63, size: 9, font: bold, color: rgb(0.4, 0.4, 0.4) });
+        p.drawText(`FECHA DE ENVÍO: ${fecha}`, { x: 105, y: height - 75, size: 8, font: font, color: rgb(0.4, 0.4, 0.4) });
+    };
+
+    let page = pdfDoc.addPage([595, 842]); // A4
+    const { width, height } = page.getSize();
+    drawHeader(page);
+    
+    let y = height - 120;
+    
+    // Empleado info box
+    page.drawRectangle({ x: 40, y: y - 50, width: width - 80, height: 45, color: rgb(0.97, 0.97, 0.97), borderColor: rgb(0.9, 0.9, 0.9), borderWidth: 1 });
+    page.drawText(`EMPLEADO: ${nombre.toUpperCase()}`, { x: 50, y: y - 25, size: 10, font: bold, color: rgb(0.2, 0.2, 0.2) });
+    page.drawText(`C.I: ${cedula}`, { x: 350, y: y - 25, size: 10, font: font, color: rgb(0.2, 0.2, 0.2) });
+    page.drawText(`TELÉFONO: ${telefono_celular}`, { x: 50, y: y - 40, size: 10, font: font, color: rgb(0.2, 0.2, 0.2) });
+    y -= 80;
+    
+    // Event headers
+    const drawTableHeaders = (p: any, currentY: number) => {
+        p.drawRectangle({ x: 40, y: currentY - 15, width: width - 80, height: 20, color: rgb(0.06, 0.72, 0.5) });
+        p.drawText('N°', { x: 50, y: currentY - 10, size: 9, font: bold, color: rgb(1,1,1) });
+        p.drawText('FECHA', { x: 80, y: currentY - 10, size: 9, font: bold, color: rgb(1,1,1) });
+        p.drawText('EVENTO', { x: 150, y: currentY - 10, size: 9, font: bold, color: rgb(1,1,1) });
+        p.drawText('LUGAR', { x: 300, y: currentY - 10, size: 9, font: bold, color: rgb(1,1,1) });
+        p.drawText('ACTIVIDAD', { x: 450, y: currentY - 10, size: 9, font: bold, color: rgb(1,1,1) });
+    };
+
+    drawTableHeaders(page, y);
+    y -= 35;
+    
+    if (events && Array.isArray(events)) {
+        for (const ev of events) {
+            if (y < 50) {
+                page = pdfDoc.addPage([595, 842]);
+                drawHeader(page);
+                y = height - 120;
+                drawTableHeaders(page, y);
+                y -= 35;
+            }
+            page.drawText(String(ev.numero), { x: 50, y, size: 8, font, color: rgb(0.2, 0.2, 0.2) });
+            page.drawText(String(ev.fecha).substring(0,10), { x: 80, y, size: 8, font, color: rgb(0.2, 0.2, 0.2) });
+            page.drawText(String(ev.evento).substring(0,25).toUpperCase(), { x: 150, y, size: 8, font, color: rgb(0.2, 0.2, 0.2) });
+            page.drawText(String(ev.lugar).substring(0,25).toUpperCase(), { x: 300, y, size: 8, font, color: rgb(0.2, 0.2, 0.2) });
+            page.drawText(String(ev.actividad).substring(0,20).toUpperCase(), { x: 450, y, size: 8, font, color: rgb(0.2, 0.2, 0.2) });
+            
+            // Add a subtle line
+            page.drawLine({ start: { x: 40, y: y - 8 }, end: { x: width - 40, y: y - 8 }, color: rgb(0.9, 0.9, 0.9), thickness: 1 });
+            y -= 25;
+        }
+    }
+    
+    if (observacion) {
+        y -= 20;
+        if (y < 100) {
+            page = pdfDoc.addPage([595, 842]);
+            drawHeader(page);
+            y = height - 120;
+        }
+        page.drawText('OBSERVACIÓN:', { x: 40, y, size: 9, font: bold, color: rgb(0.2, 0.2, 0.2) });
+        y -= 15;
+        const obsLines = observacion.toUpperCase().match(/.{1,100}/g) || [];
+        for (const line of obsLines) {
+            if (y < 50) {
+                page = pdfDoc.addPage([595, 842]);
+                drawHeader(page);
+                y = height - 120;
+            }
+            page.drawText(line, { x: 40, y, size: 8, font, color: rgb(0.3, 0.3, 0.3) });
+            y -= 15;
+        }
+    }
+    
+    const pdfBytes = await pdfDoc.save();
+
+    // Guardar PDF en R2
+    const safeName = nombre.replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStr = new Date().toISOString().split('T')[0];
+    const pdfKey = `formatos-pago/${dateStr}/${safeName}_ID${formatId}.pdf`;
+    await c.env.PHOTOS.put(pdfKey, pdfBytes, { httpMetadata: { contentType: 'application/pdf' } });
+    
+    // Actualizar Base de Datos con la Key
+    await c.env.DB.prepare('UPDATE payment_formats SET pdf_r2_key = ? WHERE id = ?').bind(pdfKey, formatId).run();
+
+    if (enviarCopia || enviarRRHH) {
+        const pdfBase64 = uint8ArrayToBase64(pdfBytes);
+        const htmlBody = `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                <h2 style="color: #10b981; text-transform: uppercase;">NUEVO FORMATO DE COBRO ENVIADO</h2>
+                <p>El empleado <strong>${nombre.toUpperCase()}</strong> (C.I: ${cedula}) ha enviado su relación de eventos.</p>
+                <p>Correlativo: <strong>${correlativoStr}</strong></p>
+                <p>Fecha de envío: <strong>${fecha}</strong></p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; text-transform: uppercase;">
+                    <thead>
+                        <tr style="background-color: #f3f4f6; color: #374151;">
+                            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: center;">N°</th>
+                            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left;">FECHA</th>
+                            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left;">EVENTO</th>
+                            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left;">LUGAR</th>
+                            <th style="padding: 10px; border: 1px solid #e5e7eb; text-align: left;">ACTIVIDAD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(events || []).map((ev: any) => `
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #e5e7eb; text-align: center;">${ev.numero}</td>
+                                <td style="padding: 8px; border: 1px solid #e5e7eb;">${String(ev.fecha).substring(0,10)}</td>
+                                <td style="padding: 8px; border: 1px solid #e5e7eb;">${String(ev.evento)}</td>
+                                <td style="padding: 8px; border: 1px solid #e5e7eb;">${String(ev.lugar)}</td>
+                                <td style="padding: 8px; border: 1px solid #e5e7eb;">${String(ev.actividad)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                ${observacion ? `<p style="margin-top:20px; font-size:12px; color:#555;"><strong>OBSERVACIÓN:</strong> ${observacion.toUpperCase()}</p>` : ''}
+                <p style="margin-top: 20px;">Se adjunta el formato detallado en PDF.</p>
+            </div>
+        `;
+        
+        let toEmails: string[] = [];
+        if (enviarCopia && userRec && userRec.email) {
+            toEmails.push(userRec.email);
+        }
+
+        let ccEmails: string[] = [];
+        if (enviarRRHH) {
+            const adminUsers = await c.env.DB.prepare("SELECT email FROM users WHERE name IN ('RRHH', 'ADMIN') AND email IS NOT NULL AND email != ''").all();
+            if (adminUsers && adminUsers.results) {
+                adminUsers.results.forEach((r: any) => ccEmails.push(r.email));
+            }
+        }
+
+        await sendEmail(
+            c.env, 
+            toEmails.length > 0 ? toEmails : undefined, 
+            `Formato de Cobro ${correlativoStr} - EYE STAFF`, 
+            htmlBody, 
+            [{ filename: `Formato_${correlativoStr}.pdf`, content: pdfBase64, content_type: 'application/pdf' }], 
+            ccEmails, 
+            'formato_pago'
+        );
+    }
+
+    return c.json({ success: true, correlativo: correlativoStr });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
@@ -560,12 +841,109 @@ app.get('/api/admin/payment-formats', async (c) => {
       f.events = eventsRes.results || [];
     }
     
-    return c.json({ success: true, data: formats });
+    // Also fetch payroll periods
+    const periodsRes = await c.env.DB.prepare('SELECT * FROM payroll_periods ORDER BY id DESC').all();
+    const periods = periodsRes.results || [];
+    
+    return c.json({ success: true, data: formats, periods: periods });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
 });
 
+app.put('/api/admin/payment-formats/:id/process', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const { procesado } = await c.req.json();
+    await c.env.DB.prepare('UPDATE payment_formats SET procesado = ? WHERE id = ?').bind(procesado ? 1 : 0, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/api/admin/payment-formats/:id/status', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const { status } = await c.req.json();
+    await c.env.DB.prepare('UPDATE payment_formats SET status = ? WHERE id = ?').bind(status, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.post('/api/admin/payroll-periods', async (c) => {
+  try {
+    const userPayload = c.get('user');
+    const { name, cutoff_date } = await c.req.json();
+    
+    // Close any previous OPEN periods
+    await c.env.DB.prepare("UPDATE payroll_periods SET status = 'REVIEWING' WHERE status = 'OPEN'").run();
+    
+    // Insert new period
+    await c.env.DB.prepare('INSERT INTO payroll_periods (name, cutoff_date, created_by) VALUES (?, ?, ?)')
+      .bind(name, cutoff_date, userPayload?.name || 'Admin').run();
+      
+    // Optionally update any PENDING payment formats that missed the previous cutoff, to belong to this new period?
+    // Usually, they just get attached as they come in.
+    // Wait, any formats without period_id can be assigned to the new open period:
+    const newPeriodIdRes = await c.env.DB.prepare("SELECT id FROM payroll_periods WHERE status = 'OPEN' ORDER BY id DESC LIMIT 1").first<{id: number}>();
+    if(newPeriodIdRes) {
+       await c.env.DB.prepare('UPDATE payment_formats SET period_id = ? WHERE period_id IS NULL').bind(newPeriodIdRes.id).run();
+    }
+      
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/api/admin/payroll-periods/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const { name, cutoff_date } = await c.req.json();
+    await c.env.DB.prepare('UPDATE payroll_periods SET name = ?, cutoff_date = ? WHERE id = ?').bind(name, cutoff_date, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/api/admin/payroll-periods/:id/status', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const { status } = await c.req.json();
+    await c.env.DB.prepare('UPDATE payroll_periods SET status = ? WHERE id = ?').bind(status, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/api/admin/payroll-periods/:id/pay', async (c) => {
+  try {
+    const id = c.req.param('id');
+    // Update period status
+    await c.env.DB.prepare("UPDATE payroll_periods SET status = 'PAID' WHERE id = ?").bind(id).run();
+    // Update formats status
+    await c.env.DB.prepare("UPDATE payment_formats SET status = 'PAID' WHERE period_id = ? AND status != 'REJECTED'").bind(id).run();
+    
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/api/admin/payment-formats/:id/unlink-period', async (c) => {
+  try {
+    const id = c.req.param('id');
+    await c.env.DB.prepare('UPDATE payment_formats SET period_id = NULL WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
 app.put('/api/admin/payment-formats/events/:id', async (c) => {
   try {
     const id = c.req.param('id');
@@ -587,6 +965,17 @@ app.delete('/api/admin/payment-formats/events/:id', async (c) => {
   }
 });
 
+app.delete('/api/admin/payment-formats/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    await c.env.DB.prepare('DELETE FROM payment_format_events WHERE format_id = ?').bind(id).run();
+    await c.env.DB.prepare('DELETE FROM payment_formats WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
 app.get('/api/admin/test-weekend', async (c) => {
     const sessionsRes = await c.env.DB.prepare("SELECT * FROM sessions WHERE DATE(started_at) >= '2026-06-19' AND DATE(started_at) <= '2026-06-21'").all();
     const sessions = sessionsRes.results || [];
@@ -595,81 +984,50 @@ app.get('/api/admin/test-weekend', async (c) => {
        html += `<tr><td style="padding:8px;">${s.name}</td><td style="padding:8px;">${s.type}</td><td style="padding:8px;">${s.started_at}</td></tr>`;
     }
     html += `</table></div>`;
-    await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', 'Reporte Prueba Fin de Semana', html);
-    return c.json({ success: true, count: sessions.length });
+    // await sendEmail(c.env, 'eyestaff.ncarrillo@gmail.com', 'Reporte Prueba Fin de Semana', html);
+    return c.json({ success: true, count: sessions.length, note: 'Envío omitido' });
 });
 
-app.post('/api/admin/reports/pre-inicio', async (c) => {
+
+
+app.post('/api/admin/payment-formats/send', async (c) => {
   try {
-    const { sessionId, channel } = await c.req.json();
-    if (!sessionId || !channel) return c.json({ error: 'Faltan parámetros' }, 400);
+    const { excelBase64, pdfBase64 } = await c.req.json();
+    if (!excelBase64 || !pdfBase64) {
+      return c.json({ error: 'Faltan parámetros' }, 400);
+    }
 
-    const session = await c.env.DB.prepare('SELECT * FROM sessions WHERE id = ?').bind(sessionId).first<any>();
-    if (!session) return c.json({ error: 'Evento no encontrado' }, 404);
+    const excelFilename = `reports/Matriz_Formatos_${Date.now()}.xlsx`;
+    const pdfFilename = `reports/Matriz_Formatos_${Date.now()}.pdf`;
 
-    const staffRes = await c.env.DB.prepare(
-      "SELECT email, phone FROM users WHERE (current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0) AND is_active = 1"
-    ).bind(session.id, session.id).all();
-    const assignedStaff = staffRes.results || [];
+    const excelBytes = Uint8Array.from(atob(excelBase64), char => char.charCodeAt(0));
+    const pdfBytes = Uint8Array.from(atob(pdfBase64), char => char.charCodeAt(0));
 
-    const subRes = await c.env.DB.prepare(`
-      SELECT u.email, u.phone FROM user_report_subscriptions rs
-      JOIN users u ON rs.user_id = u.id
-      WHERE rs.pre_inicio_evento = 1 AND u.is_active = 1
-    `).all();
-    const subbedStaff = subRes.results || [];
+    await c.env.PHOTOS.put(excelFilename, excelBytes.buffer, { httpMetadata: { contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' } });
+    await c.env.PHOTOS.put(pdfFilename, pdfBytes.buffer, { httpMetadata: { contentType: 'application/pdf' } });
 
-    const allStaff = [...assignedStaff, ...subbedStaff];
-    
-    // De-duplicate emails and phones
-    const allEmails = [...new Set(allStaff.map(u => u.email).filter(Boolean))] as string[];
-    const allPhones = [...new Set(allStaff.map(u => u.phone).filter(Boolean))] as string[];
+    const excelUrl = `https://eye-staff.app/files/${excelFilename}`;
+    const pdfUrl = `https://eye-staff.app/files/${pdfFilename}`;
 
-    const sendEmailFlag = channel === 'email' || channel === 'ambos';
-    const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
+    const staffList = await c.env.DB.prepare('SELECT * FROM staff WHERE UPPER(name) IN (\'ADMINISTRACION\', \'ADMINISTRACIÓN\', \'ORO 5\')').all();
+    if (!staffList.results || staffList.results.length === 0) {
+      return c.json({ error: 'No se encontraron los usuarios Administración u Oro 5' }, 404);
+    }
 
-    let dispatched = 0;
-
-    if (sendWaFlag) {
-      const waMsg = `*EYE STAFF - 🚨 ALERTA PRE-INICIO (MANUAL)*\n\nEl evento *${session.name}* está programado para iniciar pronto.\n\n🕒 *Hora de Inicio:* ${session.event_start_time || 'N/A'}\n📍 *Ubicación:* ${session.address || 'N/A'}\n\n_La ventana operativa para iniciar este evento en el sistema ya se encuentra DISPONIBLE._`;
-      for (const phone of allPhones) {
-        try {
-          await sendWhatsAppMessage(c.env, phone, waMsg);
-          dispatched++;
-        } catch (e) {
-          console.error(e);
-        }
+    for (const emp of staffList.results) {
+      if (emp.email) {
+        const html = `<h2>Matriz de Formatos de Pago</h2><p>Hola ${emp.name},</p><p>Se ha generado la matriz de formatos de pago (Transición).</p><p>Puedes descargar los archivos adjuntos o verlos en los siguientes enlaces:</p><ul><li><a href="${excelUrl}">Descargar Excel</a></li><li><a href="${pdfUrl}">Ver PDF</a></li></ul>`;
+        const attachments = [
+          { content: excelBase64, filename: 'Matriz_Formatos.xlsx' },
+          { content: pdfBase64, filename: 'Matriz_Formatos.pdf' }
+        ];
+        await sendEmail(c.env, emp.email as string, 'Matriz de Formatos de Pago', html, attachments, undefined, undefined, 'EYE STAFF');
       }
     }
 
-    if (sendEmailFlag) {
-      const subject = `ALERTA PRE-INICIO: ${session.name}`;
-      const html = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-          <div style="background-color: #f59e0b; color: white; padding: 15px; text-align: center;">
-            <h2 style="margin: 0; font-size: 1.5rem;">🚨 ALERTA PRE-INICIO</h2>
-          </div>
-          <div style="padding: 20px;">
-            <p><strong>Evento:</strong> ${session.name}</p>
-            <p><strong>Hora de Inicio:</strong> ${session.event_start_time || 'N/A'}</p>
-            <p><strong>Ubicación:</strong> ${session.address || 'N/A'}</p>
-            <p>La ventana operativa para iniciar este evento en el sistema ya se encuentra DISPONIBLE.</p>
-          </div>
-        </div>
-      `;
-      for (const email of allEmails) {
-        try {
-          await sendEmail(c.env, email, subject, html, undefined, undefined, undefined, 'EYE STAFF');
-          dispatched++;
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-
-    return c.json({ success: true, message: `Alertas despachadas (${dispatched})` });
-  } catch (e: any) {
-    console.error('Error enviando pre-inicio manual', e);
+    return c.json({ success: true });
+  } catch(e: any) {
+    console.error('Error enviando matriz', e);
     return c.json({ error: e.message }, 500);
   }
 });
@@ -860,7 +1218,54 @@ app.get('/api/sessions/next-correlativo', async (c) => {
 
 app.get('/api/admin/clients', async (c) => {
   const query = `
-    WITH CombinedClients AS (
+    WITH CombinedB2B AS (
+        SELECT 
+            UPPER(TRIM(name)) as owner_name, 
+            phone as owner_phone, 
+            '' as owner_id_ref,
+            1 as total_visits,
+            'PRESUPUESTO|' || created_at || '|N/A' as visit_history,
+            event_type as event_type
+        FROM valet_clients
+
+        UNION ALL
+
+        SELECT 
+            UPPER(TRIM(COALESCE(client, contact_name))) as owner_name, 
+            phone as owner_phone, 
+            '' as owner_id_ref,
+            1 as total_visits,
+            name || '|' || started_at || '|N/A' as visit_history,
+            type as event_type
+        FROM sessions
+        WHERE (client IS NOT NULL AND client != '') OR (contact_name IS NOT NULL AND contact_name != '')
+    )
+    SELECT 
+        owner_name, 
+        GROUP_CONCAT(DISTINCT owner_phone) as owner_phone, 
+        MAX(owner_id_ref) as owner_id_ref, 
+        SUM(total_visits) as total_visits,
+        GROUP_CONCAT(visit_history, '::') as visit_history,
+        GROUP_CONCAT(DISTINCT event_type) as event_types
+    FROM CombinedB2B
+    GROUP BY owner_name
+    ORDER BY owner_name ASC
+  `;
+  const result = await c.env.DB.prepare(query).all();
+  const clients = (result.results || []).map((cl: any) => ({
+    ...cl,
+    event_types: cl.event_types || 'VALET PARKING',
+    history: ((cl.visit_history as string) || '').split('::').filter((h: string) => h.includes('|')).map((h: string) => {
+      const [event, date, plate] = h.split('|');
+      return { event: event || 'S/E', date, plate };
+    })
+  }));
+  return c.json({ clients });
+});
+
+app.get('/api/admin/guests', async (c) => {
+  const query = `
+    WITH CombinedGuests AS (
       SELECT 
         UPPER(TRIM(owner_name)) as owner_name, 
         owner_phone, 
@@ -875,14 +1280,17 @@ app.get('/api/admin/clients', async (c) => {
 
       UNION ALL
 
-      SELECT 
-        UPPER(TRIM(name)) as owner_name, 
-        phone as owner_phone, 
+      SELECT
+        UPPER(TRIM(ac.name)) as owner_name,
+        ac.phone as owner_phone,
         '' as owner_id_ref,
-        1 as total_visits,
-        'PRESUPUESTO|' || created_at || '|N/A' as visit_history,
-        event_type
-      FROM valet_clients
+        COUNT(ac.id) as total_visits,
+        GROUP_CONCAT(s.name || '|' || ac.created_at || '|N/A', '::') as visit_history,
+        'CONTROL DE ACCESOS' as event_type
+      FROM access_control_guests ac
+      JOIN sessions s ON ac.session_id = s.id
+      WHERE ac.name IS NOT NULL AND ac.name != '' AND ac.status = 'approved'
+      GROUP BY UPPER(TRIM(ac.name)), ac.phone
     )
     SELECT 
         owner_name, 
@@ -891,20 +1299,40 @@ app.get('/api/admin/clients', async (c) => {
         SUM(total_visits) as total_visits,
         GROUP_CONCAT(visit_history, '::') as visit_history,
         GROUP_CONCAT(DISTINCT event_type) as event_types
-    FROM CombinedClients
+    FROM CombinedGuests
     GROUP BY owner_name
     ORDER BY owner_name ASC
   `;
   const result = await c.env.DB.prepare(query).all();
-  const clients = (result.results || []).map((cl: any) => ({
+  const guests = (result.results || []).map((cl: any) => ({
     ...cl,
-    event_types: cl.event_types || 'VALET PARKING',
+    event_types: cl.event_types || 'N/A',
     history: ((cl.visit_history as string) || '').split('::').filter((h: string) => h.includes('|')).map((h: string) => {
       const [event, date, plate] = h.split('|');
       return { event: event || 'S/E', date, plate };
     })
   }));
-  return c.json({ clients });
+  return c.json({ clients: guests }); // Use 'clients' in json to avoid breaking frontend immediately, though I will update frontend to use 'guests' variable.
+});
+
+app.post('/api/admin/clients/delete', async (c) => {
+  try {
+    const { owner_name } = await c.req.json();
+    if (!owner_name) {
+      return c.json({ success: false, error: 'Owner name is required' }, 400);
+    }
+    
+    // Delete from vehicles
+    await c.env.DB.prepare('DELETE FROM vehicles WHERE UPPER(TRIM(owner_name)) = UPPER(TRIM(?))').bind(owner_name).run();
+    // Delete from valet_clients
+    await c.env.DB.prepare('DELETE FROM valet_clients WHERE UPPER(TRIM(name)) = UPPER(TRIM(?))').bind(owner_name).run();
+    // Clear from sessions (so dynamically derived B2B clients also disappear)
+    await c.env.DB.prepare('UPDATE sessions SET client = NULL, contact_name = NULL WHERE UPPER(TRIM(COALESCE(client, contact_name))) = UPPER(TRIM(?))').bind(owner_name).run();
+    
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
 });
 
 app.post('/api/presupuestos/client', async (c) => {
@@ -1340,7 +1768,7 @@ app.get('/api/rentals', async (c) => {
       SELECT id, empresa, evento, fecha, form_data, items_data, monto 
       FROM budgets 
       WHERE estatus = 'APROBADO' 
-        AND (json_extract(form_data, '$.tipoEvento') = 'ALQUILER DE EQUIPOS' OR evento LIKE '%ALQUILER%')
+        AND (UPPER(json_extract(form_data, '$.tipoEvento')) = 'ALQUILER DE EQUIPOS' OR UPPER(evento) LIKE '%ALQUILER%')
     `;
     const budgetsResult = await c.env.DB.prepare(budgetsQuery).all();
     const approvedBudgets = budgetsResult.results || [];
@@ -1356,8 +1784,36 @@ app.get('/api/rentals', async (c) => {
       ORDER BY b.fecha ASC
     `;
     const rentalsResult = await c.env.DB.prepare(rentalsQuery).all();
+    let allRentals = rentalsResult.results || [];
 
-    return c.json({ success: true, rentals: rentalsResult.results });
+    const sessionsQuery = `
+      SELECT * FROM sessions 
+      WHERE LOWER(type) = 'alquiler de equipos' 
+        AND status != 'closed' 
+        AND status != 'completed'
+        AND budget_id IS NULL
+    `;
+    const sessionsResult = await c.env.DB.prepare(sessionsQuery).all();
+    const sessions = sessionsResult.results || [];
+    
+    const sessionRentals = sessions.map((s: any) => ({
+      budget_id: 'session-' + s.id,
+      status: s.status === 'planning' ? 'planning' : s.status, 
+      evento: s.name,
+      empresa: s.client || 'PARTICULAR',
+      fecha: s.started_at,
+      form_data: JSON.stringify({
+        atencion: s.contact_name || 'N/A',
+        inicio: s.event_start_time || '',
+        direccion: s.address || 'N/A',
+        lugar: s.address || 'N/A',
+        ciudad: ''
+      })
+    }));
+
+    allRentals = [...allRentals, ...sessionRentals];
+
+    return c.json({ success: true, rentals: allRentals });
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500);
   }
@@ -1368,6 +1824,12 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
     const budgetId = c.req.param('budget_id');
     const body = await c.req.json();
     const { status, notes, type, signature, photos, receiver_name, receiver_id, verified_items } = body;
+
+    if (budgetId.startsWith('session-')) {
+      const sessionId = budgetId.replace('session-', '');
+      await c.env.DB.prepare('UPDATE sessions SET status = ? WHERE id = ?').bind(status, sessionId).run();
+      return c.json({ success: true });
+    }
 
     // Si viene información de firma y fotos (conformidad completa)
     if (type === 'delivery' || type === 'retrieval') {
@@ -1459,6 +1921,11 @@ app.post('/api/rentals/:budget_id/status', async (c) => {
 app.post('/api/rentals/:budget_id/soportes', async (c) => {
   try {
     const budgetId = c.req.param('budget_id');
+    
+    if (budgetId.startsWith('session-')) {
+      return c.json({ success: false, error: "Los soportes fotográficos no están disponibles para alquileres creados como sesión. Deben ser creados a través de un presupuesto." });
+    }
+
     const { type, photos, signature } = await c.req.json(); // type: 'delivery' or 'retrieval'
 
     let signatureUrl = null;
@@ -1500,13 +1967,39 @@ app.post('/api/rentals/:budget_id/soportes', async (c) => {
   }
 });
 
+app.delete('/api/rentals/:budget_id', async (c) => {
+  try {
+    const budgetId = c.req.param('budget_id');
+    if (budgetId.startsWith('session-')) {
+      const sessionId = budgetId.replace('session-', '');
+      await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run();
+      return c.json({ success: true });
+    }
+    await c.env.DB.prepare('DELETE FROM rentals WHERE budget_id = ?').bind(budgetId).run();
+    await c.env.DB.prepare('UPDATE budgets SET estatus = "CANCELADO" WHERE id = ?').bind(budgetId).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
 app.get('/api/sessions/concluded', async (c) => {
-  const result = await c.env.DB.prepare('SELECT * FROM sessions WHERE status = "closed" ORDER BY id DESC').all();
+  const result = await c.env.DB.prepare('SELECT * FROM sessions WHERE status IN ("closed", "completed") ORDER BY id DESC').all();
   const sessions = result.results || [];
 
   for (let s of sessions) {
-    const staffRes = await c.env.DB.prepare("SELECT name FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
-    s.assigned_staff = (staffRes.results || []).map(u => u.name).join(', ');
+    const staffRes = await c.env.DB.prepare(`
+      SELECT DISTINCT u.id, u.name, u.role, u.cedula 
+      FROM users u 
+      JOIN staff_attendance a ON u.id = a.user_id 
+      WHERE a.session_id = ?
+    `).bind(s.id).all();
+    const staff = staffRes.results || [];
+    s.assigned_staff_list = staff;
+    s.assigned_staff = staff.map((u: any) => u.name).join(', ');
+
+    const gRes = await c.env.DB.prepare('SELECT * FROM guardia_details WHERE session_id = ?').bind(s.id).first();
+    s.guardia_details = gRes || null;
   }
 
   return c.json({ sessions });
@@ -1604,16 +2097,38 @@ app.post('/api/sessions/:id/unassign-staff', async (c) => {
 });
 
 app.post('/api/sessions/plan', async (c) => {
-  const { name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id } = await c.req.json();
+  const { name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
   const nowVE = new Date(new Date().getTime() - (4 * 60 * 60 * 1000));
+  const targetDate = started_at ? new Date(started_at) : nowVE;
+  const yy = targetDate.getFullYear().toString().slice(-2);
+  const mm = (targetDate.getMonth() + 1).toString().padStart(2, '0');
+  const dd = targetDate.getDate().toString().padStart(2, '0');
+  
+  const prefix = `${yy}${mm}${dd}`;
+  const rows = await c.env.DB.prepare("SELECT name FROM sessions WHERE name LIKE ?").bind(`${prefix}_%`).all<{ name: string }>();
+  let maxN = 0;
+  if (rows && rows.results) {
+    for (const row of rows.results) {
+      const match = row.name.match(new RegExp(`^${prefix}_(\\d+)`));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxN) maxN = num;
+      }
+    }
+  }
+  const nn = maxN + 1;
+  const finalPrefix = `${prefix}_${nn} `;
+
   const dateStr = nowVE.toISOString().split('T')[0].replace(/-/g, '');
-  const sessionName = name || `EVENTO_${dateStr}`;
+  const rawName = name || `EVENTO_${dateStr}`;
+  const sessionName = rawName.startsWith(prefix) ? rawName : `${finalPrefix}${rawName}`;
+  
   const sessionType = type || 'valet';
   const internalKey = correlativo ? `${sessionName} ${correlativo}` : sessionName;
 
   // Verificar exclusividad antes de planificar — SOLO bloquear si hay solapamiento de fechas
   const allIds = [...new Set([supervisor_id, ...(staff_ids || [])])].filter(Boolean);
-  if (allIds.length > 0) {
+  if (allIds.length > 0 && !is_executed) {
     // Determinar rango de fechas del nuevo evento
     const newStart = started_at ? started_at.split('T')[0] : null;
     const newEnd = event_end_date ? event_end_date.split('T')[0] : newStart;
@@ -1648,11 +2163,12 @@ app.post('/api/sessions/plan', async (c) => {
     }
   }
 
+  const finalStatus = is_executed ? 'completed' : 'planning';
   const result = await c.env.DB.prepare(`
     INSERT INTO sessions (name, internal_key, type, status, supervisor_id, started_at, phone, address, contact_name, email, observations, convocation_time, event_start_time, event_end_time, event_end_date, budget_id) 
-    VALUES (?, ?, ?, "planning", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
-    .bind(sessionName, internalKey, sessionType, supervisor_id || null, started_at || null, phone || null, address || null, contact_name || null, email || null, observations || null, convocation_time || null, event_start_time || null, event_end_time || null, event_end_date || null, budget_id || null)
+    .bind(sessionName, internalKey, sessionType, finalStatus, supervisor_id || null, started_at || null, phone || null, address || null, contact_name || null, email || null, observations || null, convocation_time || null, event_start_time || null, event_end_time || null, event_end_date || null, budget_id || null)
     .run();
 
   const sessionId = result.meta.last_row_id;
@@ -1660,16 +2176,45 @@ app.post('/api/sessions/plan', async (c) => {
   // Asignar personal
   if (allIds.length > 0) {
     for (const userId of allIds) {
-      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
-      let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
-      if (!currentIds.includes(sessionId.toString())) {
-        currentIds.push(sessionId.toString());
+      if (!is_executed) {
+        const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
+        let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
+        if (!currentIds.includes(sessionId.toString())) {
+          currentIds.push(sessionId.toString());
+        }
+        await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
+      } else {
+        const startDateStr = started_at ? started_at.split('T')[0] : nowVE.toISOString().split('T')[0];
+        const inTime = convocation_time ? `${startDateStr} ${convocation_time}:00` : nowVE.toISOString().replace('T', ' ').split('.')[0];
+        
+        await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type, timestamp) VALUES (?, ?, ?, ?)').bind(userId, sessionId, 'entry', inTime).run();
+        
+        const outDateStr = event_end_date ? event_end_date.split('T')[0] : startDateStr;
+        const outTime = event_end_time ? `${outDateStr} ${event_end_time}:00` : inTime;
+        await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type, timestamp) VALUES (?, ?, ?, ?)').bind(userId, sessionId, 'exit', outTime).run();
       }
-      await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
+    }
+    
+    if (is_executed) {
+      const summaryData = {
+        session_name: sessionName,
+        event_type: sessionType,
+        total_vehicles: 0,
+        total_staff: allIds.length,
+        delivered_vehicles: 0,
+        custody_vehicles: 0,
+        avg_stay_mins: 0,
+        duration_mins: 0
+      };
+      const reportTime = nowVE.toISOString().replace('T', ' ').split('.')[0];
+      await c.env.DB.prepare(`
+        INSERT INTO event_reports (session_id, session_name, event_type, total_vehicles, total_staff, summary_json, closed_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(sessionId, sessionName, sessionType, 0, allIds.length, JSON.stringify(summaryData), reportTime).run();
     }
   }
 
-  return c.json({ success: true, id: sessionId, name: sessionName, internal_key: internalKey, type: sessionType, status: 'planning' });
+  return c.json({ success: true, id: sessionId, name: sessionName, internal_key: internalKey, type: sessionType, status: finalStatus });
 });
 
 app.get('/api/guardia/:session_id/details', async (c) => {
@@ -1680,27 +2225,92 @@ app.get('/api/guardia/:session_id/details', async (c) => {
 
 app.post('/api/guardia/:session_id/details', async (c) => {
   const sessionId = c.req.param('session_id');
-  const { transport, desayunos, almuerzos, cenas, materials, proveedor, horas_solicitadas } = await c.req.json().catch(() => ({}));
+  const user = c.get('user');
+  const body = await c.req.json().catch(() => ({}));
+  const { transport, desayunos, almuerzos, cenas, materials, proveedor, horas_solicitadas } = body;
   
-  const existing = await c.env.DB.prepare('SELECT session_id FROM guardia_details WHERE session_id = ?').bind(sessionId).first();
+  const existing = await c.env.DB.prepare('SELECT session_id, materials FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
   
-  if (existing) {
-    await c.env.DB.prepare(`
-      UPDATE guardia_details 
-      SET transport = ?, desayunos = ?, almuerzos = ?, cenas = ?, materials = ?, proveedor = ?, horas_solicitadas = ?
-      WHERE session_id = ?
-    `).bind(transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null, proveedor || null, horas_solicitadas || null, sessionId).run();
-  } else {
-    await c.env.DB.prepare(`
-      INSERT INTO guardia_details (session_id, transport, desayunos, almuerzos, cenas, materials, proveedor, horas_solicitadas)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(sessionId, transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null, proveedor || null, horas_solicitadas || null).run();
+  // Logic to calculate differences in inventory
+  let oldItems: Record<string, number> = {};
+  let newItems: Record<string, number> = {};
+
+  if (existing && existing.materials) {
+    try {
+      const parsedOld = JSON.parse(existing.materials);
+      if (parsedOld && parsedOld.items) {
+        parsedOld.items.forEach((i: any) => { oldItems[i.name] = i.qty; });
+      }
+    } catch(e) {}
   }
+  if (materials) {
+    try {
+      const parsedNew = JSON.parse(materials);
+      if (parsedNew && parsedNew.items) {
+        parsedNew.items.forEach((i: any) => { newItems[i.name] = i.qty; });
+      }
+    } catch(e) {}
+  }
+
+  // Get current inventory to match IDs by name
+  const inventoryDb = await c.env.DB.prepare('SELECT id, name FROM inventory_items').all<any>();
+  const inventoryMap: Record<string, number> = {};
+  if (inventoryDb.results) {
+    inventoryDb.results.forEach(i => { inventoryMap[i.name] = i.id; });
+  }
+
+  // Process differences
+  const allKeys = new Set([...Object.keys(oldItems), ...Object.keys(newItems)]);
+  const statements: any[] = [];
+  const userName = user?.name || 'Sistema';
+
+  for (const key of allKeys) {
+    const oldQ = oldItems[key] || 0;
+    const newQ = newItems[key] || 0;
+    const diff = newQ - oldQ; // e.g. 5 - 2 = +3 assigned more (so -3 from physical inventory)
+    
+    if (diff !== 0) {
+      const itemId = inventoryMap[key];
+      if (itemId) {
+        const physicalChange = -diff; // Assigned more -> reduce physical
+        statements.push(
+          c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity + ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+            .bind(physicalChange, user?.id || 0, userName, itemId)
+        );
+        statements.push(
+          c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes) VALUES (?, ?, ?, ?, ?, ?)')
+            .bind(itemId, sessionId, physicalChange, diff > 0 ? 'assignment' : 'return', userName, `Ajuste por asignación en evento`)
+        );
+      }
+    }
+  }
+
+  if (existing) {
+    statements.unshift(
+      c.env.DB.prepare(`
+        UPDATE guardia_details 
+        SET transport = ?, desayunos = ?, almuerzos = ?, cenas = ?, materials = ?, proveedor = ?, horas_solicitadas = ?
+        WHERE session_id = ?
+      `).bind(transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null, proveedor || null, horas_solicitadas || null, sessionId)
+    );
+  } else {
+    statements.unshift(
+      c.env.DB.prepare(`
+        INSERT INTO guardia_details (session_id, transport, desayunos, almuerzos, cenas, materials, proveedor, horas_solicitadas)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(sessionId, transport || null, desayunos || 0, almuerzos || 0, cenas || 0, materials || null, proveedor || null, horas_solicitadas || null)
+    );
+  }
+
+  if (statements.length > 0) {
+    await c.env.DB.batch(statements);
+  }
+
   return c.json({ success: true });
 });
 
 app.post('/api/sessions/update', async (c) => {
-  const { id, name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id } = await c.req.json();
+  const { id, name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
   if (!id) return c.json({ error: 'ID requerido' }, 400);
 
   const internalKey = correlativo ? `${name} ${correlativo}` : name;
@@ -1718,6 +2328,10 @@ app.post('/api/sessions/update', async (c) => {
     .bind(name, internalKey, type.toLowerCase(), supervisor_id || null, started_at || null, phone || null, address || null, contact_name || null, email || null, observations || null, convocation_time || null, event_start_time || null, event_end_time || null, event_end_date || null, budget_id || null, id)
     .run();
 
+  if (is_executed) {
+    await c.env.DB.prepare('UPDATE sessions SET status = "completed" WHERE id = ?').bind(id).run();
+  }
+
   // 2. Gestionar personal
   const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
   for (const u of (usersWithSession.results || [])) {
@@ -1729,12 +2343,26 @@ app.post('/api/sessions/update', async (c) => {
   const allIds = [...new Set([supervisor_id, ...(staff_ids || [])])].filter(Boolean);
   if (allIds.length > 0) {
     for (const userId of allIds) {
-      const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
-      let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
-      if (!currentIds.includes(id.toString())) {
-        currentIds.push(id.toString());
+      if (!is_executed) {
+        const userObj = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(userId).first<{ current_session_id: string | null }>();
+        let currentIds = userObj && userObj.current_session_id ? userObj.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean) : [];
+        if (!currentIds.includes(id.toString())) {
+          currentIds.push(id.toString());
+        }
+        await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
+      } else {
+        const nowVE = new Date(new Date().getTime() - (4 * 60 * 60 * 1000));
+        const startDateStr = started_at ? started_at.split('T')[0] : nowVE.toISOString().split('T')[0];
+        const inTime = convocation_time ? `${startDateStr} ${convocation_time}:00` : nowVE.toISOString().replace('T', ' ').split('.')[0];
+        
+        const existingAtt = await c.env.DB.prepare('SELECT id FROM staff_attendance WHERE user_id = ? AND session_id = ?').bind(userId, id).first();
+        if (!existingAtt) {
+            await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type, timestamp) VALUES (?, ?, ?, ?)').bind(userId, id, 'entry', inTime).run();
+            const outDateStr = event_end_date ? event_end_date.split('T')[0] : startDateStr;
+            const outTime = event_end_time ? `${outDateStr} ${event_end_time}:00` : inTime;
+            await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type, timestamp) VALUES (?, ?, ?, ?)').bind(userId, id, 'exit', outTime).run();
+        }
       }
-      await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
     }
   }
 
@@ -1785,7 +2413,6 @@ app.post('/api/sessions/activate', async (c) => {
       currentIds.push(id.toString());
     }
     await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
-    await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type) VALUES (?, ?, "entry")').bind(userId, id).run();
   }
 
   // 4. Enviar Email de Confirmación
@@ -1935,12 +2562,20 @@ app.post('/api/reports/test-request', async (c) => {
     const adminEmail = env.DIRECTOR_EMAIL ;
 
     if (type === 'birthday') {
-      await sendMonthlyBirthdayReport(env, true);
-      return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado masivamente` });
+      await sendWeeklyBirthdayReport(env, true);
+      return c.json({ success: true, message: `Reporte de cumpleañeros forzado y enviado semanalmente` });
+
+    } else if (type === 'applications') {
+      await sendWeeklyApplicationsReport(env, true);
+      return c.json({ success: true, message: `Reporte de postulaciones forzado y enviado semanalmente` });
 
     } else if (type === 'plantilla_rrhh') {
       const res = await env.DB.prepare('SELECT * FROM users').all();
-      const list = (res.results || []) as any[];
+      let list = (res.results || []) as any[];
+      
+      const excludedAdmins = ["ADMIN", "ADMINISTRACION", "EQUIPOS", "OPERACIONES", "ORO 1", "ORO 2", "ORO 4", "ORO 5", "RRHH", "TRANSPORTE"];
+      list = list.filter(u => !excludedAdmins.includes((u.name || '').toUpperCase().trim()));
+
       const eyePriority: Record<string, number> = { 'ORO': 1, 'PLATA': 2, 'BRONCE': 3, 'LOGÍSTICA': 4 };
       list.sort((a, b) => {
         const prioA = eyePriority[(a.eye_id || '').toUpperCase()] || 99;
@@ -1950,7 +2585,7 @@ app.post('/api/reports/test-request', async (c) => {
       });
 
       const excelData = [
-          ['Item', 'Status', 'Nombre', 'Cedula', 'Email', 'Perfil Admin', 'Perfil Opera', 'EYE ID', 'Telefono', 'Direccion', 'Sector', 'Entidad Bancaria', 'Numero de Cuenta', 'Telefono Pago Movil', 'Familiar', 'TelFamiliar', 'Alergias', 'Edad'],
+          ['ITEM', 'STATUS', 'NOMBRE', 'CEDULA', 'EMAIL', 'PERFIL ADMIN', 'PERFIL OPERA', 'EYE ID', 'TELEFONO', 'DIRECCION', 'SECTOR', 'ENTIDAD BANCARIA', 'NUMERO DE CUENTA', 'TELEFONO PAGO MOVIL', 'FAMILIAR', 'TELFAMIILIAR', 'ALERGIAS', 'EDAD'],
           ...list.map((u, i) => {
               let age = '';
               if (u.birth_date) {
@@ -1967,21 +2602,21 @@ app.post('/api/reports/test-request', async (c) => {
               return [
                   i + 1, 
                   u.is_active === 0 ? 'INACTIVO' : 'ACTIVO', 
-                  u.name || '', 
-                  u.cedula || '', 
-                  u.email || '',
-                  u.profile_admin || '',
-                  u.profile_opera || '', 
-                  u.eye_id || '',
-                  u.phone || '', 
-                  u.address || '', 
-                  u.sector || '', 
-                  (u.bank_name || ''), 
-                  (u.bank_account || ''), 
-                  (u.pago_movil_phone || ''),
-                  u.emergency_contact || '', 
-                  u.emergency_phone || '', 
-                  u.allergies || '',
+                  (u.name || '').toUpperCase(), 
+                  (u.cedula || '').toUpperCase(), 
+                  (u.email || '').toUpperCase(),
+                  (u.profile_admin || '').toUpperCase(),
+                  (u.profile_opera || '').toUpperCase(), 
+                  (u.eye_id || '').toUpperCase(),
+                  (u.phone || '').toUpperCase(), 
+                  (u.address || '').toUpperCase(), 
+                  (u.sector || '').toUpperCase(), 
+                  (u.bank_name || '').toUpperCase(), 
+                  (u.bank_account || '').toUpperCase(), 
+                  (u.pago_movil_phone || '').toUpperCase(),
+                  (u.emergency_contact || '').toUpperCase(), 
+                  (u.emergency_phone || '').toUpperCase(), 
+                  (u.allergies || '').toUpperCase(),
                   age
               ];
           })
@@ -2015,10 +2650,10 @@ app.post('/api/reports/test-request', async (c) => {
       // Obtener los permisos guardados
       const permRowsRes = await env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
       const permRows = permRowsRes.results || [];
-      const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
+      const permMap = new Map<any, any>(permRows.map((r: any) => [r.user_id, r]));
 
       let excelData = [
-        ['Empleado', 'Valet Parking Ve', 'Valet Parking Mod', 'Eventos y Listas Ve', 'Eventos y Listas Mod', 'Admin General Ve', 'Admin General Mod', 'VIP Eye Staff Ve', 'VIP Eye Staff Mod', 'Seguridad (Pines) Ve', 'Seguridad (Pines) Mod']
+        ['EMPLEADO', 'VALET PARKING VE', 'VALET PARKING MOD', 'EVENTOS Y LISTAS VE', 'EVENTOS Y LISTAS MOD', 'ADMIN GENERAL VE', 'ADMIN GENERAL MOD', 'VIP EYE STAFF VE', 'VIP EYE STAFF MOD', 'SEGURIDAD (PINES) VE', 'SEGURIDAD (PINES) MOD']
       ];
 
       let htmlRows = '';
@@ -2221,15 +2856,31 @@ app.post('/api/reports/test-request', async (c) => {
       } catch (e: any) {
         return c.json({ error: `Error: ${e.message}` }, 500);
       }
+    } else if (type === 'apertura_evento') {
+      // Buscar la última sesión en la base de datos para simular el reporte de apertura si no se provee session_id (aunque en realidad viene en sessionId pero se envía null desde el frontend)
+      const { session_id, channel } = await c.req.json();
+      let sessionIdToUse = session_id;
+      if (!sessionIdToUse) {
+        const latestSession = await env.DB.prepare('SELECT id FROM sessions ORDER BY id DESC LIMIT 1').first<any>();
+        if (!latestSession) return c.json({ error: 'No hay eventos en la base de datos para simular la apertura.' }, 400);
+        sessionIdToUse = latestSession.id;
+      }
+      try {
+        await sendEventActivationEmail(env, sessionIdToUse, channel);
+        return c.json({ success: true, message: `Confirmación de Inicio de Evento enviada (ID ${sessionIdToUse})` });
+      } catch (e: any) {
+        console.error('Error in sendEventActivationEmail test:', e);
+        return c.json({ error: `Error: ${e.message}` }, 500);
+      }
     } else if (type === 'credenciales') {
     const { channel } = await c.req.json();
     const sendEmailFlag = channel === 'email' || channel === 'ambos' || !channel;
     const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
     
     const subsRes = await env.DB.prepare(`
-      SELECT u.id, u.name, u.email, u.phone, u.pin_hash FROM user_report_subscriptions rs
+      SELECT u.id, u.name, u.email, u.phone, u.pin_hash, rs.credenciales as sub_channel FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.credenciales = 1 AND u.is_active = 1
+      WHERE rs.credenciales IN (1, 2, 3) AND u.is_active = 1
     `).all();
     const subs = subsRes.results || [];
     
@@ -2241,6 +2892,10 @@ app.post('/api/reports/test-request', async (c) => {
 
     for (const user of subs) {
       let sentAny = false;
+      const uChannel = (user as any).sub_channel || 0;
+      const emailOk = sendEmailFlag && (channel ? true : (uChannel === 2 || uChannel === 3));
+      const waOk = sendWaFlag && (channel ? true : (uChannel === 1 || uChannel === 3));
+      
       const firstName = (user.name as string).split(' ')[0];
       const htmlBody = `
 <!DOCTYPE html>
@@ -2278,29 +2933,29 @@ app.post('/api/reports/test-request', async (c) => {
 </body>
 </html>`;
 
-      if (sendEmailFlag && user.email) {
+      if (emailOk && user.email) {
         try {
           await sendEmail(env, [user.email as string], '🔐 Credenciales de Acceso - EYE STAFF', htmlBody);
           sentAny = true;
         } catch(e) {
           console.error(e);
-          if (!sendWaFlag) errors++;
+          if (!waOk) errors++;
         }
-      } else if (sendEmailFlag && !user.email) {
-        if (!sendWaFlag) errors++;
+      } else if (emailOk && !user.email) {
+        if (!waOk) errors++;
       }
 
-      if (sendWaFlag && user.phone) {
+      if (waOk && user.phone) {
         const waMessage = `Hola *${firstName}* 👋🏼\n\nAquí están tus credenciales de acceso a la plataforma *EYE STAFF*:\n\n🌐 URL: https://eye-staff.app\n👤 Usuario: *${user.name}*\n🔑 Contraseña (PIN): *${user.pin_hash}*\n\n🔒 _Mantén tu contraseña segura. Si deseas cambiarla, contacta al administrador._`;
         const res = await sendWhatsAppMessage(env, user.phone as string, waMessage);
         if (res.ok) {
           sentAny = true;
         } else {
           if (res.error) lastBotError = res.error;
-          if (!sendEmailFlag) errors++;
+          if (!emailOk) errors++;
         }
-      } else if (sendWaFlag && !user.phone) {
-        if (!sendEmailFlag) errors++;
+      } else if (waOk && !user.phone) {
+        if (!emailOk) errors++;
       }
 
       if (sentAny) sentCount++;
@@ -2313,30 +2968,32 @@ app.post('/api/reports/test-request', async (c) => {
     return c.json({ success: true, message: `Enviado a ${sentCount} empleados (${errors} errores)` });
   } else if (type === 'bbdd_eventos') {
       const events = await env.DB.prepare('SELECT id, session_id, event_type, closed_at, total_vehicles, total_staff FROM event_reports ORDER BY closed_at DESC LIMIT 100').all();
-      let excelData = [['ID', 'Session ID', 'Tipo', 'Fecha (Cierre)', 'Vehículos', 'Staff']];
+      let excelData = [['ID', 'SESSION ID', 'TIPO', 'FECHA (CIERRE)', 'VEHÍCULOS', 'STAFF']];
       for (const e of (events.results || [])) {
-        excelData.push([e.id, (e as any).session_id, (e as any).event_type, (e as any).closed_at, (e as any).total_vehicles, (e as any).total_staff]);
+        excelData.push([e.id, ((e as any).session_id || '').toUpperCase(), ((e as any).event_type || '').toUpperCase(), ((e as any).closed_at || '').toUpperCase(), (e as any).total_vehicles, (e as any).total_staff]);
       }
       const ws = XLSX.utils.aoa_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Eventos");
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
       const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-      await sendEmail(env, adminEmail, 'Base de Datos de Eventos Cerrados', '<p>Adjunto encontrarás la base de datos de los últimos 100 eventos cerrados.</p>', [{ filename: 'BBDD_Eventos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-      return c.json({ success: true, message: `BBDD de eventos enviada a ${adminEmail}` });
+      // Extracciones de Bases de Datos eliminadas a petición del usuario
+      // await sendEmail(env, adminEmail, 'Base de Datos de Eventos Cerrados', '<p>Adjunto encontrarás la base de datos de los últimos 100 eventos cerrados.</p>', [{ filename: 'BBDD_Eventos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `BBDD de eventos generada (envío omitido)` });
     } else if (type === 'vehiculos') {
       const vehicles = await env.DB.prepare('SELECT plate, brand, color, owner_phone, status, session_id FROM vehicles ORDER BY id DESC LIMIT 500').all();
-      let excelData = [['Placa', 'Marca', 'Color', 'Teléfono', 'Estado', 'Session ID']];
+      let excelData = [['PLACA', 'MARCA', 'COLOR', 'TELÉFONO', 'ESTADO', 'SESSION ID']];
       for (const v of (vehicles.results || [])) {
-        excelData.push([(v as any).plate, (v as any).brand, (v as any).color, (v as any).owner_phone, (v as any).status, (v as any).session_id]);
+        excelData.push([((v as any).plate || '').toUpperCase(), ((v as any).brand || '').toUpperCase(), ((v as any).color || '').toUpperCase(), ((v as any).owner_phone || '').toUpperCase(), ((v as any).status || '').toUpperCase(), ((v as any).session_id || '').toUpperCase()]);
       }
       const ws = XLSX.utils.aoa_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Vehiculos");
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
       const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-      await sendEmail(env, adminEmail, 'Base de Datos de Vehículos', '<p>Adjunto encontrarás la base de datos de los últimos 500 vehículos.</p>', [{ filename: 'BBDD_Vehiculos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-      return c.json({ success: true, message: `BBDD de vehículos enviada a ${adminEmail}` });
+      // Extracciones de Bases de Datos eliminadas a petición del usuario
+      // await sendEmail(env, adminEmail, 'Base de Datos de Vehículos', '<p>Adjunto encontrarás la base de datos de los últimos 500 vehículos.</p>', [{ filename: 'BBDD_Vehiculos.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `BBDD de vehículos generada (envío omitido)` });
     } else if (type === 'personal') {
       const users = await env.DB.prepare('SELECT id, name, role, is_active, phone FROM users ORDER BY name ASC').all();
       let excelData = [['ID', 'Nombre', 'Rol', 'Activo', 'Teléfono']];
@@ -2348,8 +3005,9 @@ app.post('/api/reports/test-request', async (c) => {
       XLSX.utils.book_append_sheet(wb, ws, "Personal");
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
       const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-      await sendEmail(env, adminEmail, 'Matriz Completa de Personal', '<p>Adjunto encontrarás la matriz completa de personal.</p>', [{ filename: 'Matriz_Personal.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-      return c.json({ success: true, message: `Matriz de personal enviada a ${adminEmail}` });
+      // Extracciones de Bases de Datos eliminadas a petición del usuario
+      // await sendEmail(env, adminEmail, 'Matriz Completa de Personal', '<p>Adjunto encontrarás la matriz completa de personal.</p>', [{ filename: 'Matriz_Personal.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `Matriz de personal generada (envío omitido)` });
     } else if (type === 'nominas') {
       // Para simplificar ya que staff_payroll u otra tabla de nómina puede no existir, devolvemos un reporte de sesiones
       const sessions = await env.DB.prepare('SELECT id, name, status, started_at FROM sessions ORDER BY started_at DESC LIMIT 100').all();
@@ -2362,12 +3020,19 @@ app.post('/api/reports/test-request', async (c) => {
       XLSX.utils.book_append_sheet(wb, ws, "Nominas");
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
       const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
-      await sendEmail(env, adminEmail, 'Resumen Contable de Nóminas (MOCK)', '<p>Adjunto encontrarás una simulación del resumen contable de nóminas.</p>', [{ filename: 'Nominas.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
-      return c.json({ success: true, message: `Resumen de nóminas enviado a ${adminEmail}` });
+      // Reportes Contables / Cierres eliminados a petición del usuario
+      // await sendEmail(env, adminEmail, 'Resumen Contable de Nóminas (MOCK)', '<p>Adjunto encontrarás una simulación del resumen contable de nóminas.</p>', [{ filename: 'Nominas.xlsx', content: excelBase64, content_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }]);
+      return c.json({ success: true, message: `Resumen de nóminas generado (envío omitido)` });
     } else if (type === 'cierre_pago') {
       const html = `<div style="font-family: sans-serif; padding: 20px;"><h2>Cierre de Ciclo de Pago</h2><p>Este es un correo simulado de cierre de ciclo de pago. Se han marcado los eventos aprobados como PAGADOS.</p></div>`;
       await sendEmail(env, adminEmail, 'Cierre de Ciclo de Pago', html);
       return c.json({ success: true, message: `Correo de cierre enviado a ${adminEmail}` });
+    } else if (type === 'cumpleanos') {
+      await sendWeeklyBirthdayReport(env, true);
+      return c.json({ success: true, message: `Reporte real de cumpleañeros forzado y enviado` });
+    } else if (type === 'postulacion_empleo') {
+      await sendWeeklyApplicationsReport(env, true);
+      return c.json({ success: true, message: `Reporte real de postulaciones forzado y enviado` });
     } else {
       return c.json({ error: 'Tipo de reporte de prueba no soportado' }, 400);
     }
@@ -2438,7 +3103,7 @@ app.post('/api/reports/send-credentials', async (c) => {
   </div>
 </body>
 </html>`;
-    await sendEmail(c.env, c.env.DIRECTOR_EMAIL, `👑 Credenciales de acceso de ${user.name} — EYE STAFF App`, html);
+    // Copias de Accesos a Director eliminadas a petición del usuario
     return c.json({ success: true });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
@@ -2464,20 +3129,22 @@ app.delete('/api/sessions/:id', async (c) => {
       await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.length > 0 ? currentIds.join(',') : null, u.id).run();
     }
 
-    // 2. Eliminar toda la data asociada y finalmente la sesión
-    await Promise.all([
-      c.env.DB.prepare('DELETE FROM payroll_submissions WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM chat_messages WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM access_control_guests WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM access_logs WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM guest_list WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM staff_attendance WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM guardia_details WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM event_reports WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM vehicles WHERE session_id = ?').bind(id).run(),
-      c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run()
+    // 2. Eliminar toda la data asociada y finalmente la sesión secuencialmente
+    await c.env.DB.batch([
+      c.env.DB.prepare('DELETE FROM payroll_submissions WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM chat_messages WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM access_control_guests WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM access_logs WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM guest_list WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM staff_attendance WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM guardia_details WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM event_reports WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id),
+      c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id),
+      c.env.DB.prepare('DELETE FROM vehicles WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM staff_locations WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM inventory_movements WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id)
     ]);
 
     return c.json({ success: true });
@@ -2514,7 +3181,22 @@ app.post('/api/sessions/close', async (c) => {
   if (!id) return c.json({ error: 'No hay sesión activa para cerrar' }, 400);
 
   if (status === 'budgeted') {
-    await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id).run();
+    await c.env.DB.batch([
+      c.env.DB.prepare('DELETE FROM payroll_submissions WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM chat_messages WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM access_control_guests WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM access_logs WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM guest_list WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM staff_attendance WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM guardia_details WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM event_reports WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM photos WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id),
+      c.env.DB.prepare('DELETE FROM events WHERE vehicle_id IN (SELECT id FROM vehicles WHERE session_id = ?)').bind(id),
+      c.env.DB.prepare('DELETE FROM vehicles WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM staff_locations WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM inventory_movements WHERE session_id = ?').bind(id),
+      c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(id)
+    ]);
 
     const usersWithSession = await c.env.DB.prepare("SELECT id, current_session_id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(id), String(id)).all<{ id: number, current_session_id: string }>();
     for (const u of (usersWithSession.results || [])) {
@@ -2533,6 +3215,15 @@ app.post('/api/sessions/close', async (c) => {
     dbUser = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(currentUserId).first<any>();
   }
 
+  // VALIDACIÓN: Evitar que se cierre múltiples veces el mismo evento
+  const currentSession = await c.env.DB.prepare('SELECT status FROM sessions WHERE id = ?').bind(id).first<{status: string}>();
+  if (!currentSession) {
+    return c.json({ error: 'Sesión no encontrada' }, 404);
+  }
+  if (currentSession.status === 'closed') {
+    return c.json({ error: 'Este evento ya ha sido cerrado previamente' }, 400);
+  }
+
   await c.env.DB.prepare('UPDATE sessions SET status = "closed", ended_at = CURRENT_TIMESTAMP WHERE id = ?').bind(id).run();
 
   // Liberar personal asignado al cerrar
@@ -2548,6 +3239,16 @@ app.post('/api/sessions/close', async (c) => {
 
   // Generar reporte detallado y enviar por email
   const reportData = await sendEventClosingReport(c.env, id);
+
+  c.executionCtx.waitUntil((async () => {
+    try {
+      const sRes = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(id).first<{name: string}>();
+      if (sRes) {
+        // WhatsApp de Debugging eliminado a petición del usuario
+        // await sendAdminDebugWa(c.env, `El evento *${sRes.name}* ha finalizado (cerrado).`);
+      }
+    } catch(e){}
+  })());
 
   return c.json({ success: true, status: 'closed', session_id: id, report: reportData });
 });
@@ -2568,6 +3269,16 @@ app.get('/api/event-reports', async (c) => {
   return c.json({ reports: res.results || [] });
 });
 
+app.delete('/api/event-reports/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    await c.env.DB.prepare('DELETE FROM event_reports WHERE id = ?').bind(id).run();
+    return c.json({ success: true, message: 'Reporte eliminado' });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
 app.get('/api/event-reports/:id/details', async (c) => {
   try {
     const reportId = c.req.param('id');
@@ -2579,6 +3290,9 @@ app.get('/api/event-reports/:id/details', async (c) => {
     // 1. Obtener detalles de la sesión
     const session = await c.env.DB.prepare('SELECT * FROM sessions WHERE id = ?').bind(sessionId).first<any>();
     if (!session) return c.json({ error: 'Sesión no encontrada' }, 404);
+
+    const guardiaDetails = await c.env.DB.prepare('SELECT * FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
+    session.guardia_details = guardiaDetails || null;
 
     // 2. Obtener vehículos
     const vehiclesRes = await c.env.DB.prepare(`
@@ -2901,7 +3615,8 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
     }
     const ccList = Array.from(ccEmailsSet);
 
-    await sendEmail(c.env, primaryEmail, `EYE STAFF: Reporte Final (Reenvío) — ${session.name}`, html, attachments, ccList);
+    // Reenvío Manual de Reporte Final eliminado a petición del usuario
+    // await sendEmail(c.env, primaryEmail, `EYE STAFF: Reporte Final (Reenvío) — ${session.name}`, html, attachments, ccList);
 
     // Actualizar el historial de emails enviados en el reporte
     let currentHistory: string[] = [];
@@ -2932,7 +3647,9 @@ app.post('/api/event-reports/:id/send-email', async (c) => {
 async function sendEventClosingReport(env: Env, sessionId: number, channel: string = 'email') {
   const session = await env.DB.prepare('SELECT * FROM sessions WHERE id = ?').bind(sessionId).first<any>();
   if (!session) return null;
-  const isLogistico = (session.type || '').toUpperCase().includes('LOGISTICO');
+  const guardiaDetails = await env.DB.prepare('SELECT * FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
+  session.guardia_details = guardiaDetails || null;
+  const isLogistico = (session.type || '').toUpperCase().includes('LOGISTICO') || (session.type || '').toUpperCase().includes('GUARDIA');
   const formatHHMM = (mins: number) => {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
@@ -2992,7 +3709,7 @@ async function sendEventClosingReport(env: Env, sessionId: number, channel: stri
     }).length;
 
     const sessionSupervisorIds = String(session.supervisor_id || '').split(',').map((id: string) => id.trim());
-    const roleStr = sessionSupervisorIds.includes(String(member.id)) ? 'SUPERVISOR' : 'EMPLEADO REGULAR';
+    const roleStr = sessionSupervisorIds.includes(String(member.id)) ? 'SUPERVISOR' : 'LOGÍSTICA';
 
     staffWithAttendance.push({
       ...member,
@@ -3118,7 +3835,11 @@ async function sendEventClosingReport(env: Env, sessionId: number, channel: stri
     page.drawRectangle({ x: 0, y: pageH - 60, width: pageW, height: 60, color: rgb(0.06, 0.09, 0.15) });
     page.drawText('EYE STAFF', { x: margin, y: pageH - 38, size: 20, font: bold, color: rgb(0.94, 0.27, 0.27) });
     page.drawText('REPORTE OFICIAL DE CIERRE DE EVENTO', { x: margin, y: pageH - 55, size: 8, font, color: rgb(0.6, 0.6, 0.6) });
-    page.drawText(`${session.name}  |  ID: ${sessionId}`, { x: 300, y: pageH - 38, size: 11, font: bold, color: rgb(1, 1, 1) });
+    if (isLogistico) {
+      page.drawText(`${session.name}`, { x: 300, y: pageH - 38, size: 11, font: bold, color: rgb(1, 1, 1) });
+    } else {
+      page.drawText(`${session.name}  |  ID: ${sessionId}`, { x: 300, y: pageH - 38, size: 11, font: bold, color: rgb(1, 1, 1) });
+    }
     page.drawText(`Generado: ${formatFull24h(new Date())}`, { x: 300, y: pageH - 55, size: 7, font, color: rgb(0.6, 0.6, 0.6) });
     y = pageH - 75;
   };
@@ -3136,6 +3857,41 @@ async function sendEventClosingReport(env: Env, sessionId: number, channel: stri
     ['INICIO:', formatFull24h(eventStart).toUpperCase()], ['FIN:', formatFull24h(eventEnd).toUpperCase()],
     ['DURACIÓN:', isLogistico ? formatHHMM(durationMins) + ' HRS' : `${durationMins} MINUTOS`],
   ];
+
+  let equiposTxtPdf = '';
+  let materialesTxtPdf = '';
+  const gdPdf = session.guardia_details;
+  if (gdPdf && gdPdf.transport) {
+    try {
+      const trans = JSON.parse(gdPdf.transport);
+      equiposTxtPdf = trans.equipos || '';
+    } catch(e) {}
+  }
+  if (gdPdf && gdPdf.materials) {
+    try {
+      const matObj = JSON.parse(gdPdf.materials);
+      let matItems = [];
+      if (matObj.items && Array.isArray(matObj.items)) {
+        matItems = matObj.items.map((i: any) => {
+          let s = `${i.qty}x ${i.name}`;
+          if (i.serials) s += ` (Serials: ${i.serials})`;
+          return s;
+        });
+      }
+      materialesTxtPdf = matItems.join(', ');
+      if (matObj.notes) materialesTxtPdf += ` | Notas: ${matObj.notes}`;
+    } catch(e) {
+      materialesTxtPdf = gdPdf.materials;
+    }
+  }
+
+  if (equiposTxtPdf) {
+    infoItems.push(['LOGÍSTICA:', equiposTxtPdf.toUpperCase()]);
+  }
+  if (materialesTxtPdf) {
+    infoItems.push(['MATERIALES:', materialesTxtPdf.toUpperCase()]);
+  }
+
   if (!isLogistico) {
     infoItems.push(['TOTAL VEHÍCULOS:', String(vehicles.length)]);
     infoItems.push(['ENTREGADOS:', String(delivered)]);
@@ -3229,32 +3985,26 @@ async function sendEventClosingReport(env: Env, sessionId: number, channel: stri
   y -= 15;
 
   // Sección 4: Resumen ejecutivo
-  ensureSpace(80);
-  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
-  page.drawText('RESUMEN EJECUTIVO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
-  y -= 22;
+  if (!isLogistico) {
+    ensureSpace(80);
+    page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2 * margin, height: 16, color: rgb(0.94, 0.27, 0.27) });
+    page.drawText('RESUMEN EJECUTIVO', { x: margin + 5, y: y + 2, size: 9, font: bold, color: rgb(1, 1, 1) });
+    y -= 22;
 
-  const execLines = isLogistico ? [
-    `EL EVENTO "${session.name.toUpperCase()}" SE DESARROLLÓ EN ${(session.address || 'LA UBICACIÓN ACORDADA').toUpperCase()}.`,
-    `INICIO: ${formatFull24h(eventStart).toUpperCase()}  |  FIN: ${formatFull24h(eventEnd).toUpperCase()}  |  DURACIÓN TOTAL: ${formatHHMM(durationMins)} HRS.`,
-    `EL EQUIPO OPERATIVO ESTUVO COMPUESTO POR ${staffWithAttendance.length} PERSONA(S).`,
-    ``,
-    `ESTE REPORTE HA SIDO GENERADO AUTOMÁTICAMENTE POR EYE STAFF AL CIERRE DEL EVENTO.`,
-    `PARA NOTAS ADICIONALES, CONTACTE AL COORDINADOR RESPONSABLE DEL EVENTO.`
-  ] : [
-    `EL EVENTO "${session.name.toUpperCase()}" SE DESARROLLÓ EN ${(session.address || 'LA UBICACIÓN ACORDADA').toUpperCase()}.`,
-    `INICIO: ${formatFull24h(eventStart).toUpperCase()}  |  FIN: ${formatFull24h(eventEnd).toUpperCase()}  |  DURACIÓN TOTAL: ${durationMins} MINUTOS.`,
-    `SE RECIBIERON ${vehicles.length} VEHÍCULOS, DE LOS CUALES ${delivered} FUERON ENTREGADOS (${inCustody} EN CUSTODIA AL CIERRE).`,
-    `EL TIEMPO PROMEDIO DE ESTANCIA POR VEHÍCULO FUE DE ${avgStayMins} MINUTOS.`,
-    `EL EQUIPO OPERATIVO ESTUVO COMPUESTO POR ${staffWithAttendance.length} PERSONA(S).`,
-    ``,
-    `ESTE REPORTE HA SIDO GENERADO AUTOMÁTICAMENTE POR EYE STAFF AL CIERRE DEL EVENTO.`,
-    `PARA NOTAS ADICIONALES, CONTACTE AL COORDINADOR RESPONSABLE DEL EVENTO.`
-  ];
-  for (const line of execLines) {
-    ensureSpace(14);
-    page.drawText(line, { x: margin, y, size: 7.5, font: line === '' ? font : font, color: rgb(0.15, 0.15, 0.15) });
-    y -= 13;
+    const execLines = [
+      `SE RECIBIERON ${vehicles.length} VEHÍCULOS, DE LOS CUALES ${delivered} FUERON ENTREGADOS Y ${inCustody} PERMANECIERON EN`,
+      `CUSTODIA AL CIERRE. EL TIEMPO PROMEDIO DE ESTANCIA FUE DE ${avgStayMins} MINUTOS. EL EQUIPO`,
+      `ESTUVO INTEGRADO POR ${staffWithAttendance.length} PERSONA(S). DURACIÓN TOTAL DEL EVENTO: ${durationMins} MINUTOS.`,
+      ``,
+      `EL REPORTE COMPLETO HA SIDO ENVIADO POR CORREO ELECTRÓNICO E INCLUYE UN ARCHIVO EXCEL`,
+      `(.XLSX) CON 3 HOJAS DE ANÁLISIS Y UN PDF OFICIAL CON FORMATO EYE STAFF. LOS ARCHIVOS TAMBIÉN`,
+      `HAN SIDO GUARDADOS EN LA BBDD DE EVENTOS PARA CONSULTA POSTERIOR.`
+    ];
+    for (const line of execLines) {
+      ensureSpace(14);
+      page.drawText(line, { x: margin, y, size: 7.5, font: line === '' ? font : font, color: rgb(0.15, 0.15, 0.15) });
+      y -= 13;
+    }
   }
 
   // Footer en última página
@@ -3290,13 +4040,13 @@ async function sendEventClosingReport(env: Env, sessionId: number, channel: stri
   const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
 
   if (sendEmailFlag) {
-    const cierreSubs = await getSubscribedEmails(env, 'cierre_html');
+    const cierreSubs = await getSubscribedEmails(env, 'cierre_html', session.id);
     const ccList = [...new Set([...cierreSubs])];
     await sendEmail(env, adminEmail, `EYE STAFF: Reporte de Cierre de Evento — ${session.name}`, html, attachments, ccList);
   }
 
   if (sendWaFlag) {
-    const phones = await getSubscribedPhones(env, 'cierre_html');
+    const phones = await getSubscribedPhones(env, 'cierre_html', session.id);
     const waPhones = [...new Set([...phones])];
     const pdfUrl = `https://eye-staff.app/files/${pdfKey}`;
     const waMsg = `*REPORTE DE CIERRE DE EVENTO*\n\nHola, se ha cerrado el evento *${session.name}*.\n\n📊 *Resumen en PDF:*\n${pdfUrl}`;
@@ -3328,57 +4078,125 @@ function buildClosingEmailHtml(session: any, vehicles: any[], staff: any[], summ
     const m = mins % 60;
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   };
-  return `<div style="font-family:Arial,sans-serif;color:#333;max-width:800px;margin:0 auto;border:1px solid #eee;text-transform:uppercase;">
-    <div style="background:#0b0f19;padding:24px;text-align:center;">
-      <h1 style="color:#ef4444;margin:0;letter-spacing:2px;">EYE STAFF</h1>
-      <p style="color:#94a3b8;margin:4px 0 0 0;font-size:0.8rem;">REPORTE OFICIAL DE CIERRE DE EVENTO</p>
+
+  const startDt = new Date(session.started_at);
+  const endDt = new Date(session.ended_at || Date.now());
+
+  return `
+  <div style="font-family:'Inter',Arial,sans-serif; background-color:#ffffff; color:#334155; max-width:600px; margin:0 auto; padding:20px; text-transform:uppercase; font-size:12px;">
+    
+    <!-- HEADER -->
+    <div style="background-color:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:24px; text-align:center; margin-bottom:20px;">
+      <div style="font-size:24px; margin-bottom:10px;">🏁</div>
+      <h1 style="color:#EF4444; font-size:20px; font-weight:800; letter-spacing:1px; margin:0 0 8px 0;">REPORTE DE CIERRE</h1>
+      <div style="color:#64748b; font-size:12px; font-weight:600; letter-spacing:0.5px;">${session.name}</div>
     </div>
-    <div style="padding:24px;">
-      <h2 style="margin-top:0;">${session.name}</h2>
-      <p><b>INICIO:</b> ${formatFull24h(new Date(session.started_at))} &nbsp;|&nbsp; <b>FIN:</b> ${formatFull24h(new Date(session.ended_at || Date.now()))}</p>
-      <p><b>DURACIÓN:</b> ${isLogistico ? formatHHMM(summary.duration_mins) + ' HRS' : summary.duration_mins + ' MIN'} &nbsp;|&nbsp; <b>UBICACIÓN:</b> ${summary.location}</p>
-      ${isLogistico ? '' : `
-      <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;">VEHÍCULOS (${vehicles.length})</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:11px;">
-        <tr style="background:#f1f5f9;"><th style="border:1px solid #ddd;padding:6px;">PLACA</th><th style="border:1px solid #ddd;padding:6px;">MARCA/COLOR</th><th style="border:1px solid #ddd;padding:6px;">PROPIETARIO</th><th style="border:1px solid #ddd;padding:6px;">ENTRADA</th><th style="border:1px solid #ddd;padding:6px;">SALIDA</th><th style="border:1px solid #ddd;padding:6px;">ESTADO</th></tr>
-        ${vehicles.map((v: any) => `<tr><td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${v.plate}</td><td style="border:1px solid #ddd;padding:6px;">${v.brand || ''} ${v.color || ''}</td><td style="border:1px solid #ddd;padding:6px;">${v.owner_name || '—'}</td><td style="border:1px solid #ddd;padding:6px;">${v.created_at ? fmtDateTime(new Date(v.created_at)) : ''}</td><td style="border:1px solid #ddd;padding:6px;">${v.check_out_at ? fmtDateTime(new Date(v.check_out_at)) : 'EN CUSTODIA'}</td><td style="border:1px solid #ddd;padding:6px;">${['delivered', 'retrieved'].includes(v.status) ? 'ENTREGADO' : 'CUSTODIA'}</td></tr>`).join('')}
-      </table>
-      `}
-      <h3 style="color:#ef4444;border-bottom:2px solid #ef4444;padding-bottom:4px;margin-top:24px;">PERSONAL (${staff.length})</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:11px;">
-        <tr style="background:#f1f5f9;">
-          <th style="border:1px solid #ddd;padding:6px;">NOMBRE</th>
-          <th style="border:1px solid #ddd;padding:6px;">ROL</th>
-          <th style="border:1px solid #ddd;padding:6px;">ENTRADA</th>
-          <th style="border:1px solid #ddd;padding:6px;">SALIDA</th>
-          ${isLogistico ? '' : '<th style="border:1px solid #ddd;padding:6px;">DESCANSO</th>'}
-          <th style="border:1px solid #ddd;padding:6px;">JORNADA</th>
-          ${isLogistico ? '' : '<th style="border:1px solid #ddd;padding:6px;">VEH.</th>'}
-        </tr>
-        ${staff.map((s: any) => `<tr>
-          <td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${s.name.toUpperCase()}</td>
-          <td style="border:1px solid #ddd;padding:6px;">${s.role}</td>
-          <td style="border:1px solid #ddd;padding:6px;">${s.entry_time}</td>
-          <td style="border:1px solid #ddd;padding:6px;">${s.exit_time}</td>
-          ${isLogistico ? '' : `<td style="border:1px solid #ddd;padding:6px;">${s.break_mins}MIN</td>`}
-          <td style="border:1px solid #ddd;padding:6px;">${isLogistico ? formatHHMM(s.total_mins) : s.total_mins + 'MIN'}</td>
-          ${isLogistico ? '' : `<td style="border:1px solid #ddd;padding:6px;">${s.vehicles_attended}</td>`}
-        </tr>`).join('')}
-      </table>
-      <div style="background:#f8fafc;border-left:4px solid #ef4444;padding:16px;margin-top:24px;border-radius:4px;">
-        <h3 style="margin-top:0;color:#ef4444;">RESUMEN EJECUTIVO</h3>
-        ${isLogistico ? `
-        <p>EL EVENTO SE DESARROLLÓ EN <b>${summary.location !== 'N/A' ? summary.location.toUpperCase() : 'LA UBICACIÓN ACORDADA'}</b>. EL EQUIPO ESTUVO INTEGRADO POR <b>${summary.total_staff}</b> PERSONA(S). DURACIÓN TOTAL DEL EVENTO: <b>${formatHHMM(summary.duration_mins)} HRS</b>.</p>
-        ` : `
-        <p>EL EVENTO SE DESARROLLÓ EN <b>${summary.location !== 'N/A' ? summary.location.toUpperCase() : 'LA UBICACIÓN ACORDADA'}</b>. SE RECIBIERON <b>${summary.total_vehicles}</b> VEHÍCULOS, DE LOS CUALES <b>${summary.total_delivered}</b> FUERON ENTREGADOS Y <b>${summary.total_in_custody}</b> PERMANECIERON EN CUSTODIA AL MOMENTO DEL CIERRE. EL TIEMPO PROMEDIO DE ESTANCIA FUE DE <b>${summary.avg_stay_mins} MINUTOS</b>. EL EQUIPO ESTUVO INTEGRADO POR <b>${summary.total_staff}</b> PERSONA(S). DURACIÓN TOTAL DEL EVENTO: <b>${summary.duration_mins} MINUTOS</b>.</p>
-        `}
+
+    <!-- CARDS -->
+    ${isLogistico ? '' : `
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+      <div style="flex:1; background-color:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #22C55E; border-radius:8px; padding:16px 10px; text-align:center;">
+        <div style="color:#22C55E; font-size:28px; font-weight:900; margin-bottom:4px;">${summary.total_vehicles}</div>
+        <div style="color:#64748b; font-size:9px; font-weight:700; letter-spacing:1px;">VEHÍCULOS</div>
+      </div>
+      <div style="flex:1; background-color:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #F59E0B; border-radius:8px; padding:16px 10px; text-align:center;">
+        <div style="color:#F59E0B; font-size:28px; font-weight:900; margin-bottom:4px;">${summary.total_delivered}</div>
+        <div style="color:#64748b; font-size:9px; font-weight:700; letter-spacing:1px;">ENTREGADOS</div>
+      </div>
+      <div style="flex:1; background-color:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #6366F1; border-radius:8px; padding:16px 10px; text-align:center;">
+        <div style="color:#6366F1; font-size:28px; font-weight:900; margin-bottom:4px;">${summary.duration_mins}</div>
+        <div style="color:#64748b; font-size:9px; font-weight:700; letter-spacing:1px;">MINUTOS</div>
       </div>
     </div>
-    <div style="background:#0b0f19;padding:12px;text-align:center;font-size:10px;color:#94a3b8;">EYE STAFF 2026 · EYE-STAFF.APP · REPORTE ADJUNTO EN PDF</div>
-  </div>`;
+    `}
+
+    <!-- DATOS DEL EVENTO -->
+    <div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+      <div style="color:#EF4444; font-size:11px; font-weight:800; letter-spacing:1px; margin-bottom:16px;">📋 DATOS DEL EVENTO</div>
+      <table style="width:100%; font-size:11px; border-collapse:collapse;">
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0; width:130px;">EVENTO</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${session.name}</td></tr>
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0;">TIPO</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${summary.event_type}</td></tr>
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0;">UBICACIÓN</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${summary.location}</td></tr>
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0;">CONTACTO</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${summary.contact}</td></tr>
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0;">INICIO</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${fmtDateTime(startDt)}</td></tr>
+        <tr><td style="color:#64748b; padding:8px 0; border-bottom:1px solid #e2e8f0;">FIN</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0; border-bottom:1px solid #e2e8f0;">${fmtDateTime(endDt)}</td></tr>
+        ${isLogistico ? '' : `<tr><td style="color:#64748b; padding:8px 0;">ESTANCIA PROMEDIO</td><td style="color:#0f172a; font-weight:700; text-align:right; padding:8px 0;">${summary.avg_stay_mins} MIN</td></tr>`}
+      </table>
+    </div>
+
+    <!-- VEHICULOS -->
+    ${isLogistico ? '' : `
+    <div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+      <div style="color:#22C55E; font-size:11px; font-weight:800; letter-spacing:1px; margin-bottom:16px;">🚗 VEHÍCULOS (${vehicles.length})</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; font-size:10px; border-collapse:collapse; text-align:left;">
+          <tr style="color:#64748b; border-bottom:1px solid #e2e8f0;">
+            <th style="padding:8px 4px;">#</th><th style="padding:8px 4px;">PLACA</th><th style="padding:8px 4px;">PROPIETARIO</th>
+            <th style="padding:8px 4px;">MARCA</th><th style="padding:8px 4px;">ENTRADA</th><th style="padding:8px 4px;">SALIDA</th><th style="padding:8px 4px;">ESTADO</th>
+          </tr>
+          ${vehicles.map((v, i) => `
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:8px 4px; color:#64748b;">${i+1}</td>
+            <td style="padding:8px 4px; font-weight:700; color:#0f172a;">${v.plate}</td>
+            <td style="padding:8px 4px; color:#0f172a;">${(v.owner_name || '—').substring(0, 14)}</td>
+            <td style="padding:8px 4px; color:#0f172a;">${v.brand || '—'}</td>
+            <td style="padding:8px 4px; color:#334155;">${v.created_at ? fmtDateTime(new Date(v.created_at)) : '—'}</td>
+            <td style="padding:8px 4px; color:#334155;">${v.check_out_at ? fmtDateTime(new Date(v.check_out_at)) : '—'}</td>
+            <td style="padding:8px 4px; font-weight:700; color:${['delivered', 'retrieved'].includes(v.status) ? '#22C55E' : '#F59E0B'};">${['delivered', 'retrieved'].includes(v.status) ? 'ENTREGADO' : 'CUSTODIA'}</td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </div>
+    `}
+
+    <!-- PERSONAL -->
+    <div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+      <div style="color:#6366F1; font-size:11px; font-weight:800; letter-spacing:1px; margin-bottom:16px;">👥 PERSONAL (${staff.length})</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; font-size:10px; border-collapse:collapse; text-align:left;">
+          <tr style="color:#64748b; border-bottom:1px solid #e2e8f0;">
+            <th style="padding:8px 4px;">NOMBRE</th><th style="padding:8px 4px;">ROL</th>
+            <th style="padding:8px 4px;">ENTRADA</th><th style="padding:8px 4px;">SALIDA</th>
+            <th style="padding:8px 4px;">JORNADA</th>${isLogistico ? '' : '<th style="padding:8px 4px;">VEH.</th>'}
+          </tr>
+          ${staff.map(s => {
+            const entryLines = s.entry_time !== 'INASISTENTE' && s.entry_time !== '—' ? s.entry_time.split(' ') : ['—',''];
+            const exitLines = s.exit_time !== 'INASISTENTE' && s.exit_time !== '—' ? s.exit_time.split(' ') : ['—',''];
+            return `
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:10px 4px; font-weight:700; color:#0f172a;">${s.name.toUpperCase().substring(0, 16)}</td>
+            <td style="padding:10px 4px; color:#64748b;">${s.role}</td>
+            <td style="padding:10px 4px; color:#334155;">${entryLines[0]}<br><span style="color:#94a3b8;">${entryLines[1]||''}</span></td>
+            <td style="padding:10px 4px; color:#334155;">${exitLines[0]}<br><span style="color:#94a3b8;">${exitLines[1]||''}</span></td>
+            <td style="padding:10px 4px; font-weight:700; color:#22C55E;">${isLogistico ? formatHHMM(s.total_mins) : s.total_mins + 'M'}</td>
+            ${isLogistico ? '' : `<td style="padding:10px 4px; font-weight:700; color:#0f172a;">${s.vehicles_attended}</td>`}
+          </tr>`}
+          ).join('')}
+        </table>
+      </div>
+    </div>
+
+    <!-- RESUMEN EJECUTIVO -->
+    ${isLogistico ? '' : `
+    <div style="background-color:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #EF4444; border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+      <div style="color:#EF4444; font-size:11px; font-weight:800; letter-spacing:1px; margin-bottom:12px;">📊 RESUMEN EJECUTIVO</div>
+      <p style="color:#475569; font-size:12px; line-height:1.6; margin:0 0 16px 0;">
+        SE RECIBIERON <span style="color:#22C55E; font-weight:700;">${summary.total_vehicles}</span> VEHÍCULOS, DE LOS CUALES <span style="color:#22C55E; font-weight:700;">${summary.total_delivered}</span> FUERON ENTREGADOS Y <span style="color:#F59E0B; font-weight:700;">${summary.total_in_custody}</span> PERMANECIERON EN CUSTODIA AL CIERRE. EL TIEMPO PROMEDIO DE ESTANCIA FUE DE <span style="color:#6366F1; font-weight:700;">${summary.avg_stay_mins} MINUTOS</span>. EL EQUIPO ESTUVO INTEGRADO POR <b>${summary.total_staff}</b> PERSONA(S). DURACIÓN TOTAL DEL EVENTO: <span style="color:#EF4444; font-weight:700;">${summary.duration_mins} MINUTOS</span>.
+      </p>
+      <div style="background-color:#f8fafc; padding:12px; border-radius:6px; display:flex; align-items:flex-start; gap:10px; border:1px solid #e2e8f0;">
+        <span style="font-size:16px;">📧</span>
+        <p style="color:#64748b; font-size:10px; line-height:1.5; margin:0;">
+          EL REPORTE COMPLETO HA SIDO ENVIADO POR CORREO ELECTRÓNICO E INCLUYE UN ARCHIVO <b style="color:#334155;">EXCEL (.XLSX)</b> CON 3 HOJAS DE ANÁLISIS Y UN <b style="color:#334155;">PDF</b> OFICIAL CON FORMATO EYE STAFF. LOS ARCHIVOS TAMBIÉN HAN SIDO GUARDADOS EN LA <b style="color:#334155;">BBDD DE EVENTOS</b> PARA CONSULTA POSTERIOR.
+        </p>
+      </div>
+    </div>
+    `}
+
+  </div>
+  `;
 }
 
-async function sendEventActivationEmail(env: Env, sessionId: number) {
+async function sendEventActivationEmail(env: Env, sessionId: number, channel: string = 'ambos') {
   const session = await env.DB.prepare('SELECT * FROM sessions WHERE id = ?').bind(sessionId).first<any>();
   if (!session) return;
 
@@ -3411,7 +4229,7 @@ async function sendEventActivationEmail(env: Env, sessionId: number) {
         <ul style="list-style: none; padding: 0;">
           ${staff.map((u: any) => {
             const isSup = sessionSupervisorIds.includes(String(u.id));
-            const eventRole = isSup ? 'SUPERVISOR' : 'EMPLEADO REGULAR';
+            const eventRole = isSup ? 'SUPERVISOR' : 'LOGÍSTICA';
             const phoneStr = u.phone ? u.phone : 'Sin teléfono';
             return `
             <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
@@ -3425,36 +4243,120 @@ async function sendEventActivationEmail(env: Env, sessionId: number) {
     </div>
   `;
 
-  // Enviar a suscritos (Apertura Evento)
-  const emails = await getSubscribedEmails(env, 'apertura_evento');
-  // Extraer emails de los supervisores asignados
-  const supEmails = staff.filter((u: any) => sessionSupervisorIds.includes(String(u.id)) && u.email).map((u: any) => u.email);
-  const allEmails = [...new Set([...emails, ...supEmails])].filter(Boolean) as string[];
+  const sendEmailFlag = channel === 'email' || channel === 'ambos' || !channel;
+  const sendWaFlag = channel === 'whatsapp' || channel === 'ambos' || !channel;
 
-  if (allEmails.length > 0) {
-    for (const email of allEmails) {
-      await sendEmail(env, email, `EYE STAFF: Inicio de Evento - ${session.name}`, html);
+  let attachments: any[] = [];
+  try {
+    // Generar PDF de Nota de Entrega si hay materiales
+    const gdRes = await env.DB.prepare('SELECT materials FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
+    let assignedItems = [];
+    if (gdRes && gdRes.materials) {
+      const parsed = JSON.parse(gdRes.materials);
+      if (parsed && parsed.items) assignedItems = parsed.items;
+    }
+
+    if (assignedItems.length > 0) {
+      const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([595.276, 841.89]); // A4
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      
+      let y = 800;
+      page.drawText('NOTA DE ENTREGA AL CLIENTE', { x: 50, y, font: bold, size: 18, color: rgb(0,0,0) });
+      y -= 30;
+      page.drawText(`Evento: ${session.name}`, { x: 50, y, font: bold, size: 12 });
+      y -= 20;
+      page.drawText(`ID: ${sessionId} | Fecha: ${new Date().toLocaleDateString()}`, { x: 50, y, font, size: 12 });
+      y -= 30;
+      
+      page.drawText('ÍTEM', { x: 50, y, font: bold, size: 12 });
+      page.drawText('CANT.', { x: 300, y, font: bold, size: 12 });
+      y -= 15;
+      page.drawLine({ start: { x: 50, y }, end: { x: 400, y }, thickness: 1, color: rgb(0.8,0.8,0.8) });
+      y -= 15;
+
+      for (const item of assignedItems as any[]) {
+        page.drawText(item.name.substring(0, 40), { x: 50, y, font, size: 10 });
+        page.drawText(String(item.qty), { x: 300, y, font, size: 10 });
+        y -= 20;
+        if (y < 100) { // basic pagination logic not strictly needed if small list, but good practice
+          // assuming not more than ~35 items for now to keep it simple
+        }
+      }
+      
+      y -= 40;
+      page.drawText('RECIBE CONFORME:', { x: 50, y, font: bold, size: 12 });
+      y -= 50;
+      page.drawLine({ start: { x: 50, y }, end: { x: 300, y }, thickness: 1, color: rgb(0,0,0) });
+      y -= 15;
+      page.drawText('Firma del Cliente', { x: 50, y, font, size: 10 });
+
+      const pdfBytes = await pdfDoc.save();
+      let base64 = '';
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+      const bytes = new Uint8Array(pdfBytes);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i += 3) {
+        base64 += chars[bytes[i] >> 2];
+        base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+        base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+        base64 += chars[bytes[i + 2] & 63];
+      }
+      if ((len % 3) === 2) { base64 = base64.substring(0, base64.length - 1) + "="; }
+      else if (len % 3 === 1) { base64 = base64.substring(0, base64.length - 2) + "=="; }
+
+      attachments.push({ name: `Nota_de_Entrega_${session.name.replace(/[^a-z0-9]/gi, '_')}.pdf`, content: base64, content_type: 'application/pdf' });
+    }
+  } catch(e) {
+    console.error('Error generando nota de entrega PDF:', e);
+  }
+
+  if (sendEmailFlag) {
+    const allEmails = await getSubscribedEmails(env, 'apertura_evento', sessionId);
+    if (allEmails.length > 0) {
+      for (const email of allEmails) {
+        await sendEmail(env, email, `EYE STAFF: Inicio de Evento - ${session.name}`, html, attachments);
+      }
     }
   }
 
-  // Notificar por WhatsApp a los supervisores y a los suscritos en la matriz
-  const supPhones = staff.filter((u: any) => sessionSupervisorIds.includes(String(u.id)) && u.phone).map((u: any) => u.phone);
-  
-  const subscribedPhonesRes = await env.DB.prepare(`
-    SELECT u.phone FROM user_report_subscriptions rs
-    JOIN users u ON rs.user_id = u.id
-    WHERE rs.apertura_evento = 1 AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
-  `).all<any>();
-  const subscribedPhones = (subscribedPhonesRes.results || []).map((r: any) => r.phone);
-  
-  const allPhones = [...new Set([...supPhones, ...subscribedPhones])].filter(Boolean) as string[];
+  if (sendWaFlag) {
+    let staffText = staff.map((u: any) => {
+      const isSup = sessionSupervisorIds.includes(String(u.id));
+      const eventRole = isSup ? 'SUPERVISOR' : 'LOGÍSTICA';
+      const phoneStr = u.phone ? u.phone : 'Sin teléfono';
+      return `👤 *${u.name.toUpperCase()}*\n└ ${eventRole} (${phoneStr})`;
+    }).join('\\n\\n');
 
-  for (const phone of allPhones) {
-    const waMsg = `*EYE STAFF - CONFIRMACIÓN DE INICIO DE EVENTO*\n\nEl evento *${session.name}* ha sido INICIADO.\n\n📍 *Ubicación:* ${session.address || 'N/A'}\n👤 *Contacto:* ${session.contact_name || 'N/A'} (${session.phone || 'N/A'})\n\n_Revisa el reporte completo en tu correo o en la plataforma._`;
-    try {
-      await sendWhatsAppMessage(env, phone, waMsg);
-    } catch (e) {
-      console.error('Error sending WA event activation notification:', e);
+    const waMsg = `🟢 *CONFIRMACIÓN DE INICIO DE EVENTO* 🟢
+_${session.name} | ID: ${sessionId}_
+
+───────────────
+📅 *Fecha de Inicio:* ${formatFull24h(new Date())}
+🚗 *Tipo de Evento:* ${session.type ? session.type.toUpperCase() : 'VALET PARKING'}
+📍 *Ubicación:* ${session.address || 'N/A'}
+📞 *Contacto:* ${session.contact_name || 'N/A'} (${session.phone || 'N/A'})
+
+───────────────
+🕒 *Hora de Convocatoria:* ${session.convocation_time || 'N/A'}
+⚡ *Hora de Inicio de Evento:* ${session.event_start_time || 'N/A'}
+🏁 *Tentativa de Culminación:* ${session.event_end_time || 'N/A'}${session.event_end_date ? ` (${session.event_end_date.split('-').reverse().join('/')})` : ''}
+
+───────────────
+👥 *PERSONAL ASIGNADO*
+${staffText}
+
+_EYE STAFF ${new Date().getFullYear()} - Control Operativo en Tiempo Real_`;
+    const allPhones = await getSubscribedPhones(env, 'apertura_evento', sessionId);
+
+    for (const phone of allPhones) {
+      try {
+        await sendWhatsAppMessage(env, phone, waMsg);
+      } catch (e) {
+        console.error('Error sending WA event activation notification:', e);
+      }
     }
   }
 }
@@ -3627,8 +4529,8 @@ async function checkScheduledNotifications(env: Env) {
 
     const subscribedEmails = await getSubscribedEmails(env, 'convocatoria');
     const sessionSupervisorIds = String(session.supervisor_id || '').split(',').map((id: string) => id.trim());
-    const supEmails = staff.filter((u: any) => sessionSupervisorIds.includes(String(u.id)) && u.email).map((u: any) => u.email);
-    const allEmails = [...new Set([...subscribedEmails, ...supEmails])].filter(Boolean) as string[];
+    // Regla especial de Supervisores eliminada a petición del usuario
+    const allEmails = [...new Set([...subscribedEmails])].filter(Boolean) as string[];
 
     const subject = `📢 CONVOCATORIA - ${session.name}`;
     let html = `<h2>Convocatoria para ${session.name}</h2>
@@ -3647,15 +4549,15 @@ async function checkScheduledNotifications(env: Env) {
       }
     }
 
-    // WhatsApp para supervisores y suscritos
-    const supPhones = staff.filter((u: any) => sessionSupervisorIds.includes(String(u.id)) && u.phone).map((u: any) => u.phone);
+    // WhatsApp para suscritos
     const subscribedPhonesRes = await env.DB.prepare(`
       SELECT u.phone FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.convocatoria = 1 AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
+      WHERE rs.convocatoria IN (1, 3) AND u.phone IS NOT NULL AND u.phone != '' AND u.is_active = 1
     `).all<any>();
     const subscribedPhones = (subscribedPhonesRes.results || []).map((r: any) => r.phone);
-    const allPhones = [...new Set([...supPhones, ...subscribedPhones])].filter(Boolean) as string[];
+    // Regla especial de Supervisores eliminada a petición del usuario
+    const allPhones = [...new Set([...subscribedPhones])].filter(Boolean) as string[];
 
     for (const phone of allPhones) {
       const waMsg = `*EYE STAFF - 📢 NOTIFICACIÓN DE CONVOCATORIA*\n\nHa llegado la hora de convocatoria para el evento *${session.name}*.\n\n🕒 *Hora:* ${session.convocation_time || 'N/A'}\n📍 *Ubicación:* ${session.address || 'N/A'}\n👤 *Contacto:* ${session.contact_name || 'N/A'} (${session.phone || 'N/A'})\n\n_Revisa tu correo para ver el mapa y la lista completa del personal citado._`;
@@ -3668,93 +4570,116 @@ async function checkScheduledNotifications(env: Env) {
 
     // Marcar como notificado
     await env.DB.prepare("UPDATE sessions SET notified = 1 WHERE id = ?").bind(session.id).run();
+    // WhatsApp de Debugging eliminado a petición del usuario
+    // await sendAdminDebugWa(env, `📢 [HORA CONVOCATORIA] Ha llegado la hora de convocatoria del evento *${session.name}*.`);
 
     console.log(`[CRON] Notificación enviada para: ${session.name}`);
   }
 
-  // --- ALERTA PRE-INICIO (3 HORAS ANTES) ---
-  console.log(`[CRON] Revisando alertas de pre-inicio (3 horas)...`);
-  const upcomingSessionsRes = await env.DB.prepare(
-    "SELECT * FROM sessions WHERE status = 'planning' AND (pre_start_notified IS NULL OR pre_start_notified = 0)"
-  ).all();
+  // --- REVISIÓN HORA DE INICIO EVENTO (ADMIN ALERTS) ---
+  const startSessionsRes = await env.DB.prepare(
+    "SELECT id, name FROM sessions WHERE status IN ('planning', 'active') AND started_at = ? AND event_start_time = ? AND (pre_start_notified IS NULL OR pre_start_notified = 0)"
+  ).bind(today, currentTime).all<any>();
+  for (const s of startSessionsRes.results || []) {
+    await env.DB.prepare("UPDATE sessions SET pre_start_notified = 1 WHERE id = ?").bind(s.id).run();
+    // WhatsApp de Debugging eliminado a petición del usuario
+    // await sendAdminDebugWa(env, `🚀 [INICIO EVENTO] Ha llegado la hora de inicio planificada del evento *${s.name}*.`);
+  }
 
-  const upcomingSessions = upcomingSessionsRes.results || [];
-  for (const session of upcomingSessions as any[]) {
-    if (!session.started_at || !session.event_start_time) continue;
-    
-    const rawDate = session.started_at;
-    let yyyy, mm_date, dd;
-    if (typeof rawDate === 'string' && rawDate.length >= 10 && rawDate.includes('-')) {
-        const parts = rawDate.substring(0, 10).split('-');
-        yyyy = parts[0]; mm_date = parts[1]; dd = parts[2];
-    } else {
-        const d = new Date(rawDate);
-        yyyy = d.getFullYear(); mm_date = String(d.getMonth() + 1).padStart(2, '0'); dd = String(d.getDate()).padStart(2, '0');
-    }
-    const [hhStr, mmStr] = session.event_start_time.split(':');
-    const schedDate = new Date(`${yyyy}-${mm_date.padStart(2, '0')}-${dd.padStart(2, '0')}T${hhStr.padStart(2, '0')}:${mmStr.padStart(2, '0')}:00-04:00`);
-    
-    // Usar 'now' (tiempo real) para la diferencia, ya que schedDate ya tiene el offset de -04:00
-    const diffMs = schedDate.getTime() - now.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
+  // --- REPORTE DE HORARIO DE EVENTOS ---
+  const horarioSessionsRes = await env.DB.prepare(
+    "SELECT * FROM sessions WHERE status IN ('planning', 'active') AND started_at = ? AND (convocation_time = ? OR event_start_time = ? OR event_end_time = ?)"
+  ).bind(today, currentTime, currentTime, currentTime).all<any>();
 
-    // Si faltan exactamente 3 horas o menos (pero más de 2.9 horas para no enviar tarde)
-    if (diffHours <= 3 && diffHours > 2.9) {
-      // Enviar notificación a todo el personal asignado (vía WhatsApp)
-      const staffRes = await env.DB.prepare(
-        "SELECT phone FROM users WHERE (current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0) AND is_active = 1 AND phone IS NOT NULL AND phone != ''"
-      ).bind(session.id, session.id).all();
+  const horarioSessions = horarioSessionsRes.results || [];
+  
+  if (horarioSessions.length > 0) {
+    const subscribedHorariosRes = await env.DB.prepare(`
+      SELECT u.phone, u.email, rs.horario_eventos FROM user_report_subscriptions rs
+      JOIN users u ON rs.user_id = u.id
+      WHERE rs.horario_eventos IN (1, 2, 3) AND u.is_active = 1
+    `).all<any>();
+    
+    const waPhones = (subscribedHorariosRes.results || [])
+        .filter((r: any) => [1, 3].includes(r.horario_eventos) && r.phone)
+        .map((r: any) => r.phone);
+    const emails = (subscribedHorariosRes.results || [])
+        .filter((r: any) => [2, 3].includes(r.horario_eventos) && r.email)
+        .map((r: any) => r.email);
+
+    for (const s of horarioSessions) {
+      let stageStr = "HORARIO DEL EVENTO";
+      if (s.convocation_time === currentTime) stageStr = "HORA DE CONVOCATORIA";
+      else if (s.event_start_time === currentTime) stageStr = "HORA DE INICIO";
+      else if (s.event_end_time === currentTime) stageStr = "HORA DE FIN (ESTIMADA)";
+
+      const waMsg = `*EYE STAFF - 🕒 REPORTE DE HORARIOS*\n\nSe ha alcanzado la *${stageStr}* del evento *${s.name}*.\n\n📅 *Fecha:* ${s.started_at || 'N/A'}\n📢 *Convocatoria:* ${s.convocation_time || 'N/A'}\n🚀 *Inicio:* ${s.event_start_time || 'N/A'}\n🏁 *Fin Estimado:* ${s.event_end_time || 'N/A'}`;
       
-      const staffPhones = (staffRes.results || []).map((u: any) => u.phone).filter(Boolean);
-      
-      // Agregar números de RRHH / Admins suscritos en la matriz
-      const subRes = await env.DB.prepare(`
-        SELECT u.phone FROM user_report_subscriptions rs
-        JOIN users u ON rs.user_id = u.id
-        WHERE rs.pre_inicio_evento = 1 AND u.is_active = 1 AND u.phone IS NOT NULL AND u.phone != ''
-      `).all();
-      const subPhones = (subRes.results || []).map((u: any) => u.phone).filter(Boolean);
-      
-      const allPhonesToNotify = [...new Set([...staffPhones, ...subPhones])] as string[];
-      
-      if (allPhonesToNotify.length > 0) {
-        const waMsg = `*EYE STAFF - 🚨 ALERTA PRE-INICIO*\n\nEl evento *${session.name}* está programado para iniciar en exactamente *3 HORAS*.\n\n🕒 *Hora de Inicio:* ${session.event_start_time}\n📍 *Ubicación:* ${session.address || 'N/A'}\n\n_La ventana operativa para iniciar este evento en el sistema ya se encuentra DISPONIBLE._`;
-        
-        for (const phone of allPhonesToNotify) {
-          try {
-            await sendWhatsAppMessage(env, phone, waMsg);
-          } catch(e) {
-            console.error('Error sending WA pre-start notification:', e);
-          }
+      for (const phone of [...new Set(waPhones)]) {
+        try {
+          await sendWhatsAppMessage(env, phone as string, waMsg);
+        } catch (e) {
+          console.error('Error sending WA horario notification:', e);
         }
       }
 
-      // Marcar como notificado
-      await env.DB.prepare("UPDATE sessions SET pre_start_notified = 1 WHERE id = ?").bind(session.id).run();
-      console.log(`[CRON] Alerta Pre-Inicio enviada para el evento: ${session.name}`);
+      const emailSubject = `🕒 REPORTE DE HORARIOS - ${s.name}`;
+      const emailHtml = `<h2>Reporte de Horarios: ${s.name}</h2>
+      <p>Se ha alcanzado la <strong>${stageStr}</strong> del evento.</p>
+      <ul>
+        <li><strong>Fecha:</strong> ${s.started_at || 'N/A'}</li>
+        <li><strong>Convocatoria:</strong> ${s.convocation_time || 'N/A'}</li>
+        <li><strong>Inicio:</strong> ${s.event_start_time || 'N/A'}</li>
+        <li><strong>Fin Estimado:</strong> ${s.event_end_time || 'N/A'}</li>
+      </ul>`;
+
+      for (const email of [...new Set(emails)]) {
+        try {
+          await sendEmail(env, email as string, emailSubject, emailHtml);
+        } catch (e) {
+          console.error('Error sending Email horario notification:', e);
+        }
+      }
     }
   }
 
-  // --- REPORTE DE CUMPLEAÑEROS MENSUAL (DÍA 30 A LAS 12:00) ---
-  const dateNum = localTime.getUTCDate();
-  const monthNum = localTime.getUTCMonth();
-  const isLeapYear = (year: number) => (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  const isFebruaryLastDay = monthNum === 1 && (
-    (dateNum === 29 && isLeapYear(localTime.getUTCFullYear())) ||
-    (dateNum === 28 && !isLeapYear(localTime.getUTCFullYear()))
-  );
+  // --- REVISIÓN EVENTOS SIN PERSONAL (2 HORAS ANTES) ---
+  const twoHoursAhead = new Date(localTime.getTime() + (2 * 60 * 60 * 1000));
+  const hh2 = twoHoursAhead.getUTCHours().toString().padStart(2, '0');
+  const mm2 = twoHoursAhead.getUTCMinutes().toString().padStart(2, '0');
+  const targetTime = `${hh2}:${mm2}`;
+  
+  const warningSessionsRes = await env.DB.prepare(
+    "SELECT id, name FROM sessions WHERE status = 'planning' AND started_at = ? AND event_start_time = ? AND (staff_warning_notified IS NULL OR staff_warning_notified = 0)"
+  ).bind(today, targetTime).all<any>();
+  
+  for (const s of warningSessionsRes.results || []) {
+    const assignedStaff = await env.DB.prepare(
+      "SELECT id FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0"
+    ).bind(s.id, s.id).all();
+    if (!assignedStaff.results || assignedStaff.results.length === 0) {
+      await env.DB.prepare("UPDATE sessions SET staff_warning_notified = 1 WHERE id = ?").bind(s.id).run();
+      await sendStaffWarningWa(env, `⚠️ [ATENCIÓN] Faltan 2 horas para el inicio del evento *${s.name}* y aún NO hay personal asignado. Por favor asigne personal.`);
+    }
+  }
 
-  const isSendDay = dateNum === 30 || isFebruaryLastDay;
-  if (isSendDay && currentTime === '12:00') {
+  // --- REPORTE DE CUMPLEAÑEROS Y POSTULACIONES SEMANAL (LUNES A LAS 09:00 CARACAS) ---
+  const isSendDay = localTime.getUTCDay() === 1; // 1 = Lunes
+  if (isSendDay && currentTime === '09:00') {
     try {
-      await sendMonthlyBirthdayReport(env);
+      await sendWeeklyBirthdayReport(env);
     } catch (e) {
-      console.error('Error enviando reporte mensual de cumpleañeros en Cron:', e);
+      console.error('Error enviando reporte semanal de cumpleañeros en Cron:', e);
+    }
+    try {
+      await sendWeeklyApplicationsReport(env);
+    } catch (e) {
+      console.error('Error enviando reporte semanal de postulaciones en Cron:', e);
     }
   }
 }
 
-async function generateBirthdayPDF(guys: any[], monthName: string) {
+async function generateBirthdayPDF(guys: any[], titlePart: string, highlightNames: string[] = []) {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([595.276, 841.89]); // A4
   const { width, height } = page.getSize();
@@ -3780,7 +4705,7 @@ async function generateBirthdayPDF(guys: any[], monthName: string) {
     color: rgb(0.388, 0.4, 0.945),
   });
 
-  page.drawText(`REPORTE DE CUMPLEAÑEROS - MES: ${monthName.toUpperCase()}`, {
+  page.drawText(`REPORTE DE CUMPLEAÑEROS - ${titlePart.toUpperCase()}`, {
     x: 40,
     y: height - 80,
     size: 12,
@@ -3810,12 +4735,13 @@ async function generateBirthdayPDF(guys: any[], monthName: string) {
 
   for (const guy of guys) {
     currentY -= 25;
+    const isHighlighted = highlightNames.includes(guy.name);
     page.drawRectangle({
       x: 40,
       y: currentY - 5,
       width: width - 80,
       height: 22,
-      color: rgb(1, 1, 1),
+      color: isHighlighted ? rgb(1, 1, 0.6) : rgb(1, 1, 1),
       borderColor: rgb(0.93, 0.94, 0.95),
       borderWidth: 0.5,
     });
@@ -3847,7 +4773,7 @@ async function generateBirthdayPDF(guys: any[], monthName: string) {
     page.drawText((guy.eye_id || 'LOGISTICA').toUpperCase(), { x: 460, y: currentY + 3, size: 9, font: boldFont, color: rgb(0.1, 0.1, 0.1) });
   }
 
-  page.drawText(`Generado automaticamente por el sistema de gestion de personal EYE STAFF.`, {
+  page.drawText(`GENERADO AUTOMÁTICAMENTE POR EL SISTEMA DE GESTIÓN DE PERSONAL EYE STAFF.`, {
     x: 40,
     y: 30,
     size: 8,
@@ -3858,41 +4784,56 @@ async function generateBirthdayPDF(guys: any[], monthName: string) {
   return await pdfDoc.save();
 }
 
-async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
-  if (!(env as any).RESEND_API_KEY) {
-    console.error('RESEND_API_KEY no configurado');
-    return;
-  }
+async function sendWeeklyBirthdayReport(env: Env, forceTest: boolean = false) {
+
 
   // Obtener fecha en Venezuela (GMT-4)
   const now = new Date();
   const offset = -4;
   const localTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
 
-  const monthNum = localTime.getUTCMonth();
+  // Rango de la semana (Lunes a Domingo) de la semana actual
+  const dayOfWeek = localTime.getUTCDay(); // 0 = Dom, 1 = Lun, ... 6 = Sab
+  const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(localTime);
+  monday.setUTCDate(monday.getUTCDate() + daysToMonday);
+  
+  const sunday = new Date(monday);
+  sunday.setUTCDate(sunday.getUTCDate() + 6);
 
-  // Proximo mes (1-12)
-  const nextMonth = ((monthNum + 1) % 12) + 1;
-  const monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
-  const nextMonthName = monthNames[nextMonth - 1];
+  const formatDate = (d: Date) => `${d.getUTCDate().toString().padStart(2, '0')}/${(d.getUTCMonth() + 1).toString().padStart(2, '0')}/${d.getUTCFullYear()}`;
+  
+  const getWeekNumber = (d: Date) => {
+    const dC = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    const dayNum = dC.getUTCDay() || 7;
+    dC.setUTCDate(dC.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(dC.getUTCFullYear(), 0, 1));
+    return Math.ceil((((dC.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  };
+  const weekNum = getWeekNumber(monday);
 
-  // Obtener usuarios activos
-  const usersRes = await env.DB.prepare("SELECT name, eye_id, birth_date, email FROM users WHERE is_active = 1").all();
-  const allUsers = usersRes.results || [];
+  const weekName = `${weekNum} DEL ${formatDate(monday)} AL ${formatDate(sunday)}`;
 
-  const nextMonthStr = nextMonth.toString().padStart(2, '0');
+  // Obtener usuarios activos y excluir perfiles corporativos/administrativos
+  const usersRes = await env.DB.prepare("SELECT name, eye_id, birth_date, email, is_corporate_profile FROM users WHERE is_active = 1").all();
+  const allUsers = (usersRes.results || []).filter((u: any) => u.is_corporate_profile !== 1);
+
+  const mon = new Date(Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate()));
+  const sun = new Date(Date.UTC(sunday.getUTCFullYear(), sunday.getUTCMonth(), sunday.getUTCDate()));
 
   const birthdayGuys = (allUsers as any[]).filter(u => {
     if (!u.birth_date) return false;
     const parts = u.birth_date.split('-');
-    return parts[1] === nextMonthStr;
+    const bMonth = parseInt(parts[1], 10) - 1;
+    const bDay = parseInt(parts[2], 10);
+    
+    const d1 = new Date(Date.UTC(monday.getUTCFullYear(), bMonth, bDay));
+    const d2 = new Date(Date.UTC(sunday.getUTCFullYear(), bMonth, bDay));
+    return (d1 >= mon && d1 <= sun) || (d2 >= mon && d2 <= sun);
   });
 
   if (birthdayGuys.length === 0 && !forceTest) {
-    console.log(`No hay cumpleaneros para ${nextMonthName}`);
+    console.log(`No hay cumpleaneros para la semana ${weekName}`);
     return;
   }
 
@@ -3910,66 +4851,51 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
     return 0;
   });
 
-  // Excel
-  const excelData = [
-    ['Item', 'Nombre', 'EYE ID', 'Fecha de Nacimiento', 'Dia de Cumpleanos', 'Edad', 'Email'],
-    ...birthdayGuys.map((u, i) => {
-      let age = '';
-      if (u.birth_date) {
-        const birth = new Date(u.birth_date);
-        if (!isNaN(birth.getTime())) {
-          age = (now.getFullYear() - birth.getFullYear()).toString();
-          const m = now.getMonth() - birth.getMonth();
-          if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) {
-            age = (parseInt(age) - 1).toString();
-          }
-        }
-      }
-      const day = u.birth_date ? u.birth_date.split('-')[2] : 'S/D';
-      return [
-        i + 1,
-        u.name.toUpperCase(),
-        (u.eye_id || 'LOGISTICA').toUpperCase(),
-        u.birth_date || 'S/D',
-        day,
-        age,
-        u.email || 'S/D'
-      ];
-    })
-  ];
 
-  const ws = XLSX.utils.aoa_to_sheet(excelData);
+  const currentMonth = localTime.getUTCMonth();
+  const nextMonth = (currentMonth + 1) % 12;
+  const currentMonthYear = localTime.getUTCFullYear();
+  const nextMonthYear = currentMonth === 11 ? currentMonthYear + 1 : currentMonthYear;
 
-  // Ajustar el ancho de las columnas dinámicamente según el contenido
-  const colWidths: number[] = [];
-  excelData.forEach(row => {
-    row.forEach((val: any, colIdx: number) => {
-      const strVal = val !== undefined && val !== null ? val.toString() : '';
-      const len = strVal.length;
-      if (!colWidths[colIdx] || len > colWidths[colIdx]) {
-        colWidths[colIdx] = len;
-      }
-    });
+  const currentMonthGuys = (allUsers as any[]).filter(u => {
+    if (!u.birth_date) return false;
+    const parts = u.birth_date.split('-');
+    const bMonth = parseInt(parts[1], 10) - 1;
+    return bMonth === currentMonth;
   });
-  ws['!cols'] = colWidths.map(w => ({ wch: Math.max(w + 4, 10) }));
 
-  // Añadir autofiltro en la fila 1 para todas las columnas que tienen datos
-  const maxColLetter = XLSX.utils.encode_col(excelData[0].length - 1);
-  ws['!autofilter'] = { ref: `A1:${maxColLetter}${excelData.length}` };
+  const nextMonthGuys = (allUsers as any[]).filter(u => {
+    if (!u.birth_date) return false;
+    const parts = u.birth_date.split('-');
+    const bMonth = parseInt(parts[1], 10) - 1;
+    return bMonth === nextMonth;
+  });
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Cumpleaneros");
-  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-  const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+  const sortGuys = (arr: any[]) => arr.sort((a, b) => {
+    const dayA = parseInt(a.birth_date.split('-')[2], 10);
+    const dayB = parseInt(b.birth_date.split('-')[2], 10);
+    if (dayA !== dayB) return dayA - dayB;
+    const nameA = (a.name || '').toUpperCase();
+    const nameB = (b.name || '').toUpperCase();
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+  });
+
+  sortGuys(currentMonthGuys);
+  sortGuys(nextMonthGuys);
+
+  const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+  
+  const currentWeekNames = birthdayGuys.map((g: any) => g.name);
 
   // PDF
-  const pdfBytes = await generateBirthdayPDF(birthdayGuys, nextMonthName);
-  const pdfBase64 = uint8ArrayToBase64(pdfBytes);
+  const currentMonthPdfBytes = await generateBirthdayPDF(currentMonthGuys, `MES DE ${monthNames[currentMonth]} ${currentMonthYear}`, currentWeekNames);
+  const currentMonthPdfBase64 = uint8ArrayToBase64(currentMonthPdfBytes);
 
-  const recipient = env.DIRECTOR_EMAIL;
+  const nextMonthPdfBytes = await generateBirthdayPDF(nextMonthGuys, `MES DE ${monthNames[nextMonth]} ${nextMonthYear}`);
+  const nextMonthPdfBase64 = uint8ArrayToBase64(nextMonthPdfBytes);
 
   let listHtml = '';
-  for (const guy of birthdayGuys) {
+  for (const guy of currentMonthGuys) {
     const day = guy.birth_date ? guy.birth_date.split('-')[2] : 'S/D';
 
     // Calcular edad
@@ -3987,8 +4913,11 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
       }
     }
 
+    const isHighlighted = currentWeekNames.includes(guy.name);
+    const bg = isHighlighted ? 'background:#fef08a;' : '';
+
     listHtml += `
-      <tr style="border-bottom:1px solid #f1f5f9;">
+      <tr style="border-bottom:1px solid #f1f5f9; ${bg}">
         <td style="padding:12px 15px; color:#1e293b; font-weight:700;">${guy.name.toUpperCase()}</td>
         <td style="padding:12px 15px; color:#6366f1; font-weight:900; text-align:center;">${day}</td>
         <td style="padding:12px 15px; color:#475569; text-align:center; font-weight:bold;">${age}</td>
@@ -4005,46 +4934,321 @@ async function sendMonthlyBirthdayReport(env: Env, forceTest: boolean = false) {
       </div>
       <div style="padding:30px; background:#fff;">
         <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px; border-left:4px solid #6366f1;">
-          <p style="margin:0 0 8px; font-size:1.1rem; color:#1e293b;"><strong>MES PROXIMO:</strong> ${nextMonthName.toUpperCase()}</p>
-          <p style="margin:0 0 0; color:#475569;">A continuacion se detalla el listado de personal que celebra su cumpleanos el proximo mes, ordenado cronologicamente por dia de celebracion y alfabeticamente por nombre.</p>
+          <p style="margin:0 0 8px; font-size:1.1rem; color:#1e293b;"><strong>MES DE ${monthNames[currentMonth]} ${currentMonthYear}</strong></p>
+          <p style="margin:0 0 0; color:#475569;">A CONTINUACIÓN SE DETALLA EL LISTADO DE PERSONAL QUE CELEBRA SU CUMPLEAÑOS DURANTE ESTE MES, ORDENADO CRONOLÓGICAMENTE POR DÍA DE CELEBRACIÓN Y ALFABÉTICAMENTE POR NOMBRE. LOS CUMPLEAÑEROS DE LA SEMANA ACTUAL ESTÁN RESALTADOS EN AMARILLO (SEMANA ${weekName.toUpperCase()}).</p>
         </div>
 
-        <h3 style="color:#0f172a; margin:0 0 15px; font-size:1.1rem; border-bottom:2px solid #f1f5f9; padding-bottom:5px;">🎂 Celebrados del Mes</h3>
+        <h3 style="color:#0f172a; margin:0 0 15px; font-size:1.1rem; border-bottom:2px solid #f1f5f9; padding-bottom:5px;">🎂 CELEBRADOS DEL MES</h3>
         <table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:25px;">
           <thead>
             <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
-              <th style="padding:10px 15px; color:#475569;">Nombre</th>
-              <th style="padding:10px 15px; color:#475569; text-align:center;">Día</th>
-              <th style="padding:10px 15px; color:#475569; text-align:center;">Edad</th>
+              <th style="padding:10px 15px; color:#475569;">NOMBRE</th>
+              <th style="padding:10px 15px; color:#475569; text-align:center;">DÍA</th>
+              <th style="padding:10px 15px; color:#475569; text-align:center;">EDAD</th>
               <th style="padding:10px 15px; color:#475569; text-align:center;">EYE ID</th>
             </tr>
           </thead>
           <tbody>
-            ${listHtml || '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">No se encontraron cumpleañeros para este mes.</td></tr>'}
+            ${listHtml || '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">NO SE ENCONTRARON CUMPLEAÑEROS PARA ESTA SEMANA.</td></tr>'}
           </tbody>
         </table>
 
         <div style="background:#e0e7ff; border:1px solid #c7d2fe; border-radius:10px; padding:15px; margin-top:20px;">
-          <p style="margin:0; color:#3730a3; font-weight:bold; font-size:0.85rem; text-align:center;">📦 Reporte completo adjunto en formatos EXCEL (.xlsx) y PDF para administracion.</p>
+          <p style="margin:0; color:#3730a3; font-weight:bold; font-size:0.85rem; text-align:center;">📦 REPORTES DETALLADOS ADJUNTOS EN FORMATO PDF PARA RRHH (MES ACTUAL Y MES PRÓXIMO).</p>
         </div>
 
         <p style="color:#94a3b8; font-size:0.75rem; text-align:center; margin-top:30px;">
-          GRUPO EYE STAFF — Sistema de Gestion Automatizado de Personal
+          GRUPO EYE STAFF — SISTEMA DE GESTIÓN AUTOMATIZADO DE PERSONAL
         </p>
       </div>
     </div>
   `;
 
-  await sendEmail(env, recipient, `🎂 REPORTE CUMPLEAÑEROS - MES DE ${nextMonthName.toUpperCase()}`, htmlContent, [
+  await sendEmail(env, undefined, `🎂 REPORTE MENSUAL DE CUMPLEAÑEROS - MES DE ${monthNames[currentMonth]} ${currentMonthYear}`, htmlContent, [
     {
-      filename: `Cumpleaneros_${nextMonthName}.xlsx`,
-      content: excelBase64
+      filename: `Cumpleaneros_Mes_${monthNames[currentMonth]}_${currentMonthYear}.pdf`,
+      content: currentMonthPdfBase64
     },
     {
-      filename: `Cumpleaneros_${nextMonthName}.pdf`,
-      content: pdfBase64
+      filename: `Cumpleaneros_Mes_${monthNames[nextMonth]}_${nextMonthYear}.pdf`,
+      content: nextMonthPdfBase64
     }
   ], undefined, 'cumpleanos');
+
+  // WhatsApp Sending
+  const subs = await env.DB.prepare('SELECT u.phone, p.cumpleanos FROM users u JOIN user_report_subscriptions p ON u.id = p.user_id WHERE p.cumpleanos IN (1, 3) AND u.is_active = 1 AND u.phone IS NOT NULL AND u.phone != ""').all<any>();
+  for (const s of (subs.results || [])) {
+    const waMsg = `*EYE STAFF - 🎂 REPORTE DE CUMPLEAÑEROS*\n\nEl reporte mensual de cumpleañeros (Mes de ${monthNames[currentMonth]} ${currentMonthYear}) ha sido generado.\n\n_Revisa tu correo para ver los reportes detallados en PDF._`;
+    try {
+      await sendWhatsAppMessage(env, s.phone, waMsg);
+    } catch (e) {
+      console.error('Error WA cumpleanos:', e);
+    }
+  }
+}
+
+async function generateApplicationsPDF(env: Env, apps: any[], weekName: string) {
+  const pdfDoc = await PDFDocument.create();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const drawHeader = (page: any) => {
+    const { width, height } = page.getSize();
+    page.drawRectangle({ x: 0, y: height - 100, width: width, height: 100, color: rgb(0.06, 0.09, 0.16) });
+    page.drawText('GRUPO EYE STAFF', { x: 40, y: height - 55, size: 24, font: boldFont, color: rgb(0.388, 0.4, 0.945) });
+    page.drawText(`REPORTE DE POSTULACIONES - SEMANA: ${weekName.toUpperCase()}`, { x: 40, y: height - 80, size: 12, font: boldFont, color: rgb(1, 1, 1) });
+  };
+
+  // --- PAGE 1: LIST ---
+  let page = pdfDoc.addPage([595.276, 841.89]); // A4
+  const { width, height } = page.getSize();
+  drawHeader(page);
+
+  let currentY = height - 150;
+  
+  // Resumen gerencial
+  page.drawText(`RESUMEN GERENCIAL`, { x: 40, y: currentY, size: 12, font: boldFont, color: rgb(0.1, 0.1, 0.1) });
+  currentY -= 20;
+  page.drawText(`A continuación se listan los postulantes recibidos esta semana para su revisión y análisis.`, { x: 40, y: currentY, size: 10, font: font, color: rgb(0.4, 0.4, 0.4) });
+  currentY -= 30;
+
+  // Header tabla
+  page.drawRectangle({ x: 40, y: currentY - 10, width: width - 80, height: 25, color: rgb(0.96, 0.97, 0.98) });
+  page.drawText('NOMBRE', { x: 50, y: currentY - 2, size: 10, font: boldFont, color: rgb(0.06, 0.09, 0.16) });
+  page.drawText('TELÉFONO', { x: 250, y: currentY - 2, size: 10, font: boldFont, color: rgb(0.06, 0.09, 0.16) });
+  page.drawText('ESTATUS', { x: 400, y: currentY - 2, size: 10, font: boldFont, color: rgb(0.06, 0.09, 0.16) });
+
+  currentY -= 20;
+
+  for (const a of apps) {
+    if (currentY < 50) {
+      page = pdfDoc.addPage([595.276, 841.89]);
+      drawHeader(page);
+      currentY = height - 150;
+    }
+    currentY -= 25;
+    page.drawRectangle({
+      x: 40, y: currentY - 5, width: width - 80, height: 22, color: rgb(1, 1, 1),
+      borderColor: rgb(0.93, 0.94, 0.95), borderWidth: 0.5,
+    });
+
+    let statusText = a.status === 'pending' ? 'PENDIENTE' : a.status === 'hired' ? 'CONTRATADO' : a.status === 'approved' ? 'APROBADO' : a.status === 'rejected' ? 'RECHAZADO' : 'ENTREVISTADO';
+    page.drawText((a.name||'').toUpperCase(), { x: 50, y: currentY + 3, size: 9, font: font, color: rgb(0.1, 0.1, 0.1) });
+    page.drawText(a.phone||'', { x: 250, y: currentY + 3, size: 9, font: font, color: rgb(0.388, 0.4, 0.945) });
+    page.drawText(statusText, { x: 400, y: currentY + 3, size: 9, font: boldFont, color: rgb(0.1, 0.1, 0.1) });
+  }
+  page.drawText(`Generado automaticamente por el sistema de gestion de personal EYE STAFF.`, { x: 40, y: 30, size: 8, font: font, color: rgb(0.5, 0.5, 0.5) });
+
+  // --- PROFILES PAGES ---
+  for (const a of apps) {
+    page = pdfDoc.addPage([595.276, 841.89]);
+    drawHeader(page);
+    currentY = height - 140;
+
+    // Photo
+    if (a.photo_url) {
+      try {
+        const obj = await env.PHOTOS.get(a.photo_url);
+        if (obj) {
+          const imgBytes = await obj.arrayBuffer();
+          let img;
+          try { img = await pdfDoc.embedJpg(imgBytes); } catch(e) {
+            try { img = await pdfDoc.embedPng(imgBytes); } catch(e2) {}
+          }
+          if (img) {
+            const dims = img.scaleToFit(120, 120);
+            page.drawImage(img, {
+              x: 40,
+              y: currentY - 120,
+              width: dims.width,
+              height: dims.height,
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error loading photo for PDF", err);
+      }
+    }
+
+    // Name & Details
+    page.drawText((a.name||'').toUpperCase(), { x: 180, y: currentY - 20, size: 18, font: boldFont, color: rgb(0.1, 0.1, 0.1) });
+    page.drawText(`C.I: ${a.cedula||''}`, { x: 180, y: currentY - 45, size: 12, font: boldFont, color: rgb(0.388, 0.4, 0.945) });
+    page.drawText(`NACIMIENTO: ${a.birth_date||''}`, { x: 180, y: currentY - 65, size: 10, font: font, color: rgb(0.4, 0.4, 0.4) });
+    
+    const regDateStr = a.created_at ? new Date(a.created_at).toLocaleDateString('es-ES') : '';
+    page.drawText(`REGISTRO: ${regDateStr}`, { x: 180, y: currentY - 80, size: 10, font: font, color: rgb(0.4, 0.4, 0.4) });
+
+    currentY -= 150;
+
+    // Contact Box
+    page.drawText('DATOS DE CONTACTO', { x: 40, y: currentY, size: 10, font: boldFont, color: rgb(0.388, 0.4, 0.945) });
+    currentY -= 10;
+    page.drawRectangle({ x: 40, y: currentY - 65, width: width - 80, height: 65, color: rgb(0.96, 0.97, 0.98), borderColor: rgb(0.9, 0.9, 0.9), borderWidth: 1 });
+    
+    page.drawText(`Teléfono: ${a.phone||''}`, { x: 60, y: currentY - 20, size: 10, font: font, color: rgb(0.2, 0.2, 0.2) });
+    page.drawText(`Email: ${(a.email||'').toUpperCase()}`, { x: 60, y: currentY - 38, size: 10, font: boldFont, color: rgb(0.388, 0.4, 0.945) });
+    const addr = a.address || '';
+    page.drawText(`Ubicación: ${addr.substring(0, 80).toUpperCase()}`, { x: 60, y: currentY - 56, size: 9, font: font, color: rgb(0.4, 0.4, 0.4) });
+
+    currentY -= 95;
+
+    // Experience Box
+    page.drawText('EXPERIENCIA LABORAL', { x: 40, y: currentY, size: 10, font: boldFont, color: rgb(0.388, 0.4, 0.945) });
+    currentY -= 10;
+    
+    const expWords = (a.experience || 'SIN EXPERIENCIA REGISTRADA').toUpperCase().split(' ');
+    let lines = [];
+    let currentLine = '';
+    for (const w of expWords) {
+      if ((currentLine + w).length > 80) {
+        lines.push(currentLine);
+        currentLine = w + ' ';
+      } else {
+        currentLine += w + ' ';
+      }
+    }
+    if (currentLine.trim()) lines.push(currentLine.trim());
+    
+    const boxHeight = (lines.length * 15) + 20;
+    page.drawRectangle({ x: 40, y: currentY - boxHeight, width: width - 80, height: boxHeight, color: rgb(0.96, 0.97, 0.98), borderColor: rgb(0.9, 0.9, 0.9), borderWidth: 1 });
+    
+    let textY = currentY - 20;
+    for (const line of lines) {
+      page.drawText(line, { x: 60, y: textY, size: 9, font: font, color: rgb(0.2, 0.2, 0.2) });
+      textY -= 15;
+    }
+
+    page.drawText(`Generado automaticamente por el sistema de gestion de personal EYE STAFF.`, { x: 40, y: 30, size: 8, font: font, color: rgb(0.5, 0.5, 0.5) });
+  }
+
+  return await pdfDoc.save();
+}
+
+async function sendWeeklyApplicationsReport(env: Env, forceTest: boolean = false) {
+
+
+  const now = new Date();
+  const offset = -4;
+  const localTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
+
+  const dayOfWeek = localTime.getUTCDay();
+  const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(localTime);
+  monday.setUTCDate(monday.getUTCDate() + daysToMonday);
+  
+  const sunday = new Date(monday);
+  sunday.setUTCDate(sunday.getUTCDate() + 6);
+
+  const formatDate = (d: Date) => `${d.getUTCDate().toString().padStart(2, '0')}/${(d.getUTCMonth() + 1).toString().padStart(2, '0')}/${d.getUTCFullYear()}`;
+  
+  const getWeekNumber = (d: Date) => {
+    const dC = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    const dayNum = dC.getUTCDay() || 7;
+    dC.setUTCDate(dC.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(dC.getUTCFullYear(), 0, 1));
+    return Math.ceil((((dC.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  };
+  const weekNum = getWeekNumber(monday);
+
+  const weekName = `${weekNum} DEL ${formatDate(monday)} AL ${formatDate(sunday)}`;
+
+  const lastMonday = new Date(monday);
+  lastMonday.setUTCDate(lastMonday.getUTCDate() - 7);
+
+  const lastMondayStr = `${lastMonday.getUTCFullYear()}-${(lastMonday.getUTCMonth() + 1).toString().padStart(2, '0')}-${lastMonday.getUTCDate().toString().padStart(2, '0')} 00:00:00`;
+  const thisMondayStr = `${monday.getUTCFullYear()}-${(monday.getUTCMonth() + 1).toString().padStart(2, '0')}-${monday.getUTCDate().toString().padStart(2, '0')} 00:00:00`;
+
+  const appsRes = await env.DB.prepare(
+    "SELECT * FROM job_applications WHERE created_at >= ? AND created_at < ? ORDER BY created_at DESC"
+  ).bind(lastMondayStr, thisMondayStr).all();
+  const apps = appsRes.results || [];
+
+  const pdfBytes = await generateApplicationsPDF(env, apps, weekName);
+  const pdfBase64 = uint8ArrayToBase64(pdfBytes);
+
+
+  let newHtml = '';
+  let oldHtml = '';
+
+  for (const a of apps) {
+    const createdAtStr = String(a.created_at || '');
+    if (createdAtStr >= thisMondayStr) {
+      let statusText = a.status === 'pending' ? 'PENDIENTE' : a.status === 'approved' ? 'APROBADO' : 'OTRO';
+      newHtml += `
+        <tr style="border-bottom:1px solid #f1f5f9;">
+          <td style="padding:12px 15px; color:#1e293b; font-weight:700;">${(String(a.name) || '').toUpperCase()}</td>
+          <td style="padding:12px 15px; color:#475569; text-align:center;">${a.phone}</td>
+          <td style="padding:12px 15px; text-align:center;"><span style="background:#f1f5f9; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold; color:#1e293b;">${statusText}</span></td>
+        </tr>
+      `;
+    } else {
+      let statusText = 'POR VALIDACIÓN RRHH';
+      oldHtml += `
+        <tr style="border-bottom:1px solid #f1f5f9; background:#fffbeb;">
+          <td style="padding:12px 15px; color:#b45309; font-weight:700;">${(String(a.name) || '').toUpperCase()}</td>
+          <td style="padding:12px 15px; color:#b45309; text-align:center;">${a.phone}</td>
+          <td style="padding:12px 15px; text-align:center;"><span style="background:#fef3c7; border:1px solid #fde68a; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold; color:#d97706;">${statusText}</span></td>
+        </tr>
+      `;
+    }
+  }
+
+  let listHtml = newHtml;
+  if (oldHtml) {
+    listHtml += `
+      <tr>
+        <td colspan="3" style="padding:20px 15px 10px; font-weight:bold; color:#94a3b8; text-align:center; font-size:0.85rem; border-top:2px dashed #e2e8f0;">
+          POSTULACIONES ANTERIORES EN ESPERA DE VALIDACIÓN
+        </td>
+      </tr>
+      ${oldHtml}
+    `;
+  }
+
+  const htmlContent = `
+    <div style="font-family:sans-serif; max-width:600px; margin:auto; border:1px solid #eee; border-radius:15px; overflow:hidden; border-top:6px solid #6366f1;">
+      <div style="background:#0f172a; padding:35px; text-align:center;">
+        <h1 style="color:#6366f1; margin:0; font-size:2rem; letter-spacing:3px;">EYE STAFF</h1>
+        <p style="color:#94a3b8; font-weight:700; margin:5px 0 0; font-size:0.9rem;">REPORTE SEMANAL DE POSTULACIONES</p>
+      </div>
+      <div style="padding:30px; background:#fff;">
+        <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px; border-left:4px solid #6366f1;">
+          <p style="margin:0 0 8px; font-size:1.1rem; color:#1e293b;"><strong>SEMANA:</strong> ${weekName.toUpperCase()}</p>
+          <p style="margin:0 0 0; color:#475569;">A continuacion se detalla el listado de postulantes captados que estan disponibles para revision en la semana en curso.</p>
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:25px;">
+          <thead>
+            <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
+              <th style="padding:10px 15px; color:#475569;">Nombre</th>
+              <th style="padding:10px 15px; color:#475569; text-align:center;">Teléfono</th>
+              <th style="padding:10px 15px; color:#475569; text-align:center;">Estatus</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${listHtml || '<tr><td colspan="3" style="text-align:center; padding:20px; color:#94a3b8;">No se encontraron postulaciones registradas esta semana.</td></tr>'}
+          </tbody>
+        </table>
+        <div style="background:#e0e7ff; border:1px solid #c7d2fe; border-radius:10px; padding:15px; margin-top:20px;">
+          <p style="margin:0; color:#3730a3; font-weight:bold; font-size:0.85rem; text-align:center;">📦 Reporte completo adjunto en formato PDF para RRHH.</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  await sendEmail(env, undefined, `📝 REPORTE POSTULACIONES - SEMANA ${weekName.toUpperCase()}`, htmlContent, [
+    { filename: `Postulaciones_Semana_${monday.getUTCDate()}_${monday.getUTCMonth()+1}.pdf`, content: pdfBase64 }
+  ], undefined, 'postulacion_empleo');
+
+  // WhatsApp Sending
+  const subs = await env.DB.prepare('SELECT u.phone, p.postulacion_empleo FROM users u JOIN user_report_subscriptions p ON u.id = p.user_id WHERE p.postulacion_empleo IN (1, 3) AND u.is_active = 1 AND u.phone IS NOT NULL AND u.phone != ""').all<any>();
+  for (const s of (subs.results || [])) {
+    const waMsg = `*EYE STAFF - 🎓 REPORTE DE POSTULACIONES*\n\nEl reporte semanal de postulaciones de empleo (Semana ${weekName.toUpperCase()}) ha sido generado.\n\n_Revisa tu correo para ver el reporte detallado en PDF._`;
+    try {
+      await sendWhatsAppMessage(env, s.phone, waMsg);
+    } catch (e) {
+      console.error('Error WA postulaciones:', e);
+    }
+  }
 }
 
 async function sendRetrievalTokenEmail(env: Env, vehicle: any, token: string) {
@@ -4605,8 +5809,16 @@ app.post('/api/public/confirm-conformity/:code', async (c) => {
 // PÚBLICO: ENVIAR REPORTE DE PRUEBA DE CUMPLEAÑOS
 app.post('/api/public/test-birthday-report', async (c) => {
   try {
-    await sendMonthlyBirthdayReport(c.env, true);
-    return c.json({ success: true, message: 'Reporte de cumpleaños enviado a eyestaff.ncarrillo@gmail.com' });
+    const subs = await getSubscribedEmails(c.env, 'cumpleanos');
+    return c.json({ success: true, subs });
+  } catch(e:any) { return c.json({ error: e.message }) }
+});
+
+// PÚBLICO: ENVIAR REPORTE DE POSTULACIONES
+app.post('/api/public/test-applications-report', async (c) => {
+  try {
+    await sendWeeklyApplicationsReport(c.env, true);
+    return c.json({ success: true, message: 'Reporte de postulaciones enviado.' });
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
   }
@@ -4657,23 +5869,32 @@ app.post('/api/staff/login', async (c) => {
     }
 
 
-    // 2. Verificación en Base de Datos (Para Nelson, Nicolas y el resto)
+    // 2. Verificación en Base de Datos
     const stripAccents = (str: string) => {
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
-    // Buscamos ignorando tildes, espacios y permitiendo cédula
     const cleanInput = stripAccents(inputName).replace(/\s+/g, '').toLowerCase();
 
-    const allActiveUsers = await c.env.DB.prepare("SELECT * FROM users WHERE is_active = 1").all();
-    const usersList = (allActiveUsers && allActiveUsers.results) ? allActiveUsers.results : [];
+    let dbUser: any = null;
+    let usersList: any[] = [];
+    
+    // Quick path if inputName is a cedula
+    if (/^\d+$/.test(inputName.trim())) {
+      const userByCedula = await c.env.DB.prepare("SELECT * FROM users WHERE is_active = 1 AND cedula = ?").bind(inputName.trim()).first();
+      if (userByCedula) dbUser = userByCedula;
+    }
 
-    const dbUser: any = usersList.find((u: any) => {
-      const cleanDBName = stripAccents(u.name || '').replace(/\s+/g, '').toLowerCase();
-      const cleanCedula = (u.cedula || '').toString().trim();
-      // Comparación EXACTA: el nombre ingresado debe coincidir completamente
-      return cleanDBName === cleanInput || cleanCedula === inputName.trim();
-    });
+    if (!dbUser) {
+      const allActiveUsers = await c.env.DB.prepare("SELECT * FROM users WHERE is_active = 1").all();
+      usersList = (allActiveUsers && allActiveUsers.results) ? allActiveUsers.results : [];
+
+      dbUser = usersList.find((u: any) => {
+        const cleanDBName = stripAccents(u.name || '').replace(/\s+/g, '').toLowerCase();
+        const cleanCedula = (u.cedula || '').toString().trim();
+        return cleanDBName === cleanInput || cleanCedula === inputName.trim();
+      });
+    }
 
     if (dbUser && (dbUser.pin_hash || '').toString().toLowerCase() === lowerPass) {
       let finalRole = dbUser.role || 'valet';
@@ -4682,6 +5903,7 @@ app.post('/api/staff/login', async (c) => {
         inputName.includes('nicolas') ||
         inputName.includes('billy') ||
         inputName.includes('ramos') ||
+        dbUser.is_corporate_profile === 1 ||
         dbUser.profile_admin === 'DIRECTOR' ||
         dbUser.profile_admin === 'ADMIN' ||
         dbUser.profile_admin === 'RRHH';
@@ -4698,47 +5920,40 @@ app.post('/api/staff/login', async (c) => {
         profile_admin: dbUser.profile_admin || 'NO APLICA',
         profile_opera: dbUser.profile_opera || 'NO APLICA',
         eye_id: dbUser.eye_id || null,
+        is_corporate_profile: dbUser.is_corporate_profile || 0,
         is_guest: isGuestUser,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365 * 10
       }, c.env.JWT_SECRET || 'secret', 'HS256');
 
-      await logAudit(c.env, dbUser.id, 'LOGIN', `Acceso exitoso: ${dbUser.name}`, c);
-
       const device = c.req.header('User-Agent') || 'Unknown';
       const ip = c.req.header('cf-connecting-ip') || 'unknown';
-      const sessionId = Date.now().toString();
 
-      // Actualizar último login y dispositivo en la tabla de usuarios
-      await c.env.DB.prepare('UPDATE users SET last_login = datetime("now"), current_device = ? WHERE id = ?')
-        .bind(device, dbUser.id)
-        .run();
+      // Optimizamos 5 queries en solo 2 (batch + concurrent query)
+      const [batchResults, permRow] = await Promise.all([
+        c.env.DB.batch([
+          c.env.DB.prepare('INSERT INTO audit_logs (user_id, action, details, ip, device) VALUES (?, ?, ?, ?, ?)').bind(dbUser.id, 'LOGIN', `Acceso exitoso: ${dbUser.name}`, ip, device),
+          c.env.DB.prepare('UPDATE users SET last_login = datetime("now"), current_device = ? WHERE id = ?').bind(device, dbUser.id),
+          c.env.DB.prepare(`
+            UPDATE web_sessions 
+            SET is_active = 0, logout_at = datetime("now") 
+            WHERE user_id = ? AND is_active = 1 
+            AND id NOT IN (
+              SELECT id FROM web_sessions 
+              WHERE user_id = ? AND is_active = 1 
+              ORDER BY last_activity_at DESC 
+              LIMIT 2
+            )
+          `).bind(dbUser.id, dbUser.id),
+          c.env.DB.prepare('INSERT INTO web_sessions (user_id, device, ip, is_active, last_activity_at) VALUES (?, ?, ?, 1, datetime("now"))').bind(dbUser.id, device, ip)
+        ]),
+        c.env.DB.prepare('SELECT * FROM user_permissions_matrix WHERE user_id = ?').bind(dbUser.id).first<any>()
+      ]);
 
-      // Limitar concurrencia de sesiones a 3 dispositivos máximo por usuario.
-      // Se mantienen las 2 más recientes activas para que con la actual sumen 3.
-      await c.env.DB.prepare(`
-        UPDATE web_sessions 
-        SET is_active = 0, logout_at = datetime("now") 
-        WHERE user_id = ? AND is_active = 1 
-        AND id NOT IN (
-          SELECT id FROM web_sessions 
-          WHERE user_id = ? AND is_active = 1 
-          ORDER BY last_activity_at DESC 
-          LIMIT 2
-        )
-      `).bind(dbUser.id, dbUser.id).run();
-
-      // Registrar sesión activa
-      const sessionResult = await c.env.DB.prepare('INSERT INTO web_sessions (user_id, device, ip, is_active, last_activity_at) VALUES (?, ?, ?, 1, datetime("now"))')
-        .bind(dbUser.id, device, ip)
-        .run();
-
+      const sessionResult = batchResults[3];
       const webSessionId = sessionResult.meta.last_row_id?.toString() || Date.now().toString();
-
-      // Obtener permisos personalizados o calcular defaults
-      const permRow = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix WHERE user_id = ?').bind(dbUser.id).first<any>();
       let permissions = permRow;
       if (!permRow) {
-        const isSuperadmin = finalRole === 'director' || dbUser.profile_admin === 'ADMIN' || dbUser.profile_admin === 'RRHH' || dbUser.profile_admin === 'DIRECTOR';
+        const isSuperadmin = finalRole === 'director' || dbUser.is_corporate_profile === 1 || dbUser.profile_admin === 'ADMIN' || dbUser.profile_admin === 'RRHH' || dbUser.profile_admin === 'DIRECTOR';
         const isSupervisor = finalRole === 'supervisor';
         const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
         const isVIP = allowedCfoNames.some(n => (dbUser.name || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(n));
@@ -4761,14 +5976,18 @@ app.post('/api/staff/login', async (c) => {
       return c.json({
         id: dbUser.id,
         name: dbUser.name,
+        cedula: dbUser.cedula || null,
+        phone: dbUser.phone || null,
         role: finalRole,
         is_superadmin: finalRole === 'director',
         profile_admin: dbUser.profile_admin || 'NO APLICA',
         profile_opera: dbUser.profile_opera || 'NO APLICA',
         eye_id: dbUser.eye_id || null,
+        is_corporate_profile: dbUser.is_corporate_profile || 0,
         is_guest: isGuestUser,
         web_session_id: webSessionId,
         pin_hash: dbUser.pin_hash,
+        privacy_accepted: dbUser.privacy_accepted || 0,
         token,
         permissions
       });
@@ -4797,6 +6016,7 @@ app.post('/api/staff/login', async (c) => {
         role: 'director',
         is_superadmin: true,
         is_guest: false,
+        is_corporate_profile: 1,
         web_session_id: Date.now().toString(),
         pin_hash: lowerPass,
         eye_id: 'ORO',
@@ -4805,6 +6025,31 @@ app.post('/api/staff/login', async (c) => {
     }
 
     return c.json({ error: `ACCESO DENEGADO PARA: [${inputName.toUpperCase()}]` }, 401);
+  } catch (e: any) {
+    return c.json({ error: 'Error: ' + e.message }, 500);
+  }
+});
+
+app.get('/api/public/staff-lookup/:cedula', async (c) => {
+  try {
+    const cedula = c.req.param('cedula');
+    if (!cedula) return c.json({ error: 'Cédula requerida' }, 400);
+
+    const searchCedula = cedula.replace(/[^0-9]/g, '');
+    if (!searchCedula) return c.json({ error: 'Cédula inválida' }, 400);
+
+    const user = await c.env.DB.prepare(`
+      SELECT name, phone 
+      FROM users 
+      WHERE REPLACE(REPLACE(REPLACE(UPPER(cedula), 'V-', ''), 'E-', ''), '.', '') = ? 
+        AND is_active = 1
+    `).bind(searchCedula).first<any>();
+
+    if (user) {
+      return c.json({ success: true, name: user.name, phone: user.phone || '' });
+    } else {
+      return c.json({ success: false, error: 'No encontrado' }, 404);
+    }
   } catch (e: any) {
     return c.json({ error: 'Error: ' + e.message }, 500);
   }
@@ -4910,6 +6155,41 @@ app.post('/api/auth/refresh', async (c) => {
     'HS256'
   );
   return c.json({ success: true, token });
+});
+
+app.post('/api/staff/accept-privacy', async (c) => {
+  const user = c.get('user');
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
+  await c.env.DB.prepare('UPDATE users SET privacy_accepted = 1 WHERE id = ?').bind(user.id).run();
+  return c.json({ success: true });
+});
+
+app.post('/api/staff/app-location', async (c) => {
+  const user = c.get('user');
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
+  const { latitude, longitude, session_id } = await c.req.json().catch(() => ({}));
+  if (!latitude || !longitude) return c.json({ error: 'Missing coordinates' }, 400);
+
+  // Comprobar si el usuario sigue activo (no le han dado salida)
+  const userRow = await c.env.DB.prepare('SELECT current_session_id FROM users WHERE id = ?').bind(user.id).first<{ current_session_id: string | null }>();
+  
+  if (!userRow || !userRow.current_session_id) {
+    return c.json({ stop_tracking: true });
+  }
+
+  if (session_id) {
+    const activeSessions = userRow.current_session_id.toString().split(',').map(x => x.trim()).filter(Boolean);
+    if (!activeSessions.includes(session_id.toString())) {
+       return c.json({ stop_tracking: true });
+    }
+  }
+
+  await c.env.DB.prepare(`
+    INSERT INTO staff_locations (user_id, session_id, latitude, longitude, ts)
+    VALUES (?, ?, ?, ?, datetime('now'))
+  `).bind(user.id, session_id || null, latitude, longitude).run();
+
+  return c.json({ success: true });
 });
 
 app.post('/api/staff/logout', async (c) => {
@@ -5115,8 +6395,8 @@ app.post('/api/staff', async (c) => {
     return c.json({ error: 'No autorizado' }, 403);
   }
 
-  const { name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, pago_movil_phone, carnet, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer } = await c.req.json();
-  if (!name || !pin_hash || !role) return c.json({ error: 'Faltan datos' }, 400);
+  const { name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, pago_movil_phone, carnet, profile_admin, profile_opera, eye_id, email, birth_date, entry_date, emergency_contact, emergency_phone, is_allergic, is_chofer, is_corporate_profile } = await c.req.json();
+  if (!cedula || !pin_hash || !role) return c.json({ error: 'Faltan datos' }, 400);
 
   let carnetKey = null;
   if (carnet) {
@@ -5140,10 +6420,10 @@ app.post('/api/staff', async (c) => {
     cleanName = `${fName} ${lName}`.toUpperCase();
   }
 
-  const mappedRole = mapRole(role || 'driver');
+  const mappedRole = mapRole(role || 'employee');
 
-  await c.env.DB.prepare('INSERT INTO users (name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, pago_movil_phone, carnet_url, profile_admin, profile_opera, eye_id, email, birth_date, emergency_contact, emergency_phone, is_allergic, is_chofer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(cleanName, pin_hash, mappedRole, cedula || null, phone || null, address || null, sector || null, bank_name || null, bank_account || null, pago_movil || 0, pago_movil_phone || null, carnetKey, profile_admin || null, profile_opera || null, eye_id || null, email || null, birth_date || null, emergency_contact || null, emergency_phone || null, is_allergic || null, is_chofer ? 1 : 0)
+  await c.env.DB.prepare('INSERT INTO users (name, pin_hash, role, cedula, phone, address, sector, bank_name, bank_account, pago_movil, pago_movil_phone, carnet_url, profile_admin, profile_opera, eye_id, email, birth_date, entry_date, emergency_contact, emergency_phone, is_allergic, is_chofer, is_corporate_profile) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    .bind(cleanName, pin_hash, mappedRole, cedula || null, phone || null, address || null, sector || null, bank_name || null, bank_account || null, pago_movil || 0, pago_movil_phone || null, carnetKey, profile_admin || null, profile_opera || null, eye_id || null, email || null, birth_date || null, entry_date || null, emergency_contact || null, emergency_phone || null, is_allergic || null, is_chofer ? 1 : 0, is_corporate_profile ? 1 : 0)
     .run();
 
   return c.json({ message: 'Personal registrado correctamente', name: cleanName });
@@ -5201,9 +6481,10 @@ app.post('/api/admin/send-staff-list', async (c) => {
   `;
 
   const adminEmail = c.env.DIRECTOR_EMAIL ;
-  await sendEmail(c.env, adminEmail, 'EYE STAFF — Listado Completo de Accesos y Pines', html);
+  // Listado de Accesos y Pines eliminado a petición del usuario
+  // await sendEmail(c.env, adminEmail, 'EYE STAFF — Listado Completo de Accesos y Pines', html);
 
-  return c.json({ success: true, message: `Correo enviado con éxito a ${adminEmail}` });
+  return c.json({ success: true, message: `Reporte de pines generado (envío omitido)` });
 });
 
 app.post('/api/admin/verify-pin-and-query', async (c) => {
@@ -5212,7 +6493,7 @@ app.post('/api/admin/verify-pin-and-query', async (c) => {
 
   // Verificar rol del usuario
   const isAuthorized = (
-    current.profile_admin === 'DIRECTOR' || current.profile_admin === 'ADMIN' || current.profile_admin === 'RRHH' ||
+    current.is_corporate_profile === 1 || current.profile_admin === 'DIRECTOR' || current.profile_admin === 'ADMIN' || current.profile_admin === 'RRHH' ||
     current.profile_admin === 'COORDINADOR' ||
     current.role === 'director'
   );
@@ -5293,7 +6574,7 @@ app.post('/api/staff/update', async (c) => {
   const { id, field, value } = await c.req.json();
   if (!id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic'];
+  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'entry_date', 'is_corporate_profile'];
   if (!allowedFields.includes(field)) return c.json({ error: 'Campo no permitido' }, 400);
 
   await c.env.DB.prepare(`UPDATE users SET ${field} = ? WHERE id = ?`)
@@ -5307,7 +6588,7 @@ app.post('/api/staff/update-bulk', async (c) => {
   const { id, updates } = await c.req.json();
   if (!id || !updates) return c.json({ error: 'Faltan datos' }, 400);
 
-  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer'];
+  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'entry_date', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer', 'is_corporate_profile'];
 
   const setClauses = [];
   const values = [];
@@ -5361,6 +6642,33 @@ app.post('/api/staff/:id/photo', async (c) => {
 
   return c.json({ success: true, url: publicUrl });
 });
+
+app.delete('/api/staff/:id/document', async (c) => {
+  const id = c.req.param('id');
+  const { document_type } = await c.req.json();
+
+  if (!document_type) {
+    return c.json({ error: 'Faltan datos' }, 400);
+  }
+
+  const allowedTypes = [
+    'carnet_url',
+    'cedula_photo_url', 
+    'licencia_photo_url', 
+    'certificado_medico_url', 
+    'licencia_3ra_photo_url', 
+    'certificado_medico_3ra_url'
+  ];
+  
+  if (!allowedTypes.includes(document_type)) {
+    return c.json({ error: 'Tipo de documento no válido' }, 400);
+  }
+
+  await c.env.DB.prepare(`UPDATE users SET ${document_type} = NULL WHERE id = ?`).bind(id).run();
+
+  return c.json({ success: true });
+});
+
 
 app.post('/api/staff/:id/document', async (c) => {
   const id = c.req.param('id');
@@ -5556,6 +6864,47 @@ app.post('/api/staff/update-bank-info', async (c) => {
   return c.json({ success: true });
 });
 
+app.post('/api/staff/submit-data-update', async (c) => {
+  try {
+    const data = await c.req.json();
+    const userId = c.get('user')?.id;
+    if (!userId) return c.json({ error: 'No autorizado' }, 401);
+
+    // Parse the data and extract photo
+    const proposedData = JSON.stringify(data.proposed_data || {});
+    const photoBase64 = data.photo_base64 || null;
+    const dummyToken = 'inapp_' + Math.random().toString(36).substring(2, 15);
+
+    // Eliminar solicitudes previas pendientes del mismo usuario para evitar duplicados
+    await c.env.DB.prepare("DELETE FROM employee_data_updates WHERE user_id = ? AND status = 'pending_review'")
+      .bind(userId)
+      .run();
+
+    await c.env.DB.prepare('INSERT INTO employee_data_updates (user_id, token, proposed_data, photo_base64, status) VALUES (?, ?, ?, ?, ?)')
+      .bind(userId, dummyToken, proposedData, photoBase64, 'pending_review')
+      .run();
+    
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: e.message, stack: e.stack }, 500);
+  }
+});
+
+app.get('/api/staff/profile/me', async (c) => {
+  const userId = c.get('user')?.id;
+  if (!userId) return c.json({ error: 'No autorizado' }, 401);
+
+  const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first();
+  if (!user) return c.json({ error: 'User not found' }, 404);
+
+  const pendingRequest = await c.env.DB.prepare("SELECT * FROM employee_data_updates WHERE user_id = ? AND status = 'pending_review' ORDER BY created_at DESC LIMIT 1").bind(userId).first();
+
+  return c.json({ user, pendingRequest });
+});
+
+
+
+
 app.post('/api/staff/import', async (c) => {
   const { csv } = await c.req.json();
   if (!csv) return c.json({ error: 'CSV requerido' }, 400);
@@ -5588,7 +6937,7 @@ app.post('/api/staff/import', async (c) => {
     const allergies = cols[15] || '';
 
     // Inferir ROL legacy
-    let role = 'driver';
+    let role = 'employee';
     if (pAdmin === 'DIRECTOR') role = 'director';
     else if (pAdmin === 'COORDINADOR' || ['JEFE DE GRUPO', 'SUPERVISOR', 'COORDINADOR GENERAL'].includes(pOpera)) role = 'supervisor';
 
@@ -5733,7 +7082,7 @@ app.get('/api/admin/user-permissions', async (c) => {
 
   const permRowsRes = await c.env.DB.prepare('SELECT * FROM user_permissions_matrix').all();
   const permRows = permRowsRes.results || [];
-  const permMap = new Map(permRows.map((r: any) => [r.user_id, r]));
+  const permMap = new Map<any, any>(permRows.map((r: any) => [r.user_id, r]));
 
   const allowedCfoNames = ["ADMIN", "NICOLAS BETANCOURT", "MAIFER BARRUETA"];
 
@@ -5768,7 +7117,28 @@ app.get('/api/admin/user-permissions', async (c) => {
         seg_ve: permRow.seg_ve,
         seg_mod: permRow.seg_mod,
         loc_ve: permRow.loc_ve,
-        loc_mod: permRow.loc_mod
+        loc_mod: permRow.loc_mod,
+        portal_ve: permRow.portal_ve, portal_mod: permRow.portal_mod,
+        operaciones_ve: permRow.operaciones_ve, operaciones_mod: permRow.operaciones_mod,
+        listas_ve: permRow.listas_ve, listas_mod: permRow.listas_mod,
+        administracion_ve: permRow.administracion_ve, administracion_mod: permRow.administracion_mod,
+        gestion_personal_ve: permRow.gestion_personal_ve, gestion_personal_mod: permRow.gestion_personal_mod,
+        captacion_ve: permRow.captacion_ve, captacion_mod: permRow.captacion_mod,
+        informes_ve: permRow.informes_ve, informes_mod: permRow.informes_mod,
+        cierre_eventos_ve: permRow.cierre_eventos_ve, cierre_eventos_mod: permRow.cierre_eventos_mod,
+        bases_datos_ve: permRow.bases_datos_ve, bases_datos_mod: permRow.bases_datos_mod,
+        inventarios_ve: permRow.inventarios_ve, inventarios_mod: permRow.inventarios_mod,
+        auditoria_ve: permRow.auditoria_ve, auditoria_mod: permRow.auditoria_mod,
+        direccion_ve: permRow.direccion_ve, direccion_mod: permRow.direccion_mod,
+        presupuestos_ve: permRow.presupuestos_ve, presupuestos_mod: permRow.presupuestos_mod,
+        nomina_ve: permRow.nomina_ve, nomina_mod: permRow.nomina_mod,
+        cierres_direccion_ve: permRow.cierres_direccion_ve, cierres_direccion_mod: permRow.cierres_direccion_mod,
+        proyectos_ve: permRow.proyectos_ve, proyectos_mod: permRow.proyectos_mod,
+        publicidad_ve: permRow.publicidad_ve, publicidad_mod: permRow.publicidad_mod,
+        legal_ve: permRow.legal_ve, legal_mod: permRow.legal_mod,
+        geolocalizacion_ve: permRow.geolocalizacion_ve, geolocalizacion_mod: permRow.geolocalizacion_mod,
+        backup_ve: permRow.backup_ve, backup_mod: permRow.backup_mod,
+        formatos_ve: permRow.formatos_ve, formatos_mod: permRow.formatos_mod
       };
     } else {
       const isSuperadmin = u.role === 'director';
@@ -5802,7 +7172,28 @@ app.get('/api/admin/user-permissions', async (c) => {
         seg_ve: isSuperadmin ? 1 : 0,
         seg_mod: isSuperadmin ? 1 : 0,
         loc_ve: 1,
-        loc_mod: (isSuperadmin || isSupervisor) ? 1 : 0
+        loc_mod: (isSuperadmin || isSupervisor) ? 1 : 0,
+        portal_ve: isSuperadmin ? 1 : 0, portal_mod: isSuperadmin ? 1 : 0,
+        operaciones_ve: isSuperadmin ? 1 : 0, operaciones_mod: isSuperadmin ? 1 : 0,
+        listas_ve: isSuperadmin ? 1 : 0, listas_mod: isSuperadmin ? 1 : 0,
+        administracion_ve: isSuperadmin ? 1 : 0, administracion_mod: isSuperadmin ? 1 : 0,
+        gestion_personal_ve: isSuperadmin ? 1 : 0, gestion_personal_mod: isSuperadmin ? 1 : 0,
+        captacion_ve: isSuperadmin ? 1 : 0, captacion_mod: isSuperadmin ? 1 : 0,
+        informes_ve: isSuperadmin ? 1 : 0, informes_mod: isSuperadmin ? 1 : 0,
+        cierre_eventos_ve: isSuperadmin ? 1 : 0, cierre_eventos_mod: isSuperadmin ? 1 : 0,
+        bases_datos_ve: isSuperadmin ? 1 : 0, bases_datos_mod: isSuperadmin ? 1 : 0,
+        inventarios_ve: isSuperadmin ? 1 : 0, inventarios_mod: isSuperadmin ? 1 : 0,
+        auditoria_ve: isSuperadmin ? 1 : 0, auditoria_mod: isSuperadmin ? 1 : 0,
+        direccion_ve: isSuperadmin ? 1 : 0, direccion_mod: isSuperadmin ? 1 : 0,
+        presupuestos_ve: isSuperadmin ? 1 : 0, presupuestos_mod: isSuperadmin ? 1 : 0,
+        nomina_ve: isSuperadmin ? 1 : 0, nomina_mod: isSuperadmin ? 1 : 0,
+        cierres_direccion_ve: isSuperadmin ? 1 : 0, cierres_direccion_mod: isSuperadmin ? 1 : 0,
+        proyectos_ve: isSuperadmin ? 1 : 0, proyectos_mod: isSuperadmin ? 1 : 0,
+        publicidad_ve: isSuperadmin ? 1 : 0, publicidad_mod: isSuperadmin ? 1 : 0,
+        legal_ve: isSuperadmin ? 1 : 0, legal_mod: isSuperadmin ? 1 : 0,
+        geolocalizacion_ve: isSuperadmin ? 1 : 0, geolocalizacion_mod: isSuperadmin ? 1 : 0,
+        backup_ve: isSuperadmin ? 1 : 0, backup_mod: isSuperadmin ? 1 : 0,
+        formatos_ve: 0, formatos_mod: 0
       };
     }
   });
@@ -5817,7 +7208,7 @@ app.post('/api/admin/user-permissions', async (c) => {
   const { user_id, field, value } = await c.req.json();
   if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const validFields = ['valet_ve', 'valet_mod', 'accesos_ve', 'accesos_mod', 'alquiler_ve', 'alquiler_mod', 'traslados_ve', 'traslados_mod', 'guardia_ve', 'guardia_mod', 'custodia_ve', 'custodia_mod', 'eventos_ve', 'eventos_mod', 'admin_ve', 'admin_mod', 'vip_ve', 'vip_mod', 'seg_ve', 'seg_mod', 'loc_ve', 'loc_mod'];
+  const validFields = ['valet_ve', 'valet_mod', 'accesos_ve', 'accesos_mod', 'alquiler_ve', 'alquiler_mod', 'traslados_ve', 'traslados_mod', 'guardia_ve', 'guardia_mod', 'custodia_ve', 'custodia_mod', 'eventos_ve', 'eventos_mod', 'admin_ve', 'admin_mod', 'vip_ve', 'vip_mod', 'seg_ve', 'seg_mod', 'loc_ve', 'loc_mod', 'portal_ve', 'portal_mod', 'operaciones_ve', 'operaciones_mod', 'listas_ve', 'listas_mod', 'administracion_ve', 'administracion_mod', 'gestion_personal_ve', 'gestion_personal_mod', 'captacion_ve', 'captacion_mod', 'informes_ve', 'informes_mod', 'cierre_eventos_ve', 'cierre_eventos_mod', 'bases_datos_ve', 'bases_datos_mod', 'inventarios_ve', 'inventarios_mod', 'auditoria_ve', 'auditoria_mod', 'direccion_ve', 'direccion_mod', 'presupuestos_ve', 'presupuestos_mod', 'nomina_ve', 'nomina_mod', 'cierres_direccion_ve', 'cierres_direccion_mod', 'proyectos_ve', 'proyectos_mod', 'publicidad_ve', 'publicidad_mod', 'legal_ve', 'legal_mod', 'geolocalizacion_ve', 'geolocalizacion_mod', 'backup_ve', 'backup_mod', 'formatos_ve', 'formatos_mod'];
   if (!validFields.includes(field)) {
     return c.json({ error: 'Campo inválido' }, 400);
   }
@@ -5852,12 +7243,33 @@ app.post('/api/admin/user-permissions', async (c) => {
   const d_seg_mod = isSuperadmin ? 1 : 0;
   const d_loc_ve = 1;
   const d_loc_mod = (isSuperadmin || isSupervisor) ? 1 : 0;
+  const d_portal_ve = isSuperadmin ? 1 : 0; const d_portal_mod = isSuperadmin ? 1 : 0;
+  const d_operaciones_ve = isSuperadmin ? 1 : 0; const d_operaciones_mod = isSuperadmin ? 1 : 0;
+  const d_listas_ve = isSuperadmin ? 1 : 0; const d_listas_mod = isSuperadmin ? 1 : 0;
+  const d_administracion_ve = isSuperadmin ? 1 : 0; const d_administracion_mod = isSuperadmin ? 1 : 0;
+  const d_gestion_personal_ve = isSuperadmin ? 1 : 0; const d_gestion_personal_mod = isSuperadmin ? 1 : 0;
+  const d_captacion_ve = isSuperadmin ? 1 : 0; const d_captacion_mod = isSuperadmin ? 1 : 0;
+  const d_informes_ve = isSuperadmin ? 1 : 0; const d_informes_mod = isSuperadmin ? 1 : 0;
+  const d_cierre_eventos_ve = isSuperadmin ? 1 : 0; const d_cierre_eventos_mod = isSuperadmin ? 1 : 0;
+  const d_bases_datos_ve = isSuperadmin ? 1 : 0; const d_bases_datos_mod = isSuperadmin ? 1 : 0;
+  const d_inventarios_ve = isSuperadmin ? 1 : 0; const d_inventarios_mod = isSuperadmin ? 1 : 0;
+  const d_auditoria_ve = isSuperadmin ? 1 : 0; const d_auditoria_mod = isSuperadmin ? 1 : 0;
+  const d_direccion_ve = isSuperadmin ? 1 : 0; const d_direccion_mod = isSuperadmin ? 1 : 0;
+  const d_presupuestos_ve = isSuperadmin ? 1 : 0; const d_presupuestos_mod = isSuperadmin ? 1 : 0;
+  const d_nomina_ve = isSuperadmin ? 1 : 0; const d_nomina_mod = isSuperadmin ? 1 : 0;
+  const d_cierres_direccion_ve = isSuperadmin ? 1 : 0; const d_cierres_direccion_mod = isSuperadmin ? 1 : 0;
+  const d_proyectos_ve = isSuperadmin ? 1 : 0; const d_proyectos_mod = isSuperadmin ? 1 : 0;
+  const d_publicidad_ve = isSuperadmin ? 1 : 0; const d_publicidad_mod = isSuperadmin ? 1 : 0;
+  const d_legal_ve = isSuperadmin ? 1 : 0; const d_legal_mod = isSuperadmin ? 1 : 0;
+  const d_geolocalizacion_ve = isSuperadmin ? 1 : 0; const d_geolocalizacion_mod = isSuperadmin ? 1 : 0;
+  const d_backup_ve = isSuperadmin ? 1 : 0; const d_backup_mod = isSuperadmin ? 1 : 0;
+  const d_formatos_ve = 0; const d_formatos_mod = 0;
 
   await c.env.DB.prepare(`
     INSERT OR IGNORE INTO user_permissions_matrix 
-    (user_id, valet_ve, valet_mod, accesos_ve, accesos_mod, alquiler_ve, alquiler_mod, traslados_ve, traslados_mod, guardia_ve, guardia_mod, custodia_ve, custodia_mod, eventos_ve, eventos_mod, admin_ve, admin_mod, vip_ve, vip_mod, seg_ve, seg_mod, loc_ve, loc_mod) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(user_id, d_valet_ve, d_valet_mod, d_accesos_ve, d_accesos_mod, d_alquiler_ve, d_alquiler_mod, d_traslados_ve, d_traslados_mod, d_guardia_ve, d_guardia_mod, d_custodia_ve, d_custodia_mod, d_eventos_ve, d_eventos_mod, d_admin_ve, d_admin_mod, d_vip_ve, d_vip_mod, d_seg_ve, d_seg_mod, d_loc_ve, d_loc_mod)
+    (user_id, valet_ve, valet_mod, accesos_ve, accesos_mod, alquiler_ve, alquiler_mod, traslados_ve, traslados_mod, guardia_ve, guardia_mod, custodia_ve, custodia_mod, eventos_ve, eventos_mod, admin_ve, admin_mod, vip_ve, vip_mod, seg_ve, seg_mod, loc_ve, loc_mod, portal_ve, portal_mod, operaciones_ve, operaciones_mod, listas_ve, listas_mod, administracion_ve, administracion_mod, gestion_personal_ve, gestion_personal_mod, captacion_ve, captacion_mod, informes_ve, informes_mod, cierre_eventos_ve, cierre_eventos_mod, bases_datos_ve, bases_datos_mod, inventarios_ve, inventarios_mod, auditoria_ve, auditoria_mod, direccion_ve, direccion_mod, presupuestos_ve, presupuestos_mod, nomina_ve, nomina_mod, cierres_direccion_ve, cierres_direccion_mod, proyectos_ve, proyectos_mod, publicidad_ve, publicidad_mod, legal_ve, legal_mod, geolocalizacion_ve, geolocalizacion_mod, backup_ve, backup_mod, formatos_ve, formatos_mod) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(user_id, d_valet_ve, d_valet_mod, d_accesos_ve, d_accesos_mod, d_alquiler_ve, d_alquiler_mod, d_traslados_ve, d_traslados_mod, d_guardia_ve, d_guardia_mod, d_custodia_ve, d_custodia_mod, d_eventos_ve, d_eventos_mod, d_admin_ve, d_admin_mod, d_vip_ve, d_vip_mod, d_seg_ve, d_seg_mod, d_loc_ve, d_loc_mod, d_portal_ve, d_portal_mod, d_operaciones_ve, d_operaciones_mod, d_listas_ve, d_listas_mod, d_administracion_ve, d_administracion_mod, d_gestion_personal_ve, d_gestion_personal_mod, d_captacion_ve, d_captacion_mod, d_informes_ve, d_informes_mod, d_cierre_eventos_ve, d_cierre_eventos_mod, d_bases_datos_ve, d_bases_datos_mod, d_inventarios_ve, d_inventarios_mod, d_auditoria_ve, d_auditoria_mod, d_direccion_ve, d_direccion_mod, d_presupuestos_ve, d_presupuestos_mod, d_nomina_ve, d_nomina_mod, d_cierres_direccion_ve, d_cierres_direccion_mod, d_proyectos_ve, d_proyectos_mod, d_publicidad_ve, d_publicidad_mod, d_legal_ve, d_legal_mod, d_geolocalizacion_ve, d_geolocalizacion_mod, d_backup_ve, d_backup_mod, d_formatos_ve, d_formatos_mod)
     .run();
 
   const intVal = value ? 1 : 0;
@@ -5880,7 +7292,7 @@ app.get('/api/admin/report-subscriptions', async (c) => {
 
   const subRowsRes = await c.env.DB.prepare('SELECT * FROM user_report_subscriptions').all();
   const subRows = subRowsRes.results || [];
-  const subMap = new Map(subRows.map((r: any) => [r.user_id, r]));
+  const subMap = new Map<any, any>(subRows.map((r: any) => [r.user_id, r]));
 
   const subscriptions = staff.map((u: any) => {
     const subRow = subMap.get(u.id);
@@ -5903,7 +7315,10 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         cierre_diario: subRow.cierre_diario || 0,
         pre_inicio_evento: subRow.pre_inicio_evento || 0,
         postulacion_empleo: subRow.postulacion_empleo || 0,
-        backup: subRow.backup || 0
+        inventarios: subRow.inventarios || 0,
+        backup: subRow.backup || 0,
+        horario_eventos: subRow.horario_eventos || 0,
+        formato_pago: subRow.formato_pago || 0
       };
     } else {
       return {
@@ -5925,7 +7340,9 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         pre_inicio_evento: 0,
         postulacion_empleo: 0,
         inventarios: 0,
-        backup: 0
+        backup: 0,
+        horario_eventos: 0,
+        formato_pago: 0
       };
     }
   });
@@ -5940,7 +7357,7 @@ app.post('/api/admin/report-subscriptions', async (c) => {
   const { user_id, field, value } = await c.req.json();
   if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup'];
+  const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup', 'horario_eventos', 'formato_pago'];
   if (!validFields.includes(field)) {
     return c.json({ error: 'Campo inválido' }, 400);
   }
@@ -5950,11 +7367,13 @@ app.post('/api/admin/report-subscriptions', async (c) => {
 
   await c.env.DB.prepare(`
     INSERT OR IGNORE INTO user_report_subscriptions 
-    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, credenciales, cierre_html, apertura_evento, pre_inicio_evento, cierre_diario, postulacion_empleo, inventarios, backup) 
-    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, credenciales, cierre_html, apertura_evento, pre_inicio_evento, cierre_diario, postulacion_empleo, inventarios, backup, horario_eventos, formato_pago) 
+    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   `).bind(user_id).run();
 
-  const intVal = value ? 1 : 0;
+  const intVal = parseInt(value, 10);
+  if (isNaN(intVal) || intVal < 0 || intVal > 3) return c.json({ error: 'Valor inválido' }, 400);
+
   await c.env.DB.prepare(`UPDATE user_report_subscriptions SET ${field} = ? WHERE user_id = ?`)
     .bind(intVal, user_id)
     .run();
@@ -6024,9 +7443,9 @@ app.post('/api/admin/send-backup', async (c) => {
 
     if (sendEmailFlag || sendWaFlag) {
       const subs = await c.env.DB.prepare(`
-        SELECT u.name, u.email, u.phone FROM user_report_subscriptions rs
-        JOIN users u ON rs.user_id = u.id
-        WHERE rs.backup = 1 AND u.is_active = 1
+        SELECT u.name, u.email, u.phone FROM user_permissions_matrix upm
+        JOIN users u ON upm.user_id = u.id
+        WHERE upm.backup_ve = 1 AND u.is_active = 1
       `).all<any>();
       const users = subs.results || [];
       recipientsList = users.map((u: any) => u.name);
@@ -6034,7 +7453,7 @@ app.post('/api/admin/send-backup', async (c) => {
       if (sendEmailFlag) {
         const emails = users.filter((u: any) => u.email).map((u: any) => u.email);
         if (emails.length > 0) {
-          const dateStrFmt = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+          const dateStrFmt = new Date().toLocaleString('es-ES', { timeZone: 'America/Caracas' });
           const subject = `📦 BACKUP COMPLETO EYE STAFF - ${dateStrFmt} (Base de Datos + Frontend)`;
           const html = `
             <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px; background: #fafafa;">
@@ -6088,8 +7507,8 @@ app.post('/api/admin/send-backup', async (c) => {
       if (sendWaFlag) {
         const phones = users.filter((u: any) => u.phone).map((u: any) => u.phone);
         if (phones.length > 0) {
-          const version = 'v2.7.31';
-          const dateStrFmt = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+          const version = 'v2.7.32';
+          const dateStrFmt = new Date().toLocaleString('es-ES', { timeZone: 'America/Caracas' });
           const waMsg = `*EYE STAFF - 📦 BACKUP COMPLETADO (${version})*\n\nSe ha generado y enviado el backup completo de seguridad (Base de Datos y Frontend) a los correos suscritos.\n\n*Detalles de Ejecución:*\n- Fecha de Creación: ${dateStrFmt}\n- Estado: Completado con Éxito\n\n*Elementos incluidos en este respaldo:*\n- index_backup_${dateStr}.html (Frontend actualizado en tiempo real)\n- db_backup_${dateStr}.txt (Tablas operativas D1 en JSON)\n\n_Revisa tu bandeja de entrada para descargar los archivos adjuntos._`;
           for (const phone of phones) {
             try {
@@ -6119,9 +7538,9 @@ app.post('/api/admin/send-update-requests', async (c) => {
 
   if (type === 'matrix') {
     const subs = await c.env.DB.prepare(`
-      SELECT u.id, u.email, u.name, u.phone FROM user_report_subscriptions rs
+      SELECT u.id, u.email, u.name, u.phone, rs.actualizacion_datos as sub_channel FROM user_report_subscriptions rs
       JOIN users u ON rs.user_id = u.id
-      WHERE rs.actualizacion_datos = 1 AND u.is_active = 1
+      WHERE rs.actualizacion_datos IN (1, 2, 3) AND u.is_active = 1
     `).all();
     targetUsers = subs.results as any;
   } else if (userIds && Array.isArray(userIds) && userIds.length > 0) {
@@ -6153,7 +7572,12 @@ app.post('/api/admin/send-update-requests', async (c) => {
     const link = `https://eye-staff.app/#actualizar-datos?token=${token}`;
     const firstName = emp.name.split(' ')[0];
 
-    if (sendEmailFlag && emp.email) {
+    const uChannel = (emp as any).sub_channel || 0;
+    const isMatrix = type === 'matrix';
+    const emailOk = sendEmailFlag && (isMatrix ? (uChannel === 2 || uChannel === 3) : true);
+    const waOk = sendWaFlag && (isMatrix ? (uChannel === 1 || uChannel === 3) : true);
+
+    if (emailOk && emp.email) {
       const html = `
         <div style="text-align: center;">
           <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${emp.name},</h2>
@@ -6173,23 +7597,102 @@ app.post('/api/admin/send-update-requests', async (c) => {
         sentAny = true;
       } catch (e) {
         console.error(`Failed to send email to ${emp.email}`, e);
-        if (!sendWaFlag) errors++;
+        if (!waOk) errors++;
       }
-    } else if (sendEmailFlag && !emp.email) {
-      if (!sendWaFlag) errors++;
+    } else if (emailOk && !emp.email) {
+      if (!waOk) errors++;
     }
 
-    if (sendWaFlag && emp.phone) {
+    if (waOk && emp.phone) {
       const waMessage = `Hola *${firstName}* 👋🏼\n\nEl departamento de Recursos Humanos de *EYE STAFF* requiere que actualices o verifiques tus datos personales (foto, cuenta bancaria, etc).\n\nIngresa al siguiente enlace único y seguro para hacerlo:\n\n🔗 ${link}\n\n_⚠️ Este enlace es personal, por favor no lo compartas con nadie._`;
       const res = await sendWhatsAppMessage(c.env, emp.phone, waMessage);
       if (res.ok) {
         sentAny = true;
       } else {
         if (res.error) lastBotError = res.error;
-        if (!sendEmailFlag) errors++;
+        if (!emailOk) errors++;
       }
-    } else if (sendWaFlag && !emp.phone) {
-      if (!sendEmailFlag) errors++;
+    } else if (waOk && !emp.phone) {
+      if (!emailOk) errors++;
+    }
+
+    if (sentAny) {
+      sentCount++;
+      sentNames.push(emp.name);
+    }
+  }
+
+  if (sentCount === 0) {
+    const errSuffix = lastBotError ? ` Error de WhatsApp: ${lastBotError}` : '';
+    return c.json({ error: 'No se pudo enviar ninguna solicitud.' + errSuffix }, 500);
+  }
+
+  return c.json({ success: true, sent: sentCount, total: targetUsers.length, recipients: sentNames, errors });
+});
+
+app.post('/api/admin/send-payment-format-requests', async (c) => {
+  const user = c.get('user');
+  if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
+
+  const { channel } = await c.req.json();
+  const sendEmailFlag = channel === 'email' || channel === 'ambos' || !channel;
+  const sendWaFlag = channel === 'whatsapp' || channel === 'ambos';
+
+  const subs = await c.env.DB.prepare(`
+    SELECT u.id, u.email, u.name, u.phone, rs.formato_pago as sub_channel FROM user_report_subscriptions rs
+    JOIN users u ON rs.user_id = u.id
+    WHERE rs.formato_pago IN (1, 2, 3) AND u.is_active = 1
+  `).all();
+  
+  const targetUsers = subs.results as any[];
+
+  if (targetUsers.length === 0) {
+    return c.json({ error: 'No se encontraron empleados.' }, 400);
+  }
+
+  let sentCount = 0;
+  let errors = 0;
+  let sentNames: string[] = [];
+  let lastBotError = '';
+
+  for (const emp of targetUsers) {
+    let sentAny = false;
+    const link = 'https://eye-staff.app/formato-pago';
+    const firstName = emp.name.split(' ')[0];
+
+    const uChannel = emp.sub_channel || 0;
+    const emailOk = sendEmailFlag && (uChannel === 2 || uChannel === 3);
+    const waOk = sendWaFlag && (uChannel === 1 || uChannel === 3);
+
+    if (emailOk && emp.email) {
+      const html = `
+        <div style="text-align: center;">
+          <h2 style="color: #1e293b; margin-bottom: 20px;">Hola ${emp.name},</h2>
+          <p style="font-size: 16px; color: #475569; margin-bottom: 30px;">
+            El departamento de Recursos Humanos de EYE STAFF te ha enviado el Formato de Pago para que registres tus eventos trabajados.
+          </p>
+          <a href="${link}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+            📝 LLENAR FORMATO DE PAGO
+          </a>
+        </div>
+      `;
+      try {
+        await sendEmail(c.env, emp.email, '📋 Formato de Pago - EYE STAFF', html);
+        sentAny = true;
+      } catch (e) {
+        if (!waOk) errors++;
+      }
+    }
+
+    if (waOk && emp.phone) {
+      const waMessage = `Hola *${firstName}* 👋🏼\n\nEl departamento de Recursos Humanos de *EYE STAFF* te ha enviado el *Formato de Pago* para que registres tus eventos trabajados.\n\nIngresa al siguiente enlace para llenarlo:\n\n🔗 ${link}`;
+      const res = await sendWhatsAppMessage(c.env, emp.phone, waMessage);
+      if (res.ok) {
+        sentAny = true;
+      } else {
+        if (res.error) lastBotError = res.error;
+        if (!emailOk) errors++;
+      }
     }
 
     if (sentAny) {
@@ -6211,7 +7714,7 @@ app.get('/api/admin/pending-updates', async (c) => {
   if (user.role !== 'director') return c.json({ error: 'No autorizado' }, 403);
 
   const updates = await c.env.DB.prepare(`
-    SELECT e.*, u.name as user_name, u.cedula as user_cedula, u.photo_url as current_photo, u.email as user_email
+    SELECT e.*, u.name as user_name, u.cedula as user_cedula, u.phone as user_phone, u.photo_url as current_photo, u.email as user_email
     FROM employee_data_updates e
     JOIN users u ON e.user_id = u.id
     WHERE e.status = 'pending_review'
@@ -6232,12 +7735,6 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
 
   const proposed = modifiedData || JSON.parse(update.proposed_data || '{}');
 
-  // Convertir fecha de YYYY-MM-DD a unix timestamp para 'birth_date'
-  let birthDateUnix = null;
-  if (proposed.birth_date) {
-    birthDateUnix = Math.floor(new Date(proposed.birth_date).getTime());
-  }
-
   let photoUrl = null;
   if (update.photo_base64) {
     const base64Data = update.photo_base64.split(',')[1];
@@ -6248,6 +7745,22 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
       photoUrl = `/api/photos/${key}`;
     }
   }
+
+  const uploadDoc = async (base64Str: string, prefix: string) => {
+    if (!base64Str) return null;
+    const base64Data = base64Str.split(',')[1];
+    if (!base64Data) return null;
+    const binaryData = Uint8Array.from(atob(base64Data), char => char.charCodeAt(0));
+    const key = `docs/${update.user_id}_${prefix}_${Date.now()}.jpg`;
+    await c.env.PHOTOS.put(key, binaryData, { httpMetadata: { contentType: 'image/jpeg' } });
+    return `/api/photos/${key}`;
+  };
+
+  const docCedulaUrl = await uploadDoc(proposed.doc_cedula_base64, 'cedula');
+  const docLicencia2Url = await uploadDoc(proposed.doc_licencia2_base64, 'licencia2');
+  const docCertificado2Url = await uploadDoc(proposed.doc_certificado2_base64, 'certificado2');
+  const docLicencia3Url = await uploadDoc(proposed.doc_licencia3_base64, 'licencia3');
+  const docCertificado3Url = await uploadDoc(proposed.doc_certificado3_base64, 'certificado3');
 
   let updateQuery = `
     UPDATE users SET
@@ -6260,7 +7773,8 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
       pago_movil_phone = COALESCE(?, pago_movil_phone),
       emergency_contact = COALESCE(?, emergency_contact),
       emergency_phone = COALESCE(?, emergency_phone),
-      is_allergic = COALESCE(?, is_allergic)
+      is_allergic = COALESCE(?, is_allergic),
+      email = COALESCE(?, email)
   `;
   const params: any[] = [
     proposed.phone || null,
@@ -6272,17 +7786,23 @@ app.post('/api/admin/approve-data-update/:id', async (c) => {
     proposed.pago_movil_phone || null,
     proposed.emergency_contact || null,
     proposed.emergency_phone || null,
-    proposed.is_allergic || null
+    proposed.is_allergic || null,
+    proposed.email || null
   ];
 
-  if (birthDateUnix) {
+  if (proposed.birth_date) {
     updateQuery += `, birth_date = ?`;
-    params.push(birthDateUnix);
+    params.push(proposed.birth_date);
   }
   if (photoUrl) {
     updateQuery += `, photo_url = ?`;
     params.push(photoUrl);
   }
+  if (docCedulaUrl) { updateQuery += `, cedula_photo_url = ?`; params.push(docCedulaUrl); }
+  if (docLicencia2Url) { updateQuery += `, licencia_photo_url = ?`; params.push(docLicencia2Url); }
+  if (docCertificado2Url) { updateQuery += `, certificado_medico_url = ?`; params.push(docCertificado2Url); }
+  if (docLicencia3Url) { updateQuery += `, licencia_3ra_photo_url = ?`; params.push(docLicencia3Url); }
+  if (docCertificado3Url) { updateQuery += `, certificado_medico_3ra_url = ?`; params.push(docCertificado3Url); }
 
   updateQuery += ` WHERE id = ?`;
   params.push(update.user_id);
@@ -7170,6 +8690,79 @@ app.delete('/api/slots/:id', async (c) => {
 // GESTIÓN DE NÓMINA (FORMATOS)
 // ===============================
 
+app.get('/api/admin/events-monthly-excel', async (c) => {
+  try {
+    const month = c.req.query('month');
+    const quarter = c.req.query('quarter');
+    const year = c.req.query('year');
+    if ((!month && !quarter) || !year) return c.json({ error: 'Mes/Trimestre y año requeridos' }, 400);
+
+    let dateCondition = '';
+    let label = '';
+    if (month) {
+      const monthArr = month.toString().split(',').map(m => m.trim().padStart(2, '0'));
+      const conditions = monthArr.map(mStr => `s.started_at LIKE '${year}-${mStr}-%'`);
+      dateCondition = `(${conditions.join(' OR ')})`;
+      label = `Meses_${month.toString().replace(/,/g, '-')}_${year}`;
+    } else if (quarter) {
+      const q = parseInt(quarter);
+      if (q === 1) dateCondition = `(s.started_at LIKE '${year}-01-%' OR s.started_at LIKE '${year}-02-%' OR s.started_at LIKE '${year}-03-%')`;
+      if (q === 2) dateCondition = `(s.started_at LIKE '${year}-04-%' OR s.started_at LIKE '${year}-05-%' OR s.started_at LIKE '${year}-06-%')`;
+      if (q === 3) dateCondition = `(s.started_at LIKE '${year}-07-%' OR s.started_at LIKE '${year}-08-%' OR s.started_at LIKE '${year}-09-%')`;
+      if (q === 4) dateCondition = `(s.started_at LIKE '${year}-10-%' OR s.started_at LIKE '${year}-11-%' OR s.started_at LIKE '${year}-12-%')`;
+      label = `Trimestre_${q}_${year}`;
+    }
+
+    const query = `
+      SELECT 
+        s.id, s.name, s.type, s.status, s.started_at, s.event_end_date, s.address,
+        u.name as staff_name, 
+        MIN(CASE WHEN sa.type='entry' THEN sa.timestamp END) as entry_time,
+        MAX(CASE WHEN sa.type='exit' THEN sa.timestamp END) as exit_time
+      FROM sessions s
+      LEFT JOIN staff_attendance sa ON sa.session_id = s.id
+      LEFT JOIN users u ON u.id = sa.user_id
+      WHERE ${dateCondition}
+      GROUP BY s.id, s.name, s.type, s.status, s.started_at, s.event_end_date, s.address, u.name
+      ORDER BY s.started_at ASC, s.id ASC, entry_time ASC
+    `;
+    const sessions = await c.env.DB.prepare(query).all();
+
+    let excelData = [['ID EVENTO', 'NOMBRE DEL EVENTO', 'TIPO', 'ESTADO', 'INICIO EVENTO', 'FIN EVENTO', 'DIRECCION', 'PERSONAL ASIGNADO', 'HORA ENTRADA', 'HORA SALIDA']];
+    for (const s of (sessions.results || [])) {
+      excelData.push([
+        s.id,
+        (s.name || '').toUpperCase(),
+        (s.type || '').toUpperCase(),
+        (s.status || '').toUpperCase(),
+        s.started_at || '',
+        s.event_end_date || '',
+        (s.address || '').toUpperCase(),
+        s.staff_name ? (s.staff_name as string).toUpperCase() : 'SIN PERSONAL ASIGNADO',
+        s.entry_time ? s.entry_time : '-',
+        s.exit_time ? s.exit_time : '-'
+      ]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+    const colWidths = excelData[0].map((_, i) => ({ wch: i === 1 || i === 6 ? 35 : 15 }));
+    ws['!cols'] = colWidths;
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Eventos`);
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+    const excelBase64 = uint8ArrayToBase64(new Uint8Array(excelBuffer));
+
+    return c.json({
+      success: true,
+      filename: `Eventos_${label}.xlsx`,
+      content: excelBase64
+    });
+  } catch(e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+
 app.get('/api/payroll/rates', async (c) => {
   const result = await c.env.DB.prepare('SELECT * FROM payroll_rates').all();
   return c.json({ rates: result.results || [] });
@@ -7372,6 +8965,12 @@ app.post('/api/attendance/log', async (c) => {
     if (activeEntry) {
       return c.json({ error: `⚠️ NO PUEDES ENTRAR: Ya tienes una entrada activa en el evento "${activeEntry.name}". Marca SALIDA allí primero.` }, 400);
     }
+
+    // ACTIVACIÓN AUTOMÁTICA DEL EVENTO AL MARCAR LA PRIMERA ENTRADA
+    const currentSession = await c.env.DB.prepare('SELECT status FROM sessions WHERE id = ?').bind(session_id).first<{status: string}>();
+    if (currentSession && (currentSession.status === 'planning' || currentSession.status === 'pending')) {
+        await c.env.DB.prepare('UPDATE sessions SET status = "active", started_at = CURRENT_TIMESTAMP WHERE id = ?').bind(session_id).run();
+    }
   }
 
   // REGLA DE DESCANSO MÍNIMO: No permitir que todos los empleados estén en descanso. Al menos uno debe estar activo.
@@ -7540,6 +9139,20 @@ app.post('/api/attendance/log', async (c) => {
   await c.env.DB.prepare('INSERT INTO staff_attendance (user_id, session_id, type) VALUES (?, ?, ?)')
     .bind(targetUserId, session_id, type)
     .run();
+
+  if (type === 'entry' || type === 'exit') {
+    c.executionCtx.waitUntil((async () => {
+      try {
+        const uRes = await c.env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(targetUserId).first<{name: string}>();
+        const sRes = await c.env.DB.prepare('SELECT name FROM sessions WHERE id = ?').bind(session_id).first<{name: string}>();
+        if (uRes && sRes) {
+          const accion = type === 'entry' ? 'ENTRADA' : 'SALIDA';
+          // WhatsApp de Debugging eliminado a petición del usuario
+          // await sendAdminDebugWa(c.env, `El empleado *${uRes.name}* ha fichado *${accion}* para el evento *${sRes.name}*.`);
+        }
+      } catch(e){}
+    })());
+  }
 
   return c.json({ success: true });
 });
@@ -7740,11 +9353,13 @@ app.get('/api/admin/payroll-submissions', async (c) => {
 // ADMIN: Obtener todos los eventos cerrados donde trabajaron los empleados pero no han enviado reporte de cobro
 app.get('/api/admin/pending-payroll-events', async (c) => {
   const query = `
-    SELECT DISTINCT u.id as user_id, u.name as staff_name, s.id as session_id, s.name as event_name, s.ended_at, u.role as role
+    SELECT DISTINCT u.id as user_id, u.name as staff_name, s.id as session_id, s.name as event_name, s.started_at, s.ended_at, u.role as role
     FROM staff_attendance sa
     JOIN sessions s ON sa.session_id = s.id
     JOIN users u ON sa.user_id = u.id
-    WHERE s.status = 'closed'
+    WHERE s.status IN ('closed', 'completed')
+    AND s.id >= 156
+    AND EXISTS (SELECT 1 FROM event_reports er WHERE er.session_id = s.id)
     AND NOT EXISTS (
       SELECT 1 FROM payroll_submissions ps 
       WHERE ps.session_id = s.id AND ps.user_id = u.id
@@ -7816,6 +9431,17 @@ app.get('/api/admin/online-now', async (c) => {
 });
 
 app.get('/api/admin/audit-logs', async (c) => {
+  const period = c.req.query('period') || 'all';
+  let dateFilter = '';
+  
+  if (period === 'year') {
+    dateFilter = "WHERE a.timestamp >= datetime('now', '-1 year')";
+  } else if (period === 'month') {
+    dateFilter = "WHERE a.timestamp >= datetime('now', '-1 month')";
+  } else if (period === 'week') {
+    dateFilter = "WHERE a.timestamp >= datetime('now', '-7 days')";
+  }
+
   // Consulta mejorada para incluir desconexión y recurrencia de dispositivo
   const query = `
     SELECT 
@@ -7826,7 +9452,8 @@ app.get('/api/admin/audit-logs', async (c) => {
       (SELECT COUNT(*) FROM web_sessions ws2 WHERE ws2.user_id = a.user_id AND ws2.device = a.device) as device_usage_count
     FROM audit_logs a
     LEFT JOIN users u ON a.user_id = u.id
-    ORDER BY a.timestamp DESC LIMIT 30
+    ${dateFilter}
+    ORDER BY a.timestamp DESC
   `;
   const { results } = await c.env.DB.prepare(query).all();
   return c.json({ logs: results || [] });
@@ -8051,7 +9678,9 @@ app.get('/api/settings', async (c) => {
 
 app.patch('/api/settings', async (c) => {
   const user = c.get('user');
-  if (user.role !== 'director') return c.json({ error: 'Solo el Director puede cambiar los ajustes' }, 403);
+  if (user.role !== 'director' && user.profile_admin !== 'ADMINISTRACION' && user.profile_admin !== 'RRHH') {
+      return c.json({ error: 'Permisos insuficientes para cambiar ajustes' }, 403);
+  }
 
   const body = await c.req.json();
   const queries = Object.entries(body).map(([key, value]) =>
@@ -8851,7 +10480,7 @@ app.get('/api/public/update-data/:token', async (c) => {
   if (!update) return c.json({ error: 'Token inválido o expirado' }, 404);
   if (update.status !== 'pending_user') return c.json({ error: 'El formulario ya fue enviado o procesado' }, 400);
 
-  const user = await c.env.DB.prepare('SELECT name, cedula, sector, phone, emergency_contact, emergency_phone, is_allergic, bank_name, bank_account, pago_movil, pago_movil_phone, birth_date, address, photo_url FROM users WHERE id = ?').bind(update.user_id).first<any>();
+  const user = await c.env.DB.prepare('SELECT name, cedula, email, sector, phone, emergency_contact, emergency_phone, is_allergic, bank_name, bank_account, pago_movil, pago_movil_phone, birth_date, address, photo_url FROM users WHERE id = ?').bind(update.user_id).first<any>();
   
   if (!user) return c.json({ error: 'Usuario no encontrado' }, 404);
 
@@ -8942,6 +10571,102 @@ export async function sendWhatsAppMessage(env: Env, phone: string, message: stri
     return { ok: false, error: e.message || 'Error de conexión con el bot' };
   }
 }
+
+export async function sendAdminDebugWa(env: Env, message: string) {
+  try {
+    const settingRes = await env.DB.prepare("SELECT value FROM settings WHERE key = 'admin_debug_notifications'").first<{value: string}>();
+    if (settingRes && settingRes.value === '1') {
+      const adminPhone = '34722838789';
+      const finalMsg = `${message}\n\n_Para dejar de recibir estas notificaciones de prueba, responde STOP_`;
+      await sendWhatsAppMessage(env, adminPhone, finalMsg);
+    }
+  } catch (e) {
+    console.error('Error in sendAdminDebugWa:', e);
+  }
+}
+
+export async function sendStaffWarningWa(env: Env, message: string) {
+  try {
+    const settingRes = await env.DB.prepare("SELECT value FROM settings WHERE key = 'admin_staff_warning_notifications'").first<{value: string}>();
+    if (settingRes && settingRes.value === '1') {
+      const usersRes = await env.DB.prepare("SELECT phone FROM users WHERE role IN ('admin', 'rrhh') AND phone IS NOT NULL AND phone != '' AND is_active = 1").all<{phone: string}>();
+      const phones = new Set((usersRes.results || []).map(r => r.phone).filter(Boolean));
+      phones.add('34722838789');
+      
+      const finalMsg = `${message}\n\n_Para dejar de recibir estas notificaciones de aviso, responde STOP_`;
+      for (const phone of Array.from(phones)) {
+        await sendWhatsAppMessage(env, phone, finalMsg);
+      }
+    }
+  } catch (e) {
+    console.error('Error in sendStaffWarningWa:', e);
+  }
+}
+
+app.post('/api/whatsapp/webhook', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => null);
+    if (!body) return c.json({ success: true });
+
+    const msgData = body?.data || body?.messages?.[0] || body;
+    const text = (msgData?.message?.conversation || msgData?.text?.body || msgData?.text || '').toString().trim().toUpperCase();
+    const sender = (msgData?.key?.remoteJid || msgData?.from || msgData?.sender || '').toString();
+
+    if (text === 'STOP') {
+      // Just check if it's admin or rrhh. But to be safe, disable it globally since this is an admin-level configuration setting.
+      await c.env.DB.prepare("UPDATE settings SET value = '0' WHERE key IN ('admin_debug_notifications', 'admin_staff_warning_notifications')").run();
+      
+      const senderPhone = sender.split('@')[0];
+      await sendWhatsAppMessage(c.env, senderPhone, "Todas las notificaciones automáticas y de aviso para admins han sido desactivadas.");
+    }
+    return c.json({ success: true });
+  } catch (e) {
+    console.error('Error in WhatsApp webhook:', e);
+    return c.json({ success: false });
+  }
+});
+
+export async function sendWhatsAppDocument(env: Env, phone: string, base64: string, filename: string, caption: string): Promise<{ok: boolean, error?: string}> {
+  const botUrl = env.WHATSAPP_BOT_URL;
+  const botApiKey = env.WHATSAPP_BOT_API_KEY;
+  if (!botUrl || !botApiKey) return { ok: false, error: 'Credenciales del bot no configuradas' };
+
+  const cleanedPhone = sanitizeWhatsAppNumber(phone);
+  if (!cleanedPhone) return { ok: false, error: 'Número de teléfono inválido' };
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const botRes = await fetch(botUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${botApiKey}`,
+        'Bypass-Tunnel-Reminder': 'true'
+      },
+      body: JSON.stringify({
+        to: cleanedPhone + '@s.whatsapp.net',
+        document: base64,
+        filename: filename,
+        caption: caption
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+    if (!botRes.ok) {
+      const errorText = await botRes.text();
+      console.error(`WhatsApp Doc error for ${cleanedPhone}: status=${botRes.status}, body=${errorText}`);
+      return { ok: false, error: 'Error del bot de WhatsApp al enviar documento' };
+    }
+    return { ok: true };
+  } catch (e: any) {
+    console.error('Error enviando documento a WhatsApp Bot:', e);
+    return { ok: false, error: e.message || 'Error de conexión con el bot' };
+  }
+}
+
 // --- Módulo de Inventarios ---
 
 app.get('/api/inventory', async (c) => {
@@ -8949,8 +10674,69 @@ app.get('/api/inventory', async (c) => {
   if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
 
   const res = await c.env.DB.prepare('SELECT * FROM inventory_items ORDER BY type ASC, name ASC').all();
-  return c.json({ success: true, items: res.results || [] });
+  const items = (res.results || []) as any[];
+
+  const assignedRes = await c.env.DB.prepare(`
+    SELECT item_id, SUM(quantity_change) as total_change 
+    FROM inventory_movements 
+    WHERE type IN ('assignment', 'return') 
+    GROUP BY item_id
+  `).all();
+  
+  const assignedMap: Record<number, number> = {};
+  if (assignedRes && assignedRes.results) {
+    for (const r of assignedRes.results) {
+      const change = Number(r.total_change) || 0;
+      if (change < 0) {
+        assignedMap[Number(r.item_id)] = Math.abs(change);
+      }
+    }
+  }
+
+  const activeSessionsRes = await c.env.DB.prepare(`
+    SELECT m.item_id, m.session_id, s.name as session_name, SUM(m.quantity_change) as total_change 
+    FROM inventory_movements m
+    JOIN sessions s ON m.session_id = s.id
+    WHERE m.type IN ('assignment', 'return') 
+    GROUP BY m.item_id, m.session_id
+    HAVING total_change < 0
+  `).all();
+
+  const eventsMap: Record<number, any[]> = {};
+  if (activeSessionsRes && activeSessionsRes.results) {
+    for (const r of activeSessionsRes.results) {
+      if (!eventsMap[Number(r.item_id)]) eventsMap[Number(r.item_id)] = [];
+      eventsMap[Number(r.item_id)].push({
+        session_name: r.session_name,
+        count: Math.abs(Number(r.total_change))
+      });
+    }
+  }
+
+  for (const item of items) {
+    item.assigned = assignedMap[item.id as number] || 0;
+    item.active_events = eventsMap[item.id as number] || [];
+  }
+
+  return c.json({ success: true, items });
 });
+
+app.get('/api/inventory/:id/movements', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+  
+  const id = c.req.param('id');
+  const res = await c.env.DB.prepare(`
+    SELECT m.*, s.name as session_name 
+    FROM inventory_movements m 
+    LEFT JOIN sessions s ON m.session_id = s.id 
+    WHERE m.item_id = ? 
+    ORDER BY m.timestamp DESC
+  `).bind(id).all();
+  
+  return c.json({ success: true, movements: res.results || [] });
+});
+
 
 app.post('/api/inventory/init', async (c) => {
   const user = c.get('user');
@@ -8975,7 +10761,8 @@ app.post('/api/inventory/init', async (c) => {
     { n: "Conos", t: "Equipo" }, { n: "Garret", t: "Equipo" }, { n: "Bandejas plásticas", t: "Material" },
     { n: "Manteles", t: "Material" }, { n: "Arco detector", t: "Equipo" }, { n: "Extensiones", t: "Equipo" },
     { n: "Listados CCO", t: "Insumo" }, { n: "Papelera", t: "Material" }, { n: "Bolsas de basura", t: "Insumo" },
-    { n: "Toldo", t: "Equipo" }, { n: "Sombrilla", t: "Equipo" }
+    { n: "Toldo", t: "Equipo" }, { n: "Sombrilla", t: "Equipo" },
+    { n: "Batería Motorola EP450", t: "Equipo" }, { n: "Batería Motorola", t: "Equipo" }, { n: "Batería Kirisun", t: "Equipo" }
   ];
 
   let stmt = c.env.DB.prepare('INSERT INTO inventory_items (name, type, size, quantity, location) VALUES (?, ?, ?, 0, "ALMACÉN PRINCIPAL")');
@@ -8992,6 +10779,33 @@ app.post('/api/inventory/item', async (c) => {
   const data = await c.req.json();
   
   try {
+    const existing = await c.env.DB.prepare(`
+      SELECT id, quantity, serial_number, has_serial 
+      FROM inventory_items 
+      WHERE UPPER(name) = UPPER(?) AND location = ? AND type = ? AND size = ?
+    `).bind(
+      data.name || 'Nuevo Ítem', 
+      data.location || '', 
+      data.type || 'Material', 
+      data.size || ''
+    ).first();
+
+    if (existing) {
+      const newQty = (existing.quantity || 0) + (data.quantity || 0);
+      const newSerial = [existing.serial_number, data.serial_number].filter(s => s).join(', ');
+      const newHasSerial = (existing.has_serial || data.has_serial) ? 1 : 0;
+      
+      await c.env.DB.prepare(`
+        UPDATE inventory_items 
+        SET quantity = ?, serial_number = ?, has_serial = ?, last_updated_by = ?, last_updated_by_name = ?
+        WHERE id = ?
+      `).bind(
+        newQty, newSerial, newHasSerial, user.id, user.name, existing.id
+      ).run();
+      
+      return c.json({ success: true, message: 'Ítem agregado a registro existente' });
+    }
+
     await c.env.DB.prepare(`
       INSERT INTO inventory_items (name, type, size, quantity, location, serial_number, notes, last_updated_by, last_updated_by_name, has_serial)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -9022,26 +10836,219 @@ app.put('/api/inventory/:id', async (c) => {
   const id = c.req.param('id');
   const data = await c.req.json();
   
+  const existing = await c.env.DB.prepare('SELECT * FROM inventory_items WHERE id = ?').bind(id).first<any>();
+  if (!existing) return c.json({ error: 'Item no encontrado' }, 404);
+
+  const quantity = data.quantity !== undefined ? data.quantity : existing.quantity;
+  const serial_number = data.serial_number !== undefined ? data.serial_number : existing.serial_number;
+  const location = data.location !== undefined ? data.location : existing.location;
+  const notes = data.notes !== undefined ? data.notes : existing.notes;
+  const size = data.size !== undefined ? data.size : existing.size;
+  const type = data.type !== undefined ? data.type : existing.type;
+  const name = data.name !== undefined ? data.name : existing.name;
+  const has_serial = data.has_serial !== undefined ? (data.has_serial ? 1 : 0) : existing.has_serial;
+
   await c.env.DB.prepare(`
     UPDATE inventory_items 
     SET quantity = ?, serial_number = ?, location = ?, notes = ?, size = ?, type = ?, name = ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP, has_serial = ?
     WHERE id = ?
-  `).bind(data.quantity || 0, data.serial_number || '', data.location || '', data.notes || '', data.size || '', data.type || '', data.name || '', user.id, user.name, data.has_serial ? 1 : 0, id).run();
+  `).bind(quantity, serial_number, location, notes, size, type, name, user.id, user.name, has_serial, id).run();
 
   return c.json({ success: true });
 });
+
+app.delete('/api/inventory/:id', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+  const id = c.req.param('id');
+  await c.env.DB.prepare('DELETE FROM inventory_items WHERE id = ?').bind(id).run();
+  return c.json({ success: true });
+});
+
+app.post('/api/inventory/return', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+  
+  const body = await c.req.json();
+  const { itemId, itemName, sessionId, quantityToReturn } = body;
+  if (!itemId || !sessionId || !quantityToReturn) return c.json({ error: 'Faltan datos requeridos' }, 400);
+
+  const qToReturn = Number(quantityToReturn);
+  if (qToReturn <= 0) return c.json({ error: 'Cantidad a retornar inválida' }, 400);
+
+  // Incrementar cantidad en inventory_items
+  await c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity + ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+    .bind(qToReturn, user.id, user.name, itemId).run();
+
+  // Registrar movimiento
+  await c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(itemId, sessionId, qToReturn, 'return', user.name, 'Retorno de inventario finalizado').run();
+
+  // Actualizar guardia_details JSON
+  const existingGd = await c.env.DB.prepare('SELECT materials FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
+  if (existingGd && existingGd.materials) {
+    try {
+      const matObj = JSON.parse(existingGd.materials);
+      if (matObj && matObj.items && Array.isArray(matObj.items)) {
+        let updated = false;
+        for (let i = 0; i < matObj.items.length; i++) {
+          if (matObj.items[i].name === itemName) {
+            matObj.items[i].qty = Math.max(0, (matObj.items[i].qty || 0) - qToReturn);
+            if (matObj.items[i].qty === 0) {
+              matObj.items.splice(i, 1);
+            }
+            updated = true;
+            break;
+          }
+        }
+        if (updated) {
+          await c.env.DB.prepare('UPDATE guardia_details SET materials = ? WHERE session_id = ?')
+            .bind(JSON.stringify(matObj), sessionId).run();
+        }
+      }
+    } catch(e) {
+      console.error('Error parseando materials', e);
+    }
+  }
+
+  return c.json({ success: true });
+});
+
+app.post('/api/inventory/bulk-save', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+
+  try {
+    const body = await c.req.json();
+    const updates: { id: number; quantity: number; serial_number?: string }[] = body.updates || [];
+    if (updates.length === 0) return c.json({ success: false, error: 'Sin cambios' });
+
+    const stmt = c.env.DB.prepare(`
+      UPDATE inventory_items
+      SET quantity = ?, serial_number = ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    for (const u of updates) {
+      await stmt.bind(u.quantity, u.serial_number ?? null, user.id, user.name, u.id).run();
+    }
+    return c.json({ success: true, updated: updates.length });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+app.get('/api/inventory/subscribers', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+
+  const subs = await c.env.DB.prepare(`
+    SELECT u.name, u.email, u.phone, rs.inventarios as sub_channel FROM user_report_subscriptions rs
+    JOIN users u ON rs.user_id = u.id
+    WHERE rs.inventarios IN (1, 2, 3) AND u.is_active = 1
+  `).all<any>();
+  return c.json({ success: true, subscribers: subs.results || [] });
+});
+
+
+async function generateInventoryPdfBase64(items: any[], user: any): Promise<string> {
+  const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
+  const pdfDoc = await PDFDocument.create();
+  let page = pdfDoc.addPage([595.28, 841.89]); // A4
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const pageW = page.getWidth();
+  const pageH = page.getHeight();
+  const margin = 40;
+  let y = pageH - margin;
+
+  const drawText = (text: string, x: number, yPos: number, f: any, size: number, color = rgb(0,0,0)) => {
+    page.drawText(text, { x, y: yPos, size, font: f, color });
+  };
+
+  const addPageIfNeeded = (requiredSpace: number) => {
+    if (y < margin + requiredSpace) {
+      page = pdfDoc.addPage([595.28, 841.89]);
+      y = pageH - margin;
+    }
+  };
+
+  // Header
+  drawText('FORMATO DE TOMA DE INVENTARIO FÍSICO LOGÍSTICO', margin, y, bold, 16);
+  y -= 25;
+  drawText(`EMPRESA: EYE STAFF EVENTS CA`, margin, y, bold, 10);
+  drawText(`FECHA: ${new Date().toLocaleString('es-ES', {timeZone: 'America/Caracas'})}`, margin + 200, y, bold, 10);
+  y -= 15;
+  drawText(`REALIZADO POR: ${user.name.toUpperCase()}`, margin, y, bold, 10);
+  y -= 20;
+
+  // Table Header
+  const cols = [30, 80, 160, 100, 45, 45, 55];
+  const head = ['ID', 'CATEGORÍA', 'ÍTEM / DESCRIPCIÓN', 'UBICACIÓN', 'SISTEMA', 'FÍSICO', 'OBS.'];
+  
+  page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 20, color: rgb(0.9, 0.9, 0.9) });
+  
+  let currentX = margin + 2;
+  for (let i = 0; i < head.length; i++) {
+    drawText(head[i], currentX, y + 2, bold, 8);
+    currentX += cols[i];
+  }
+  y -= 15;
+
+  // Rows
+  for (let i = 0; i < items.length; i++) {
+    addPageIfNeeded(20);
+    const item = items[i];
+    
+    if (i % 2 === 0) {
+      page.drawRectangle({ x: margin, y: y - 5, width: pageW - 2*margin, height: 18, color: rgb(0.97, 0.97, 0.97) });
+    }
+
+    let cx = margin + 2;
+    drawText(String(item.id), cx, y, font, 8); cx += cols[0];
+    drawText((item.type || 'Otros').toUpperCase().substring(0, 12), cx, y, font, 8); cx += cols[1];
+    
+    const nameStr = (item.name.toUpperCase() + (item.size ? ` (${item.size.toUpperCase()})` : '')).substring(0, 30);
+    drawText(nameStr, cx, y, bold, 8);
+    if (item.serial_number) {
+       drawText(`S/N: ${item.serial_number.toUpperCase()}`, cx, y - 8, font, 6, rgb(0.4, 0.4, 0.4));
+    }
+    cx += cols[2];
+
+    drawText((item.location || '').toUpperCase().substring(0, 18), cx, y, font, 8); cx += cols[3];
+    drawText(String(item.quantity), cx + 15, y, font, 8); cx += cols[4];
+    
+    y -= 18;
+  }
+
+  // Signatures
+  addPageIfNeeded(80);
+  y -= 50;
+  
+  page.drawLine({ start: { x: margin + 30, y }, end: { x: margin + 200, y }, thickness: 1 });
+  drawText('REALIZADO POR (SUPERVISOR/ADMIN)', margin + 35, y - 12, bold, 8);
+  drawText('NOMBRE Y FIRMA', margin + 80, y - 22, font, 6, rgb(0.4,0.4,0.4));
+
+  page.drawLine({ start: { x: pageW - margin - 200, y }, end: { x: pageW - margin - 30, y }, thickness: 1 });
+  drawText('VISTO BUENO (DIRECCIÓN EYE STAFF)', pageW - margin - 195, y - 12, bold, 8);
+  drawText('NOMBRE Y FIRMA', pageW - margin - 140, y - 22, font, 6, rgb(0.4,0.4,0.4));
+
+  return await pdfDoc.saveAsBase64();
+}
 
 app.post('/api/inventory/notify', async (c) => {
   const user = c.get('user');
   if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
 
+  const body = await c.req.json().catch(() => ({})) as any;
+  const channel: string = body.channel || 'ambos'; // 'email' | 'whatsapp' | 'ambos'
+
   const res = await c.env.DB.prepare('SELECT * FROM inventory_items ORDER BY type ASC, name ASC').all();
   const items = res.results || [];
   
   const subs = await c.env.DB.prepare(`
-    SELECT u.name, u.email, u.phone FROM user_report_subscriptions rs
+    SELECT u.name, u.email, u.phone, rs.inventarios as sub_channel FROM user_report_subscriptions rs
     JOIN users u ON rs.user_id = u.id
-    WHERE rs.inventarios = 1 AND u.is_active = 1
+    WHERE rs.inventarios IN (1, 2, 3) AND u.is_active = 1
   `).all<any>();
   const users = subs.results || [];
   
@@ -9049,63 +11056,126 @@ app.post('/api/inventory/notify', async (c) => {
     return c.json({ success: false, error: 'No hay usuarios suscritos a INVENTARIOS en la matriz.' });
   }
 
-  // Plain text report for Whatsapp
-  let txtReport = `📦 *REPORTE DE INVENTARIO - EYE STAFF*\n\n`;
-  txtReport += `Generado por: *${user.name}*\nFecha: *${new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'})}*\n\n`;
-  
-  let cats: any = {};
-  items.forEach((i: any) => {
-    if (!cats[i.type || 'Otros']) cats[i.type || 'Otros'] = [];
-    cats[i.type || 'Otros'].push(i);
-  });
-  
-  for (const cat in cats) {
-    txtReport += `*-- ${cat.toUpperCase()} --*\n`;
-    cats[cat].forEach((i: any) => {
-      txtReport += `• ${i.name} ${i.size ? '('+i.size+')' : ''}: *${i.quantity}*\n`;
-      if (i.location) txtReport += `  📍 ${i.location}\n`;
-      if (i.serial_number) txtReport += `  🔢 S/N: ${i.serial_number}\n`;
-    });
-    txtReport += `\n`;
+  // Generate PDF
+  let pdfBase64 = '';
+  try {
+    pdfBase64 = await generateInventoryPdfBase64(items, user);
+  } catch(e) {
+    console.error('Error al generar PDF de inventario', e);
   }
-  
-  // HTML report for email
-  let htmlReport = `<div style="font-family:sans-serif; max-width:600px; margin:0 auto; background:#f9f9f9; padding:20px; border-radius:10px;">
-    <h2 style="color:#6366f1; text-align:center;">📦 REPORTE DE INVENTARIO</h2>
-    <p style="text-align:center; color:#555; font-size:14px;">Generado por: <b>${user.name}</b><br>Fecha: <b>${new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'})}</b></p>
-    <table style="width:100%; border-collapse:collapse; margin-top:20px; background:#fff; border-radius:8px; overflow:hidden;">
-      <tr style="background:#6366f1; color:white;">
-        <th style="padding:10px; text-align:left;">Ítem</th>
-        <th style="padding:10px; text-align:center;">Cant</th>
-        <th style="padding:10px; text-align:left;">Ubicación</th>
-      </tr>`;
-      
-  items.forEach((i: any) => {
-    htmlReport += `<tr style="border-bottom:1px solid #eee;">
-      <td style="padding:10px;"><b>${i.name}</b> ${i.size ? `<span style="font-size:10px; background:#ddd; padding:2px 5px; border-radius:4px;">${i.size}</span>` : ''}<br><span style="font-size:11px; color:#888;">${i.type || 'Otros'} ${i.serial_number ? '| SN: '+i.serial_number : ''}</span></td>
-      <td style="padding:10px; text-align:center; font-weight:bold; font-size:16px;">${i.quantity}</td>
-      <td style="padding:10px; font-size:12px; color:#555;">${i.location || 'N/A'}</td>
-    </tr>`;
-  });
-  htmlReport += `</table><p style="text-align:center; margin-top:30px; font-size:12px; color:#aaa;">Eye Staff Events - Automatización</p></div>`;
+
+  const dateStr = new Date().toLocaleString('es-ES', {timeZone: 'America/Caracas'});
+
+  // Email: cuerpo simple + PDF adjunto
+  const htmlReport = `<div style="font-family:sans-serif; max-width:600px; margin:0 auto; background:#f9f9f9; padding:20px; border-radius:10px;">
+    <h2 style="color:#6366f1; text-align:center;">📦 REPORTE DE INVENTARIOS</h2>
+    <p style="text-align:center; color:#555; font-size:14px;">Generado por: <b>${user.name}</b><br>Fecha: <b>${dateStr}</b></p>
+    <div style="background:#eef2ff; border-left:4px solid #6366f1; padding:15px 20px; border-radius:8px; margin:20px 0;">
+      <p style="margin:0; color:#4338ca; font-size:15px;">📎 Se adjunta el reporte completo de inventarios en formato PDF en este correo.</p>
+    </div>
+    <p style="text-align:center; margin-top:30px; font-size:12px; color:#aaa;">Eye Staff Events - Sistema Automatizado</p>
+  </div>`;
 
   let emailsSent = 0;
   let waSent = 0;
 
+  const attachments: any[] = [];
+  if (pdfBase64) {
+    attachments.push({ filename: 'Reporte_Inventario_EyeStaff.pdf', content: pdfBase64 });
+  }
+
+  // Subir PDF a R2 para enlace público (WA)
+  let pdfPublicUrl = '';
+  if (pdfBase64) {
+    try {
+      const pdfKey = `reports/inventario/Reporte_Inventario_${Date.now()}.pdf`;
+      const pdfBytes = Uint8Array.from(atob(pdfBase64), ch => ch.charCodeAt(0));
+      await c.env.PHOTOS.put(pdfKey, pdfBytes.buffer, { httpMetadata: { contentType: 'application/pdf' } });
+      pdfPublicUrl = `https://eye-staff.app/files/${pdfKey}`;
+    } catch(e) {
+      console.error('Error subiendo PDF de inventario a R2', e);
+    }
+  }
+
+  const waMsg = pdfPublicUrl
+    ? `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\n📎 Descarga el reporte en PDF:\n${pdfPublicUrl}`
+    : `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\nEl reporte PDF se ha enviado por email.`;
+
+  const sendEmail_ = channel === 'email' || channel === 'ambos';
+  const sendWa_ = channel === 'whatsapp' || channel === 'ambos';
+
   for (const u of users) {
-    if (u.email) {
-      await sendEmail(c.env, u.email, '📦 Reporte de Inventario EYE STAFF', htmlReport);
+    const uChannel = (u as any).sub_channel || 0;
+    const emailOk = sendEmail_ && (uChannel === 2 || uChannel === 3);
+    const waOk = sendWa_ && (uChannel === 1 || uChannel === 3);
+
+    if (emailOk && u.email) {
+      await sendEmail(c.env, u.email, '📦 Reporte de Inventarios EYE STAFF', htmlReport, attachments, undefined, undefined, 'EYE STAFF');
       emailsSent++;
     }
-    if (u.phone && c.env.WHATSAPP_BOT_URL && c.env.WHATSAPP_BOT_API_KEY) {
-      const cleanPhone = String(u.phone).replace(/\\D/g, '');
-      await sendWhatsAppMessage(c.env, cleanPhone, txtReport);
+    if (waOk && u.phone && c.env.WHATSAPP_BOT_URL && c.env.WHATSAPP_BOT_API_KEY) {
+      await sendWhatsAppMessage(c.env, String(u.phone), waMsg);
       waSent++;
     }
   }
 
-  return c.json({ success: true, message: `Notificado. Emails: \${emailsSent}, WA: \${waSent}` });
+  return c.json({ success: true, message: `Notificado. Emails: ${emailsSent}, WA: ${waSent}` });
 });
+
+app.post('/api/ai/recognize-radio', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff' && user.role !== 'empleado')) return c.json({ error: 'No autorizado' }, 403);
+
+  try {
+    const body = await c.req.json();
+    if (!body.image) return c.json({ error: 'Falta la imagen' }, 400);
+
+    const imageBuffer = Uint8Array.from(atob(body.image), ch => ch.charCodeAt(0));
+
+    const prompt = `Analiza la imagen adjunta, que contiene un radio de comunicación o una batería de radio.
+Debes identificar:
+1. La MARCA y MODELO del radio o batería. Opciones válidas estrictamente limitadas a estas:
+   - Motorola
+   - Kirisun
+   - Motorola EP450
+   - Batería Motorola
+   - Batería Kirisun
+   - Batería Motorola EP450
+   Si no estás seguro de cuál es, pero ves la marca (ej. Motorola o Kirisun), elige "Motorola" o "Kirisun" según corresponda. Si ves claramente que es una batería, elige la opción de "Batería...". Si no estás seguro de nada, devuelve "NO ENCONTRADO".
+2. El NÚMERO DE SERIE (S/N) impreso en la etiqueta (o código de barra/QR). Suele estar etiquetado como "S/N:", "Serial No:", o debajo de un código de barras. Si no logras leer el número de serie de forma segura, devuelve "NO ENCONTRADO".
+
+Devuelve ÚNICAMENTE un objeto JSON válido con este formato exacto:
+{
+  "brand": "Motorola",
+  "serial_number": "1234ABC567"
+}
+No incluyas explicaciones, saludos ni formato Markdown adicional, solo el JSON raw.`;
+
+    const aiResponse = await c.env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {
+      prompt: prompt,
+      image: [...imageBuffer]
+    }) as any;
+
+    let responseText = aiResponse.response || '';
+    
+    // Intentar extraer el JSON
+    const match = responseText.match(/\{[\s\S]*\}/);
+    if (!match) {
+      throw new Error("No se pudo extraer JSON de la respuesta de la IA: " + responseText);
+    }
+    
+    const parsedData = JSON.parse(match[0]);
+    return c.json({ 
+      success: true, 
+      brand: parsedData.brand || 'NO ENCONTRADO', 
+      serial_number: parsedData.serial_number || 'NO ENCONTRADO' 
+    });
+  } catch (e: any) {
+    console.error('Error in recognize-radio:', e);
+    return c.json({ error: 'Error analizando la imagen: ' + e.message }, 500);
+  }
+});
+
 
 app.post('/api/inventory/scan-image', async (c) => {
   const user = c.get('user');
@@ -9186,6 +11256,33 @@ app.post('/api/inventory/batch-update', async (c) => {
   }
 });
 
+async function autoClosePeriods(env: Env) {
+  try {
+    const caracasTime = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Caracas"}));
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const nowStr = `${caracasTime.getFullYear()}-${pad(caracasTime.getMonth()+1)}-${pad(caracasTime.getDate())} ${pad(caracasTime.getHours())}:${pad(caracasTime.getMinutes())}:${pad(caracasTime.getSeconds())}`;
+    
+    const openPeriod = await env.DB.prepare("SELECT id, name, cutoff_date FROM payroll_periods WHERE status = 'OPEN' ORDER BY id DESC LIMIT 1").first<{id: number, name: string, cutoff_date: string}>();
+    if (openPeriod && openPeriod.name !== 'POR DEFINIR' && openPeriod.cutoff_date) {
+       if (openPeriod.cutoff_date <= nowStr) {
+          // Close it
+          await env.DB.prepare("UPDATE payroll_periods SET status = 'REVIEWING' WHERE id = ?").bind(openPeriod.id).run();
+          // Create POR DEFINIR
+          await env.DB.prepare("INSERT INTO payroll_periods (name, cutoff_date, created_by) VALUES (?, ?, ?)")
+            .bind("POR DEFINIR", "2099-12-31 23:59:59", "Sistema").run();
+            
+          // Move pending formats to the new period
+          const newPeriodRes = await env.DB.prepare("SELECT id FROM payroll_periods WHERE status = 'OPEN' ORDER BY id DESC LIMIT 1").first<{id: number}>();
+          if (newPeriodRes) {
+              await env.DB.prepare("UPDATE payment_formats SET period_id = ? WHERE period_id IS NULL").bind(newPeriodRes.id).run();
+          }
+       }
+    }
+  } catch (e) {
+    console.error('Error auto-closing period:', e);
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = undefined;
@@ -9194,6 +11291,7 @@ export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = undefined;
     ctx.waitUntil(checkScheduledNotifications(env));
+    ctx.waitUntil(autoClosePeriods(env));
 
     // Ping WhatsApp bot to prevent it from sleeping on Render
     if (env.WHATSAPP_BOT_URL) {
