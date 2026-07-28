@@ -1360,7 +1360,7 @@
             </div>
 
             <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                EYE STAFF — PLATAFORMA INTEGRAL v2.7.52
+                EYE STAFF — PLATAFORMA INTEGRAL v2.7.64
             </div>
         </div>
     </main>
@@ -2123,7 +2123,7 @@
         const displayCount = Math.max(1, onlineCount);
 
         const onlineText = ` | <span style="color:var(--success); font-weight:900;">${displayCount}</span>`;
-        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span><a href="https://eye-staff.com/" target="_blank" style="color:inherit; text-decoration:none;">EYE STAFF 2026</a> - v2.7.52 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span><a href="https://eye-staff.com/" target="_blank" style="color:inherit; text-decoration:none;">EYE STAFF 2026</a> - v2.7.64 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
             if (window.currentModule === 'portal') {
@@ -2188,6 +2188,7 @@
         btn.onclick = exitToPortal;
         
         if (module === 'valet') {
+            window.didAutoSkipValet = false;
             checkActiveSession().then(() => {
                 renderHome(view);
                 setTimeout(updateFloatingChatVisibility, 100);
@@ -4560,10 +4561,31 @@
         const view = document.getElementById("current-view");
         const btn = document.getElementById('btn-back-portal');
         
-        if (tab === 'home' || tab === 'valet-menu') {
+        if (tab === 'home') {
             renderHome(view);
             btn.innerHTML = '🏠';
             btn.onclick = exitToPortal;
+            return;
+        }
+
+        if (tab === 'valet-menu') {
+            renderValetMenu(view);
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            let fSessions = (window.allSessions || []).filter(s => {
+                const isValet = !s.type || s.type.toLowerCase().includes('valet');
+                if (!isValet) return false;
+                if (s.status !== 'active' && s.status !== 'planning') return false;
+                const isStrictAdmin = user && user.is_corporate_profile === 1;
+                if (isStrictAdmin) return true;
+                return s.assigned_staff_list && s.assigned_staff_list.some(staff => staff.id == user.id);
+            });
+            if (fSessions.length === 1) {
+                btn.innerHTML = '🏠';
+                btn.onclick = exitToPortal;
+            } else {
+                btn.innerHTML = '🏠 EVENTOS';
+                btn.onclick = () => { window.didAutoSkipValet = true; showTab('home'); };
+            }
             return;
         }
 
@@ -4573,7 +4595,7 @@
             btn.onclick = exitToPortal;
         } else {
             btn.innerHTML = '🏠 MENÚ';
-            btn.onclick = () => showTab('home');
+            btn.onclick = () => showTab('valet-menu');
         }
 
         // Bloqueo de seguridad: No permitir operar si no hay evento activo
@@ -4592,6 +4614,209 @@
             case 'admin': renderAdmin(view); break;
             case 'staff': renderStaff(view); break;
         }
+    }
+
+    function renderValetMenu(el) {
+        setTimeout(() => window.scrollTo(0, 0), 100);
+        const session = window.activeSession;
+        
+        let html = `
+            <div id="home-view">
+                <div class="view-header" style="justify-content: center; text-align: center; margin-bottom:20px;">
+                    <h1 class="view-title">MENÚ VALET PARKING</h1>
+                </div>
+                
+                <div class="menu-grid">
+                    <div id="menu-checkin" class="menu-item" onclick="showTab('checkin')">
+                        <i>🚗</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title">RECEPCIÓN</span>
+                            <span class="menu-item-desc">INGRESAR NUEVO VEHÍCULO</span>
+                        </div>
+                    </div>
+                    
+                    <div id="menu-eventos" class="menu-item" onclick="showTab('eventos')">
+                        <i>📊</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title">CUSTODIA</span>
+                            <span class="menu-item-desc">VEHÍCULOS EN RECINTO</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" onclick="showTab('resumen')">
+                        <i>📋</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title">RESUMEN</span>
+                            <span class="menu-item-desc">REPORTE Y CIERRE DE JORNADA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                ${(session && session.status === 'active' && (() => {
+                    const cu = JSON.parse(localStorage.getItem('user') || '{}');
+                    return (cu.id === session.supervisor_id || cu.role === 'director' || false || window.isUserAdminOrStaff(cu));
+                })()) ? `
+                <div class="stat-card" style="max-width: 1000px; margin: 30px auto; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 25px; border-radius:24px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser.id === session.supervisor_id || currentUser.role === 'director' || window.isUserAdminOrStaff(currentUser));
+                        
+                        const filteredStaffList = isAuthorizedSupervisor 
+                            ? (session.assigned_staff_list || [])
+                            : (session.assigned_staff_list || []).filter(u => u.id === currentUser.id);
+                            
+                        const isEventActive = session.status === 'active';
+
+                        return `
+                            <div style="text-align:center; margin-bottom:25px;">
+                                <div style="font-size: 0.7rem; color: var(--warning); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom:5px;">📋 CONTROL DE ASISTENCIA Y JORNADA</div>
+                                <div style="font-size: 0.6rem; color: var(--muted); font-weight: 700;">
+                                    ${isAuthorizedSupervisor ? 'REGISTRE LAS HORAS INDIVIDUALES DEL EQUIPO ASIGNADO' : 'REGISTRE SUS HORAS INDIVIDUALES PARA EL EVENTO'}
+                                </div>
+                            </div>
+                            
+                            <div class="staff-grid" style="display:grid; ${isAuthorizedSupervisor ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr; max-width: 380px; margin: 0 auto;'} gap:15px;">
+                                ${filteredStaffList.map(u => {
+                                    const isSupervisor = u.id === session.supervisor_id;
+                                    const att = u.attendance || [];
+                                    const entry = att.find(a => a.type === 'entry')?.timestamp;
+                                    const exit = att.find(a => a.type === 'exit')?.timestamp;
+                                    
+                                    let totalTime = '0h 00m';
+                                    if (entry) {
+                                        const sorted = [...att].sort((a, b) => parseSQLiteDate(a.timestamp) - parseSQLiteDate(b.timestamp));
+                                        let workedMs = 0;
+                                        const refTime = exit ? parseSQLiteDate(exit) : new Date();
+
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            const current = sorted[i];
+                                            const currentType = current.type;
+                                            const currentT = parseSQLiteDate(current.timestamp);
+
+                                            const next = sorted[i + 1];
+                                            const nextT = next ? parseSQLiteDate(next.timestamp) : refTime;
+
+                                            if (currentType === 'entry') {
+                                                workedMs += (nextT - currentT);
+                                            }
+                                        }
+                                        
+                                        const hours = Math.floor(workedMs / 3600000);
+                                        const mins = Math.floor((workedMs % 3600000) / 60000);
+                                        totalTime = `${hours}h ${mins.toString().padStart(2, '0')}m`;
+                                    }
+
+                                    const formatTime = formatTime24h;
+
+                                    const lastAction = att.length > 0 ? att[att.length - 1].type : null;
+                                    const hasExited = exit !== undefined;
+                                    const isAbsent = lastAction === 'absent';
+
+                                    // Botones: sin descanso
+                                    const isEventClosed = session.status === 'closed' || session.status === 'concluded';
+                                    const canEntry = !isEventClosed && !lastAction;
+                                    const canExit = isEventActive && (!lastAction || lastAction === 'entry');
+
+                                    // Si está inasistente, ocultar la tarjeta del control de asistencia
+                                    if (isAbsent) {
+                                        return `
+                                        <div class="stat-card" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; opacity:0.5;">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:var(--danger); background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid rgba(239,68,68,0.3);">
+                                                    INASISTENTE
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                    }
+
+                                    let statusText = 'INACTIVO';
+                                    let statusColor = 'var(--muted)';
+                                    if (lastAction === 'entry') { statusText = 'ACTIVO'; statusColor = 'var(--success)'; }
+                                    else if (hasExited) { statusText = 'RETIRADO'; statusColor = '#6b7280'; }
+
+                                    let buttonsHtml = '';
+                                    if (isAuthorizedSupervisor) {
+                                        buttonsHtml = `
+                                            <button onclick="logStaffAttendance(${u.id}, 'entry', ${session.id})" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}">ENTRADA</button>
+                                            <button onclick="handleExitClick(this, ${u.id}, ${session.id})" ${!canExit ? 'disabled' : ''} style="flex:1; background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canExit ? 'pointer' : 'not-allowed'}; opacity:${canExit ? '1' : '0.3'}; transition: all 0.2s ease-in-out;" data-selected="false">SALIDA</button>
+                                        `;
+                                    } else {
+                                        buttonsHtml = `
+                                            <button onclick="logStaffAttendance(${u.id}, 'entry', ${session.id})" ${!canEntry ? 'disabled' : ''} style="flex:1; background:var(--danger); color:white; border:none; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:0.55rem; font-weight:900; cursor:${canEntry ? 'pointer' : 'not-allowed'}; opacity:${canEntry ? '1' : '0.3'}">MARCAR MI ENTRADA</button>
+                                        `;
+                                    }
+
+
+                                    return `
+                                        <div class="stat-card" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:15px; border-radius:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; opacity:${lastAction === 'exit' ? '0.6' : '1'}">
+                                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                <div style="font-size:0.85rem; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                                                    ${u.name.toUpperCase()}
+                                                    ${isSupervisor ? '<span style="font-size:0.5rem; background:var(--warning); color:black; padding:2px 6px; border-radius:4px; font-weight:900;">SUPERVISOR</span>' : ''}
+                                                </div>
+                                                <div style="font-size:0.6rem; font-weight:900; color:${statusColor}; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:8px; border:1px solid ${statusColor}44;">
+                                                    ${statusText}
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; background:rgba(0,0,0,0.3); padding:10px 5px; border-radius:12px; font-size:0.55rem; font-weight:900; letter-spacing:0.2px;">
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger); border-right:1px solid rgba(255,255,255,0.05);">ENT: <span style="color:#fff; margin-top:2px;">${formatTime(entry)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--success); border-right:1px solid rgba(255,255,255,0.05);">SAL: <span style="color:#fff; margin-top:2px;">${formatTime(exit)}</span></div>
+                                                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);">TOTAL: <span style="color:#fff; margin-top:2px;">${totalTime}</span></div>
+                                            </div>
+
+                                            <div style="display:flex; gap:6px;">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    })()}
+                </div>
+
+                <div style="display:flex; justify-content:center; margin: 30px 0; padding:0 20px;">
+                    ${(() => {
+                        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                        const isAuthorizedSupervisor = (currentUser && (
+                            currentUser.id === window.activeSession.supervisor_id || 
+                            currentUser.role === 'director' ||
+                            false ||
+                            window.isUserAdminOrStaff(currentUser)
+                        ));
+                        if (!isAuthorizedSupervisor) return '';
+                        
+                        const staff = session.assigned_staff_list || [];
+                        const allExited = staff.length === 0 || staff.every(u => (u.attendance || []).some(a => a.type === 'exit' || a.type === 'absent'));
+                        
+                        return `
+                            <button class="btn" 
+                                    onclick="finalizeEvent(false, ${session.id})" 
+                                    ${!allExited ? 'disabled' : ''} 
+                                    style="background:${allExited ? 'var(--brand-red)' : 'rgba(255,255,255,0.05)'}; color:white; padding:18px 50px; border-radius:50px; font-weight:900; font-size:1.1rem; border:1px solid ${allExited ? 'var(--brand-red)' : 'var(--border)'}; cursor:${allExited ? 'pointer' : 'not-allowed'}; opacity:${allExited ? '1' : '0.4'}; box-shadow: ${allExited ? '0 10px 30px rgba(239,68,68,0.3)' : 'none'}; transition:0.3s;">
+                                🏁 FINALIZAR EVENTO
+                            </button>
+                        `;
+                    })()}
+                </div>
+                ` : ''}
+
+                <div style="display:flex; flex-direction: column; align-items: center; margin-top:30px; margin-bottom:20px;">
+                    <button class="btn" style="background:var(--success); color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; border:none; cursor:pointer;" onclick="exitToPortal()">
+                        ← VOLVER AL PORTAL
+                    </button>
+                </div>
+
+            </div>
+        `;
+        el.innerHTML = html;
     }
 
     function renderHome(el) {
@@ -4632,6 +4857,16 @@
             };
             return getTime(a) - getTime(b);
         });
+
+        if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
+            window.didAutoSkipValet = true;
+            const session = filteredSessions[0];
+            window.currentSessionId = session.id;
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', session.id);
+            checkActiveSession().then(() => showTab('valet-menu'));
+            return;
+        }
 
         if (filteredSessions.length === 0) {
             document.getElementById('btn-back-portal').style.display = 'none';
@@ -4685,7 +4920,7 @@
                             ${session.address ? `<span style="color:var(--accent); font-weight:bold; font-size:0.75rem;">${session.address.toUpperCase()}</span>` : '<span style="color:var(--muted); font-style:italic; font-size:0.65rem;">NO ESPECIFICADA</span>'}
                         </div>
                         <button class="btn" style="background:var(--success); color:white; width:100%; padding:14px; border-radius:12px; font-weight:900; font-size:0.9rem;" 
-                            onclick="(async () => { window.currentSessionId = ${session.id}; window.activeSession = ${JSON.stringify(session).replace(/"/g, '&quot;')}; localStorage.setItem('selectedSessionId', ${session.id}); await checkActiveSession(); showTab('checkin'); })()">
+                            onclick="(async () => { window.currentSessionId = ${session.id}; window.activeSession = ${JSON.stringify(session).replace(/"/g, '&quot;')}; localStorage.setItem('selectedSessionId', ${session.id}); await checkActiveSession(); showTab('valet-menu'); })()">
                             🚘 INGRESAR A OPERACIÓN VALET
                         </button>
                     </div>
@@ -5405,6 +5640,46 @@
                                                 </a>
                                             ` : '<span style="color:var(--muted); font-style:italic; font-size:0.7rem;">NO ESPECIFICADA</span>'}
                                         </div>
+
+                                        ${(() => {
+                                            const g = session.guardia_details;
+                                            if (!g) return '';
+                                            let trans = null;
+                                            try { trans = g.transport ? JSON.parse(g.transport) : null; } catch(e){}
+                                            
+                                            const mealsParts = [];
+                                            if (g.desayunos > 0) mealsParts.push(`${g.desayunos} Desayunos`);
+                                            if (g.almuerzos > 0) mealsParts.push(`${g.almuerzos} Almuerzos`);
+                                            if (g.cenas > 0) mealsParts.push(`${g.cenas} Cenas`);
+                                            const meals = mealsParts.join(', ');
+
+                                            let htmlStr = '';
+                                            if (trans && trans.equipos) htmlStr += `<div style="margin-top:10px;"><span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📦 EQUIPOS:</span><br><span style="font-size:0.75rem; color:white; font-weight:700;">${trans.equipos}</span></div>`;
+                                            
+                                            if (g.materials) {
+                                                let matDisplay = g.materials;
+                                                try {
+                                                    const matObj = JSON.parse(g.materials);
+                                                    if (matObj.items && Array.isArray(matObj.items)) {
+                                                        const itemsHtml = matObj.items.map(m => {
+                                                            let str = `<span style="color:var(--accent); margin-right:4px;">▪</span>${m.qty}x <b>${m.name}</b>`;
+                                                            if (m.serials) str += ` <span style="font-size:0.65rem; color:var(--muted)">(${m.serials})</span>`;
+                                                            return `<div style="font-size:0.75rem; color:white;">${str}</div>`;
+                                                        }).join('');
+                                                        matDisplay = `<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:6px; margin-top:4px;">${itemsHtml}</div>`;
+                                                        if (matObj.notes) matDisplay += `<div style="font-size:0.7rem; color:var(--warning); margin-top:6px; font-style:italic;">Nota: ${matObj.notes}</div>`;
+                                                    }
+                                                } catch(e) {}
+                                                
+                                                htmlStr += `<div style="margin-top:10px;"><span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">📋 MATERIALES:</span><br>${matDisplay}</div>`;
+                                            }
+
+                                            if (meals) htmlStr += `<div style="margin-top:10px;"><span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🍔 COMIDAS:</span><br><span style="font-size:0.75rem; color:white; font-weight:700;">${meals}</span></div>`;
+                                            if (trans && trans.personal) htmlStr += `<div style="margin-top:10px;"><span style="color:var(--muted); font-size:0.6rem; font-weight:800; letter-spacing:0.5px;">🚌 TRASLADOS:</span><br><span style="font-size:0.75rem; color:white; font-weight:700;">${trans.personal}</span></div>`;
+                                            
+                                            if (!htmlStr) return '';
+                                            return `<div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">${htmlStr}</div>`;
+                                        })()}
                                     </div>
                                 </div>
                             </div>
@@ -5412,7 +5687,7 @@
                             <div class="event-card-right" style="${isPlanning ? 'filter:grayscale(1); opacity:0.3;' : ''}">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                                     <div style="font-size:0.7rem; color:var(--warning); font-weight:900; letter-spacing:2px; text-transform:uppercase;">📋 CONTROL DE PERSONAL</div>
-                                    ${sessionStaff.length > 0 && session.address ? `<button class="btn btn-sm" onclick="openSmartRoute('${session.address.replace(/'/g, "\\'")}', '${sessionStaff.map(s => s.name.replace(/'/g, "\\'")).join(',')}')" style="background:rgba(168, 85, 247, 0.15); color:#a855f7; border:1px solid #a855f7; border-radius:12px; padding:6px 12px; font-size:0.6rem; font-weight:900;">🚌 RUTA INTELIGENTE</button>` : ''}
+                                    
                                 </div>
                                 <div class="staff-control-grid">
                                     ${(() => {
@@ -5440,18 +5715,18 @@
                                                 let lastBreakStart = null;
                                                 
                                                 sortedLogs.forEach(log => {
-                                                    if (log.type === 'break_start') lastBreakStart = new Date(log.timestamp);
+                                                    if (log.type === 'break_start') lastBreakStart = parseSQLiteDate(log.timestamp);
                                                     if (log.type === 'break_end' && lastBreakStart) {
-                                                        breakMs += (new Date(log.timestamp) - lastBreakStart);
+                                                        breakMs += (parseSQLiteDate(log.timestamp) - lastBreakStart);
                                                         lastBreakStart = null;
                                                     }
                                                 });
                                                 
                                                 if (lastLog?.type === 'break_start') {
-                                                    breakMs += (now - new Date(lastLog.timestamp));
+                                                    breakMs += (now - parseSQLiteDate(lastLog.timestamp));
                                                 }
                                                 
-                                                totalMs = (now - new Date(entryLog.timestamp)) - breakMs;
+                                                totalMs = (now - parseSQLiteDate(entryLog.timestamp)) - breakMs;
                                             }
                                             
                                             const hours = Math.floor(totalMs / 3600000);
@@ -5552,7 +5827,7 @@
                 <div style="display: flex; justify-content: center; margin-top: 40px;">
                     ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.52</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.64</div>
             `;
 
             el.innerHTML = html;
@@ -6000,7 +6275,7 @@
 
             <div id="custodia-list-detail"></div>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'valet-menu\')')}
             </div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
         `;
@@ -6335,7 +6610,7 @@
                         <datalist id="predictive-owners"></datalist>
                         <div class="field"><label>CONTACTO <span style="color:var(--brand-red)">*</span></label><input type="text" id="in-phone" placeholder="EJ: +584141234567" required></div>
                     </div>
-                    <div class="field"><label>EMAIL <span style="color:var(--brand-red)">*</span></label><input type="email" id="in-email" placeholder="EJ: CLIENTE@CORREO.COM" required></div>
+                    <div class="field"><label>EMAIL</label><input type="email" id="in-email" placeholder="EJ: CLIENTE@CORREO.COM"></div>
 
                     <div class="detail-section-title" style="margin-top:20px">INSPECCIÓN DE ENTRADA</div>
                     <div style="border-bottom: 1px solid var(--border); margin: 10px 0 20px 0; opacity: 0.3;"></div>
@@ -6355,8 +6630,7 @@
                 </div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
-                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'valet-menu\')')}
             </div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026</div>
         `;
@@ -6531,8 +6805,7 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
-                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'valet-menu\')')}
             </div>
             <div class="chat-access-btn" style="margin-top:20px" onclick="showGlobalChat()">💬 ACCEDER AL CENTRO DE MENSAJES</div>
             <div class="footer-info">COPYRIGHT EYE STAFF 2026 - v1.1</div>
@@ -6871,7 +7144,7 @@
             }
 
             if (inCustodyCount === 0) {
-                showTab('home');
+                showTab('valet-menu');
             } else {
                 showTab('resumen');
             }
@@ -7008,8 +7281,7 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; align-items: center;">
-                ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
-                ${getVolverBtn('MENÚ VALET', 'showTab(\'home\')')}
+                ${getVolverBtn('MENÚ VALET', 'showTab(\'valet-menu\')')}
             </div>
             <div class="footer-info" style="margin-top:40px; text-align:center;">COPYRIGHT EYE STAFF 2026</div>
         `;
@@ -7261,7 +7533,7 @@
                     </div>
 
                     <button class="btn btn-accent" style="width:100%; height:60px; font-size:1.2rem; margin-bottom:10px" onclick="window.open('${ticketUrl}', '_blank')">VER TICKET DIGITAL</button>
-                    ${getVolverBtn('MENÚ VALET', 'closeModal(); showTab(\'home\');')}
+                    ${getVolverBtn('MENÚ VALET', 'closeModal(); showTab(\'valet-menu\');')}
                     <div id="redirect-timer" style="margin-top:15px; font-size:0.8rem; color:var(--accent); font-weight:700;">VOLVIENDO AL MENÚ EN 15 SEGUNDOS...</div>
                 </div>
             `;
@@ -7278,7 +7550,7 @@
                     const mc = document.getElementById('modal-container');
                     if (mc && mc.classList.contains('open')) {
                         closeModal();
-                        showTab('home');
+                        showTab('valet-menu');
                     }
                 }
             }, 1000);
@@ -12997,6 +13269,16 @@
             return getTime(a) - getTime(b);
         });
 
+        if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
+            window.didAutoSkipValet = true;
+            const session = filteredSessions[0];
+            window.currentSessionId = session.id;
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', session.id);
+            checkActiveSession().then(() => showTab('valet-menu'));
+            return;
+        }
+
         if (filteredSessions.length === 0) {
             renderAccessControlPresentation(el);
             return;
@@ -13307,19 +13589,19 @@
                                     const entry = att.find(a => a.type === 'entry')?.timestamp;
                                     const exit = att.find(a => a.type === 'exit')?.timestamp;
                                     
-                                    let totalTime = '0:00h';
+                                    let totalTime = '0h 00m';
                                     if (entry) {
-                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        const sorted = [...att].sort((a, b) => parseSQLiteDate(a.timestamp) - parseSQLiteDate(b.timestamp));
                                         let workedMs = 0;
-                                        const refTime = exit ? new Date(exit) : new Date();
+                                        const refTime = exit ? parseSQLiteDate(exit) : new Date();
 
                                         for (let i = 0; i < sorted.length; i++) {
                                             const current = sorted[i];
                                             const currentType = current.type;
-                                            const currentT = new Date(current.timestamp);
+                                            const currentT = parseSQLiteDate(current.timestamp);
 
                                             const next = sorted[i + 1];
-                                            const nextT = next ? new Date(next.timestamp) : refTime;
+                                            const nextT = next ? parseSQLiteDate(next.timestamp) : refTime;
 
                                             if (currentType === 'entry') {
                                                 workedMs += (nextT - currentT);
@@ -13328,7 +13610,7 @@
                                         
                                         const hours = Math.floor(workedMs / 3600000);
                                         const mins = Math.floor((workedMs % 3600000) / 60000);
-                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                        totalTime = `${hours}h ${mins.toString().padStart(2, '0')}m`;
                                     }
 
                                     const formatTime = formatTime24h;
@@ -13736,6 +14018,16 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             return getTime(a) - getTime(b);
         });
 
+        if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
+            window.didAutoSkipValet = true;
+            const session = filteredSessions[0];
+            window.currentSessionId = session.id;
+            window.activeSession = session;
+            localStorage.setItem('selectedSessionId', session.id);
+            checkActiveSession().then(() => showTab('valet-menu'));
+            return;
+        }
+
         if (filteredSessions.length === 0) {
             renderGuardiaPresentation(el);
             return;
@@ -14051,19 +14343,19 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                     const entry = att.find(a => a.type === 'entry')?.timestamp;
                                     const exit = att.find(a => a.type === 'exit')?.timestamp;
                                     
-                                    let totalTime = '0:00h';
+                                    let totalTime = '0h 00m';
                                     if (entry) {
-                                        const sorted = [...att].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                        const sorted = [...att].sort((a, b) => parseSQLiteDate(a.timestamp) - parseSQLiteDate(b.timestamp));
                                         let workedMs = 0;
-                                        const refTime = exit ? new Date(exit) : new Date();
+                                        const refTime = exit ? parseSQLiteDate(exit) : new Date();
 
                                         for (let i = 0; i < sorted.length; i++) {
                                             const current = sorted[i];
                                             const currentType = current.type;
-                                            const currentT = new Date(current.timestamp);
+                                            const currentT = parseSQLiteDate(current.timestamp);
 
                                             const next = sorted[i + 1];
-                                            const nextT = next ? new Date(next.timestamp) : refTime;
+                                            const nextT = next ? parseSQLiteDate(next.timestamp) : refTime;
 
                                             if (currentType === 'entry') {
                                                 workedMs += (nextT - currentT);
@@ -14072,7 +14364,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                         
                                         const hours = Math.floor(workedMs / 3600000);
                                         const mins = Math.floor((workedMs % 3600000) / 60000);
-                                        totalTime = `${hours}:${mins.toString().padStart(2, '0')}h`;
+                                        totalTime = `${hours}h ${mins.toString().padStart(2, '0')}m`;
                                     }
 
                                     const formatTime = formatTime24h;

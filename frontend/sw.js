@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eye-staff-v2.7.55';
+const CACHE_NAME = 'eye-staff-v2.7.64';
 const STATIC_ASSETS = ['/'];
 
 self.addEventListener('install', e => {
