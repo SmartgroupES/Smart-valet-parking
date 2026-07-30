@@ -10311,13 +10311,22 @@ app.get('/api/chat/conversations', async (c) => {
   // Active conversations (1-on-1)
   const activeUsersRes = await c.env.DB.prepare(`
     SELECT u.id, u.name, u.eye_id, 'user' as type, MAX(m.created_at) as last_msg_time,
-           (SELECT COUNT(*) FROM chat_messages unread WHERE unread.sender_id = u.id AND unread.recipient_id = ? AND unread.is_read = 0) as unread_count,
-           CASE WHEN EXISTS (
-             SELECT 1 FROM web_sessions ws 
-             WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')
-           ) THEN 1 ELSE 0 END as is_online
+           IFNULL(unread.count, 0) as unread_count,
+           CASE WHEN IFNULL(ws.active_sessions, 0) > 0 THEN 1 ELSE 0 END as is_online
     FROM users u
     JOIN chat_messages m ON (m.sender_id = u.id AND m.recipient_id = ?) OR (m.sender_id = ? AND m.recipient_id = u.id)
+    LEFT JOIN (
+        SELECT sender_id, COUNT(*) as count 
+        FROM chat_messages 
+        WHERE recipient_id = ? AND is_read = 0 
+        GROUP BY sender_id
+    ) unread ON u.id = unread.sender_id
+    LEFT JOIN (
+        SELECT user_id, COUNT(*) as active_sessions
+        FROM web_sessions
+        WHERE is_active = 1 AND last_activity_at > datetime('now', '-5 minutes')
+        GROUP BY user_id
+    ) ws ON u.id = ws.user_id
     WHERE u.is_active=1 AND u.id != ?
     GROUP BY u.id
     ORDER BY last_msg_time DESC
@@ -10326,13 +10335,15 @@ app.get('/api/chat/conversations', async (c) => {
   // All users for the "New Chat" modal and online status
   const allUsersRes = await c.env.DB.prepare(`
     SELECT u.id, u.name, u.eye_id, 'user' as type,
-           (SELECT COUNT(*) FROM web_sessions ws 
-            WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')) as active_sessions,
-           CASE WHEN EXISTS (
-             SELECT 1 FROM web_sessions ws 
-             WHERE ws.user_id = u.id AND ws.is_active = 1 AND ws.last_activity_at > datetime('now', '-5 minutes')
-           ) THEN 1 ELSE 0 END as is_online
+           IFNULL(ws.active_sessions, 0) as active_sessions,
+           CASE WHEN IFNULL(ws.active_sessions, 0) > 0 THEN 1 ELSE 0 END as is_online
     FROM users u
+    LEFT JOIN (
+        SELECT user_id, COUNT(*) as active_sessions
+        FROM web_sessions
+        WHERE is_active = 1 AND last_activity_at > datetime('now', '-5 minutes')
+        GROUP BY user_id
+    ) ws ON u.id = ws.user_id
     WHERE u.is_active=1
     ORDER BY u.name ASC
   `).all();
