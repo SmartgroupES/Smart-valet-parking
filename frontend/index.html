@@ -1374,6 +1374,16 @@
 <div id="toast-container"></div>
 
 <script>
+    window.eventRoleMapping = {
+        'VALET PARKING': ['PROTOCOLO', 'VIALIDAD', 'VALET PARKING'],
+        'CONTROL DE ACCESOS': ['LOGÍSTICA', 'COORDINADOR AUXILIAR', 'COORDINADOR', 'SUPERVISOR', 'JEFE DE GRUPO'],
+        'EVENTO LOGISTICO': ['LOGÍSTICA', 'COORDINADOR AUXILIAR', 'COORDINADOR', 'SUPERVISOR', 'JEFE DE GRUPO'],
+        'ALQUILER DE EQUIPOS': ['OPERADOR', 'MONTAJE', 'TRANSPORTISTA'],
+        'TRASLADOS': ['CHOFER', 'ESCOLTA', 'PROTOCOLO'],
+        'GUARDIA DIURNA/NOCTURNA': ['GUARDIA DIURNA', 'GUARDIA NOCTURNA', 'AVANZADA', 'MONTAJE'],
+        'CUSTODIA': ['CUSTODIA', 'PROTOCOLO', 'ESCOLTA']
+    };
+
     // Registro del Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1826,6 +1836,8 @@
                         if (res && res.success && res.budgets) {
                             const b = res.budgets.find(x => x.id === budgetId);
                             if (b) {
+                                window.eventToEdit = null;
+                                window.editingSessionId = null;
                                 enterModule('listas');
                                 
                                 const form = typeof b.form_data === 'string' ? JSON.parse(b.form_data) : b.form_data || {};
@@ -2392,7 +2404,7 @@
                     const isClosed = s.status === 'closed' || s.status === 'concluded';
                     return `
                         <div onclick="showDayDetails('${currentDateIterator.toISOString()}')" style="cursor:pointer; background:${colorSet.bg}; border-left:4px solid ${colorSet.border}; color:${colorSet.text}; padding:6px 4px; border-radius:6px; margin-bottom:6px; display:flex; flex-direction:column; gap:4px; transition:0.2s; opacity:${colorSet.grayscale ? '0.5' : '1'}; text-align:center;" onmouseover="this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${colorSet.bg}';">
-                            <div class="calendar-event-text">${s.name.toUpperCase()} ${isClosed ? ' <span style="color:#ef4444;">(FIN)</span>' : ''}</div>
+                            <div class="calendar-event-text">${s.name.toUpperCase()} ${optionsHtml} ${isClosed ? ' <span style="color:#ef4444;">(FIN)</span>' : ''}</div>
                         </div>
                     `;
                 }).join('');
@@ -2568,7 +2580,7 @@
                     const c = getEventColor(s);
                     const isClosed = s.status === 'closed' || s.status === 'concluded';
                     return `<div onclick="showDayDetails('${day.toISOString()}', ${s.id})" style="cursor:pointer; background:${c.bg}; border-left:3px solid ${c.border}; color:${c.text}; font-size:0.65rem; padding:6px 8px; border-radius:6px; display:flex; flex-direction:column; transition:0.2s; align-items:flex-start; text-align:left;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                        <span style="font-weight:900; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4;">${s.name.toUpperCase()}${isClosed ? ' ✓' : ''}</span>
+                        <span style="font-weight:900; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4;">${s.name.toUpperCase()} ${optionsHtml}${isClosed ? ' ✓' : ''}</span>
                     </div>`;
                 }).join('');
             }
@@ -2793,9 +2805,24 @@
                             },
                             regreso: {
                                 encargado: document.getElementById('lista-guardia-transporte-regreso-encargado')?.value || '',
-                                vehiculo: document.getElementById('lista-guardia-transporte-regreso-vehiculo')?.value || ''
+                                vehiculo: document.getElementById('lista-guardia-transporte-regreso-vehiculo')?.value || '',
+                                lugar: document.getElementById('lista-guardia-transporte-regreso-lugar')?.value || '',
+                                hora: document.getElementById('lista-guardia-transporte-regreso-hora')?.value || ''
                             },
-                            equipos: document.getElementById('lista-guardia-transporte-equipos')?.value || ''
+                            equipos: document.getElementById('lista-guardia-transporte-equipos-notas')?.value || '',
+                            requiere_equipos: document.getElementById('lista-guardia-transporte-equipos-check')?.checked || false,
+                            equipos_ida: {
+                                encargado: document.getElementById('lista-guardia-transporte-equipos-ida-encargado')?.value || '',
+                                vehiculo: document.getElementById('lista-guardia-transporte-equipos-ida-vehiculo')?.value || '',
+                                lugar: document.getElementById('lista-guardia-transporte-equipos-ida-lugar')?.value || '',
+                                hora: document.getElementById('lista-guardia-transporte-equipos-ida-hora')?.value || ''
+                            },
+                            equipos_regreso: {
+                                encargado: document.getElementById('lista-guardia-transporte-equipos-regreso-encargado')?.value || '',
+                                vehiculo: document.getElementById('lista-guardia-transporte-equipos-regreso-vehiculo')?.value || '',
+                                lugar: document.getElementById('lista-guardia-transporte-equipos-regreso-lugar')?.value || '',
+                                hora: document.getElementById('lista-guardia-transporte-equipos-regreso-hora')?.value || ''
+                            }
                         }),
                         desayunos: parseInt(document.getElementById('lista-guardia-desayunos')?.value || '0'),
                         almuerzos: parseInt(document.getElementById('lista-guardia-almuerzos')?.value || '0'),
@@ -2816,11 +2843,21 @@
                             }),
                             notes: document.getElementById('lista-guardia-materiales')?.value || ''
                         }),
-                        proveedor: document.getElementById('lista-guardia-proveedor')?.value || '',
+                        proveedor: (() => {
+                            const sel = document.getElementById('lista-guardia-proveedor-select')?.value;
+                            if (sel === 'Otro') return document.getElementById('lista-guardia-proveedor-otro')?.value || 'Otro';
+                            return sel || '';
+                        })(),
                         horas_solicitadas: JSON.stringify({
-                            desayuno: document.getElementById('lista-guardia-hora-desayunos')?.value || '',
-                            almuerzo: document.getElementById('lista-guardia-hora-almuerzos')?.value || '',
-                            cena: document.getElementById('lista-guardia-hora-cenas')?.value || ''
+                            desayunos: document.getElementById('lista-guardia-hora-desayunos')?.value || '',
+                            desayunos_lugar: document.getElementById('lista-guardia-lugar-desayunos')?.value || '',
+                            desayunos_lugar_otro: document.getElementById('lista-guardia-lugar-otro-input-desayunos')?.value || '',
+                            almuerzos: document.getElementById('lista-guardia-hora-almuerzos')?.value || '',
+                            almuerzos_lugar: document.getElementById('lista-guardia-lugar-almuerzos')?.value || '',
+                            almuerzos_lugar_otro: document.getElementById('lista-guardia-lugar-otro-input-almuerzos')?.value || '',
+                            cenas: document.getElementById('lista-guardia-hora-cenas')?.value || '',
+                            cenas_lugar: document.getElementById('lista-guardia-lugar-cenas')?.value || '',
+                            cenas_lugar_otro: document.getElementById('lista-guardia-lugar-otro-input-cenas')?.value || ''
                         })
                     })
                 });
@@ -2831,7 +2868,8 @@
             
             // Reset state and re-render to clear form
             window.editingSessionId = null;
-            window.staffSelection = { supervisors: [], employees: [] };
+            window.eventToEdit = null;
+            window.staffSelection = { supervisors: [], employees: [], roles: {} };
             renderListas(document.getElementById("current-view"));
             handleAddressChange(''); 
             
@@ -2844,6 +2882,14 @@
     
         window.toggleTransportDisabled = function(disabled) {
             const container = document.getElementById('lista-guardia-transporte-detalles');
+            if (!container) return;
+            container.style.opacity = disabled ? '0.4' : '1';
+            const inputs = container.querySelectorAll('input');
+            inputs.forEach(input => input.disabled = disabled);
+        };
+
+        window.toggleTransportEquiposDisabled = function(disabled) {
+            const container = document.getElementById('lista-guardia-transporte-equipos-detalles');
             if (!container) return;
             container.style.opacity = disabled ? '0.4' : '1';
             const inputs = container.querySelectorAll('input');
@@ -3139,7 +3185,7 @@
                             </div>
                             <div style="grid-column: span 1;">
                                 <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TIPO DE EVENTO</label>
-                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;">
+                                <select id="lista-tipo" class="input-field" style="width:100%; margin-top:5px; border-radius:12px; padding:12px; background:var(--surface); box-sizing:border-box; color:#fff;" onchange="window.updateStaffList('supervisor'); window.updateStaffList('employee');">
                                     <option value="" disabled selected>Seleccione...</option>
                                     <option value="valet parking">VALET PARKING</option>
                                     <option value="control de accesos">CONTROL DE ACCESOS</option>
@@ -3228,34 +3274,33 @@
 
                     <!-- COLUMNA 2: ASIGNACIÓN DE PERSONAL (BÚSQUEDA) -->
                     <div class="vehicle-card" style="height:100%; box-sizing:border-box; padding:25px; border-radius:24px; animation: slideInUp 0.4s ease-out; display:flex; flex-direction:column;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('asignacion-personal-content'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('asignacion-personal-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
+                        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:20px;" onclick="const content = document.getElementById('asignacion-personal-content'); content.style.display = content.style.display === 'none' ? 'grid' : 'none'; const icon = document.getElementById('asignacion-personal-icon'); icon.innerText = content.style.display === 'none' ? '▶' : '▼';">
                             <h3 style="margin:0; color:var(--warning);">Asignación de Personal</h3>
                             <span id="asignacion-personal-icon" style="color:var(--warning); font-size:0.8rem;">▶</span>
                         </div>
-                        <div id="asignacion-personal-content" style="display:none;">
+                        <div id="asignacion-personal-content" style="display:none; grid-template-columns: 1fr 1fr; gap: 20px;">
                         
                         <!-- SECCIÓN SUPERVISORES -->
-                        <div style="margin-bottom:25px;">
+                        <div style="margin-bottom:0;">
                             <label style="font-size:0.65rem; color:var(--warning); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">🛡️ SUPERVISORES</label>
                             <input type="text" id="filter-supervisor" class="input-field" placeholder="Filtrar por nombre..." 
                                 style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
                                 oninput="updateStaffList('supervisor')">
-                            <div id="list-supervisor" style="height:150px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--warning) transparent;">
+                            <div id="list-supervisor" style="height:350px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--warning) transparent;">
                                 <!-- Cargado dinámicamente -->
                             </div>
                         </div>
 
                         <!-- SECCIÓN EMPLEADOS -->
-                        <div id="employee-selection-section" style="flex:1; display:flex; flex-direction:column; min-height:0; transition:0.3s;">
+                        <div id="employee-selection-section" style="display:flex; flex-direction:column; min-height:0; transition:0.3s;">
                             <label style="font-size:0.65rem; color:var(--accent); font-weight:900; letter-spacing:1px; display:block; margin-bottom:8px;">👥 EMPLEADOS</label>
                             <input type="text" id="filter-employee" class="input-field" placeholder="Filtrar por nombre..." 
                                 style="width:100%; border-radius:12px; padding:10px; box-sizing:border-box; font-size:0.75rem;"
                                 oninput="updateStaffList('employee')">
-                            <div id="list-employee" style="height:240px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--accent) transparent;">
+                            <div id="list-employee" style="height:350px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; margin-top:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:5px; scrollbar-width:thin; scrollbar-color:var(--accent) transparent;">
                                 <!-- Cargado dinámicamente -->
                             </div>
                         </div>
-
 
                         </div>
                     </div>
@@ -3274,23 +3319,101 @@
                                 <div style="grid-column: span 2; display:flex; justify-content:flex-end;">
                                     <button type="button" class="btn btn-sm" onclick="calcularSugerenciasGuardia()" style="background:var(--accent); color:white; padding:6px 12px; border-radius:8px; font-size:0.7rem; font-weight:bold;">CALCULAR COMIDAS</button>
                                 </div>
-                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DESAYUNOS (02-10)</label>
-                                     <div style="display:flex; gap:8px;">
-                                        <input type="number" id="lista-guardia-desayunos" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="text" id="lista-guardia-hora-desayunos" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
-                                     </div></div>
-                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">ALMUERZOS (10-18)</label>
-                                     <div style="display:flex; gap:8px;">
-                                        <input type="number" id="lista-guardia-almuerzos" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="text" id="lista-guardia-hora-almuerzos" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
-                                     </div></div>
-                                <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CENAS (18-02)</label>
-                                     <div style="display:flex; gap:8px;">
-                                        <input type="number" id="lista-guardia-cenas" class="input-field" value="0" style="width:50%; border-radius:8px; padding:8px;" title="Cantidad">
-                                        <input type="text" id="lista-guardia-hora-cenas" class="input-field" placeholder="--:--" maxlength="5" style="width:50%; border-radius:8px; padding:8px; text-align:center;" title="Hora HH:MM">
-                                     </div></div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">DESAYUNOS (02-10)</label>
+                                    <div style="display:flex; gap:8px; align-items: flex-end; margin-bottom:5px;">
+                                        <div style="width: 20%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Cantidad</label>
+                                            <input type="number" id="lista-guardia-desayunos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;">
+                                        </div>
+                                        <div style="width: 25%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Hora de entrega</label>
+                                            <input type="text" id="lista-guardia-hora-desayunos" class="input-field" placeholder="--:--" maxlength="5" style="width:100%; border-radius:8px; padding:8px; text-align:center;">
+                                        </div>
+                                        <div style="width: 55%; display: flex; gap: 4px;">
+                                            <div style="flex: 1;">
+                                                <label style="font-size:0.6rem; color:var(--muted);">Lugar de entrega:</label>
+                                                <select id="lista-guardia-lugar-desayunos" class="input-field" style="width:100%; border-radius:8px; padding:8px;" onchange="document.getElementById('lista-guardia-lugar-otro-desayunos').style.display = this.value === 'Otro' ? 'block' : 'none'">
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Evento">Evento</option>
+                                                    <option value="Oficina">Oficina</option>
+                                                    <option value="Otro">Otro</option>
+                                                </select>
+                                            </div>
+                                            <div style="flex: 1; display: none;" id="lista-guardia-lugar-otro-desayunos">
+                                                <label style="font-size:0.6rem; color:var(--muted);">¿Dónde?</label>
+                                                <input type="text" id="lista-guardia-lugar-otro-input-desayunos" class="input-field" placeholder="Especificar..." style="width:100%; border-radius:8px; padding:8px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">ALMUERZOS (10-18)</label>
+                                    <div style="display:flex; gap:8px; align-items: flex-end; margin-bottom:5px;">
+                                        <div style="width: 20%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Cantidad</label>
+                                            <input type="number" id="lista-guardia-almuerzos" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;">
+                                        </div>
+                                        <div style="width: 25%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Hora de entrega</label>
+                                            <input type="text" id="lista-guardia-hora-almuerzos" class="input-field" placeholder="--:--" maxlength="5" style="width:100%; border-radius:8px; padding:8px; text-align:center;">
+                                        </div>
+                                        <div style="width: 55%; display: flex; gap: 4px;">
+                                            <div style="flex: 1;">
+                                                <label style="font-size:0.6rem; color:var(--muted);">Lugar de entrega:</label>
+                                                <select id="lista-guardia-lugar-almuerzos" class="input-field" style="width:100%; border-radius:8px; padding:8px;" onchange="document.getElementById('lista-guardia-lugar-otro-almuerzos').style.display = this.value === 'Otro' ? 'block' : 'none'">
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Evento">Evento</option>
+                                                    <option value="Oficina">Oficina</option>
+                                                    <option value="Otro">Otro</option>
+                                                </select>
+                                            </div>
+                                            <div style="flex: 1; display: none;" id="lista-guardia-lugar-otro-almuerzos">
+                                                <label style="font-size:0.6rem; color:var(--muted);">¿Dónde?</label>
+                                                <input type="text" id="lista-guardia-lugar-otro-input-almuerzos" class="input-field" placeholder="Especificar..." style="width:100%; border-radius:8px; padding:8px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; color:var(--muted); font-weight:700;">CENAS (18-02)</label>
+                                    <div style="display:flex; gap:8px; align-items: flex-end; margin-bottom:5px;">
+                                        <div style="width: 20%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Cantidad</label>
+                                            <input type="number" id="lista-guardia-cenas" class="input-field" value="0" style="width:100%; border-radius:8px; padding:8px;">
+                                        </div>
+                                        <div style="width: 25%;">
+                                            <label style="font-size:0.6rem; color:var(--muted);">Hora de entrega</label>
+                                            <input type="text" id="lista-guardia-hora-cenas" class="input-field" placeholder="--:--" maxlength="5" style="width:100%; border-radius:8px; padding:8px; text-align:center;">
+                                        </div>
+                                        <div style="width: 55%; display: flex; gap: 4px;">
+                                            <div style="flex: 1;">
+                                                <label style="font-size:0.6rem; color:var(--muted);">Lugar de entrega:</label>
+                                                <select id="lista-guardia-lugar-cenas" class="input-field" style="width:100%; border-radius:8px; padding:8px;" onchange="document.getElementById('lista-guardia-lugar-otro-cenas').style.display = this.value === 'Otro' ? 'block' : 'none'">
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Evento">Evento</option>
+                                                    <option value="Oficina">Oficina</option>
+                                                    <option value="Otro">Otro</option>
+                                                </select>
+                                            </div>
+                                            <div style="flex: 1; display: none;" id="lista-guardia-lugar-otro-cenas">
+                                                <label style="font-size:0.6rem; color:var(--muted);">¿Dónde?</label>
+                                                <input type="text" id="lista-guardia-lugar-otro-input-cenas" class="input-field" placeholder="Especificar..." style="width:100%; border-radius:8px; padding:8px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">PROVEEDOR DE COMIDAS</label>
-                                     <input type="text" id="lista-guardia-proveedor" class="input-field" placeholder="Ej. Catering Juan" style="width:100%; border-radius:8px; padding:8px;"></div>
+                                     <div style="display:flex; gap:8px;">
+                                        <select id="lista-guardia-proveedor-select" class="input-field" style="width:50%; border-radius:8px; padding:8px;" onchange="document.getElementById('lista-guardia-proveedor-otro').style.display = this.value === 'Otro' ? 'block' : 'none'">
+                                            <option value="">Seleccionar...</option>
+                                            <option value="Isabel">Isabel</option>
+                                            <option value="Georgina">Georgina</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                        <input type="text" id="lista-guardia-proveedor-otro" class="input-field" placeholder="Especificar proveedor..." style="width:50%; border-radius:8px; padding:8px; display:none;">
+                                     </div>
+                                </div>
                             </div>
                         </div>
 
@@ -3339,10 +3462,45 @@
                                             <input type="text" id="lista-guardia-transporte-regreso-encargado" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
                                         <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">VEHÍCULO</label>
                                             <input type="text" id="lista-guardia-transporte-regreso-vehiculo" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">LUGAR DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-regreso-lugar" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">HORA DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-regreso-hora" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
                                     </div>
                                 </div>
-                                <div style="margin-top:5px;"><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">TRASLADO DE EQUIPOS</label>
-                                     <input type="text" id="lista-guardia-transporte-equipos" class="input-field" placeholder="Ej. Camión 350, Personal de logística" style="width:100%; border-radius:8px; padding:8px; margin-top:5px;">
+                                <div style="margin-top:20px;">
+                                    <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--success); font-weight:900; cursor:pointer; width:fit-content;">
+                                        <input type="checkbox" id="lista-guardia-transporte-equipos-check" style="width:18px; height:18px; accent-color:var(--success);" onchange="toggleTransportEquiposDisabled(!this.checked)">
+                                        REQUIERE TRASLADO DE EQUIPOS
+                                    </label>
+                                </div>
+                                <div id="lista-guardia-transporte-equipos-detalles" style="display:flex; flex-direction:column; gap:15px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); opacity:0.4;">
+                                    <h5 style="margin:0; color:var(--accent); font-size:0.8rem;">TRASLADO EQUIPOS IDA</h5>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">ENCARGADO</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-ida-encargado" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">VEHÍCULO</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-ida-vehiculo" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">LUGAR DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-ida-lugar" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">HORA DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-ida-hora" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                    </div>
+                                    
+                                    <h5 style="margin:0; margin-top:5px; color:var(--warning); font-size:0.8rem;">TRASLADO EQUIPOS REGRESO</h5>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">ENCARGADO</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-regreso-encargado" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">VEHÍCULO</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-regreso-vehiculo" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">LUGAR DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-regreso-lugar" class="input-field" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                        <div><label style="font-size:0.65rem; color:var(--muted); font-weight:700;">HORA DE CONVOCATORIA</label>
+                                            <input type="text" id="lista-guardia-transporte-equipos-regreso-hora" class="input-field" placeholder="HH:MM" maxlength="5" style="width:100%; border-radius:8px; padding:6px;" disabled></div>
+                                    </div>
+                                    <div style="margin-top:5px;"><label style="font-size:0.7rem; color:var(--muted); font-weight:700;">NOTAS / OTROS</label>
+                                         <input type="text" id="lista-guardia-transporte-equipos-notas" class="input-field" placeholder="Ej. Detalles logísticos adicionales" style="width:100%; border-radius:8px; padding:8px; margin-top:5px;" disabled>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3366,7 +3524,7 @@
                 </div>
             `;
             window.allStaffData = allStaff;
-            window.staffSelection = { supervisors: [], employees: [] };
+            window.staffSelection = { supervisors: [], employees: [], roles: {} };
             
             // Inicializar listas de personal
             updateStaffList('supervisor');
@@ -4061,7 +4219,7 @@
                                 100% { background-color: #ef4444; transform: scale(1.02); box-shadow: 0 0 15px rgba(239,68,68,0.5); }
                             }
                         </style>
-                        <div class="menu-item ${hasPendingListasAlert ? '' : 'admin-card-bg'}" onclick="enterModule('listas')" style="border-top: 3px solid #f43f5e; padding:12px 15px; ${hasPendingListasAlert ? 'animation: blinkPortalListas 1s infinite alternate;' : ''}">
+                        <div class="menu-item ${hasPendingListasAlert ? '' : 'admin-card-bg'}" onclick="window.eventToEdit = null; window.editingSessionId = null; enterModule('listas')" style="border-top: 3px solid #f43f5e; padding:12px 15px; ${hasPendingListasAlert ? 'animation: blinkPortalListas 1s infinite alternate;' : ''}">
                             <i style="font-size:1.5rem">📋</i>
                             <div class="menu-item-content">
                                 <span class="menu-item-title" style="font-size:0.9rem;">LISTAS</span>
@@ -4477,7 +4635,7 @@
         if (session) {
             if (container && selector) {
                 selector.innerHTML = activeSessions.map(s => `
-                    <option value="${s.id}" ${s.id == session.id ? 'selected' : ''}>${s.name.toUpperCase()}</option>
+                    <option value="${s.id}" ${s.id == session.id ? 'selected' : ''}>${s.name.toUpperCase()} ${optionsHtml}</option>
                 `).join('');
                 container.style.display = 'flex';
             }
@@ -6237,7 +6395,26 @@
     }
 
     async function closeSessionFromDashboard(id, name) {
-        if (!confirm(`⚠️ CONFIRMACIÓN\\n\\n¿Realmente está seguro que desea cerrar y concluir definitivamente el evento "${name.toUpperCase()}"?\\n\\nEsta acción NO se puede deshacer y liberará a todo el personal.`)) {
+        let hasPendingMaterials = false;
+        let sessionData = null;
+        if (window.activeSessions) {
+            sessionData = window.activeSessions.find(s => s.id === id);
+            if (sessionData && sessionData.guardia_details && sessionData.guardia_details.materials) {
+                try {
+                    const matObj = JSON.parse(sessionData.guardia_details.materials);
+                    if (matObj && matObj.items && Array.isArray(matObj.items)) {
+                        hasPendingMaterials = matObj.items.some(m => m.qty > 0);
+                    }
+                } catch(e) {}
+            }
+        }
+
+        if (hasPendingMaterials && sessionData) {
+            showInventoryReturnModal(sessionData);
+            return;
+        }
+
+        if (!confirm(`⚠️ CONFIRMACIÓN\n\n¿Realmente está seguro que desea cerrar y concluir definitivamente el evento "${name.toUpperCase()}"?\n\nEsta acción NO se puede deshacer y liberará a todo el personal.`)) {
             return;
         }
         
@@ -6259,6 +6436,101 @@
             hideLoading();
         }
     }
+
+    function showInventoryReturnModal(session) {
+        let itemsHtml = '';
+        try {
+            const matObj = JSON.parse(session.guardia_details.materials);
+            if (matObj && matObj.items && Array.isArray(matObj.items)) {
+                matObj.items.forEach((m, idx) => {
+                    if (m.qty > 0) {
+                        itemsHtml += `
+                            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="font-weight:bold; color:white;">${m.name}</span>
+                                    <span style="font-size:0.8rem; color:var(--muted);">Asignados: <b>${m.qty}</b></span>
+                                </div>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <input type="number" id="ret-qty-${idx}" value="${m.qty}" min="0" max="${m.qty}" style="width:80px; padding:8px; border-radius:5px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white; text-align:center;">
+                                    <input type="text" id="ret-notes-${idx}" placeholder="Notas (ej. pérdida, daño)" style="flex:1; padding:8px; border-radius:5px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white; font-size:0.85rem;">
+                                    <input type="hidden" id="ret-id-${idx}" value="${m.id || ''}">
+                                    <input type="hidden" id="ret-name-${idx}" value="${m.name}">
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+        } catch(e) {}
+
+        const html = `
+            <div style="padding:20px; text-align:left;">
+                <h3 style="margin-top:0; color:var(--warning);">⚠️ DECLARACIÓN DE INVENTARIO INVERSO</h3>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:20px;">
+                    El evento <b>${session.name.toUpperCase()}</b> tiene equipos asignados.<br>
+                    Antes de cerrar la jornada, debes declarar las cantidades que se entregan al transporte/almacén.
+                </p>
+                <div style="max-height:400px; overflow-y:auto; padding-right:10px;">
+                    ${itemsHtml}
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CANCELAR</button>
+                    <button class="btn" style="background:var(--warning); color:#000; border:none; padding:10px 15px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="submitInventoryReturn(${session.id}, '${session.name}')">CONFIRMAR Y CERRAR EVENTO</button>
+                </div>
+            </div>
+        `;
+        showModal(html);
+    }
+
+    window.submitInventoryReturn = async function(sessionId, sessionName) {
+        // Recolectar datos
+        const itemsToReturn = [];
+        const inputs = document.querySelectorAll('input[id^="ret-qty-"]');
+        for (const input of inputs) {
+            const idx = input.id.replace('ret-qty-', '');
+            const qty = parseInt(input.value) || 0;
+            const notes = document.getElementById(`ret-notes-${idx}`).value;
+            const itemId = document.getElementById(`ret-id-${idx}`).value;
+            const itemName = document.getElementById(`ret-name-${idx}`).value;
+            
+            if (qty > 0) {
+                itemsToReturn.push({ itemId, itemName, declaredQty: qty, notes });
+            }
+        }
+
+        showLoading('PROCESANDO INVENTARIO INVERSO...');
+        try {
+            if (itemsToReturn.length > 0) {
+                const res = await apiFetch('/api/inventory/declare-returns', {
+                    method: 'POST',
+                    body: JSON.stringify({ sessionId, sessionName, items: itemsToReturn })
+                });
+                if (!res || !res.success) {
+                    hideLoading();
+                    toast(res?.error || 'Error al declarar inventario', 'error');
+                    return;
+                }
+            }
+
+            // Continuar con el cierre del evento
+            const closeRes = await apiFetch('/api/sessions/close', {
+                method: 'POST',
+                body: JSON.stringify({ id: sessionId })
+            });
+            
+            if (closeRes && closeRes.success) {
+                closeModal();
+                toast('✅ JORNADA CERRADA E INVENTARIO DECLARADO', 'success');
+                renderEventsDashboard(document.getElementById("current-view"));
+            } else {
+                toast(closeRes?.error || 'Error al cerrar evento', 'error');
+            }
+        } catch (e) {
+            toast('❌ ERROR DE CONEXIÓN', 'error');
+        } finally {
+            hideLoading();
+        }
+    };
 
     async function renderEvents(el) {
         setTimeout(() => window.scrollTo(0, 0), 100);
@@ -6464,7 +6736,7 @@
                     <label>ASIGNAR SUPERVISOR (OBLIGATORIO)</label>
                     <select id="new-session-supervisor" required style="background:var(--surface2); border:1px solid var(--accent); color:#fff; height:45px;">
                         <option value="">SELECCIONE...</option>
-                        ${availableStaff.map(s => `<option value="${s.id}">${s.name.toUpperCase()}</option>`).join('')}
+                        ${availableStaff.map(s => `<option value="${s.id}">${s.name.toUpperCase()} ${optionsHtml}</option>`).join('')}
                     </select>
                 </div>
 
@@ -8159,7 +8431,7 @@
                                             const sOut = s.exit_time ? new Date(s.exit_time).toLocaleString('es-ES', tzOpts).replace(',', '') : '—';
                                             return `
                                                 <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
-                                                    <td style="padding:12px; font-weight:800; color:#fff;">${s.name.toUpperCase()}</td>
+                                                    <td style="padding:12px; font-weight:800; color:#fff;">${s.name.toUpperCase()} ${optionsHtml}</td>
                                                     <td style="padding:12px; color:#fff; font-weight:700;">${sIn}</td>
                                                     <td style="padding:12px; color:#fff; font-weight:700;">${sOut}</td>
                                                     <td style="padding:12px; text-align:center; font-weight:800; color:var(--success);">${String(Math.floor(s.total_mins / 60)).padStart(2, '0')}:${String(s.total_mins % 60).padStart(2, '0')}</td>
@@ -10101,7 +10373,7 @@
                 'listas': 'LISTAS'
             };
             const typeLabel = typeMap[s.type] || s.type.toUpperCase();
-            const fullTitle = `${typeLabel} - ${s.name.toUpperCase()}`;
+            const fullTitle = `${typeLabel} - ${s.name.toUpperCase()} ${optionsHtml}`;
 
             return `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="viewAdminDetail(${s.id})">
@@ -10186,6 +10458,22 @@
 
     async function closeSession() {
         if (!window.activeSession) return toast('No hay una sesión activa', 'warning');
+
+        let hasPendingMaterials = false;
+        if (window.activeSession.guardia_details && window.activeSession.guardia_details.materials) {
+            try {
+                const matObj = JSON.parse(window.activeSession.guardia_details.materials);
+                if (matObj && matObj.items && Array.isArray(matObj.items)) {
+                    hasPendingMaterials = matObj.items.some(m => m.qty > 0);
+                }
+            } catch(e) {}
+        }
+
+        if (hasPendingMaterials) {
+            showInventoryReturnModal(window.activeSession);
+            return;
+        }
+
         if (!confirm('¿CONFIRMAR CIERRE DEL EVENTO? ESTO GENERARÁ EL PDF Y EL EXCEL AUTOMÁTICAMENTE.')) return;
         
         showLoading('PROCESANDO CIERRE Y REPORTES...');
@@ -11035,7 +11323,10 @@
             <div id="pending-updates-container" style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:20px; padding:25px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
                     <h3 style="margin:0; color:white; font-size:1.1rem; font-weight:900;">📝 Solicitudes de Actualización Pendientes</h3>
-                    <button class="btn btn-secondary" onclick="loadPendingUpdates()" style="font-size:0.7rem; padding:8px 15px;">🔄 REFRESCAR</button>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('https://eye-staff.app/actualizar').then(()=>Swal.fire({title:'¡Copiado!', text:'Link copiado al portapapeles: https://eye-staff.app/actualizar', icon:'success', background:'#0b0f19', color:'white', confirmButtonColor:'#28A8E9'}))" style="font-size:0.7rem; padding:8px 15px; background:var(--brand-blue); border:none; box-shadow:0 0 10px rgba(40,168,233,0.3); color:white;">🔗 COPIAR LINK</button>
+                        <button class="btn btn-secondary" onclick="loadPendingUpdates()" style="font-size:0.7rem; padding:8px 15px;">🔄 REFRESCAR</button>
+                    </div>
                 </div>
                 <div id="pending-updates-content">
                     <div style="text-align:center; padding:20px; color:var(--muted); font-size:0.85rem;">Cargando solicitudes...</div>
@@ -15559,7 +15850,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         handleAddressChange(s.address || '');
         
         // Personal
-        window.staffSelection = { supervisors: [], employees: [] };
+        window.staffSelection = { supervisors: [], employees: [], roles: {} };
         
         if (s.assigned_staff_list && s.assigned_staff_list.length > 0) {
             window.staffSelection.supervisors = s.assigned_staff_list
@@ -15613,8 +15904,33 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         if (parsed.regreso) {
                             if(document.getElementById('lista-guardia-transporte-regreso-encargado')) document.getElementById('lista-guardia-transporte-regreso-encargado').value = parsed.regreso.encargado || '';
                             if(document.getElementById('lista-guardia-transporte-regreso-vehiculo')) document.getElementById('lista-guardia-transporte-regreso-vehiculo').value = parsed.regreso.vehiculo || '';
+                            if(document.getElementById('lista-guardia-transporte-regreso-lugar')) document.getElementById('lista-guardia-transporte-regreso-lugar').value = parsed.regreso.lugar || s.address || '';
+                            if(document.getElementById('lista-guardia-transporte-regreso-hora')) document.getElementById('lista-guardia-transporte-regreso-hora').value = parsed.regreso.hora || '';
+                        } else {
+                            if(document.getElementById('lista-guardia-transporte-regreso-lugar')) document.getElementById('lista-guardia-transporte-regreso-lugar').value = s.address || '';
                         }
-                        if(document.getElementById('lista-guardia-transporte-equipos')) document.getElementById('lista-guardia-transporte-equipos').value = parsed.equipos || '';
+
+                        if(document.getElementById('lista-guardia-transporte-equipos-check')) {
+                            const reqEquipos = parsed.requiere_equipos || false;
+                            document.getElementById('lista-guardia-transporte-equipos-check').checked = reqEquipos;
+                            window.toggleTransportEquiposDisabled(!reqEquipos);
+                        }
+                        if (parsed.equipos_ida) {
+                            if(document.getElementById('lista-guardia-transporte-equipos-ida-encargado')) document.getElementById('lista-guardia-transporte-equipos-ida-encargado').value = parsed.equipos_ida.encargado || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-ida-vehiculo')) document.getElementById('lista-guardia-transporte-equipos-ida-vehiculo').value = parsed.equipos_ida.vehiculo || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-ida-lugar')) document.getElementById('lista-guardia-transporte-equipos-ida-lugar').value = parsed.equipos_ida.lugar || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-ida-hora')) document.getElementById('lista-guardia-transporte-equipos-ida-hora').value = parsed.equipos_ida.hora || '';
+                        }
+                        if (parsed.equipos_regreso) {
+                            if(document.getElementById('lista-guardia-transporte-equipos-regreso-encargado')) document.getElementById('lista-guardia-transporte-equipos-regreso-encargado').value = parsed.equipos_regreso.encargado || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-regreso-vehiculo')) document.getElementById('lista-guardia-transporte-equipos-regreso-vehiculo').value = parsed.equipos_regreso.vehiculo || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-regreso-lugar')) document.getElementById('lista-guardia-transporte-equipos-regreso-lugar').value = parsed.equipos_regreso.lugar || s.address || '';
+                            if(document.getElementById('lista-guardia-transporte-equipos-regreso-hora')) document.getElementById('lista-guardia-transporte-equipos-regreso-hora').value = parsed.equipos_regreso.hora || '';
+                        } else {
+                            if(document.getElementById('lista-guardia-transporte-equipos-regreso-lugar')) document.getElementById('lista-guardia-transporte-equipos-regreso-lugar').value = s.address || '';
+                        }
+                        
+                        if(document.getElementById('lista-guardia-transporte-equipos-notas')) document.getElementById('lista-guardia-transporte-equipos-notas').value = parsed.equipos || '';
                     } else if (document.getElementById('lista-guardia-transporte-personal-check')) {
                         // legacy transport
                         if (d.transport && d.transport !== 'Personal llega por su cuenta') {
@@ -15673,13 +15989,45 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 } catch(e) {
                     if(document.getElementById('lista-guardia-materiales')) document.getElementById('lista-guardia-materiales').value = d.materials || '';
                 }
-                if(document.getElementById('lista-guardia-proveedor')) document.getElementById('lista-guardia-proveedor').value = d.proveedor || '';
+                if(document.getElementById('lista-guardia-proveedor-select')) {
+                    const val = d.proveedor || '';
+                    if (val === 'Isabel' || val === 'Georgina' || val === '') {
+                        document.getElementById('lista-guardia-proveedor-select').value = val;
+                        if(document.getElementById('lista-guardia-proveedor-otro')) {
+                            document.getElementById('lista-guardia-proveedor-otro').style.display = 'none';
+                            document.getElementById('lista-guardia-proveedor-otro').value = '';
+                        }
+                    } else {
+                        document.getElementById('lista-guardia-proveedor-select').value = 'Otro';
+                        if(document.getElementById('lista-guardia-proveedor-otro')) {
+                            document.getElementById('lista-guardia-proveedor-otro').style.display = 'block';
+                            document.getElementById('lista-guardia-proveedor-otro').value = val;
+                        }
+                    }
+                }
                 try {
                     if (d.horas_solicitadas && d.horas_solicitadas.startsWith('{')) {
                         const parsed = JSON.parse(d.horas_solicitadas);
-                        if(document.getElementById('lista-guardia-hora-desayunos')) document.getElementById('lista-guardia-hora-desayunos').value = parsed.desayuno || '';
-                        if(document.getElementById('lista-guardia-hora-almuerzos')) document.getElementById('lista-guardia-hora-almuerzos').value = parsed.almuerzo || '';
-                        if(document.getElementById('lista-guardia-hora-cenas')) document.getElementById('lista-guardia-hora-cenas').value = parsed.cena || '';
+                        if(document.getElementById('lista-guardia-hora-desayunos')) document.getElementById('lista-guardia-hora-desayunos').value = parsed.desayunos || parsed.desayuno || '';
+                        if(document.getElementById('lista-guardia-lugar-desayunos')) {
+                            document.getElementById('lista-guardia-lugar-desayunos').value = parsed.desayunos_lugar || '';
+                            document.getElementById('lista-guardia-lugar-otro-desayunos').style.display = parsed.desayunos_lugar === 'Otro' ? 'block' : 'none';
+                        }
+                        if(document.getElementById('lista-guardia-lugar-otro-input-desayunos')) document.getElementById('lista-guardia-lugar-otro-input-desayunos').value = parsed.desayunos_lugar_otro || '';
+                        
+                        if(document.getElementById('lista-guardia-hora-almuerzos')) document.getElementById('lista-guardia-hora-almuerzos').value = parsed.almuerzos || parsed.almuerzo || '';
+                        if(document.getElementById('lista-guardia-lugar-almuerzos')) {
+                            document.getElementById('lista-guardia-lugar-almuerzos').value = parsed.almuerzos_lugar || '';
+                            document.getElementById('lista-guardia-lugar-otro-almuerzos').style.display = parsed.almuerzos_lugar === 'Otro' ? 'block' : 'none';
+                        }
+                        if(document.getElementById('lista-guardia-lugar-otro-input-almuerzos')) document.getElementById('lista-guardia-lugar-otro-input-almuerzos').value = parsed.almuerzos_lugar_otro || '';
+                        
+                        if(document.getElementById('lista-guardia-hora-cenas')) document.getElementById('lista-guardia-hora-cenas').value = parsed.cenas || parsed.cena || '';
+                        if(document.getElementById('lista-guardia-lugar-cenas')) {
+                            document.getElementById('lista-guardia-lugar-cenas').value = parsed.cenas_lugar || '';
+                            document.getElementById('lista-guardia-lugar-otro-cenas').style.display = parsed.cenas_lugar === 'Otro' ? 'block' : 'none';
+                        }
+                        if(document.getElementById('lista-guardia-lugar-otro-input-cenas')) document.getElementById('lista-guardia-lugar-otro-input-cenas').value = parsed.cenas_lugar_otro || '';
                     }
                 } catch(e) {}
             }
@@ -15776,7 +16124,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             return `
                 <div class="search-item" onclick="${action}" style="${isBusy ? 'opacity:0.6; cursor:not-allowed;' : ''}">
                     <div style="display:flex; flex-direction:column;">
-                        <span style="font-weight:800;">${s.name.toUpperCase()}</span>
+                        <span style="font-weight:800;">${s.name.toUpperCase()} ${optionsHtml}</span>
                         ${isBusy ? `<span style="font-size:0.55rem; color:${statusColor}; font-weight:700;">${statusText}</span>` : ''}
                     </div>
                 </div>
@@ -15819,6 +16167,20 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             const isBusy = !!busySession;
             const onclick = isBusy ? `toast('⚠️ YA ASIGNADO A: ${busySession.name}', 'warning')` : `toggleStaffSelection('${type}', ${s.id})`;
             
+            
+            const eventTypeSelect = document.getElementById('lista-tipo')?.value.toUpperCase() || '';
+            let optionsHtml = '';
+            if (isSelected && eventTypeSelect && window.eventRoleMapping[eventTypeSelect]) {
+                const roles = window.eventRoleMapping[eventTypeSelect];
+                const currentRole = window.staffSelection.roles[s.id] || '';
+                optionsHtml = '<select onchange="changeStaffRole(event, ' + s.id + ')" onclick="event.stopPropagation()" style="margin-left: 10px; font-size: 0.65rem; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 2px 4px;">';
+                optionsHtml += '<option value="">(Sin función)</option>';
+                roles.forEach(r => {
+                    optionsHtml += '<option value="' + r + '" ' + (currentRole === r ? 'selected' : '') + '>' + r + '</option>';
+                });
+                optionsHtml += '</select>';
+            }
+
             const checkboxColor = type === 'supervisor' ? 'var(--warning)' : 'var(--accent)';
             const nameColor = isSelected ? (type === 'supervisor' ? 'var(--warning)' : 'var(--accent)') : (isBusy ? 'var(--brand-red)' : '#fff');
             
@@ -15827,7 +16189,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     <input type="checkbox" ${isSelected ? 'checked' : ''} ${isBusy && !isSelected ? 'disabled' : ''} style="width:16px; height:16px; cursor:pointer; accent-color:${checkboxColor};">
                     <div style="flex:1;">
                         <div style="color:${nameColor}; font-weight:${isSelected ? '900' : '600'}; font-size:0.75rem; display:flex; align-items:center; gap:5px;">
-                            ${s.name.toUpperCase()}
+                            ${s.name.toUpperCase()} ${optionsHtml}
                             ${isBusy ? `<span style="font-size:0.5rem; background:rgba(239, 68, 68, 0.1); color:var(--brand-red); padding:2px 6px; border-radius:4px;">OCUPADO</span>` : ''}
                         </div>
                         ${isBusy ? `<div style="font-size:0.5rem; color:var(--muted); font-weight:800; letter-spacing:0.5px;">• EN: ${busySession.name.toUpperCase()}</div>` : ''}
@@ -15837,10 +16199,18 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         }).join('');
     }
 
+    window.changeStaffRole = function(event, id) {
+        event.stopPropagation();
+        window.staffSelection.roles[id] = event.target.value;
+    }
+
     window.toggleStaffSelection = function(type, id) {
         const selection = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
         const index = selection.indexOf(id);
-        if (index > -1) selection.splice(index, 1);
+        if (index > -1) {
+            selection.splice(index, 1);
+            delete window.staffSelection.roles[id];
+        }
         else selection.push(id);
         
         updateStaffList(type);
@@ -15851,7 +16221,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     window.removeStaffFromEvent = function(type, id) {
         const targetList = type === 'supervisor' ? window.staffSelection.supervisors : window.staffSelection.employees;
         const index = targetList.indexOf(id);
-        if (index > -1) targetList.splice(index, 1);
+        if (index > -1) {
+            targetList.splice(index, 1);
+            delete window.staffSelection.roles[id];
+        }
         renderStaffTags(type);
         updateStaffList('employee');
     }
@@ -15935,7 +16308,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             return `
             <div class="vehicle-card" style="margin-bottom:15px; padding:20px; border-radius:16px; background:${isClosed ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isClosed ? 'rgba(255,255,255,0.05)' : 'var(--border)'}; filter:${isClosed ? 'grayscale(1)' : 'none'}; opacity:${isClosed ? '0.5' : '1'}">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
+                    <div style="font-size:1.1rem; font-weight:900; color:${isClosed ? 'var(--muted)' : (isActive ? 'var(--success)' : 'var(--accent)')};">${(s.type || 'EVENTO').toUpperCase()} - ${s.name.toUpperCase()} ${optionsHtml} ${isClosed ? '(FINALIZADO)' : (isActive ? '(ACTIVO)' : '')}</div>
                     ${(currentUser.name === 'ADMIN' || currentUser.name === 'RRHH' || currentUser.is_corporate_profile === 1) ? `<button onclick="if(confirm('¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.')) deleteEventFromCalendar(${s.id})" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:5px 10px; font-size:0.6rem; font-weight:900; cursor:pointer; margin-left:10px;">🗑️ ELIMINAR</button>` : ''}
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
@@ -16529,7 +16902,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         opacity: 1,
                         fillOpacity: 0.8
                     });
-                    marker.bindPopup(`<b>${s.name.toUpperCase()}</b><br>${s.role}`);
+                    marker.bindPopup(`<b>${s.name.toUpperCase()} ${optionsHtml}</b><br>${s.role}`);
                     window.assetsMarkersLayer.addLayer(marker);
                 });
 
@@ -17848,9 +18221,13 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         setTimeout(() => window.scrollTo(0, 0), 100);
         showLoading('Cargando inventario...');
         try {
-            const res = await apiFetch('/api/inventory');
+            const [res, pendingRes] = await Promise.all([
+                apiFetch('/api/inventory'),
+                apiFetch('/api/inventory/pending-returns')
+            ]);
             hideLoading();
             let items = res && res.items ? res.items : [];
+            let pendingReturns = pendingRes && pendingRes.returns ? pendingRes.returns : [];
             
             // Guardar globalmente para poder exportar a excel
             window.currentInventoryItems = items;
@@ -17860,11 +18237,14 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                     <h1 class="view-title" style="color:#8b5cf6;">📦 MANEJO DE INVENTARIOS</h1>
                 </div>
 
+                ${renderPendingReturnsHtml(pendingReturns)}
+
+
                 <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; margin-top:20px; align-items:center;">
                     ${items.length === 0 ? `<button class="btn" style="background:var(--success); color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="inicializarInventarioBase()">🚀 INICIALIZAR</button>` : ''}
                     <button class="btn" style="background:var(--accent); color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="openEditInventoryItem(null)">➕ NUEVO ÍTEM</button>
-                    <button class="btn" style="background:var(--success); color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="exportarInventarioExcel()">📊 EXPORTAR EXCEL</button>
-                    <button class="btn" style="background:#6366f1; color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="imprimirInventario()">🖨️ IMPRIMIR FORMATO</button>
+                    <button class="btn" style="background:var(--success); color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="showReportTypeModal('excel')">📊 EXPORTAR EXCEL</button>
+                    <button class="btn" style="background:#6366f1; color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="showReportTypeModal('pdf')">🖨️ IMPRIMIR FORMATO</button>
                     <button class="btn" style="background:#10b981; color:white; font-weight:900; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; font-size:0.78rem;" onclick="showInventoryChannelModal()">📧 ENVIAR REPORTE</button>
                 </div>
 
@@ -17887,6 +18267,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             <thead style="position:sticky; top:0; z-index:10;">
                                 <tr style="background:#1a1f35; border-bottom:2px solid rgba(99,102,241,0.4); font-size:0.7rem;">
                                     <th style="padding:10px 6px; color:white; font-weight:900;">ÍTEM</th>
+                                    <th style="padding:10px 6px; color:#ec4899; text-align:center; font-weight:900; line-height:1.2;">QR</th>
                                     <th style="padding:10px 6px; color:#a5b4fc; text-align:center; font-weight:900; line-height:1.2;">SERIALES</th>
                                     <th style="padding:10px 6px; color:#10b981; text-align:center; font-weight:900; line-height:1.2;">CANT.<br>DISP.</th>
                                     <th style="padding:10px 6px; color:#f59e0b; text-align:center; font-weight:900; line-height:1.2;">EN<br>EVENTOS</th>
@@ -17918,7 +18299,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         currentType = itemTypeStr;
                         html += `
                             <tr style="background:#111424;">
-                                <td colspan="4" style="padding:15px; color:${textColor}; font-weight:900; font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid ${textColor};">
+                                <td colspan="6" style="padding:15px; color:${textColor}; font-weight:900; font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid ${textColor};">
                                     📂 SECCIÓN: ${currentType}
                                 </td>
                             </tr>
@@ -17937,6 +18318,9 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             <td style="padding:10px 6px; color:white; font-weight:900; font-size:0.75rem; word-break:break-word;">
                                 ${i.name.toUpperCase()}
                                 ${i.size ? `<span style="background:var(--warning); color:black; padding:2px 4px; border-radius:4px; font-size:0.55rem; font-weight:900; margin-left:3px;">${i.size}</span>` : ''}
+                            </td>
+                            <td style="padding:10px 6px; text-align:center; vertical-align:middle;">
+                                ${hasSerials ? `<button onclick="event.stopPropagation(); imprimirQrItem(${i.id}, '${rowId}')" style="background:#ec4899; color:white; border:none; border-radius:6px; padding:4px 8px; font-size:0.7rem; font-weight:900; cursor:pointer;" title="Imprimir QR">🔲 QR</button>` : '<span style="color:var(--muted); font-size:0.65rem;">-</span>'}
                             </td>
                             <td style="padding:10px 6px; text-align:center; vertical-align:middle;">
                                 ${hasSerials ? `<span id="${rowId}-toggle" style="background:rgba(99,102,241,0.2); color:#a5b4fc; padding:4px 6px; border-radius:6px; font-size:0.65rem; font-weight:900; cursor:pointer; display:inline-block; transition:transform 0.2s;" onclick="event.stopPropagation(); toggleSerialRows('${rowId}')">▶ 🔢 ${serialsArr.length}</span>` : '<span style="color:var(--muted); font-size:0.65rem;">-</span>'}
@@ -17985,8 +18369,10 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                             html += `
                                 <tr id="${rowId}-sn-${snIdx}" style="display:none; background:rgba(99,102,241,0.05); border-bottom:1px solid rgba(99,102,241,0.1);">
                                     <td style="padding:6px 10px;">
+                                        <input type="checkbox" class="qr-serial-cb-${i.id}" data-serial="${snValue}" data-name="${i.name.toUpperCase().replace(/"/g, '&quot;')}" onclick="event.stopPropagation()" style="margin-right:5px; accent-color:#ec4899; cursor:pointer;">
                                         <span style="color:#a5b4fc; font-size:0.65rem; font-weight:900;">↳ ${i.name.toUpperCase()}</span>
                                     </td>
+                                    <td style="padding:6px 10px;"></td>
                                     <td style="padding:6px 10px; color:#6366f1; font-size:0.8rem; font-family:monospace; font-weight:900; text-align:center;">
                                         ${snValue} ${snBrand ? `<br><span style="font-size:0.55rem; color:var(--muted);">🏷️ ${snBrand}</span>` : ''}
                                     </td>
@@ -18042,6 +18428,106 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     }
 
 
+
+    function renderPendingReturnsHtml(returns) {
+        if (!returns || returns.length === 0) return '';
+        
+        // Agrupar por evento
+        const grouped = {};
+        returns.forEach(r => {
+            if (!grouped[r.session_id]) {
+                grouped[r.session_id] = { name: r.session_name, items: [] };
+            }
+            grouped[r.session_id].items.push(r);
+        });
+
+        let html = `
+            <div style="background:var(--surface); border:2px dashed var(--warning); border-radius:16px; padding:20px; margin-bottom:20px;">
+                <h3 style="color:var(--warning); margin-top:0; margin-bottom:15px; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.5rem;">🚚</span> DEVOLUCIONES PENDIENTES DE REVISIÓN
+                </h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:15px;">
+        `;
+
+        for (const sessionId in grouped) {
+            const group = grouped[sessionId];
+            let itemsHtml = '';
+            group.items.forEach(r => {
+                itemsHtml += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:8px 12px; border-radius:8px; margin-bottom:5px;">
+                        <div>
+                            <span style="color:white; font-size:0.8rem; font-weight:bold;">${r.item_name}</span>
+                            <span style="color:var(--muted); font-size:0.7rem; display:block;">Decl: ${r.declared_qty} | ${r.notes ? `Nota: ${r.notes}` : 'Sin notas'}</span>
+                        </div>
+                        <button class="btn" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.7rem; font-weight:bold; cursor:pointer;" onclick="openVerifyReturnModal(${r.id}, '${r.item_name}', ${r.declared_qty})">REVISAR</button>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:15px;">
+                    <div style="font-size:0.75rem; color:var(--muted); font-weight:bold; margin-bottom:10px; text-transform:uppercase;">EVENTO: <span style="color:white;">${group.name}</span></div>
+                    ${itemsHtml}
+                </div>
+            `;
+        }
+        
+        html += `
+                </div>
+            </div>
+        `;
+        return html;
+    }
+
+    window.openVerifyReturnModal = function(returnId, itemName, declaredQty) {
+        const html = `
+            <div style="padding:20px; text-align:left;">
+                <h3 style="margin-top:0; color:var(--success);">✅ VERIFICAR RECEPCIÓN</h3>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;">
+                    Ítem: <b>${itemName}</b><br>
+                    Cantidad Declarada: <b>${declaredQty}</b>
+                </p>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--muted); font-weight:bold; margin-bottom:5px;">CANTIDAD RECIBIDA EN FÍSICO</label>
+                    <input type="number" id="verify-qty" value="${declaredQty}" min="0" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; font-size:1rem; text-align:center;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--muted); font-weight:bold; margin-bottom:5px;">NOTAS DE DISCREPANCIA (OPCIONAL)</label>
+                    <textarea id="verify-notes" placeholder="Ej. El radio tiene la antena rota" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; font-size:0.85rem; resize:vertical;"></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CANCELAR</button>
+                    <button class="btn" style="background:var(--success); color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="submitVerifyReturn(${returnId})">CONFIRMAR INGRESO</button>
+                </div>
+            </div>
+        `;
+        showModal(html);
+    };
+
+    window.submitVerifyReturn = async function(returnId) {
+        const qty = parseInt(document.getElementById('verify-qty').value);
+        const notes = document.getElementById('verify-notes').value;
+        if (isNaN(qty) || qty < 0) return toast('Cantidad inválida', 'error');
+
+        showLoading('PROCESANDO INGRESO...');
+        try {
+            const res = await apiFetch('/api/inventory/verify-return', {
+                method: 'POST',
+                body: JSON.stringify({ returnId, verifiedQty: qty, discrepancyNotes: notes })
+            });
+            hideLoading();
+            if (res && res.success) {
+                closeModal();
+                toast('Recepción confirmada con éxito', 'success');
+                renderInventarios(document.getElementById('current-view'));
+            } else {
+                toast(res?.error || 'Error al verificar', 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            toast('Error de conexión', 'error');
+        }
+    };
 
     window.inicializarInventarioBase = async function() {
         if(!confirm('¿Desea inicializar la base de datos de inventario con los requerimientos logísticos por defecto?')) return;
@@ -18100,36 +18586,20 @@ Maria Gomez   INVITADO   04141234567"></textarea>
         const renderSerialInputs = (qty, existingSerials, itemName = '') => {
             let html = '';
             const serials = existingSerials ? existingSerials.split(',').map(s => s.trim()) : [];
-            const isRadioOrBattery = itemName.toLowerCase().includes('radio') || itemName.toLowerCase().includes('batería') || itemName.toLowerCase().includes('bateria');
             
             for (let i = 0; i < qty; i++) {
-                let snBrand = '';
                 let snVal = serials[i] || '';
                 if (snVal.includes(':')) {
                     const parts = snVal.split(':');
-                    snBrand = parts[0].trim();
                     snVal = parts.slice(1).join(':').trim();
                 }
                 
                 html += `<div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
-                    <div style="display:flex; gap:10px;">`;
-                if (isRadioOrBattery) {
-                    html += `
-                        <select id="serial-brand-select-${i}" class="input-field serial-brand-select" style="width:140px; border-radius:10px; padding:10px;">
-                            <option value="" ${!snBrand ? 'selected' : ''}>Sin marca</option>
-                            <option value="Motorola" ${snBrand === 'Motorola' ? 'selected' : ''}>Motorola</option>
-                            <option value="Kirisun" ${snBrand === 'Kirisun' ? 'selected' : ''}>Kirisun</option>
-                            <option value="Motorola EP450" ${snBrand === 'Motorola EP450' ? 'selected' : ''}>Motorola EP450</option>
-                            <option value="Batería Motorola" ${snBrand === 'Batería Motorola' ? 'selected' : ''}>Batería Motorola</option>
-                            <option value="Batería Kirisun" ${snBrand === 'Batería Kirisun' ? 'selected' : ''}>Batería Kirisun</option>
-                            <option value="Batería Motorola EP450" ${snBrand === 'Batería Motorola EP450' ? 'selected' : ''}>Batería Motorola EP450</option>
-                        </select>
-                    `;
-                }
-                html += `<input type="text" id="serial-input-${i}" class="input-field serial-input-box" value="${snVal}" placeholder="Serial ${i+1}" style="flex:1; border-radius:10px; padding:10px;">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="serial-input-${i}" class="input-field serial-input-box" value="${snVal}" placeholder="Serial ${i+1}" style="flex:1; border-radius:10px; padding:10px;">
                     </div>
                     <div style="display:flex; gap:5px; justify-content:flex-end;">
-                        <input type="file" id="ai-file-${i}" accept="image/*" style="display:none;" onchange="handleAiPhotoUpload(this, 'serial-input-${i}', 'serial-brand-select-${i}')">
+                        <input type="file" id="ai-file-${i}" accept="image/*" style="display:none;" onchange="handleAiPhotoUpload(this, 'serial-input-${i}', null)">
                         <button type="button" class="btn" style="background:#8b5cf6; color:white; border:none; border-radius:10px; padding:6px 10px; font-size:0.8rem; cursor:pointer;" onclick="document.getElementById('ai-file-${i}').click()" title="Tomar Foto AI">📷 Foto AI</button>
                         <button type="button" class="btn" style="background:#3b82f6; color:white; border:none; border-radius:10px; padding:6px 10px; font-size:0.8rem; cursor:pointer;" onclick="openScanner('serial-input-${i}')" title="Escanear Código">🔍 Escanear</button>
                         <button type="button" class="btn" style="background:#10b981; color:white; border:none; border-radius:10px; padding:6px 10px; font-size:0.8rem; cursor:pointer;" onclick="printLabel('serial-input-${i}')" title="Imprimir Etiqueta">🖨️ Imprimir</button>
@@ -18227,10 +18697,8 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             if (hasSerialCheckbox.checked) {
                 serialContainer.style.display = 'block';
                 // Guardar los valores actuales para no perderlos al redibujar
-                const currentInputs = Array.from(serialWrapper.querySelectorAll('.serial-input-box')).map((inp, idx) => {
-                    const brandSel = serialWrapper.querySelectorAll('.serial-brand-select')[idx];
-                    let brand = brandSel ? brandSel.value : '';
-                    return brand && inp.value.trim() ? `${brand}: ${inp.value.trim()}` : inp.value.trim();
+                const currentInputs = Array.from(serialWrapper.querySelectorAll('.serial-input-box')).map((inp) => {
+                    return inp.value.trim();
                 });
                 serialWrapper.innerHTML = renderSerialInputs(parseInt(qtyInput.value) || 0, currentInputs.join(','), document.getElementById('inv-name').value);
             } else {
@@ -18555,6 +19023,48 @@ window.deleteFormat = async function(id) {
         }
     };
 
+    window.inlineDeleteMultipleSerials = async function(itemStr) {
+        const item = JSON.parse(decodeURIComponent(itemStr));
+        const checkboxes = document.querySelectorAll('.serial-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Por favor, selecciona al menos un serial para eliminar.');
+            return;
+        }
+        const serialsToRemove = Array.from(checkboxes).map(cb => cb.value);
+        if (!confirm(`¿Seguro que deseas eliminar los ${serialsToRemove.length} seriales seleccionados?\n\nLa cantidad física del artículo disminuirá en ${serialsToRemove.length}.`)) return;
+        
+        let serials = item.serial_number ? item.serial_number.split(',').map(s => s.trim()).filter(s => s) : [];
+        serials = serials.filter(s => !serialsToRemove.includes(s));
+        const newQty = serials.length;
+        
+        const payload = {
+            name: item.name,
+            type: item.type,
+            size: item.size,
+            quantity: newQty,
+            location: item.location,
+            has_serial: item.has_serial,
+            serial_number: serials.join(', '),
+            notes: item.notes
+        };
+        
+        showLoading('Eliminando seriales...');
+        const res = await apiFetch('/api/inventory/' + item.id, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+        hideLoading();
+        if (res && res.success) {
+            toast(`${serialsToRemove.length} seriales eliminados`, 'success');
+            const modal = document.getElementById('mov-modal-overlay');
+            if (modal) modal.remove();
+            renderInventarios(document.getElementById('current-view'));
+            setTimeout(() => toggleMovements(null, item.id, item), 500);
+        } else {
+            toast('Error al eliminar', 'error');
+        }
+    };
+
     window.inlineDeleteSerial = async function(itemStr, serialToRemove) {
         const item = JSON.parse(decodeURIComponent(itemStr));
         if (!confirm(`¿Seguro que deseas eliminar el serial "${serialToRemove}"?\n\nLa cantidad física del artículo disminuirá en 1.`)) return;
@@ -18645,12 +19155,16 @@ window.deleteFormat = async function(id) {
                 if (serialsList.length > 0) {
                     serialsHtml = `
                         <div style="margin-bottom:15px; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                            <h5 style="margin:0 0 10px 0; color:var(--muted); font-size:0.75rem;">📋 LISTADO DE SERIALES REGISTRADOS (${serialsList.length})</h5>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <h5 style="margin:0; color:var(--muted); font-size:0.75rem;">📋 LISTADO DE SERIALES REGISTRADOS (${serialsList.length})</h5>
+                                <button onclick="window.inlineDeleteMultipleSerials('${encodeURIComponent(JSON.stringify(itemObj))}')" style="background:var(--danger); color:white; padding:4px 10px; border-radius:6px; font-size:0.7rem; border:none; cursor:pointer;">🗑️ ELIMINAR SELECCIONADOS</button>
+                            </div>
                             <div style="display:flex; flex-wrap:wrap; gap:6px;">
                                 ${serialsList.map(sn => {
                                     const safeItemObj = encodeURIComponent(JSON.stringify(itemObj));
                                     const safeSn = sn.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                                     return `<span style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; font-size:0.75rem; color:white; border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:6px;">
+                                        <input type="checkbox" class="serial-checkbox" value="${safeSn}" style="margin:0; cursor:pointer;">
                                         ${sn}
                                         <i onclick="window.inlineEditSerial('${safeItemObj}', '${safeSn}')" title="Modificar" style="cursor:pointer; font-style:normal;">✏️</i>
                                         <i onclick="window.inlineDeleteSerial('${safeItemObj}', '${safeSn}')" title="Eliminar" style="cursor:pointer; font-style:normal;">❌</i>
@@ -18710,7 +19224,7 @@ window.deleteFormat = async function(id) {
                             <td style="padding:8px; text-align:center; color:#10b981; font-weight:bold;">+${g.in}</td>
                             <td style="padding:8px; text-align:center; color:${pendingColor}; font-weight:bold;">${pendingIcon} ${pending}</td>
                             <td style="padding:8px; text-align:right;">
-                                ${pending > 0 ? `<button onclick="showReturnInventoryModal(${itemId}, '${itemObj ? itemObj.name.replace(/'/g, "\\'") : ''}', ${g.session_id}, '${(g.session_name || '').replace(/'/g, "\\'")}', ${pending})" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#ef4444; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:bold;">DEVOLVER</button>` : ''}
+                                ${pending > 0 ? `<button onclick="showReturnInventoryModal(${itemId}, '${itemObj ? encodeURIComponent(itemObj.name) : ''}', ${g.session_id}, '${encodeURIComponent(g.session_name || '')}', ${pending})" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#ef4444; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:bold;">DEVOLVER</button>` : ''}
                             </td>
                         </tr>`;
                     });
@@ -18745,8 +19259,136 @@ window.deleteFormat = async function(id) {
             }
     };
 
+    window.showReturnInventoryModal = function(itemId, encItemName, sessionId, encSessionName, pendingQty) {
+
+        const itemName = decodeURIComponent(encItemName);
+        const sessionName = decodeURIComponent(encSessionName);
+        const modal = document.createElement('div');
+        modal.className = 'modal-backdrop';
+        modal.id = 'return-modal';
+        modal.style.zIndex = '9999';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:400px; padding:25px; border-radius:15px; background:var(--surface); text-align:center;">
+                <h4 style="margin-top:0;">Devolver ${itemName}</h4>
+                <p style="font-size:0.9rem; color:var(--muted);">Evento: ${sessionName}</p>
+                <p style="font-size:0.9rem;">Cantidad pendiente: <b>${pendingQty}</b></p>
+                
+                <div style="margin:20px 0;">
+                    <label style="display:block; margin-bottom:10px; font-size:0.8rem; color:var(--muted); text-align:left;">Cantidad a devolver:</label>
+                    <input type="number" id="return-qty" value="${pendingQty}" min="1" max="${pendingQty}" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; font-size:1.1rem; text-align:center;">
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button onclick="document.getElementById('return-modal').remove()" style="flex:1; padding:12px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white; cursor:pointer;">CANCELAR</button>
+                    <button onclick="window.confirmReturnInventory(${itemId}, '${encodeURIComponent(itemName)}', ${sessionId}, ${pendingQty})" style="flex:1; padding:12px; border-radius:8px; border:none; background:var(--brand-green); color:white; font-weight:bold; cursor:pointer;">CONFIRMAR</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    };
+
+    window.confirmReturnInventory = async function(itemId, encItemName, sessionId, maxQty) {
+        const itemName = decodeURIComponent(encItemName);
+        const input = document.getElementById('return-qty');
+        const qty = parseInt(input.value);
+        if (isNaN(qty) || qty <= 0 || qty > maxQty) {
+            alert('Cantidad inválida.');
+            return;
+        }
+        
+        const payload = {
+            itemId,
+            itemName,
+            sessionId,
+            quantityToReturn: qty
+        };
+        
+        showLoading('Procesando devolución...');
+        const res = await apiFetch('/api/inventory/return', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        hideLoading();
+        
+        if (res && res.success) {
+            toast('Devolución registrada con éxito', 'success');
+            document.getElementById('return-modal').remove();
+            
+            // Cerrar modal de movimientos actual si existe
+            const movModal = document.querySelector('.modal-backdrop');
+            if (movModal) movModal.remove();
+            
+            // Reabrir modal de movimientos para que refresque
+            window.toggleMovements(null, itemId, { id: itemId, name: itemName, has_serial: 0 });
+            
+            // Refrescar tabla de inventarios
+            renderInventarios(document.getElementById('current-view'));
+        } else {
+            toast(res?.error || 'Error al procesar devolución', 'error');
+        }
+    };
+
+
 
     window.showInventoryChannelModal = async function() {
+        const html = `
+            <div style="padding:20px;">
+                <h3 style="margin-top:0; color:#10b981;">📧 ENVIAR REPORTE DIGITAL</h3>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:20px;">Selecciona los formatos y tipos de reporte que deseas enviar a los destinatarios configurados en la matriz. Puedes seleccionar varios.</p>
+                
+                <div style="display:flex; flex-direction:column; gap:10px; text-align:left;">
+                    <label class="btn btn-secondary" style="justify-content:flex-start; padding:15px; border-left: 4px solid var(--success); cursor:pointer; display:flex; align-items:center;">
+                        <input type="checkbox" id="chk-rep-excel-resumen" value="excel-resumen" style="width:20px; height:20px; margin-right:15px; flex-shrink:0;">
+                        <div>
+                            <span style="font-size:1rem; font-weight:800; color:white; display:block;">📊 EXCEL (RESUMEN)</span>
+                            <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Envía el reporte Excel con los totales sin seriales.</span>
+                        </div>
+                    </label>
+                    <label class="btn btn-secondary" style="justify-content:flex-start; padding:15px; border-left: 4px solid var(--success); cursor:pointer; display:flex; align-items:center;">
+                        <input type="checkbox" id="chk-rep-excel-detallado" value="excel-detallado" style="width:20px; height:20px; margin-right:15px; flex-shrink:0;">
+                        <div>
+                            <span style="font-size:1rem; font-weight:800; color:white; display:block;">📊 EXCEL (DETALLADO)</span>
+                            <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Envía el reporte Excel completo con los seriales.</span>
+                        </div>
+                    </label>
+                    <label class="btn btn-secondary" style="justify-content:flex-start; padding:15px; border-left: 4px solid #6366f1; cursor:pointer; display:flex; align-items:center;">
+                        <input type="checkbox" id="chk-rep-pdf-resumen" value="pdf-resumen" style="width:20px; height:20px; margin-right:15px; flex-shrink:0;">
+                        <div>
+                            <span style="font-size:1rem; font-weight:800; color:white; display:block;">🖨️ PDF (RESUMEN)</span>
+                            <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Envía el reporte PDF con los totales sin seriales.</span>
+                        </div>
+                    </label>
+                    <label class="btn btn-secondary" style="justify-content:flex-start; padding:15px; border-left: 4px solid #6366f1; cursor:pointer; display:flex; align-items:center;">
+                        <input type="checkbox" id="chk-rep-pdf-detallado" value="pdf-detallado" style="width:20px; height:20px; margin-right:15px; flex-shrink:0;">
+                        <div>
+                            <span style="font-size:1rem; font-weight:800; color:white; display:block;">🖨️ PDF (DETALLADO)</span>
+                            <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Envía el reporte PDF completo con los seriales.</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; margin-top:20px; gap:10px;">
+                    <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CANCELAR</button>
+                    <button class="btn" style="background:#10b981; border:none; color:white; padding:10px 15px; border-radius:8px; cursor:pointer; font-weight:bold;" onclick="checkInventoryChannelSubscribersMultiple()">ENVIAR SELECCIONADOS</button>
+                </div>
+            </div>
+        `;
+        showModal(html);
+    };
+
+    window.checkInventoryChannelSubscribersMultiple = async function() {
+        const selected = [];
+        if (document.getElementById('chk-rep-excel-resumen').checked) selected.push({ fileType: 'excel', tipo: 'resumen' });
+        if (document.getElementById('chk-rep-excel-detallado').checked) selected.push({ fileType: 'excel', tipo: 'detallado' });
+        if (document.getElementById('chk-rep-pdf-resumen').checked) selected.push({ fileType: 'pdf', tipo: 'resumen' });
+        if (document.getElementById('chk-rep-pdf-detallado').checked) selected.push({ fileType: 'pdf', tipo: 'detallado' });
+
+        if (selected.length === 0) {
+            alert('Por favor, selecciona al menos un reporte para enviar.');
+            return;
+        }
+
+        closeModal();
         showLoading('VERIFICANDO MATRIZ...');
         const subsRes = await apiFetch('/api/inventory/subscribers');
         hideLoading();
@@ -18769,81 +19411,174 @@ window.deleteFormat = async function(id) {
             }
         });
 
-        let msg = `¿Seguro que deseas enviar manualmente este reporte?\n\nReporte: MANEJO DE INVENTARIOS\n\nSe enviará a:\n- ${emailCount} personas por EMAIL\n- ${waCount} personas por WHATSAPP\n\nDestinatarios: ${destNames.join(', ')}`;
+        const reportNames = selected.map(s => `${s.fileType.toUpperCase()} (${s.tipo.toUpperCase()})`).join(', ');
+        let msg = `¿Seguro que deseas enviar los siguientes reportes?\n\nReportes seleccionados: ${reportNames}\n\nSe enviará a:\n- ${emailCount} personas por EMAIL\n- ${waCount} personas por WHATSAPP\n\nDestinatarios: ${destNames.join(', ')}`;
         
         if (!confirm(msg)) return;
-        if (!confirm("¿CONFIRMAS DEFINITIVAMENTE EL ENVÍO?\nEsta acción ejecutará el envío real a todos los suscritos con un PDF adjunto.")) return;
+        if (!confirm("¿CONFIRMAS DEFINITIVAMENTE EL ENVÍO?\nEsta acción ejecutará el envío real a todos los suscritos con los archivos adjuntos (se enviarán uno a uno).")) return;
         
-        notificarInventario('ambos');
+        showLoading('Enviando reportes seleccionados...');
+        for (let i = 0; i < selected.length; i++) {
+            const { fileType, tipo } = selected[i];
+            await notificarInventarioInterno('ambos', fileType, tipo, i + 1, selected.length);
+        }
+        hideLoading();
+        toast('Todos los reportes seleccionados fueron procesados', 'success');
     };
 
-    window.notificarInventario = async function(channel) {
-        showLoading('Enviando reporte digital...');
+    window.notificarInventarioInterno = async function(channel, fileType = 'pdf', tipo = 'detallado', currentNum, totalNum) {
+        let fileBase64 = '';
+        let fileName = '';
+        if (fileType === 'excel') {
+            const { wb, dateStr, fileNameSuffix } = generateExcelWorkbook(tipo);
+            fileName = `Inventario_EyeStaff_${fileNameSuffix}_${dateStr}.xlsx`;
+            fileBase64 = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+        } else {
+            const now = new Date();
+            const caracasStr = now.toLocaleString('en-US', { timeZone: 'America/Caracas' });
+            const caracasDate = new Date(caracasStr);
+            const yy = String(caracasDate.getFullYear()).slice(-2);
+            const mm = String(caracasDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(caracasDate.getDate()).padStart(2, '0');
+            const hh = String(caracasDate.getHours()).padStart(2, '0');
+            const min = String(caracasDate.getMinutes()).padStart(2, '0');
+            const fileNameSuffix = tipo === 'resumen' ? 'Resumen' : 'Detallado';
+            fileName = `Inventario_EyeStaff_${fileNameSuffix}_${yy}${mm}${dd}_${hh}${min}.pdf`;
+        }
+
         const res = await apiFetch('/api/inventory/notify', {
             method: 'POST',
-            body: JSON.stringify({ channel: channel || 'ambos' })
+            body: JSON.stringify({ channel: channel || 'ambos', fileType, tipo, fileBase64, fileName })
         });
-        hideLoading();
+        
         if(res && res.success) {
-            toast(res.message || 'Reporte enviado con éxito', 'success');
+            console.log(`Reporte ${currentNum}/${totalNum} (${fileName}) enviado con éxito`);
         } else {
-            toast(res?.error || 'Error al enviar reporte', 'error');
+            console.error(`Error enviando reporte ${currentNum}/${totalNum} (${fileName}): ${res?.error}`);
         }
     };
 
-    window.exportarInventarioExcel = function() {
+    window.showReportTypeModal = function(action) {
+        const html = `
+            <div style="padding:20px;">
+                <h3 style="margin-top:0; color:var(--accent);">${action === 'excel' ? '📊 EXPORTAR EXCEL' : '🖨️ IMPRIMIR FORMATO'}</h3>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:20px;">Selecciona el tipo de reporte que deseas generar.</p>
+                
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="btn btn-secondary" style="justify-content:flex-start; text-align:left; padding:15px;" onclick="${action === 'excel' ? "exportarInventarioExcel('resumen')" : "imprimirInventario('resumen')"}">
+                        <span style="font-size:1rem; font-weight:800; color:white; display:block;">📄 REPORTE RESUMEN</span>
+                        <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Muestra los totales por cada ítem, sin desglosar los seriales individuales. Ideal para conteos rápidos.</span>
+                    </button>
+                    <button class="btn btn-secondary" style="justify-content:flex-start; text-align:left; padding:15px;" onclick="${action === 'excel' ? "exportarInventarioExcel('detallado')" : "imprimirInventario('detallado')"}">
+                        <span style="font-size:1rem; font-weight:800; color:white; display:block;">📝 REPORTE DETALLADO</span>
+                        <span style="font-size:0.7rem; color:var(--muted); margin-top:5px; font-weight:normal; display:block; line-height:1.2;">Desglosa cada artículo serializado mostrando todos sus códigos y ubicaciones.</span>
+                    </button>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+                    <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:8px 15px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CANCELAR</button>
+                </div>
+            </div>
+        `;
+        showModal(html);
+    };
+
+    window.generateExcelWorkbook = function(tipo = 'detallado') {
+        const data = [];
+        window.currentInventoryItems.forEach(i => {
+            const serials = (i.serial_number && tipo === 'detallado') ? i.serial_number.toUpperCase().split(',').map(s=>s.trim()).filter(s=>s) : [];
+            
+            if (serials.length > 0) {
+                // Fila principal
+                const row = {
+                    "CATEGORÍA": (i.type||'').toUpperCase(),
+                    "ÍTEM / DESCRIPCIÓN": (i.name.toUpperCase() + (i.size ? ' ('+i.size.toUpperCase()+')' : '')),
+                    "SERIALES": "(VER DETALLE)",
+                    "UBICACIÓN": (i.location || '').toUpperCase(),
+                    "CANT. DISP.": i.quantity,
+                    "FÍSICO": "",
+                    "OBS.": ""
+                };
+                if (tipo === 'resumen') delete row["SERIALES"];
+                data.push(row);
+
+                const eventsQueue = [];
+                (i.active_events || []).forEach(ev => {
+                    for(let k=0; k<ev.count; k++) {
+                        eventsQueue.push(ev.session_name);
+                    }
+                });
+
+                serials.forEach((sn, idx) => {
+                    let snBrand = '';
+                    let snValue = sn;
+                    if (sn.includes(':')) {
+                        const parts = sn.split(':');
+                        snBrand = parts[0].trim();
+                        snValue = parts.slice(1).join(':').trim();
+                    }
+
+                    const eventName = eventsQueue[idx];
+                    const isAssigned = !!eventName;
+                    const locText = isAssigned ? eventName.toUpperCase() : (() => {
+                        const loc = (i.location || '').toUpperCase();
+                        return loc === 'ALMACÉN PRINCIPAL' ? 'FLANDES' : (loc || '');
+                    })();
+
+                    data.push({
+                        "CATEGORÍA": "",
+                        "ÍTEM / DESCRIPCIÓN": "   ↳ " + i.name.toUpperCase(),
+                        "SERIALES": snValue + (snBrand ? ` (${snBrand})` : ''),
+                        "UBICACIÓN": locText,
+                        "CANT. DISP.": 1,
+                        "FÍSICO": "",
+                        "OBS.": ""
+                    });
+                });
+            } else {
+                const row = {
+                    "CATEGORÍA": (i.type||'').toUpperCase(),
+                    "ÍTEM / DESCRIPCIÓN": (i.name.toUpperCase() + (i.size ? ' ('+i.size.toUpperCase()+')' : '')),
+                    "SERIALES": "",
+                    "UBICACIÓN": (i.location || '').toUpperCase(),
+                    "CANT. DISP.": i.quantity,
+                    "FÍSICO": "",
+                    "OBS.": ""
+                };
+                if (tipo === 'resumen') delete row["SERIALES"];
+                data.push(row);
+            }
+        });
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+
+        const colWidths = [
+            { wch: 15 }, // CATEGORÍA
+            { wch: 45 }, // ÍTEM / DESCRIPCIÓN
+            ...(tipo === 'detallado' ? [{ wch: 25 }] : []), // SERIALES
+            { wch: 25 }, // UBICACIÓN
+            { wch: 15 }, // CANT. DISP.
+            { wch: 12 }, // FÍSICO
+            { wch: 20 }  // OBS.
+        ];
+        ws['!cols'] = colWidths;
+        
+        const dateStr = new Date().toISOString().split('T')[0];
+        const fileNameSuffix = tipo === 'resumen' ? 'Resumen' : 'Detallado';
+        
+        return { wb, dateStr, fileNameSuffix };
+    };
+
+    window.exportarInventarioExcel = function(tipo = 'detallado') {
         if (!window.currentInventoryItems || window.currentInventoryItems.length === 0) {
             toast('No hay ítems en el inventario para exportar.', 'warning');
             return;
         }
-
-        // Formatear datos para Excel
-        const data = window.currentInventoryItems.map(i => ({
-            "ID": i.id,
-            "TIPO": (i.type || 'OTROS').toUpperCase(),
-            "ÍTEM": (i.name + (i.size ? ` (${i.size})` : '')).toUpperCase(),
-            "CANTIDAD": i.quantity,
-            "UBICACIÓN": (i.location || 'N/A').toUpperCase(),
-            "NÚMERO DE SERIE": (i.serial_number || 'N/A').toUpperCase(),
-            "ÚLTIMA REVISIÓN": (i.last_updated_at ? new Date(i.last_updated_at).toLocaleString('es-ES') : 'NUNCA').toUpperCase(),
-            "REVISADO POR": (i.last_updated_by_name || 'N/A').toUpperCase()
-        }));
-
-        // Crear libro y hoja
-        const ws = XLSX.utils.json_to_sheet(data);
-        
-        if (data.length > 0) {
-            const colWidths = Object.keys(data[0]).map(key => {
-                let max = key.length;
-                data.forEach(row => {
-                    const val = row[key];
-                    const len = val !== null && val !== undefined ? String(val).length : 0;
-                    if (len > max) max = len;
-                });
-                return { wch: Math.min(max + 2, 50) };
-            });
-            ws['!cols'] = colWidths;
-        }
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-
-        // Ajustar ancho de columnas
-        const colWidths = [
-            { wch: 8 },  // ID
-            { wch: 15 }, // TIPO
-            { wch: 40 }, // ÍTEM
-            { wch: 12 }, // CANTIDAD
-            { wch: 25 }, // UBICACIÓN
-            { wch: 20 }, // NÚMERO DE SERIE
-            { wch: 25 }, // ÚLTIMA REVISIÓN
-            { wch: 25 }  // REVISADO POR
-        ];
-        ws['!cols'] = colWidths;
-
-        // Generar archivo
-        const dateStr = new Date().toISOString().split('T')[0];
-        XLSX.writeFile(wb, `Inventario_EyeStaff_${dateStr}.xlsx`);
+        closeModal();
+        const { wb, dateStr, fileNameSuffix } = generateExcelWorkbook(tipo);
+        XLSX.writeFile(wb, `Inventario_EyeStaff_${fileNameSuffix}_${dateStr}.xlsx`);
     };
 
     window.handleInventoryScan = async function(event) {
@@ -18973,7 +19708,253 @@ window.deleteFormat = async function(id) {
 
 
 
-    window.imprimirInventario = async function() {
+    window.imprimirQrItem = function(itemId, rowId) {
+        const item = window.currentInventoryItems.find(x => x.id === itemId);
+        if (!item || !item.has_serial || !item.serial_number) return;
+        
+        const firstSubRow = document.getElementById(`${rowId}-sn-0`);
+        const isExpanded = firstSubRow && firstSubRow.style.display !== 'none';
+        
+        let serialsToPrint = [];
+        if (!isExpanded) {
+            // Print all
+            const arr = item.serial_number.split(',').map(s => s.trim()).filter(s => s);
+            arr.forEach(s => {
+                let snValue = s;
+                if (s.includes(':')) {
+                    const parts = s.split(':');
+                    snValue = parts.slice(1).join(':').trim();
+                }
+                serialsToPrint.push({ serial: snValue, name: item.name.toUpperCase() });
+            });
+        } else {
+            // Print only checked
+            const checkboxes = document.querySelectorAll(`input.qr-serial-cb-${itemId}:checked`);
+            checkboxes.forEach(cb => {
+                serialsToPrint.push({ serial: cb.dataset.serial, name: cb.dataset.name });
+            });
+            if (serialsToPrint.length === 0) {
+                toast('Debe marcar los seriales que desea imprimir.', 'error');
+                return;
+            }
+        }
+        
+        showQrPrintModal(serialsToPrint);
+    };
+
+    window.showQrPrintModal = function(serialsList = null) {
+        if (!serialsList || serialsList.length === 0) {
+            return;
+        }
+
+        window.currentQrSerialsToPrint = serialsList;
+
+        const html = `
+            <div style="padding:20px;">
+                <h3 style="margin-top:0; color:var(--accent);">🔲 Imprimir Códigos QR</h3>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:20px;">Genera un archivo PDF con ${serialsList.length} código(s) QR. Se optimizará el espacio en hoja tamaño A4.</p>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:0.75rem; font-weight:bold; color:var(--muted); display:block; margin-bottom:5px;">TAMAÑO DEL CÓDIGO QR</label>
+                    <select id="qr-size-select" style="width:100%; padding:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; border-radius:8px; outline:none;">
+                        <option value="1">1x1 cm (Pequeño)</option>
+                        <option value="2" selected>2x2 cm (Mediano)</option>
+                        <option value="3">3x3 cm (Grande)</option>
+                    </select>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:8px 15px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CANCELAR</button>
+                    <button class="btn" style="background:var(--accent); border:none; color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold;" onclick="generarPdfQrEquipos()">GENERAR PDF</button>
+                </div>
+                <div id="hidden-qr-container" style="position:absolute; top:-9999px; left:-9999px; visibility:hidden;"></div>
+            </div>
+        `;
+        showModal(html);
+    };
+
+    window.generarPdfQrEquipos = async function() {
+        const sizeCm = parseInt(document.getElementById('qr-size-select').value) || 2;
+        const sizeMm = sizeCm * 10;
+        
+        let serialsList = window.currentQrSerialsToPrint || [];
+
+        if (serialsList.length === 0) {
+            toast('No hay seriales para generar QR.', 'error');
+            return;
+        }
+
+        showLoading('Generando PDF de códigos QR...');
+        
+        // Cargar logo para el centro del QR
+        const logoImg = new Image();
+        logoImg.src = 'favicon.png';
+        await new Promise(r => {
+            logoImg.onload = r;
+            logoImg.onerror = () => {
+                console.error("No se pudo cargar el logo para el QR");
+                r();
+            };
+        });
+        
+        // Wait a bit to ensure UI updates
+        await new Promise(r => setTimeout(r, 100));
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            
+            // A4 is 210 x 297 mm
+            const marginX = 10;
+            const marginY = 10;
+            const usableWidth = 210 - (marginX * 2);
+            const usableHeight = 297 - (marginY * 2);
+            
+            // Cell sizes
+            // We add some padding for the text below the QR
+            const cellWidth = sizeMm + 4; 
+            const textHeight = 6;
+            const cellHeight = sizeMm + textHeight + 4;
+            
+            const cols = Math.floor(usableWidth / cellWidth);
+            const rows = Math.floor(usableHeight / cellHeight);
+            
+            const spacingX = (usableWidth - (cols * cellWidth)) / (cols > 1 ? cols - 1 : 1);
+            const spacingY = (usableHeight - (rows * cellHeight)) / (rows > 1 ? rows - 1 : 1);
+            
+            let currentX = marginX;
+            let currentY = marginY;
+            let colIdx = 0;
+            let rowIdx = 0;
+
+            const qrContainer = document.getElementById('hidden-qr-container');
+            
+            for (let i = 0; i < serialsList.length; i++) {
+                const item = serialsList[i];
+                
+                // Generar QR en DOM
+                qrContainer.innerHTML = '<div id="temp-qr-div"></div>';
+                const tempDiv = document.getElementById('temp-qr-div');
+                
+                new QRCode(tempDiv, {
+                    text: item.serial,
+                    width: 256, // Render at high res internally
+                    height: 256,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // wait for qrcode to render canvas
+                await new Promise(r => setTimeout(r, 10)); 
+                
+                const canvas = tempDiv.querySelector('canvas');
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    if (logoImg.complete && logoImg.naturalWidth > 0) {
+                        const logoSize = 64; // ~25% of 256
+                        const x = (256 - logoSize) / 2;
+                        const y = (256 - logoSize) / 2;
+                        // Fondo blanco para el logo para asegurar legibilidad
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(x - 4, y - 4, logoSize + 8, logoSize + 8);
+                        ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+                    }
+
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    if (colIdx >= cols) {
+                        colIdx = 0;
+                        rowIdx++;
+                        currentX = marginX;
+                        currentY += cellHeight + (spacingY > 0 ? spacingY : 2);
+                    }
+                    
+                    if (rowIdx >= rows) {
+                        doc.addPage();
+                        colIdx = 0;
+                        rowIdx = 0;
+                        currentX = marginX;
+                        currentY = marginY;
+                    }
+                    
+                    // Dibujar líneas de corte (borde de la celda)
+                    doc.setDrawColor(200, 200, 200); // Gris claro
+                    doc.setLineWidth(0.2);
+                    // Intentamos línea punteada si jsPDF lo soporta, si no, sólida clara.
+                    if (typeof doc.setLineDashPattern === 'function') {
+                        doc.setLineDashPattern([1, 1], 0); 
+                    } else if (typeof doc.setLineDash === 'function') {
+                        doc.setLineDash([1, 1], 0);
+                    }
+                    doc.rect(currentX, currentY, cellWidth, cellHeight);
+                    
+                    // Restaurar línea sólida
+                    if (typeof doc.setLineDashPattern === 'function') {
+                        doc.setLineDashPattern([], 0);
+                    } else if (typeof doc.setLineDash === 'function') {
+                        doc.setLineDash([], 0);
+                    }
+
+                    // Dibujar QR
+                    doc.addImage(imgData, 'PNG', currentX + 2, currentY + 2, sizeMm, sizeMm);
+                    
+                    // Dibujar texto (Nombre + Serial)
+                    doc.setFontSize(5);
+                    doc.setTextColor(0, 0, 0);
+                    
+                    const textDesc = item.name;
+                    const textSerial = 'S/N: ' + item.serial;
+                    
+                    // Truncar texto si es muy largo
+                    let splitName = doc.splitTextToSize(textDesc, cellWidth - 2);
+                    if (splitName.length > 1) splitName = [splitName[0] + '...']; // Tomar solo 1 línea
+                    
+                    doc.text(splitName[0], currentX + (cellWidth / 2), currentY + sizeMm + 4, { align: 'center' });
+                    doc.text(textSerial, currentX + (cellWidth / 2), currentY + sizeMm + 7, { align: 'center' });
+                    
+                    currentX += cellWidth + (spacingX > 0 ? spacingX : 2);
+                    colIdx++;
+                }
+            }
+            
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            const now = new Date();
+            const yy = String(now.getFullYear()).slice(-2);
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const filename = `QR_EyeStaff_${yy}${mm}${dd}_${hh}${min}.pdf`;
+
+            // En lugar de descargar automático, mostramos un modal de previsualización
+            const html = `
+                <div style="padding:10px; text-align:center; height: 80vh; display: flex; flex-direction: column;">
+                    <h3 style="color:var(--accent); margin-top:0;">📄 PREVISUALIZACIÓN DE QR</h3>
+                    <div style="flex:1; width:100%; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:15px; background:white;">
+                        <iframe src="${pdfUrl}" width="100%" height="100%" style="border:none;"></iframe>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        <button class="btn" style="background:transparent; border:1px solid var(--border); color:white; padding:10px 20px; border-radius:8px; cursor:pointer;" onclick="closeModal()">CERRAR</button>
+                        <a href="${pdfUrl}" download="${filename}" class="btn" style="background:var(--success); color:white; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:5px;" onclick="toast('Descargando archivo...', 'success')">⬇️ DESCARGAR PDF</a>
+                    </div>
+                </div>
+            `;
+            showModal(html);
+        } catch (error) {
+            console.error(error);
+            toast('Error al generar el PDF.', 'error');
+        } finally {
+            hideLoading();
+            const qrContainer = document.getElementById('hidden-qr-container');
+            if (qrContainer) qrContainer.innerHTML = '';
+        }
+    };
+
+    window.imprimirInventario = async function(tipo = 'detallado') {
+        // Cerrar modal si está abierto
+        closeModal();
+
         const printWin = window.open('', '_blank');
         if (printWin) {
             printWin.document.write('<div style="font-family:sans-serif; padding:20px; text-align:center;">Generando formato, por favor espere...</div>');
@@ -18996,6 +19977,19 @@ window.deleteFormat = async function(id) {
             });
 
             printWin.document.open();
+            
+            // Generar nombre de archivo dinámico en timezone America/Caracas (AAMMDD_HHMM)
+            const now = new Date();
+            const caracasStr = now.toLocaleString('en-US', { timeZone: 'America/Caracas' });
+            const caracasDate = new Date(caracasStr);
+            const yy = String(caracasDate.getFullYear()).slice(-2);
+            const mm = String(caracasDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(caracasDate.getDate()).padStart(2, '0');
+            const hh = String(caracasDate.getHours()).padStart(2, '0');
+            const min = String(caracasDate.getMinutes()).padStart(2, '0');
+            const fileNameSuffix = tipo === 'resumen' ? 'Resumen' : 'Detallado';
+            const fileName = `Inventario_EyeStaff_${fileNameSuffix}_${yy}${mm}${dd}_${hh}${min}`;
+            
             let dStr = new Date().toLocaleString('es-VE', {timeZone: 'America/Caracas'});
             const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -19003,7 +19997,7 @@ window.deleteFormat = async function(id) {
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Formato de Validación de Inventario - EYE STAFF</title>
+                    <title>${fileName}</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 30px; font-size: 12px; color: #000; }
                         .header-container { display: flex; align-items: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -19025,7 +20019,7 @@ window.deleteFormat = async function(id) {
                 <body>
                     <div class="header-container">
                         <img src="${window.location.origin}/favicon_old.png" alt="EYE STAFF">
-                        <h1>FORMATO DE TOMA DE INVENTARIO FÍSICO</h1>
+                        <h1>FORMATO DE TOMA DE INVENTARIO FÍSICO (${tipo === 'resumen' ? 'RESUMEN' : 'DETALLADO'})</h1>
                     </div>
                     <div class="header-info">
                         <div>EMPRESA: EYE STAFF</div>
@@ -19038,7 +20032,7 @@ window.deleteFormat = async function(id) {
                             <tr>
                                 <th style="width:15%;">CATEGORÍA</th>
                                 <th style="width:25%;">ÍTEM / DESCRIPCIÓN</th>
-                                <th style="width:15%;">SERIALES</th>
+                                ${tipo === 'detallado' ? '<th style="width:15%;">SERIALES</th>' : ''}
                                 <th style="width:15%;">UBICACIÓN</th>
                                 <th style="width:10%; text-align:center;">CANT.<br>DISP.</th>
                                 <th style="width:10%; text-align:center;">FÍSICO</th>
@@ -19049,13 +20043,13 @@ window.deleteFormat = async function(id) {
             `;
 
             items.forEach(i => {
-                const serials = i.serial_number ? i.serial_number.toUpperCase().split(',').map(s=>s.trim()).filter(s=>s) : [];
+                const serials = (i.serial_number && tipo === 'detallado') ? i.serial_number.toUpperCase().split(',').map(s=>s.trim()).filter(s=>s) : [];
                 if (serials.length > 0) {
                     html += `
                         <tr>
                             <td>${(i.type||'').toUpperCase()}</td>
                             <td><b>${i.name.toUpperCase()}</b> ${i.size ? '('+i.size.toUpperCase()+')' : ''}</td>
-                            <td style="font-size:10px; color:#64748b;">(VER DETALLE)</td>
+                            ${tipo === 'detallado' ? '<td style="font-size:10px; color:#64748b;">(VER DETALLE)</td>' : ''}
                             <td>${(i.location || '').toUpperCase()}</td>
                             <td style="text-align:center; font-weight:bold;">${i.quantity}</td>
                             <td></td>
@@ -19102,7 +20096,7 @@ window.deleteFormat = async function(id) {
                         <tr>
                             <td>${(i.type||'').toUpperCase()}</td>
                             <td><b>${i.name.toUpperCase()}</b> ${i.size ? '('+i.size.toUpperCase()+')' : ''}</td>
-                            <td></td>
+                            ${tipo === 'detallado' ? '<td></td>' : ''}
                             <td>${(i.location || '').toUpperCase()}</td>
                             <td style="text-align:center;">${i.quantity}</td>
                             <td></td>
@@ -21838,17 +22832,17 @@ window.deleteFormat = async function(id) {
                 adminBtn.style.borderTopColor = globalBlinkToggle ? '#ef4444' : '#6366f1';
                 adminBtn.style.backgroundColor = globalBlinkToggle ? 'rgba(239, 68, 68, 0.2)' : 'var(--card-bg)';
                 adminBtn.style.boxShadow = globalBlinkToggle ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none';
-                adminTitle.innerText = globalBlinkToggle ? 'ACTUALIZACIONES PENDIENTES' : 'ADMINISTRACIÓN';
+                adminTitle.innerText = 'ADMINISTRACIÓN';
                 adminTitle.style.color = globalBlinkToggle ? '#ef4444' : 'white';
-                adminTitle.style.fontSize = globalBlinkToggle ? '0.65rem' : '0.9rem';
+                adminTitle.style.fontSize = '0.9rem';
             }
             if (hrBtn && hrTitle) {
                 hrBtn.style.borderTopColor = globalBlinkToggle ? '#ef4444' : 'var(--accent2)';
                 hrBtn.style.backgroundColor = globalBlinkToggle ? 'rgba(239, 68, 68, 0.2)' : 'var(--card-bg)';
                 hrBtn.style.boxShadow = globalBlinkToggle ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none';
-                hrTitle.innerText = globalBlinkToggle ? 'REVISAR ACTUALIZACIÓN' : 'GESTIÓN DE PERSONAL';
+                hrTitle.innerText = 'GESTIÓN DE PERSONAL';
                 hrTitle.style.color = globalBlinkToggle ? '#ef4444' : 'white';
-                hrTitle.style.fontSize = globalBlinkToggle ? '0.75rem' : '1.1rem';
+                hrTitle.style.fontSize = '1.1rem';
             }
         } else {
             // Restore default styles when no updates

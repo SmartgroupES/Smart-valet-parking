@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ACTUALIZAR DATOS — EYE STAFF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #161b2c;
+            --accent: #ef4444;
+            --brand-blue: #28A8E9;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; background: var(--bg); color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+        }
+
+        .container { width: 100%; max-width: 600px; }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo-text { font-weight: 800; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; }
+        .brand-eye { color: var(--accent); }
+        .brand-staff { color: #fff; }
+        .subtitle { color: var(--brand-blue); font-size: 0.9rem; letter-spacing: 2px; margin-top: 10px; font-weight: 600; text-transform: uppercase; }
+
+        .card {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+        
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--brand-blue);
+            background: rgba(255,255,255,0.05);
+            outline: none;
+            box-shadow: 0 0 10px rgba(40, 168, 233, 0.2);
+        }
+
+        input[readonly] { background: rgba(0,0,0,0.2); color: var(--muted); cursor: not-allowed; }
+
+        .btn {
+            width: 100%;
+            background: var(--brand-blue);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(40, 168, 233, 0.3);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+
+        .btn:hover { background: #1a7ab0; box-shadow: 0 8px 20px rgba(40, 168, 233, 0.4); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .section-title {
+            color: var(--brand-blue);
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            margin-top: 25px; margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .empty-field-warning { animation: blinkYellowBorder 1.5s infinite alternate; }
+        @keyframes blinkYellowBorder {
+            0% { border-color: rgba(234, 179, 8, 0.2); box-shadow: 0 0 0 transparent; }
+            100% { border-color: rgba(234, 179, 8, 1); box-shadow: 0 0 8px rgba(234, 179, 8, 0.8); }
+        }
+
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(11, 15, 25, 0.9);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--brand-blue); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .doc-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 600px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; letter-spacing: 2px; color:white;" id="loading-text">CARGANDO...</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-text">
+                <span class="brand-eye">EYE</span><span class="brand-staff">STAFF</span>
+            </div>
+            <div class="subtitle">ACTUALIZACIÓN DE PERFIL</div>
+        </div>
+
+        <!-- PASO 1: BÚSQUEDA -->
+        <div class="card" id="step-1">
+            <h3 style="margin-top: 0; text-align: center; color: white;">INGRESAR CÉDULA</h3>
+            <p style="text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 25px;">Por favor, ingresa tu número de cédula para buscar tu perfil y actualizar tus datos.</p>
+            
+            <form id="search-form">
+                <div class="field">
+                    <input type="text" id="search_cedula" placeholder="EJ: 12345678" required inputmode="numeric" style="text-align: center; font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;">
+                </div>
+                <button type="submit" class="btn" style="margin-top: 20px;">BUSCAR PERFIL</button>
+            </form>
+        </div>
+
+        <!-- PASO 2: FORMULARIO DE ACTUALIZACIÓN -->
+        <div id="step-2" style="display: none;">
+            <div id="pending-alert" style="display:none; background:rgba(245, 158, 11, 0.2); border:1px solid var(--warning); color:#fcd34d; padding:12px; border-radius:12px; text-align:center; margin-bottom:20px; font-size:0.85rem;">
+                ⏳ Tienes una actualización pendiente de aprobación por RRHH. Puedes modificarla si lo deseas.
+            </div>
+
+            <div class="card">
+                <form id="update-form">
+                    
+                    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+                        <div style="position:relative; width:120px; height:120px; cursor:pointer;" onclick="document.getElementById('pu_photo_upload').click()">
+                            <img id="pu_photo_preview" src="/user_icon.png" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--brand-blue);">
+                            <div style="position:absolute; bottom:0; right:0; background:var(--brand-blue); border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.5);">📷</div>
+                        </div>
+                        <input type="file" id="pu_photo_upload" accept="image/*" style="display:none;" onchange="handleImageCompress(event, 'pu_photo')">
+                    </div>
+
+                    <h3 class="section-title" style="margin-top:0;">Datos No Modificables</h3>
+                    <div class="grid-2">
+                        <div class="field"><label>Nombre</label><input type="text" id="disp_name" readonly></div>
+                        <div class="field"><label>Cédula</label><input type="text" id="disp_cedula" readonly></div>
+                        <div class="field"><label>Teléfono Principal</label><input type="text" id="disp_phone" readonly></div>
+                    </div>
+                    <div style="font-size:0.7rem; color:var(--muted); text-align:right; margin-bottom: 20px;">* Para modificar estos datos contacte a RRHH.</div>
+
+                    <h3 class="section-title">Datos Personales</h3>
+                    <div class="grid-2">
+                        <div class="field"><label>Correo Electrónico</label><input type="email" id="pu_email"></div>
+                        <div class="field"><label>Fecha de Nacimiento</label><input type="date" id="pu_birth_date"></div>
+                        <div class="field" style="grid-column: 1 / -1;"><label>Dirección de Habitación</label><input type="text" id="pu_address"></div>
+                        <div class="field"><label>Sector / Zona</label><input type="text" id="pu_sector"></div>
+                        <div class="field"><label>Alergias o Condiciones</label><input type="text" id="pu_allergies" placeholder="Ninguna"></div>
+                    </div>
+
+                    <h3 class="section-title">Contacto de Emergencia</h3>
+                    <div class="grid-2">
+                        <div class="field"><label>Nombre del Familiar</label><input type="text" id="pu_family_contact"></div>
+                        <div class="field"><label>Teléfono del Familiar</label><input type="text" id="pu_family_phone"></div>
+                    </div>
+
+                    <h3 class="section-title">Datos Bancarios</h3>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Banco</label>
+                            <select id="pu_bank_name">
+                                <option value="">Seleccione...</option>
+                                <option value="BANCO DE VENEZUELA">Banco de Venezuela</option>
+                                <option value="BANCO DIGITAL DE LOS TRABAJADORES">Banco Digital (Bicentenario)</option>
+                                <option value="BANCO DEL TESORO">Banco del Tesoro</option>
+                                <option value="BANESCO">Banesco</option>
+                                <option value="MERCANTIL">Mercantil</option>
+                                <option value="BBVA PROVINCIAL">BBVA Provincial</option>
+                                <option value="BANCO NACIONAL DE CRÉDITO (BNC)">BNC</option>
+                                <option value="BANCAMIGA">Bancamiga</option>
+                                <option value="BANPLUS">Banplus</option>
+                                <option value="BANCARIBE">Bancaribe</option>
+                                <option value="OTRO">Otro...</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>N° Cuenta (20 dígitos)</label><input type="text" id="pu_bank_account"></div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-top:10px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px; color:white;">
+                            <input type="checkbox" id="pu_pago_movil_check" style="width:18px; height:18px; accent-color:var(--brand-blue);">
+                            Deseo recibir mis pagos vía Pago Móvil
+                        </label>
+                        <div class="field" style="margin-bottom:0;"><label>Teléfono Pago Móvil</label><input type="text" id="pu_pago_movil_phone" placeholder="Ej: 04141234567"></div>
+                    </div>
+
+                    <h3 class="section-title">Documentos Personales</h3>
+                    <p style="font-size:0.75rem; color:var(--muted); margin-bottom:15px;">Asegúrate de que las fotos sean legibles.</p>
+
+                    <div id="docs-container"></div>
+
+                    <button type="submit" class="btn" style="margin-top: 30px; padding: 18px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(40, 168, 233, 0.4);">
+                        ENVIAR ACTUALIZACIÓN
+                    </button>
+                    <button type="button" class="btn" style="background: transparent; color: var(--muted); border: 1px solid var(--border); box-shadow: none; margin-top: 15px;" onclick="window.location.reload()">← CANCELAR</button>
+
+                </form>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 30px; color: var(--muted); font-size: 0.65rem; letter-spacing: 1px;">
+            GRUPO EYE STAFF &copy; 2026 — TODOS LOS DERECHOS RESERVADOS
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let currentUserCedula = null;
+        window.profileUploads = {};
+
+        function showLoading(text) {
+            document.getElementById('loading-text').innerText = text;
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+        
+        function resolvePhotoUrl(url) {
+            if (!url) return '';
+            if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('http') || url.startsWith('/')) return url;
+            return '/api/photos/' + url;
+        }
+
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cedula = document.getElementById('search_cedula').value.trim();
+            if (!cedula) return;
+
+            showLoading('BUSCANDO...');
+            try {
+                const res = await fetch('/api/public/staff/profile-by-cedula?cedula=' + encodeURIComponent(cedula));
+                const data = await res.json();
+                hideLoading();
+
+                if (data.success) {
+                    renderForm(data.user, data.pendingRequest);
+                } else {
+                    Swal.fire('No encontrado', 'No se encontró ningún empleado con la cédula ' + cedula, 'error');
+                }
+            } catch (err) {
+                hideLoading();
+                Swal.fire('Error', 'Error de conexión. Intente de nuevo.', 'error');
+            }
+        });
+
+        function renderForm(user, pendingRequest) {
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+
+            currentUserId = user.id;
+            currentUserCedula = user.cedula;
+
+            let currentData = { ...user };
+            if (pendingRequest && pendingRequest.proposed_data) {
+                try {
+                    const proposed = JSON.parse(pendingRequest.proposed_data);
+                    currentData = { ...user, ...proposed };
+                    document.getElementById('pending-alert').style.display = 'block';
+                } catch(e) {}
+            }
+
+            // Datos Fijos
+            document.getElementById('disp_name').value = user.name || '';
+            document.getElementById('disp_cedula').value = user.cedula || '';
+            document.getElementById('disp_phone').value = user.phone || '';
+
+            // Foto perfil
+            const pUrl = resolvePhotoUrl(currentData.photo_url);
+            if (pUrl) document.getElementById('pu_photo_preview').src = pUrl;
+
+            // Inputs mutables
+            const fields = ['email', 'birth_date', 'address', 'sector', 'allergies', 'family_contact', 'family_phone', 'bank_name', 'bank_account', 'pago_movil_phone'];
+            const modelMapping = {
+                allergies: 'is_allergic',
+                family_contact: 'emergency_contact',
+                family_phone: 'emergency_phone'
+            };
+
+            fields.forEach(f => {
+                const el = document.getElementById('pu_' + f);
+                if (el) {
+                    const dbField = modelMapping[f] || f;
+                    const val = currentData[dbField] || '';
+                    el.value = val;
+                    if (!val && f !== 'allergies') el.classList.add('empty-field-warning');
+                    el.addEventListener('input', () => el.classList.remove('empty-field-warning'));
+                    el.addEventListener('change', () => el.classList.remove('empty-field-warning'));
+                }
+            });
+
+            const pmCheck = document.getElementById('pu_pago_movil_check');
+            pmCheck.checked = !!currentData.pago_movil;
+            pmCheck.addEventListener('change', () => {
+                if (pmCheck.checked) {
+                    document.getElementById('pu_bank_name').classList.remove('empty-field-warning');
+                    document.getElementById('pu_bank_account').classList.remove('empty-field-warning');
+                }
+            });
+
+            // Documentos
+            const docsHtml = [
+                renderDocRow('Cédula de Identidad', 'doc_cedula', currentData.cedula_photo_url),
+                renderDocRow('Licencia de 2da', 'doc_licencia2', currentData.licencia_photo_url),
+                renderDocRow('Cert. Médico de 2da', 'doc_certificado2', currentData.certificado_medico_url),
+                renderDocRow('Licencia de 3ra', 'doc_licencia3', currentData.licencia_3ra_photo_url),
+                renderDocRow('Cert. Médico de 3ra', 'doc_certificado3', currentData.certificado_medico_3ra_url)
+            ].join('');
+            document.getElementById('docs-container').innerHTML = docsHtml;
+        }
+
+        function renderDocRow(label, idPrefix, existingUrl) {
+            const hasDoc = !!existingUrl;
+            return `
+                <div class="doc-row">
+                    <div style="flex:1;">
+                        <div style="color:white; font-size:0.85rem; font-weight:600;">${label}</div>
+                        <div style="font-size:0.7rem; color:${hasDoc ? 'var(--success)' : 'var(--warning)'};">${hasDoc ? 'Documento cargado' : 'Sin documento'}</div>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <img id="${idPrefix}_preview" src="${resolvePhotoUrl(existingUrl)}" style="display:${hasDoc ? 'block' : 'none'}; width:35px; height:35px; object-fit:cover; border-radius:4px; border:1px solid var(--border);">
+                        <button type="button" onclick="document.getElementById('${idPrefix}_upload').click()" style="background:var(--surface); border:1px solid var(--brand-blue); color:var(--brand-blue); border-radius:8px; padding:6px 12px; font-size:0.7rem; font-weight:800; cursor:pointer;">SUBIR</button>
+                        <input type="file" id="${idPrefix}_upload" accept="image/*" style="display:none;" onchange="handleImageCompress(event, '${idPrefix}')">
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleImageCompress(event, elementId) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showLoading('Optimizando...');
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height;
+                    const MAX = 1200;
+                    if (width > height) { if (width > MAX) { height *= MAX / width; width = MAX; } }
+                    else { if (height > MAX) { width *= MAX / height; height = MAX; } }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    window.profileUploads[elementId] = dataUrl;
+                    const previewEl = document.getElementById(elementId + '_preview');
+                    if (previewEl) {
+                        previewEl.src = dataUrl;
+                        previewEl.style.display = 'block';
+                    }
+                    hideLoading();
+                };
+                img.onerror = () => { hideLoading(); Swal.fire('Error', 'Error al procesar imagen', 'error'); };
+            };
+        }
+
+        document.getElementById('update-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const proposedData = {
+                email: document.getElementById('pu_email').value,
+                birth_date: document.getElementById('pu_birth_date').value,
+                address: document.getElementById('pu_address').value,
+                sector: document.getElementById('pu_sector').value,
+                bank_name: document.getElementById('pu_bank_name').value,
+                bank_account: document.getElementById('pu_bank_account').value,
+                pago_movil: document.getElementById('pu_pago_movil_check').checked,
+                pago_movil_phone: document.getElementById('pu_pago_movil_phone').value,
+                emergency_contact: document.getElementById('pu_family_contact').value,
+                emergency_phone: document.getElementById('pu_family_phone').value,
+                is_allergic: document.getElementById('pu_allergies').value,
+                doc_cedula_base64: window.profileUploads['doc_cedula'] || null,
+                doc_licencia2_base64: window.profileUploads['doc_licencia2'] || null,
+                doc_certificado2_base64: window.profileUploads['doc_certificado2'] || null,
+                doc_licencia3_base64: window.profileUploads['doc_licencia3'] || null,
+                doc_certificado3_base64: window.profileUploads['doc_certificado3'] || null,
+            };
+
+            const payload = {
+                cedula: currentUserCedula,
+                proposed_data: proposedData,
+                photo_base64: window.profileUploads['pu_photo'] || null
+            };
+
+            showLoading('ENVIANDO...');
+            try {
+                const res = await fetch('/api/public/staff/submit-data-update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                hideLoading();
+
+                if (data.success) {
+                    Swal.fire({
+                        title: '¡Recibido!',
+                        text: 'Tus datos han sido enviados a Recursos Humanos para su revisión.',
+                        icon: 'success',
+                        confirmButtonColor: '#28A8E9',
+                        background: '#0b0f19', color: 'white'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.error || 'No se pudo enviar la información.', 'error');
+                }
+            } catch(err) {
+                hideLoading();
+                Swal.fire('Error', 'Error de conexión. Inténtalo de nuevo.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

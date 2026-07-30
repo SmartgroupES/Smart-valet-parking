@@ -279,6 +279,26 @@ async function initDatabase(db: D1Database) {
     )
   `).run();
 
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS inventory_pending_returns (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id INTEGER,
+      session_name TEXT,
+      item_id INTEGER,
+      item_name TEXT,
+      declared_qty INTEGER,
+      notes TEXT,
+      declared_by INTEGER,
+      declared_by_name TEXT,
+      declared_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      status TEXT DEFAULT 'pending', 
+      verified_qty INTEGER,
+      verified_by INTEGER,
+      verified_by_name TEXT,
+      verified_at DATETIME,
+      discrepancy_notes TEXT
+    )
+  `).run();
   // Tabla de Mensajería Interna (Chat)
   try {
     await db.prepare(`
@@ -504,6 +524,14 @@ app.get('/test', async (c) => {
 // --- PUBLIC JOB APPLICATIONS ---
 app.get('/join', async (c) => {
   const res = await c.env.ASSETS.fetch(new Request(new URL('/join.html', c.req.url)));
+  const response = new Response(res.body, res);
+  response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  return response;
+});
+
+// --- ACTUALIZACION DE PERFIL (PUBLICO) ---
+app.get('/actualizar', async (c) => {
+  const res = await c.env.ASSETS.fetch(new Request(new URL('/actualizar.html', c.req.url)));
   const response = new Response(res.body, res);
   response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   return response;
@@ -1159,7 +1187,7 @@ app.get('/api/sessions/active', async (c) => {
     s.guardia_details = gRes || null;
 
     // Staff details
-    const staffRes = await c.env.DB.prepare("SELECT id, name, role, cedula FROM users WHERE current_session_id = ? OR instr(',' || current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(String(s.id), String(s.id)).all();
+    const staffRes = await c.env.DB.prepare("SELECT u.id, u.name, u.role, u.cedula, sr.event_function FROM users u LEFT JOIN session_staff_roles sr ON u.id = sr.user_id AND sr.session_id = ? WHERE u.current_session_id = ? OR instr(',' || u.current_session_id || ',', ',' || CAST(? AS TEXT) || ',') > 0").bind(s.id, String(s.id), String(s.id)).all();
     const staff = staffRes.results || [] as any[];
 
     for (let u of staff) {
@@ -2097,7 +2125,7 @@ app.post('/api/sessions/:id/unassign-staff', async (c) => {
 });
 
 app.post('/api/sessions/plan', async (c) => {
-  const { name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
+  const { name, type, supervisor_id, staff_ids, staff_roles, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
   const nowVE = new Date(new Date().getTime() - (4 * 60 * 60 * 1000));
   const targetDate = started_at ? new Date(started_at) : nowVE;
   const yy = targetDate.getFullYear().toString().slice(-2);
@@ -2183,7 +2211,11 @@ app.post('/api/sessions/plan', async (c) => {
           currentIds.push(sessionId.toString());
         }
         await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
-      } else {
+      }
+      const role = (staff_roles && staff_roles[userId]) ? staff_roles[userId] : null;
+      await c.env.DB.prepare('INSERT OR REPLACE INTO session_staff_roles (session_id, user_id, event_function) VALUES (?, ?, ?)').bind(sessionId, userId, role).run();
+
+      if (is_executed) {
         const startDateStr = started_at ? started_at.split('T')[0] : nowVE.toISOString().split('T')[0];
         const inTime = convocation_time ? `${startDateStr} ${convocation_time}:00` : nowVE.toISOString().replace('T', ' ').split('.')[0];
         
@@ -2310,7 +2342,7 @@ app.post('/api/guardia/:session_id/details', async (c) => {
 });
 
 app.post('/api/sessions/update', async (c) => {
-  const { id, name, type, supervisor_id, staff_ids, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
+  const { id, name, type, supervisor_id, staff_ids, staff_roles, started_at, phone, address, contact_name, email, observations, correlativo, convocation_time, event_start_time, event_end_time, event_end_date, budget_id, is_executed } = await c.req.json();
   if (!id) return c.json({ error: 'ID requerido' }, 400);
 
   const internalKey = correlativo ? `${name} ${correlativo}` : name;
@@ -2350,7 +2382,11 @@ app.post('/api/sessions/update', async (c) => {
           currentIds.push(id.toString());
         }
         await c.env.DB.prepare('UPDATE users SET current_session_id = ? WHERE id = ?').bind(currentIds.join(','), userId).run();
-      } else {
+      }
+      const role = (staff_roles && staff_roles[userId]) ? staff_roles[userId] : null;
+      await c.env.DB.prepare('INSERT OR REPLACE INTO session_staff_roles (session_id, user_id, event_function) VALUES (?, ?, ?)').bind(id, userId, role).run();
+
+      if (is_executed) {
         const nowVE = new Date(new Date().getTime() - (4 * 60 * 60 * 1000));
         const startDateStr = started_at ? started_at.split('T')[0] : nowVE.toISOString().split('T')[0];
         const inTime = convocation_time ? `${startDateStr} ${convocation_time}:00` : nowVE.toISOString().replace('T', ' ').split('.')[0];
@@ -6903,7 +6939,51 @@ app.get('/api/staff/profile/me', async (c) => {
 });
 
 
+app.get('/api/public/staff/profile-by-cedula', async (c) => {
+  try {
+    const cedula = c.req.query('cedula');
+    if (!cedula) return c.json({ success: false, error: 'Cédula requerida' }, 400);
 
+    const user = await c.env.DB.prepare('SELECT * FROM users WHERE cedula = ?').bind(cedula.trim()).first();
+    if (!user) return c.json({ success: false, error: 'Empleado no encontrado' }, 404);
+
+    const pendingRequest = await c.env.DB.prepare("SELECT * FROM employee_data_updates WHERE user_id = ? AND status = 'pending_review' ORDER BY created_at DESC LIMIT 1").bind(user.id).first();
+
+    return c.json({ success: true, user, pendingRequest });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.post('/api/public/staff/submit-data-update', async (c) => {
+  try {
+    const data = await c.req.json();
+    const cedula = data.cedula;
+    if (!cedula) return c.json({ success: false, error: 'Cédula requerida' }, 400);
+
+    const user = await c.env.DB.prepare('SELECT id FROM users WHERE cedula = ?').bind(cedula.trim()).first();
+    if (!user) return c.json({ success: false, error: 'Empleado no encontrado' }, 404);
+    const userId = user.id;
+
+    // Parse the data and extract photo
+    const proposedData = JSON.stringify(data.proposed_data || {});
+    const photoBase64 = data.photo_base64 || null;
+    const dummyToken = 'inapp_' + Math.random().toString(36).substring(2, 15);
+
+    // Eliminar solicitudes previas pendientes del mismo usuario para evitar duplicados
+    await c.env.DB.prepare("DELETE FROM employee_data_updates WHERE user_id = ? AND status = 'pending_review'")
+      .bind(userId)
+      .run();
+
+    await c.env.DB.prepare('INSERT INTO employee_data_updates (user_id, token, proposed_data, photo_base64, status) VALUES (?, ?, ?, ?, ?)')
+      .bind(userId, dummyToken, proposedData, photoBase64, 'pending_review')
+      .run();
+    
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
 
 app.post('/api/staff/import', async (c) => {
   const { csv } = await c.req.json();
@@ -8822,7 +8902,7 @@ app.get('/api/staff/:id/available-sessions', async (c) => {
     ORDER BY s.ended_at DESC
   `;
 
-  const result = await c.env.DB.prepare(query).bind(String(id), String(id)).all();
+  const result = await c.env.DB.prepare(query).bind(id, String(id), String(id)).all();
   return c.json(result.results);
 });
 
@@ -10752,9 +10832,14 @@ app.post('/api/inventory/init', async (c) => {
     { n: "Extintores ABC", t: "Equipo" }, { n: "Extintores CO2", t: "Equipo" },
     { n: "Stand de Valet Parking", t: "Equipo" }, { n: "Carteles", t: "Material" },
     { n: "Carpetas", t: "Insumo" }, { n: "Hojas", t: "Insumo" }, { n: "Bolígrafos", t: "Insumo" },
-    { n: "Gorras", t: "Uniforme" }, { n: "Chemises", t: "Uniforme", s: "S" },
-    { n: "Chemises", t: "Uniforme", s: "M" }, { n: "Chemises", t: "Uniforme", s: "L" },
-    { n: "Chemises", t: "Uniforme", s: "XL" }, { n: "Manos libres", t: "Equipo" },
+    { n: "Gorras", t: "Uniforme" },
+    { n: "Chemise Naranja", t: "Uniforme" },
+    { n: "Chemise Negra", t: "Uniforme" },
+    { n: "Chemise Azul", t: "Uniforme" },
+    { n: "Chemise Guardia Nocturna", t: "Uniforme" },
+    { n: "Camisa Valet Parking", t: "Uniforme" },
+    { n: "Camisa Protocolo Dama", t: "Uniforme" },
+    { n: "Manos libres", t: "Equipo" },
     { n: "Audífonos especiales", t: "Equipo" }, { n: "Agua", t: "Insumo" }, { n: "Hielo", t: "Insumo" },
     { n: "CCO", t: "Equipo" }, { n: "Mesas", t: "Equipo" }, { n: "Sillas", t: "Equipo" },
     { n: "Ventilador", t: "Equipo" }, { n: "Regleta", t: "Equipo" }, { n: "Botiquin de primeros auxilios", t: "Equipo" },
@@ -10861,8 +10946,113 @@ app.delete('/api/inventory/:id', async (c) => {
   const user = c.get('user');
   if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
   const id = c.req.param('id');
-  await c.env.DB.prepare('DELETE FROM inventory_items WHERE id = ?').bind(id).run();
+  try {
+    // Eliminar movimientos y retornos asociados para evitar error de Foreign Key
+    await c.env.DB.prepare('DELETE FROM inventory_movements WHERE item_id = ?').bind(id).run();
+    await c.env.DB.prepare('DELETE FROM inventory_pending_returns WHERE item_id = ?').bind(id).run();
+    await c.env.DB.prepare('DELETE FROM inventory_items WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ error: 'No se pudo eliminar el ítem: ' + e.message }, 500);
+  }
+});
+
+// NUEVOS ENDPOINTS INVENTARIO INVERSO
+
+app.post('/api/inventory/declare-returns', async (c) => {
+  const user = c.get('user');
+  if (!user) return c.json({ error: 'No autorizado' }, 403);
+  
+  const body = await c.req.json();
+  const { sessionId, sessionName, items } = body;
+  if (!sessionId || !items || !Array.isArray(items) || items.length === 0) {
+    return c.json({ error: 'Faltan datos requeridos' }, 400);
+  }
+
+  const existingGd = await c.env.DB.prepare('SELECT materials FROM guardia_details WHERE session_id = ?').bind(sessionId).first<any>();
+  let matObj = existingGd && existingGd.materials ? JSON.parse(existingGd.materials) : null;
+
+  for (const item of items) {
+    const qToReturn = Number(item.declaredQty);
+    if (qToReturn <= 0) continue;
+
+    // 1. Insertar en pending returns
+    await c.env.DB.prepare(`
+      INSERT INTO inventory_pending_returns (session_id, session_name, item_id, item_name, declared_qty, notes, declared_by, declared_by_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(sessionId, sessionName, item.itemId, item.itemName, qToReturn, item.notes || '', user.id, user.name).run();
+
+    // 2. Restar de guardia_details (ya no está asignado al evento)
+    if (matObj && matObj.items && Array.isArray(matObj.items)) {
+      for (let i = 0; i < matObj.items.length; i++) {
+        if (matObj.items[i].name === item.itemName) {
+          matObj.items[i].qty = Math.max(0, (matObj.items[i].qty || 0) - qToReturn);
+          if (matObj.items[i].qty === 0) {
+            matObj.items.splice(i, 1);
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  if (matObj) {
+    await c.env.DB.prepare('UPDATE guardia_details SET materials = ? WHERE session_id = ?')
+      .bind(JSON.stringify(matObj), sessionId).run();
+  }
+
   return c.json({ success: true });
+});
+
+app.get('/api/inventory/pending-returns', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+
+  const res = await c.env.DB.prepare('SELECT * FROM inventory_pending_returns WHERE status = ? ORDER BY declared_at ASC').bind('pending').all();
+  return c.json({ returns: res.results || [] });
+});
+
+app.post('/api/inventory/verify-return', async (c) => {
+  const user = c.get('user');
+  if (!user || (user.role !== 'director' && user.role !== 'admin' && user.role !== 'staff')) return c.json({ error: 'No autorizado' }, 403);
+  
+  const body = await c.req.json();
+  const { returnId, verifiedQty, discrepancyNotes } = body;
+  if (!returnId || verifiedQty === undefined) return c.json({ error: 'Faltan datos' }, 400);
+
+  const pendingRecord = await c.env.DB.prepare('SELECT * FROM inventory_pending_returns WHERE id = ? AND status = ?').bind(returnId, 'pending').first<any>();
+  if (!pendingRecord) return c.json({ error: 'Registro no encontrado o ya verificado' }, 404);
+
+  const qVerified = Number(verifiedQty);
+  const status = (qVerified === pendingRecord.declared_qty && (!discrepancyNotes || discrepancyNotes.trim() === '')) ? 'verified' : 'discrepancy';
+
+  // 1. Actualizar pending record
+  await c.env.DB.prepare(`
+    UPDATE inventory_pending_returns 
+    SET status = ?, verified_qty = ?, verified_by = ?, verified_by_name = ?, verified_at = CURRENT_TIMESTAMP, discrepancy_notes = ?
+    WHERE id = ?
+  `).bind(status, qVerified, user.id, user.name, discrepancyNotes || '', returnId).run();
+
+  // 2. Sumar stock si es mayor a 0
+  if (qVerified > 0) {
+    await c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity + ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .bind(qVerified, user.id, user.name, pendingRecord.item_id).run();
+
+    // Registrar movimiento oficial
+    await c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(pendingRecord.item_id, pendingRecord.session_id, qVerified, 'return', user.name, `Verificado en almacén. Notas: ${discrepancyNotes || ''}`).run();
+  }
+
+  // 3. Notificar o guardar log si hay discrepancia (Opcional, de momento lo guardamos en audit_logs)
+  if (status === 'discrepancy') {
+    await c.env.DB.prepare(`
+      INSERT INTO audit_logs (action, table_name, record_id, user_id, user_name, details)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind('INVENTORY_DISCREPANCY', 'inventory_pending_returns', returnId, user.id, user.name, 
+      `Discrepancia en evento ${pendingRecord.session_name}: Declaró ${pendingRecord.declared_qty}, Almacén recibió ${qVerified}. Notas: ${discrepancyNotes}`).run();
+  }
+
+  return c.json({ success: true, status });
 });
 
 app.post('/api/inventory/return', async (c) => {
@@ -10950,7 +11140,7 @@ app.get('/api/inventory/subscribers', async (c) => {
 });
 
 
-async function generateInventoryPdfBase64(items: any[], user: any): Promise<string> {
+async function generateInventoryPdfBase64(items: any[], user: any, tipo: 'resumen' | 'detallado' = 'detallado'): Promise<string> {
   const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
   const pdfDoc = await PDFDocument.create();
   let page = pdfDoc.addPage([595.28, 841.89]); // A4
@@ -11009,7 +11199,7 @@ async function generateInventoryPdfBase64(items: any[], user: any): Promise<stri
     
     const nameStr = (item.name.toUpperCase() + (item.size ? ` (${item.size.toUpperCase()})` : '')).substring(0, 30);
     drawText(nameStr, cx, y, bold, 8);
-    if (item.serial_number) {
+    if (item.serial_number && tipo === 'detallado') {
        drawText(`S/N: ${item.serial_number.toUpperCase()}`, cx, y - 8, font, 6, rgb(0.4, 0.4, 0.4));
     }
     cx += cols[2];
@@ -11041,6 +11231,10 @@ app.post('/api/inventory/notify', async (c) => {
 
   const body = await c.req.json().catch(() => ({})) as any;
   const channel: string = body.channel || 'ambos'; // 'email' | 'whatsapp' | 'ambos'
+  const fileType: string = body.fileType || 'pdf'; // 'pdf' | 'excel'
+  const fileBase64: string = body.fileBase64 || '';
+  const fileName: string = body.fileName || 'Reporte_Inventario_EyeStaff.pdf';
+  const tipo: 'resumen' | 'detallado' = body.tipo || 'detallado';
 
   const res = await c.env.DB.prepare('SELECT * FROM inventory_items ORDER BY type ASC, name ASC').all();
   const items = res.results || [];
@@ -11056,12 +11250,16 @@ app.post('/api/inventory/notify', async (c) => {
     return c.json({ success: false, error: 'No hay usuarios suscritos a INVENTARIOS en la matriz.' });
   }
 
-  // Generate PDF
-  let pdfBase64 = '';
-  try {
-    pdfBase64 = await generateInventoryPdfBase64(items, user);
-  } catch(e) {
-    console.error('Error al generar PDF de inventario', e);
+  // Generate PDF or use provided Excel Base64
+  let finalBase64 = '';
+  if (fileType === 'excel' && fileBase64) {
+    finalBase64 = fileBase64;
+  } else {
+    try {
+      finalBase64 = await generateInventoryPdfBase64(items, user, tipo);
+    } catch(e) {
+      console.error('Error al generar PDF de inventario', e);
+    }
   }
 
   const dateStr = new Date().toLocaleString('es-ES', {timeZone: 'America/Caracas'});
@@ -11071,7 +11269,7 @@ app.post('/api/inventory/notify', async (c) => {
     <h2 style="color:#6366f1; text-align:center;">📦 REPORTE DE INVENTARIOS</h2>
     <p style="text-align:center; color:#555; font-size:14px;">Generado por: <b>${user.name}</b><br>Fecha: <b>${dateStr}</b></p>
     <div style="background:#eef2ff; border-left:4px solid #6366f1; padding:15px 20px; border-radius:8px; margin:20px 0;">
-      <p style="margin:0; color:#4338ca; font-size:15px;">📎 Se adjunta el reporte completo de inventarios en formato PDF en este correo.</p>
+      <p style="margin:0; color:#4338ca; font-size:15px;">📎 Se adjunta el reporte completo de inventarios en este correo.</p>
     </div>
     <p style="text-align:center; margin-top:30px; font-size:12px; color:#aaa;">Eye Staff Events - Sistema Automatizado</p>
   </div>`;
@@ -11080,26 +11278,28 @@ app.post('/api/inventory/notify', async (c) => {
   let waSent = 0;
 
   const attachments: any[] = [];
-  if (pdfBase64) {
-    attachments.push({ filename: 'Reporte_Inventario_EyeStaff.pdf', content: pdfBase64 });
+  if (finalBase64) {
+    attachments.push({ filename: fileName, content: finalBase64 });
   }
 
-  // Subir PDF a R2 para enlace público (WA)
-  let pdfPublicUrl = '';
-  if (pdfBase64) {
+  // Subir Archivo a R2 para enlace público (WA)
+  let publicUrl = '';
+  if (finalBase64) {
     try {
-      const pdfKey = `reports/inventario/Reporte_Inventario_${Date.now()}.pdf`;
-      const pdfBytes = Uint8Array.from(atob(pdfBase64), ch => ch.charCodeAt(0));
-      await c.env.PHOTOS.put(pdfKey, pdfBytes.buffer, { httpMetadata: { contentType: 'application/pdf' } });
-      pdfPublicUrl = `https://eye-staff.app/files/${pdfKey}`;
+      const ext = fileType === 'excel' ? 'xlsx' : 'pdf';
+      const contentType = fileType === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf';
+      const fileKey = `reports/inventario/${fileName.replace(/\.[^/.]+$/, "")}_${Date.now()}.${ext}`;
+      const fileBytes = Uint8Array.from(atob(finalBase64), ch => ch.charCodeAt(0));
+      await c.env.PHOTOS.put(fileKey, fileBytes.buffer, { httpMetadata: { contentType: contentType } });
+      publicUrl = `https://eye-staff.app/files/${fileKey}`;
     } catch(e) {
-      console.error('Error subiendo PDF de inventario a R2', e);
+      console.error('Error subiendo archivo de inventario a R2', e);
     }
   }
 
-  const waMsg = pdfPublicUrl
-    ? `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\n📎 Descarga el reporte en PDF:\n${pdfPublicUrl}`
-    : `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\nEl reporte PDF se ha enviado por email.`;
+  const waMsg = publicUrl
+    ? `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\n📎 Descarga el reporte:\n${publicUrl}`
+    : `📦 *REPORTE DE INVENTARIOS - EYE STAFF*\n\nGenerado por: *${user.name}*\nFecha: *${dateStr}*\n\nEl reporte se ha enviado por email.`;
 
   const sendEmail_ = channel === 'email' || channel === 'ambos';
   const sendWa_ = channel === 'whatsapp' || channel === 'ambos';
