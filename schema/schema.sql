@@ -565,6 +565,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
   type TEXT NOT NULL CHECK(type IN ('assignment', 'return', 'manual_adjustment')),
   user_name TEXT,
   notes TEXT,
+  serials_involved TEXT,
   timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(item_id) REFERENCES inventory_items(id),
   FOREIGN KEY(session_id) REFERENCES sessions(id)

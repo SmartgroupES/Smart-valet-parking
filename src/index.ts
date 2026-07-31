@@ -10828,6 +10828,24 @@ app.get('/api/inventory/:id/movements', async (c) => {
   return c.json({ success: true, movements: res.results || [] });
 });
 
+app.get('/api/sessions/:id/inventory', async (c) => {
+  const user = c.get('user');
+  const sessionId = c.req.param('id');
+  
+  const assigned = await c.env.DB.prepare(`
+    SELECT i.id, i.name, i.has_serial, 
+           SUM(CASE WHEN m.type = 'assignment' THEN m.quantity_change ELSE 0 END) -
+           SUM(CASE WHEN m.type = 'return' THEN m.quantity_change ELSE 0 END) as pending_qty
+    FROM inventory_movements m
+    JOIN inventory_items i ON m.item_id = i.id
+    WHERE m.session_id = ?
+    GROUP BY i.id, i.name, i.has_serial
+    HAVING pending_qty > 0
+  `).bind(sessionId).all();
+  
+  return c.json({ success: true, inventory: assigned.results || [] });
+});
+
 
 app.post('/api/inventory/init', async (c) => {
   const user = c.get('user');
@@ -11387,6 +11405,149 @@ No incluyas explicaciones, saludos ni formato Markdown adicional, solo el JSON r
   }
 });
 
+app.post('/api/inventory/scan-dispatch', async (c) => {
+  try {
+    const user = c.get('user');
+    const { session_id, qr_data, quantity } = await c.req.json();
+    if (!session_id || !qr_data) return c.json({ error: 'Faltan datos' }, 400);
+
+    let itemId = null;
+    let qty = quantity || 1;
+    let serialToAssign = null;
+    let isGeneric = false;
+
+    if (qr_data.startsWith('ITEM-ID:')) {
+      itemId = parseInt(qr_data.replace('ITEM-ID:', ''));
+      isGeneric = true;
+    } else {
+      const itemsRaw = await c.env.DB.prepare('SELECT id, serial_number FROM inventory_items WHERE serial_number LIKE ?').bind(`%${qr_data}%`).all();
+      const items = itemsRaw.results;
+      for (const item of items) {
+        if (item.serial_number) {
+          const serials = item.serial_number.split(',').map(s => s.trim());
+          if (serials.some(s => s === qr_data || s.endsWith(`:${qr_data}`))) {
+            itemId = item.id;
+            serialToAssign = qr_data;
+            break;
+          }
+        }
+      }
+      if (!itemId) return c.json({ error: 'Serial no encontrado en el inventario' }, 404);
+    }
+
+    const item = await c.env.DB.prepare('SELECT quantity, has_serial FROM inventory_items WHERE id = ?').bind(itemId).first();
+    if (!item) return c.json({ error: 'Ítem no encontrado' }, 404);
+
+    if (item.quantity < qty) return c.json({ error: 'Cantidad insuficiente en almacén' }, 400);
+
+    await c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity - ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .bind(qty, user?.id || 0, user?.name || 'Sistema', itemId).run();
+
+    await c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes, serials_involved) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .bind(itemId, session_id, qty, 'assignment', user?.name || 'Sistema', `Despacho por escáner`, serialToAssign ? JSON.stringify([serialToAssign]) : null).run();
+
+    return c.json({ success: true, item_id: itemId, serial: serialToAssign, quantity_dispatched: qty });
+  } catch (e) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+app.post('/api/inventory/scan-return', async (c) => {
+  try {
+    const user = c.get('user');
+    const { session_id, qr_data, quantity, quick_return, item_id } = await c.req.json();
+    if (!session_id) return c.json({ error: 'ID de sesión requerido' }, 400);
+
+    if (quick_return) {
+      if (!item_id || !quantity) return c.json({ error: 'Datos incompletos' }, 400);
+      
+      const dispatchedRaw = await c.env.DB.prepare('SELECT quantity_change, serials_involved FROM inventory_movements WHERE session_id = ? AND item_id = ? AND type = "assignment"').bind(session_id, item_id).all();
+      let totalDispatched = 0;
+      let allSerials = [];
+      for (const row of dispatchedRaw.results) {
+        totalDispatched += (row.quantity_change || 0);
+        if (row.serials_involved) {
+           const sers = JSON.parse(row.serials_involved);
+           allSerials = allSerials.concat(sers);
+        }
+      }
+
+      const returnedRaw = await c.env.DB.prepare('SELECT SUM(quantity_change) as total FROM inventory_movements WHERE session_id = ? AND item_id = ? AND type = "return"').bind(session_id, item_id).first();
+      const alreadyReturned = returnedRaw ? (returnedRaw.total || 0) : 0;
+      const netAssigned = totalDispatched - alreadyReturned;
+
+      if (netAssigned <= 0) return c.json({ error: 'No hay unidades pendientes' }, 400);
+      if (quantity > netAssigned) return c.json({ error: `Solo quedan ${netAssigned} asignadas.` }, 400);
+
+      if (allSerials.length > 0 && quantity < netAssigned) {
+        return c.json({ error: `Faltan ${netAssigned - quantity} unidades. Escanea los seriales uno a uno para identificar pérdida.`, requires_scan: true }, 400);
+      }
+
+      await c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity + ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .bind(quantity, user?.id || 0, user?.name || 'Sistema', item_id).run();
+
+      await c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes, serials_involved) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .bind(item_id, session_id, quantity, 'return', user?.name || 'Sistema', `Retorno rápido`, allSerials.length > 0 ? JSON.stringify(allSerials) : null).run();
+
+      return c.json({ success: true, returned: quantity });
+    }
+
+    let itemId = null;
+    let qty = quantity || 1;
+    let serialToReturn = null;
+    let isGeneric = false;
+
+    if (qr_data.startsWith('ITEM-ID:')) {
+      itemId = parseInt(qr_data.replace('ITEM-ID:', ''));
+      isGeneric = true;
+    } else {
+      const itemsRaw = await c.env.DB.prepare('SELECT id, serial_number FROM inventory_items WHERE serial_number LIKE ?').bind(`%${qr_data}%`).all();
+      const items = itemsRaw.results;
+      for (const item of items) {
+        if (item.serial_number) {
+          const serials = item.serial_number.split(',').map(s => s.trim());
+          if (serials.some(s => s === qr_data || s.endsWith(`:${qr_data}`))) {
+            itemId = item.id;
+            serialToReturn = qr_data;
+            break;
+          }
+        }
+      }
+      if (!itemId) return c.json({ error: 'Serial no encontrado' }, 404);
+    }
+
+    if (serialToReturn) {
+        const assignedRaw = await c.env.DB.prepare('SELECT serials_involved FROM inventory_movements WHERE session_id = ? AND item_id = ? AND type = "assignment"').bind(session_id, itemId).all();
+        let wasAssigned = false;
+        for (const row of assignedRaw.results) {
+           if (row.serials_involved) {
+              const sers = JSON.parse(row.serials_involved);
+              if (sers.includes(serialToReturn)) wasAssigned = true;
+           }
+        }
+        if (!wasAssigned) return c.json({ error: 'Serial no asignado a este evento' }, 400);
+
+        const returnedRaw = await c.env.DB.prepare('SELECT serials_involved FROM inventory_movements WHERE session_id = ? AND item_id = ? AND type = "return"').bind(session_id, itemId).all();
+        for (const row of returnedRaw.results) {
+           if (row.serials_involved) {
+              const sers = JSON.parse(row.serials_involved);
+              if (sers.includes(serialToReturn)) return c.json({ error: 'Serial ya retornado' }, 400);
+           }
+        }
+    }
+
+    await c.env.DB.prepare('UPDATE inventory_items SET quantity = quantity + ?, last_updated_by = ?, last_updated_by_name = ?, last_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .bind(qty, user?.id || 0, user?.name || 'Sistema', itemId).run();
+
+    await c.env.DB.prepare('INSERT INTO inventory_movements (item_id, session_id, quantity_change, type, user_name, notes, serials_involved) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .bind(itemId, session_id, qty, 'return', user?.name || 'Sistema', `Retorno escáner`, serialToReturn ? JSON.stringify([serialToReturn]) : null).run();
+
+    return c.json({ success: true, item_id: itemId, serial: serialToReturn, returned: qty });
+
+  } catch (e) {
+    return c.json({ error: e.message }, 500);
+  }
+});
 
 app.post('/api/inventory/scan-image', async (c) => {
   const user = c.get('user');
