@@ -1,0 +1,9 @@
+ALTER TABLE users ADD COLUMN cedula_exp TEXT;
+ALTER TABLE users ADD COLUMN licencia_num TEXT;
+ALTER TABLE users ADD COLUMN licencia_exp TEXT;
+ALTER TABLE users ADD COLUMN cert_medico_num TEXT;
+ALTER TABLE users ADD COLUMN cert_medico_exp TEXT;
+ALTER TABLE users ADD COLUMN licencia_3ra_num TEXT;
+ALTER TABLE users ADD COLUMN licencia_3ra_exp TEXT;
+ALTER TABLE users ADD COLUMN cert_medico_3ra_num TEXT;
+ALTER TABLE users ADD COLUMN cert_medico_3ra_exp TEXT;

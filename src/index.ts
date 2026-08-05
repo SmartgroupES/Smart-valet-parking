@@ -50,7 +50,7 @@ async function getSubscribedEmails(env: Env, reportId: string, sessionId?: numbe
         'backup': 'backup'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup'];
+    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup', 'estado_documentacion'];
     if (!validFields.includes(field)) return [];
 
     let emailSet = new Set<string>();
@@ -372,7 +372,7 @@ async function getSubscribedPhones(env: Env, reportId: string, sessionId?: numbe
         'backup': 'backup'
     };
     let field = fieldMap[reportId] || reportId;
-    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup'];
+    const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup', 'estado_documentacion'];
     if (!validFields.includes(field)) return [];
 
     let phoneSet = new Set<string>();
@@ -2591,6 +2591,43 @@ app.post('/api/staff/update-status', async (c) => {
   return c.json({ success: true });
 });
 
+app.post('/api/reports/send-documentacion', async (c) => {
+  try {
+    const { pdfBase64, htmlBody } = await c.req.json();
+    const env = c.env;
+    
+    if (!pdfBase64) return c.json({ error: 'PDF base64 requerido' }, 400);
+
+    const subsRes = await env.DB.prepare('SELECT u.id, u.email, u.name, u.phone, rs.estado_documentacion as sub_channel FROM user_report_subscriptions rs JOIN users u ON u.id = rs.user_id WHERE rs.estado_documentacion IN (1, 2, 3) AND u.is_active = 1').all();
+    const subscribers = (subsRes.results || []) as any[];
+
+    if (subscribers.length === 0) {
+      return c.json({ success: true, message: 'Nadie está suscrito a este reporte', sent: 0 });
+    }
+
+    let sent = 0;
+    const base64Data = pdfBase64.split('base64,')[1] || pdfBase64;
+
+    for (const sub of subscribers) {
+      const isWa = (sub.sub_channel === 1 || sub.sub_channel === 3);
+      const isEmail = (sub.sub_channel === 2 || sub.sub_channel === 3);
+
+      if (isEmail && sub.email) {
+        await sendEmail(env, sub.email, `EYE STAFF: Reporte de Documentación Vencida`, htmlBody, [{ filename: 'Estado_Documentacion.pdf', content: base64Data, content_type: 'application/pdf' }], [], 'estado_documentacion');
+        sent++;
+      }
+      
+      if (isWa && sub.phone) {
+        await sendWhatsAppDocument(env, sub.phone, base64Data, 'Estado_Documentacion.pdf', `📱 *EYE STAFF: REPORTE DE DOCUMENTACIÓN VENCIDA*\n\nHola ${sub.name},\nSe adjunta el reporte de Estado de Documentación actualizado.\n\n_Sistema Automatizado EYE STAFF_`);
+        sent++;
+      }
+    }
+
+    return c.json({ success: true, sent });
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
 app.post('/api/reports/test-request', async (c) => {
   try {
     const { type } = await c.req.json();
@@ -6349,6 +6386,15 @@ app.post('/api/staff/location', async (c) => {
   }
 });
 
+// --- AI Extraction Stubs ---
+app.get('/api/staff/ai-status', async (c) => {
+  return c.json({ available: false, reason: 'En desarrollo' });
+});
+
+app.post('/api/staff/extract-document-data', async (c) => {
+  return c.json({ error: 'Funcionalidad en desarrollo', quota_exhausted: true }, 400);
+});
+
 // GET /api/staff/live-locations — devuelve ubicaciones activas (últimas 15 min) para el mapa
 app.get('/api/staff/live-locations', async (c) => {
   try {
@@ -6624,7 +6670,13 @@ app.post('/api/staff/update-bulk', async (c) => {
   const { id, updates } = await c.req.json();
   if (!id || !updates) return c.json({ error: 'Faltan datos' }, 400);
 
-  const allowedFields = ['name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'entry_date', 'address', 'sector', 'bank_name', 'bank_account', 'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer', 'is_corporate_profile'];
+  const allowedFields = [
+    'name', 'cedula', 'role', 'phone', 'email', 'birth_date', 'entry_date', 'address', 'sector', 'bank_name', 'bank_account', 
+    'pago_movil', 'pago_movil_phone', 'profile_admin', 'profile_opera', 'eye_id', 'is_active', 'pin_hash', 'emergency_contact', 
+    'emergency_phone', 'is_allergic', 'carnet_url', 'is_chofer', 'is_corporate_profile',
+    'cedula_exp', 'licencia_num', 'licencia_exp', 'cert_medico_num', 'cert_medico_exp', 
+    'licencia_3ra_num', 'licencia_3ra_exp', 'cert_medico_3ra_num', 'cert_medico_3ra_exp'
+  ];
 
   const setClauses = [];
   const values = [];
@@ -7398,7 +7450,8 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         inventarios: subRow.inventarios || 0,
         backup: subRow.backup || 0,
         horario_eventos: subRow.horario_eventos || 0,
-        formato_pago: subRow.formato_pago || 0
+        formato_pago: subRow.formato_pago || 0,
+        estado_documentacion: subRow.estado_documentacion || 0
       };
     } else {
       return {
@@ -7422,7 +7475,8 @@ app.get('/api/admin/report-subscriptions', async (c) => {
         inventarios: 0,
         backup: 0,
         horario_eventos: 0,
-        formato_pago: 0
+        formato_pago: 0,
+        estado_documentacion: 0
       };
     }
   });
@@ -7437,7 +7491,7 @@ app.post('/api/admin/report-subscriptions', async (c) => {
   const { user_id, field, value } = await c.req.json();
   if (!user_id || !field) return c.json({ error: 'Faltan datos' }, 400);
 
-  const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup', 'horario_eventos', 'formato_pago'];
+  const validFields = ['convocatoria', 'cumpleanos', 'nominas', 'permisos', 'plantilla_rrhh', 'actualizacion_datos', 'credenciales', 'cierre_html', 'apertura_evento', 'pre_inicio_evento', 'cierre_diario', 'postulacion_empleo', 'inventarios', 'backup', 'horario_eventos', 'formato_pago', 'estado_documentacion'];
   if (!validFields.includes(field)) {
     return c.json({ error: 'Campo inválido' }, 400);
   }
@@ -7447,8 +7501,8 @@ app.post('/api/admin/report-subscriptions', async (c) => {
 
   await c.env.DB.prepare(`
     INSERT OR IGNORE INTO user_report_subscriptions 
-    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, credenciales, cierre_html, apertura_evento, pre_inicio_evento, cierre_diario, postulacion_empleo, inventarios, backup, horario_eventos, formato_pago) 
-    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    (user_id, convocatoria, cumpleanos, dossier_pdf, bbdd_excel, nominas, permisos, plantilla_rrhh, actualizacion_datos, credenciales, cierre_html, apertura_evento, pre_inicio_evento, cierre_diario, postulacion_empleo, inventarios, backup, horario_eventos, formato_pago, estado_documentacion) 
+    VALUES (?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   `).bind(user_id).run();
 
   const intVal = parseInt(value, 10);
@@ -10834,8 +10888,8 @@ app.get('/api/sessions/:id/inventory', async (c) => {
   
   const assigned = await c.env.DB.prepare(`
     SELECT i.id, i.name, i.has_serial, 
-           SUM(CASE WHEN m.type = 'assignment' THEN m.quantity_change ELSE 0 END) -
-           SUM(CASE WHEN m.type = 'return' THEN m.quantity_change ELSE 0 END) as pending_qty
+           SUM(CASE WHEN m.type = 'assignment' THEN ABS(m.quantity_change) ELSE 0 END) -
+           SUM(CASE WHEN m.type = 'return' THEN ABS(m.quantity_change) ELSE 0 END) as pending_qty
     FROM inventory_movements m
     JOIN inventory_items i ON m.item_id = i.id
     WHERE m.session_id = ?

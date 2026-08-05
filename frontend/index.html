@@ -989,6 +989,46 @@
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
 <script>
+    window.generateStaffListHtml = function(session) {
+        if (!session.assigned_staff_list || session.assigned_staff_list.length === 0) {
+            const count = session.assigned_staff_count || 0;
+            return `<div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; text-align:left;">👥 <strong style="color:#fff;">Personal Asignado:</strong> ${count} persona(s)</div>`;
+        }
+        let supervisors = session.assigned_staff_list.filter(u => u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase()));
+        let employees = session.assigned_staff_list.filter(u => !(u.id == session.supervisor_id || ['supervisor', 'director'].includes(String(u.role).toLowerCase())));
+        
+        supervisors.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'es', { sensitivity: 'base' }));
+        employees.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'es', { sensitivity: 'base' }));
+        
+        let empRoleName = 'EMPLEADO';
+        if (session.type) {
+            const t = session.type.toLowerCase();
+            if (t.includes('valet')) empRoleName = 'PROTOCOLO / VALET PARKING';
+            else if (t.includes('logis') || t.includes('logística')) empRoleName = 'LOGÍSTICA';
+            else if (t.includes('guardia')) empRoleName = 'GUARDIA DIURNA/NOCTURNA';
+            else if (t.includes('equipo')) empRoleName = 'EQUIPOS';
+            else if (t.includes('traslado')) empRoleName = 'TRASLADOS';
+            else if (t.includes('custodia')) empRoleName = 'CUSTODIA';
+        }
+
+        let html = `<div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; text-align:left;">👥 <strong style="color:#fff;">Personal Asignado:</strong><br><ul style="list-style-type: none; padding-left: 0px; margin-top: 5px; margin-bottom: 5px; color:#fff;">`;
+        supervisors.forEach(u => {
+            let roleText = 'SUPERVISOR';
+            if (u.event_function) roleText += ` - ${u.event_function.toUpperCase()}`;
+            html += `<li style="margin-bottom:3px; padding-left:15px; position:relative;"><span style="position:absolute; left:0;">•</span> ${(u.name || 'Desconocido').toUpperCase()} - <span style="color:#f59e0b; font-weight:bold;">${roleText}</span></li>`;
+        });
+        employees.forEach(u => {
+            let roleToDisplay = empRoleName;
+            if (u.event_function) {
+                roleToDisplay = u.event_function.toUpperCase();
+            } else if (u.role && !['employee', 'valet', 'driver'].includes(u.role.toLowerCase())) {
+                roleToDisplay = u.role.toUpperCase();
+            }
+            html += `<li style="margin-bottom:3px; padding-left:15px; position:relative;"><span style="position:absolute; left:0;">•</span> ${(u.name || 'Desconocido').toUpperCase()} - <span style="color:#94a3b8;">${roleToDisplay}</span></li>`;
+        });
+        html += `</ul></div>`;
+        return html;
+    };
     window.toggleReportFav = function(cardId) {
         const currentUser = JSON.parse(localStorage.getItem('user'));
         const canModify = currentUser && (currentUser.is_corporate_profile === 1 || currentUser.role === 'director');
@@ -1047,6 +1087,59 @@
     };
 </script>
 
+    <style>
+        @keyframes swapOriginal {
+            0%, 45% { opacity: 1; visibility: visible; }
+            50%, 100% { opacity: 0; visibility: hidden; }
+        }
+        @keyframes swapWip {
+            0%, 45% { opacity: 0; visibility: hidden; }
+            50%, 100% { opacity: 1; visibility: visible; }
+        }
+        @keyframes slideStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+        .dev-card-original {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            height: 100%;
+            animation: swapOriginal 5s infinite;
+        }
+        .dev-card-wip {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #0b0f19;
+            background-image: linear-gradient(
+                -45deg, 
+                #f59e0b 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                #f59e0b 50%, 
+                #f59e0b 75%, 
+                transparent 75%, 
+                transparent
+            );
+            background-size: 40px 40px;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            animation: swapWip 5s infinite, slideStripes 2s linear infinite;
+            border-radius: inherit;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
 </head>
     <script>
         window.onerror = function(message, source, lineno, colno, error) {
@@ -1355,6 +1448,14 @@
                     <div class="menu-item-content">
                         <span class="menu-item-title">RESUMEN</span>
                         <span class="menu-item-desc">REPORTE Y CIERRE DE JORNADA</span>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="openInventoryModal(window.activeSession.id)">
+                    <i>📦</i>
+                    <div class="menu-item-content">
+                        <span class="menu-item-title">EQUIPOS</span>
+                        <span class="menu-item-desc">INVENTARIO DEL EVENTO</span>
                     </div>
                 </div>
             </div>
@@ -2769,6 +2870,7 @@
                     type: type.toLowerCase(), 
                     supervisor_id: supervisor_id,
                     staff_ids: staff_ids,
+                    staff_roles: window.staffSelection?.roles || {},
                     started_at: date,
                     phone: document.getElementById('lista-telefono').value,
                     address: document.getElementById('lista-direccion').value,
@@ -4169,20 +4271,26 @@
                         ` : ''}
                         ${canSeeAlquiler ? `
                         <!-- ALQUILER DE EQUIPOS -->
-                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:12px 15px; ${blinkAlquiler}">
-                            <i style="font-size:1.5rem">🏗️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+                        <div class="menu-item" onclick="enterModule('alquiler')" style="border-top: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05); padding:0; position:relative; overflow:hidden; ${blinkAlquiler}">
+                            <div class="dev-card-original" style="padding:12px 15px; box-sizing:border-box;">
+                                <i style="font-size:1.5rem">🏗️</i>
+                                <div class="menu-item-content">
+                                    <span class="menu-item-title" style="font-size:0.9rem;">ALQUILER DE EQUIPOS</span>
+                                </div>
                             </div>
+                            <div class="dev-card-wip">EN DESARROLLO 🚧</div>
                         </div>
                         ` : ''}
                         ${canSeeTraslados ? `
                         <!-- TRASLADOS -->
-                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:12px 15px; ${blinkTraslados}">
-                            <i style="font-size:1.5rem">🚐</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding:0; position:relative; overflow:hidden; ${blinkTraslados}">
+                            <div class="dev-card-original" style="padding:12px 15px; box-sizing:border-box;">
+                                <i style="font-size:1.5rem">🚐</i>
+                                <div class="menu-item-content">
+                                    <span class="menu-item-title" style="font-size:0.9rem;">TRASLADOS</span>
+                                </div>
                             </div>
+                            <div class="dev-card-wip">EN DESARROLLO 🚧</div>
                         </div>
                         ` : ''}
                         ${canSeeGuardia ? `
@@ -4196,11 +4304,14 @@
                         ` : ''}
                         ${canSeeCustodia ? `
                         <!-- CUSTODIA -->
-                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:12px 15px; ${blinkCustodia}">
-                            <i style="font-size:1.5rem">🛡️</i>
-                            <div class="menu-item-content">
-                                <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
+                        <div class="menu-item" onclick="toast('MÓDULO EN DESARROLLO', 'info')" style="border-top: 3px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:0; position:relative; overflow:hidden; ${blinkCustodia}">
+                            <div class="dev-card-original" style="padding:12px 15px; box-sizing:border-box;">
+                                <i style="font-size:1.5rem">🛡️</i>
+                                <div class="menu-item-content">
+                                    <span class="menu-item-title" style="font-size:0.9rem;">CUSTODIA</span>
+                                </div>
                             </div>
+                            <div class="dev-card-wip">EN DESARROLLO 🚧</div>
                         </div>
                         ` : ''}
                     </div>
@@ -4808,6 +4919,14 @@
                             <span class="menu-item-desc">REPORTE Y CIERRE DE JORNADA</span>
                         </div>
                     </div>
+                    
+                    <div class="menu-item" onclick="openInventoryModal(window.activeSession.id)">
+                        <i>📦</i>
+                        <div class="menu-item-content">
+                            <span class="menu-item-title">EQUIPOS</span>
+                            <span class="menu-item-desc">INVENTARIO DEL EVENTO</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
@@ -5016,6 +5135,7 @@
             return getTime(a) - getTime(b);
         });
 
+        // Comentado para evitar el salto automático al menú de valet
         if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
             window.didAutoSkipValet = true;
             const session = filteredSessions[0];
@@ -5159,7 +5279,7 @@
                 const opDetailsHtml = `
                     <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
                         <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:10px; text-align:center;">DETALLES OPERATIVOS</div>
-                        <div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; text-align:left;">👥 <strong style="color:#fff;">Personal Asignado:</strong> ${staffCount} persona(s)</div>
+                        ${window.generateStaffListHtml(session)}
                         ${mealsHtml}
                         ${equiposHtml}
                         ${transportHtml}
@@ -5177,7 +5297,7 @@
                             <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
                             ${endDetailsHtml}
                             <div id="countdown-timer-${session.id}" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
-                                FALTAN ${Math.floor(diffHoursTotal)}H ${Math.floor((diffMs % 3600000) / 60000)}M
+                                FALTAN ${diffMs > 0 ? Math.floor(diffHoursTotal) + 'H ' + Math.floor((diffMs % 3600000) / 60000) + 'M' : '0H 0M'}
                             </div>
                             ${opDetailsHtml}
                             ${session.address ? `
@@ -5188,6 +5308,32 @@
                                     </a>
                                 </div>
                             ` : ''}
+                            ${(() => {
+                                if (diffHoursTotal > 3) {
+                                    return `
+                                        <div style="margin-top:20px;">
+                                            <button class="btn" style="background:var(--surface2); color:var(--muted); width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:0.8rem; border:1px solid rgba(255,255,255,0.05); cursor:not-allowed;" disabled>
+                                                🛑 DISPONIBLE 3 HORAS ANTES
+                                            </button>
+                                        </div>
+                                    `;
+                                } else {
+                                    if (isAuthorizedSupervisor) {
+                                        return `
+                                            <div style="margin-top:20px;">
+                                                <button class="btn" style="background:var(--success); color:white; width:100%; padding:18px; border-radius:16px; font-weight:900; font-size:1rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);" onclick="activatePlannedSession(${session.id})">🚀 INICIAR OPERACIÓN AHORA</button>
+                                            </div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                                <div style="font-size:0.8rem; font-weight:900; color:var(--warning); margin-bottom:5px;">🕒 ESPERANDO INICIO DE OPERACIÓN</div>
+                                                <div style="font-size:0.6rem; color:var(--muted); font-weight:700;">EL SUPERVISOR O ADMINISTRADOR DEBE INICIAR EL EVENTO PARA PODER EMPEZAR.</div>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            })()}
                         </div>
                     </div>
                 `;
@@ -5940,9 +6086,15 @@
                                                         <div style="display:flex; align-items:center; gap:6px;">
                                                             ${isSuper ? `
                                                                 <span style="font-size:0.5rem; background:rgba(245,158,11,0.12); color:#f59e0b; padding:2px 4px; border-radius:4px; font-weight:900; border:1px solid rgba(245,158,11,0.25); letter-spacing:0.5px; text-transform:uppercase;">
-                                                                    SUPERV
+                                                                    SUPERV${u.event_function ? ' - ' + u.event_function.toUpperCase() : ''}
                                                                 </span>
-                                                            ` : ''}
+                                                            ` : `
+                                                                ${u.event_function ? `
+                                                                <span style="font-size:0.5rem; background:rgba(148,163,184,0.12); color:#94a3b8; padding:2px 4px; border-radius:4px; font-weight:900; border:1px solid rgba(148,163,184,0.25); letter-spacing:0.5px; text-transform:uppercase;">
+                                                                    ${u.event_function.toUpperCase()}
+                                                                </span>
+                                                                ` : ''}
+                                                            `}
                                                             <span onclick="openWhatsappDirectMessage('${u.phone || ''}', '${u.name}')" title="Enviar Mensaje por WhatsApp" style="cursor:pointer; font-size:0.8rem; opacity:0.8; transition:0.2s; color:#25D366;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'">💬</span>
                                                         </div>
                                                         <div style="font-size:0.65rem; color:var(--muted); font-weight:800; text-transform:uppercase;">
@@ -6832,7 +6984,7 @@
             // 1. Planificar
             const res = await apiFetch('/api/sessions/plan', {
                 method: 'POST',
-                body: JSON.stringify({ name, type: 'valet', supervisor_id, staff_ids })
+                body: JSON.stringify({ name, type: 'valet', supervisor_id, staff_ids, staff_roles: window.staffSelection?.roles || {} })
             });
 
             if (res && res.error) return toast(res.error, 'error');
@@ -9300,6 +9452,185 @@
         }
     };
 
+    window.triggerDocumentacionReport = async function() {
+        showLoading('VERIFICANDO MATRIZ...');
+        try {
+            const res = await apiFetch('/api/admin/report-subscriptions');
+            
+            let emailCount = 0;
+            let waCount = 0;
+            let destNames = [];
+            
+            if (res && res.subscriptions) {
+                res.subscriptions.forEach(sub => {
+                    const val = sub.estado_documentacion || 0;
+                    if (val > 0) {
+                        destNames.push(sub.name);
+                        if (val === 2 || val === 3) emailCount++;
+                        if (val === 1 || val === 3) waCount++;
+                    }
+                });
+            }
+            
+            let msgHtml = `<b>Reporte:</b> Estado de Documentación<br><br>
+                           <b>Se enviará a:</b><br>
+                           - ${emailCount} personas por EMAIL<br>
+                           - ${waCount} personas por WHATSAPP<br><br>`;
+            
+            if (destNames.length === 0) {
+                hideLoading();
+                msgHtml += `<span style="color:#f59e0b;">⚠️ NADIE ESTÁ SUSCRITO A ESTE REPORTE.</span><br>No se enviará ningún mensaje.`;
+                await window.asyncConfirm('Enviar Reporte', msgHtml);
+                return;
+            } else {
+                msgHtml += `<b>Destinatarios:</b><br><span style="color:#94a3b8;">${destNames.join(', ')}</span>`;
+            }
+            hideLoading();
+            
+            const confirmed1 = await window.asyncConfirm('¿Seguro que deseas enviar manualmente este reporte?', msgHtml);
+            if (!confirmed1) return;
+            
+            const confirmed2 = await window.asyncConfirm('⚠️ ADVERTENCIA FINAL', '¿CONFIRMAS DEFINITIVAMENTE EL ENVÍO?<br><br>Esta acción ejecutará el envío real a todos los suscritos.');
+            if (!confirmed2) return;
+            
+            showLoading('GENERANDO PDF...');
+            
+            // Generar PDF igual que en downloadExpiredDocsPDF
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                hideLoading();
+                alert('Error: jsPDF no está cargado');
+                return;
+            }
+            
+            const staffRes = await apiFetch('/api/staff');
+            if (!staffRes || !staffRes.staff || staffRes.staff.length === 0) {
+                hideLoading();
+                alert('Error: No se pudo cargar la lista de personal para generar el reporte.');
+                return;
+            }
+            
+            const staffList = staffRes.staff;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            let logoBase64 = null;
+            try {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = '/logo-eye-staff.jpeg';
+                await new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; });
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                logoBase64 = canvas.toDataURL('image/jpeg');
+            } catch(e) {}
+            
+            if (logoBase64) {
+                doc.addImage(logoBase64, 'JPEG', 14, 10, 30, 30);
+            }
+            
+            doc.setFontSize(16);
+            doc.text(`Reporte de Documentación Vencida`, 50, 25);
+            
+            const nowVE = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+            doc.setFontSize(10);
+            doc.text(`Fecha de generación: ${nowVE.toLocaleDateString('es-ES')} ${nowVE.toLocaleTimeString('es-ES')}`, 50, 32);
+            
+            const expiredData = [];
+            staffList.forEach(u => {
+                if (u.is_active === 0 || u.is_corporate_profile === 1) return;
+                
+                let hasExpired = false;
+                let row = {
+                    'Nombre': (u.name || '').toUpperCase(),
+                    'Cédula': (u.cedula || '').toUpperCase(),
+                    'Cédula Id.': '',
+                    'Licencia 2da': '',
+                    'Cert. Méd. 2da': '',
+                    'Licencia 3ra/4ta/5ta': '',
+                    'Cert. Méd. 3ra/4ta/5ta': ''
+                };
+                
+                const formatDocStatus = (expDate, isCert = false, relatedLicExp = null) => {
+                    if (isCert && relatedLicExp && !expDate) {
+                        hasExpired = true;
+                        return `FALTA`;
+                    }
+                    if (expDate) {
+                        const st = calculateDocumentStatus(expDate);
+                        if (st.status && st.status.toUpperCase() === 'VENCIDO') {
+                            hasExpired = true;
+                            return `X (${st.formattedDate})`;
+                        }
+                    }
+                    return '';
+                };
+                
+                row['Cédula Id.'] = formatDocStatus(u.cedula_exp);
+                row['Licencia 2da'] = formatDocStatus(u.licencia_exp);
+                row['Cert. Méd. 2da'] = formatDocStatus(u.cert_medico_exp, true, u.licencia_exp);
+                row['Licencia 3ra/4ta/5ta'] = formatDocStatus(u.licencia_3ra_exp);
+                row['Cert. Méd. 3ra/4ta/5ta'] = formatDocStatus(u.cert_medico_3ra_exp, true, u.licencia_3ra_exp);
+                
+                if (hasExpired) expiredData.push(row);
+            });
+            
+            if (expiredData.length === 0) {
+                hideLoading();
+                alert('No hay empleados activos con documentos vencidos, no es necesario enviar el reporte.');
+                return;
+            }
+            
+            const tableCols = [
+                { header: 'EMPLEADO', dataKey: 'Nombre' },
+                { header: 'C.I', dataKey: 'Cédula' },
+                { header: 'C.I VENCIDA', dataKey: 'Cédula Id.' },
+                { header: 'LIC. 2DA', dataKey: 'Licencia 2da' },
+                { header: 'CERT. MÉD 2DA', dataKey: 'Cert. Méd. 2da' },
+                { header: 'LIC. PROF', dataKey: 'Licencia 3ra/4ta/5ta' },
+                { header: 'CERT. MÉD PROF', dataKey: 'Cert. Méd. 3ra/4ta/5ta' }
+            ];
+            
+            doc.autoTable({
+                columns: tableCols,
+                body: expiredData,
+                startY: 50,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [234, 179, 8], textColor: [0, 0, 0] } // Amarillo para alertas
+            });
+            
+            const pdfBase64 = doc.output('datauristring');
+            
+            const htmlBody = `
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #0f172a;">Reporte de Documentación Vencida — EYE STAFF</h2>
+                <p style="color: #334155;">Hola,</p>
+                <p style="color: #334155;">Se adjunta el reporte consolidado de todo el personal que mantiene documentos de identidad o de conducción <strong>vencidos o faltantes</strong> a la fecha.</p>
+                <p style="color: #334155;">Este documento detalla a cada empleado y los requerimientos exactos a renovar.</p>
+                <p style="color: #334155; font-size: 0.8rem; margin-top: 20px;">Atentamente,<br>Sistema Automatizado EYE STAFF</p>
+            </div>`;
+            
+            showLoading('ENVIANDO...');
+            const sendRes = await apiFetch('/api/reports/send-documentacion', {
+                method: 'POST',
+                body: JSON.stringify({ pdfBase64, htmlBody })
+            });
+            hideLoading();
+            
+            if (sendRes && sendRes.success) {
+                toast(`✅ REPORTE ENVIADO A ${sendRes.sent} PERSONA(S)`, 'success');
+                alert(`📧 REPORTE ENVIADO CON ÉXITO\n\nSe ha enviado a los destinatarios configurados en la matriz.`);
+            } else {
+                throw new Error(sendRes.error || 'Error desconocido');
+            }
+        } catch(e) {
+            hideLoading();
+            toast('❌ ERROR AL ENVIAR', 'error');
+            alert('Ocurrió un error: ' + e.message);
+        }
+    };
+
     window.solicitarPruebaEspecifica = async function(type, sessionId = null, preview = false, channel = 'email') {
         let title = '';
         if (type === 'convocation') title = 'NOTIFICACIÓN DE CONVOCATORIA';
@@ -10042,6 +10373,18 @@
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(20, 184, 166, 0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
                         </div>
                         <h3 onclick="window.triggerReportFromMatrix('horario_eventos', 'Horario Eventos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Horarios (horario_eventos)</h3>
+                    </div>
+                </div>
+
+                <!-- 17. Reporte de Estado Documentación -->
+                <div class="card" data-card-id="c_estado_documentacion" style="border-top:4px solid #eab308; background:rgba(234, 179, 8, 0.02); display:flex; flex-direction:column; justify-content:space-between; gap:8px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <span class="report-fav-btn" data-card-id="c_estado_documentacion" onclick="toggleReportFav('c_estado_documentacion')" style="cursor:pointer; font-size:1.2rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🤍</span>
+                            <span style="font-size:1.5rem;">⚠️</span>
+                            <span style="font-size:0.6rem; font-weight:900; background:rgba(234, 179, 8, 0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
+                        </div>
+                        <h3 onclick="window.triggerDocumentacionReport()" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Estado Documentación (estado_documentacion)</h3>
                     </div>
                 </div>
 
@@ -11326,12 +11669,12 @@
                                         </div>
                                         <input type="file" id="staff-doc-cert2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-cert2-preview')">
                                     </div>
-                                    <!-- Licencia 3ra -->
+                                    <!-- Licencia 3ra/4ta/5ta -->
                                     <div style="text-align:center;">
                                         <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-lic3').click()">
                                             <img id="staff-doc-lic3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
                                             <span style="font-size:1.5rem; margin-bottom:5px;">🚚</span>
-                                            <span style="font-size:0.55rem; font-weight:bold;">LICENCIA 3RA</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">LICENCIA 3RA/4TA/5TA</span>
                                         </div>
                                         <input type="file" id="staff-doc-lic3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-lic3-preview')">
                                     </div>
@@ -11340,7 +11683,7 @@
                                         <div style="width:100%; height:100px; background:var(--surface); border:2px dashed var(--border); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="document.getElementById('staff-doc-cert3').click()">
                                             <img id="staff-doc-cert3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
                                             <span style="font-size:1.5rem; margin-bottom:5px;">⚕️</span>
-                                            <span style="font-size:0.55rem; font-weight:bold;">CERT MÉD 3RA</span>
+                                            <span style="font-size:0.55rem; font-weight:bold;">CERT MÉD 3RA/4TA/5TA</span>
                                         </div>
                                         <input type="file" id="staff-doc-cert3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'staff-doc-cert3-preview')">
                                     </div>
@@ -11365,6 +11708,7 @@
                     </div>
                     <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; flex: 1 1 auto; justify-content:flex-end;">
                         <button class="btn btn-success" onclick="downloadRRHHTemplate()" style="flex:1; min-width:140px; font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:var(--success); color:black; font-weight:900;">📥 DESCARGAR EXCEL</button>
+                        <button class="btn" onclick="downloadExpiredDocsPDF()" style="flex:1; min-width:140px; font-size:0.7rem; white-space:nowrap; margin-bottom:5px; background:#eab308; color:black; font-weight:900; border:none; border-radius:8px;">⚠️ ESTADO DOCUMENTACIÓN</button>
                         <button class="btn btn-accent" onclick="toggleStaffList()" style="flex:1; min-width:120px; font-size:0.7rem; white-space:normal; text-align:center; line-height:1.2; margin-bottom:5px;">📊 MOSTRAR MATRIZ COMPLETA</button>
                     </div>
                 </div>
@@ -11580,7 +11924,8 @@
                 { id: 'postulacion_empleo', name: 'Postulación Empleo' },
                 { id: 'inventarios', name: 'Inventarios' },
                 { id: 'horario_eventos', name: 'Horario Eventos' },
-                { id: 'formato_pago', name: 'Formato de Pago' }
+                { id: 'formato_pago', name: 'Formato de Pago' },
+                { id: 'estado_documentacion', name: 'Estado Documentación' }
             ];
             
             let thead = '<thead><tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:0.6rem; text-transform:uppercase;">';
@@ -11656,7 +12001,8 @@
                             'inventarios': 'inventarios',
                             'backup': 'backup',
                             'horario_eventos': 'horario_eventos',
-                            'formato_pago': 'formato_pago'
+                            'formato_pago': 'formato_pago',
+                            'estado_documentacion': 'estado_documentacion'
                         };
                         for (const [dbField, uiField] of Object.entries(fieldMap)) {
                             const toggleDiv = document.querySelector(`.report-matrix-toggle[data-user="${sub.user_id}"][data-report="${uiField}"]`);
@@ -11905,7 +12251,7 @@
                         const rowBg = u.is_active === 0 ? 'opacity:0.7; background:rgba(239,68,68,0.02);' : (u.is_corporate_profile === 1 ? 'background:rgba(255, 235, 59, 0.1);' : '');
 
                         return `
-                        <tr class="${hasPending ? 'blink-row-yellow' : ''}" style="border-bottom:1px solid var(--border); ${hasPending ? '' : rowBg}">
+                        <tr class="${hasPending ? 'blink-row-yellow' : ''}" style="border-bottom:1px solid var(--border); cursor:pointer; ${hasPending ? '' : rowBg}" onclick="if(!['SELECT', 'INPUT', 'BUTTON', 'SPAN'].includes(event.target.tagName)) openStaffEditModal(${u.id})">
                             <td style="padding:4px; text-align:center; vertical-align:middle; width:40px;">
                                 <span onclick="updateStaffField(${u.id}, 'is_chofer', ${u.is_chofer ? 0 : 1})" title="${u.is_chofer ? 'Quitar Chofer' : 'Asignar Chofer'}" style="font-size:1.1rem; cursor:pointer; opacity:${u.is_chofer ? '1' : '0.1'}; transition:0.2s;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'" onmouseout="this.style.opacity='${u.is_chofer ? '1' : '0.1'}'; this.style.transform='scale(1)'">🚗</span>
                             </td>
@@ -12093,6 +12439,16 @@
         document.getElementById('edit-staff-pago-movil').checked = !!u.pago_movil;
         if(document.getElementById('edit-staff-pago-movil-phone')) document.getElementById('edit-staff-pago-movil-phone').value = u.pago_movil_phone || '';
         document.getElementById('edit-staff-account').disabled = !!u.pago_movil;
+        
+        document.getElementById('edit-staff-cedula-exp').value = u.cedula_exp || '';
+        document.getElementById('edit-staff-lic2-num').value = u.licencia_num || '';
+        document.getElementById('edit-staff-lic2-exp').value = u.licencia_exp || '';
+        document.getElementById('edit-staff-cert2-num').value = u.cert_medico_num || '';
+        document.getElementById('edit-staff-cert2-exp').value = u.cert_medico_exp || '';
+        document.getElementById('edit-staff-lic3-num').value = u.licencia_3ra_num || '';
+        document.getElementById('edit-staff-lic3-exp').value = u.licencia_3ra_exp || '';
+        document.getElementById('edit-staff-cert3-num').value = u.cert_medico_3ra_num || '';
+        document.getElementById('edit-staff-cert3-exp').value = u.cert_medico_3ra_exp || '';
 
         // Reset previews
         const docIds = ['cedula', 'lic2', 'cert2', 'lic3', 'cert3'];
@@ -12143,8 +12499,16 @@
         const choferCheck = document.getElementById('edit-staff-chofer');
         if (choferCheck) choferCheck.checked = !!u.is_chofer;
 
-        document.getElementById('edit-carnet-img').src = getCarnetUrl(u.photo_url || u.carnet_url);
-
+        const carnetImg = document.getElementById('edit-carnet-img');
+        const carnetIcon = document.getElementById('edit-staff-carnet-icon');
+        const finalUrl = getCarnetUrl(u.photo_url || u.carnet_url);
+        if (finalUrl) {
+            if (carnetImg) { carnetImg.src = finalUrl; carnetImg.style.display = 'block'; }
+            if (carnetIcon) carnetIcon.style.display = 'none';
+        } else {
+            if (carnetImg) { carnetImg.src = ''; carnetImg.style.display = 'none'; }
+            if (carnetIcon) carnetIcon.style.display = 'flex';
+        }
         // Calcular edad
         const age = calculateAge(u.birth_date, isCorporate);
         const valSpan = document.getElementById('edit-staff-age-val');
@@ -12196,6 +12560,43 @@
         const modal = document.getElementById('staff-edit-modal');
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('open'), 10);
+
+        // Check AI quota availability when opening the modal
+        checkAIAvailability();
+
+        // Auto-extracción con IA: si hay foto pero no hay fecha, lanzar automáticamente
+        setTimeout(() => {
+            const autoExtractQueue = [
+                { docType: 'cedula',           linkId: 'edit-staff-doc-cedula-link', numId: null,                  expId: 'edit-staff-cedula-exp' },
+                { docType: 'licencia_conducir', linkId: 'edit-staff-doc-lic2-link',   numId: 'edit-staff-lic2-num', expId: 'edit-staff-lic2-exp' },
+                { docType: 'certificado_medico',linkId: 'edit-staff-doc-cert2-link',  numId: 'edit-staff-cert2-num',expId: 'edit-staff-cert2-exp' },
+                { docType: 'licencia_conducir', linkId: 'edit-staff-doc-lic3-link',   numId: 'edit-staff-lic3-num', expId: 'edit-staff-lic3-exp' },
+                { docType: 'certificado_medico',linkId: 'edit-staff-doc-cert3-link',  numId: 'edit-staff-cert3-num',expId: 'edit-staff-cert3-exp' }
+            ];
+
+            let delay = 0;
+            autoExtractQueue.forEach(item => {
+                const linkEl = document.getElementById(item.linkId);
+                const expEl = document.getElementById(item.expId);
+                const numEl = item.numId ? document.getElementById(item.numId) : null;
+
+                // Solo extraer si hay foto pero los campos están vacíos
+                const hasPhoto = linkEl && linkEl.style.display !== 'none' && linkEl.getAttribute('href') && linkEl.getAttribute('href') !== '#';
+                const missingExp = !expEl || !expEl.value;
+                const missingNum = !numEl || !numEl.value;
+
+                if (hasPhoto && (missingExp || missingNum)) {
+                    // DESHABILITADO TEMPORALMENTE A PETICIÓN DEL USUARIO (CUOTA AGOTADA)
+                    /*
+                    setTimeout(() => {
+                        const fakeBtn = { innerHTML: '', disabled: false };
+                        window.extractDataWithAI(item.docType, item.linkId, item.numId, item.expId, fakeBtn);
+                    }, delay);
+                    delay += 2500; // Escalonar para no saturar el límite de la API
+                    */
+                }
+            });
+        }, 500);
     }
 
     function closeStaffEditModal() {
@@ -12208,7 +12609,10 @@
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('edit-carnet-img').src = e.target.result;
+                const img = document.getElementById('edit-carnet-img');
+                const icon = document.getElementById('edit-staff-carnet-icon');
+                if (img) { img.src = e.target.result; img.style.display = 'block'; }
+                if (icon) icon.style.display = 'none';
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -12235,6 +12639,16 @@
         const allergies = document.getElementById('edit-staff-allergies').value.trim();
         const isCorporate = document.getElementById('edit-staff-is-corporate').checked ? 1 : 0;
         const isChofer = document.getElementById('edit-staff-chofer')?.checked ? 1 : 0;
+        
+        const cedulaExp = document.getElementById('edit-staff-cedula-exp').value;
+        const lic2Num = document.getElementById('edit-staff-lic2-num').value.trim();
+        const lic2Exp = document.getElementById('edit-staff-lic2-exp').value;
+        const cert2Num = document.getElementById('edit-staff-cert2-num').value.trim();
+        const cert2Exp = document.getElementById('edit-staff-cert2-exp').value;
+        const lic3Num = document.getElementById('edit-staff-lic3-num').value.trim();
+        const lic3Exp = document.getElementById('edit-staff-lic3-exp').value;
+        const cert3Num = document.getElementById('edit-staff-cert3-num').value.trim();
+        const cert3Exp = document.getElementById('edit-staff-cert3-exp').value;
 
         let finalCedula = cedulaInput;
         let finalEyeId = eyeId;
@@ -12290,7 +12704,16 @@
             emergency_phone: finalEPhone,
             is_allergic: finalAllergies,
             is_corporate_profile: isCorporate,
-            is_chofer: isChofer
+            is_chofer: isChofer,
+            cedula_exp: cedulaExp,
+            licencia_num: lic2Num,
+            licencia_exp: lic2Exp,
+            cert_medico_num: cert2Num,
+            cert_medico_exp: cert2Exp,
+            licencia_3ra_num: lic3Num,
+            licencia_3ra_exp: lic3Exp,
+            cert_medico_3ra_num: cert3Num,
+            cert_medico_3ra_exp: cert3Exp
         };
 
         const fileInput = document.getElementById('edit-staff-carnet');
@@ -12394,7 +12817,7 @@
     }
 
     function getCarnetUrl(url) {
-        if (!url) return '/logo-eye-staff.jpeg';
+        if (!url) return '';
         if (url.startsWith('data:') || url.startsWith('http:') || url.startsWith('https:') || url.startsWith('/api/')) {
             return url;
         }
@@ -12786,12 +13209,33 @@
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         const canDelete = currentUser.is_corporate_profile === 1 || currentUser.role === 'director' || false;
 
-        const renderDoc = (title, base64) => {
-            if (!base64) return `<div style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;"><b>${title}:</b> No adjuntado</div>`;
+        const renderConflict = (title, currentUrl, newBase64, key) => {
+            if (!newBase64) return `<div style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;"><b>${title}:</b> No adjuntado (se conserva actual si existe)</div>`;
+            
+            if (!currentUrl) {
+                return `
+                    <div style="margin-bottom:15px; border-left: 3px solid var(--success); padding-left:10px;">
+                        <div style="color:var(--success); font-size:0.85rem; margin-bottom:5px;"><b>${title}:</b> Nuevo documento adjunto</div>
+                        <img src="${newBase64}" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid var(--border); object-fit:contain;">
+                    </div>
+                `;
+            }
+
             return `
-                <div style="margin-bottom:15px;">
-                    <div style="color:white; font-size:0.85rem; margin-bottom:5px;"><b>${title}:</b></div>
-                    <img src="${base64}" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid var(--border); object-fit:contain;">
+                <div style="margin-bottom:20px; border:1px solid rgba(239, 68, 68, 0.3); border-radius:12px; padding:15px; background:rgba(239, 68, 68, 0.05);">
+                    <div style="color:#ef4444; font-size:0.85rem; margin-bottom:10px; font-weight:bold;">⚠️ Conflicto: ${title} ya existe en el sistema</div>
+                    <div style="display:flex; gap:15px;">
+                        <div style="flex:1; text-align:center;">
+                            <div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px;">ACTUAL</div>
+                            <img src="${resolvePhotoUrl(currentUrl)}" style="max-width:100%; max-height:150px; border-radius:8px; border:1px solid var(--border); object-fit:contain; margin-bottom:10px;">
+                            <label style="display:block; font-size:0.8rem; cursor:pointer;"><input type="radio" name="conflict_${key}" value="keep"> Conservar Actual</label>
+                        </div>
+                        <div style="flex:1; text-align:center;">
+                            <div style="font-size:0.75rem; color:var(--success); margin-bottom:5px;">NUEVO</div>
+                            <img src="${newBase64}" style="max-width:100%; max-height:150px; border-radius:8px; border:1px solid var(--border); object-fit:contain; margin-bottom:10px;">
+                            <label style="display:block; font-size:0.8rem; cursor:pointer;"><input type="radio" name="conflict_${key}" value="replace" checked> Reemplazar</label>
+                        </div>
+                    </div>
                 </div>
             `;
         };
@@ -12807,9 +13251,13 @@
         const html = `
             <div style="padding:10px;">
                 <h2 style="color:white; margin-top:0; border-bottom:1px solid var(--border); padding-bottom:10px;">Revisar Actualización</h2>
+                
+                ${update.photo_base64 && update.current_photo ? renderConflict('Foto de Perfil', update.current_photo, update.photo_base64, 'photo') : `
                 <div style="display:flex; justify-content:center; margin-bottom:20px;">
                     <img src="${photoToShow}" style="width:120px; height:120px; object-fit:cover; border-radius:50%; border:3px solid var(--brand-blue);">
                 </div>
+                `}
+                
                 <h3 style="color:white; text-align:center; margin-top:0;">${update.user_name}</h3>
                 <p style="color:var(--muted); text-align:center; font-size:0.9rem; margin-bottom:20px;">Cédula: ${update.user_cedula || 'N/A'}</p>
 
@@ -12844,11 +13292,11 @@
 
                 <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:20px;">
                     <h4 style="color:var(--brand-blue); margin-top:0;">Documentos Adjuntos</h4>
-                    ${renderDoc('Cédula de Identidad', d.doc_cedula_base64)}
-                    ${renderDoc('Licencia de 2da', d.doc_licencia2_base64)}
-                    ${renderDoc('Certificado Médico de 2da', d.doc_certificado2_base64)}
-                    ${renderDoc('Licencia de 3ra', d.doc_licencia3_base64)}
-                    ${renderDoc('Certificado Médico de 3ra', d.doc_certificado3_base64)}
+                    ${renderConflict('Cédula de Identidad', update.cedula_photo_url, d.doc_cedula_base64, 'cedula')}
+                    ${renderConflict('Licencia de 2da', update.licencia_photo_url, d.doc_licencia2_base64, 'licencia2')}
+                    ${renderConflict('Certificado Médico de 2da', update.certificado_medico_url, d.doc_certificado2_base64, 'certificado2')}
+                    ${renderConflict('Licencia de 3ra/4ta/5ta', update.licencia_3ra_photo_url, d.doc_licencia3_base64, 'licencia3')}
+                    ${renderConflict('Certificado Médico de 3ra/4ta/5ta', update.certificado_medico_3ra_url, d.doc_certificado3_base64, 'certificado3')}
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
@@ -12864,11 +13312,36 @@
 
     window.approveUpdate = async function(id) {
         if (!confirm('¿Está seguro de que desea APROBAR esta solicitud de actualización?')) return;
+        
+        const update = window.pendingUpdatesData.find(u => u.id === id);
+        let modifiedData = JSON.parse(update.proposed_data || '{}');
+        
+        // Gather choices
+        const conflicts = [
+            { key: 'photo', docKey: 'discard_photo' },
+            { key: 'cedula', docKey: 'doc_cedula_base64' },
+            { key: 'licencia2', docKey: 'doc_licencia2_base64' },
+            { key: 'certificado2', docKey: 'doc_certificado2_base64' },
+            { key: 'licencia3', docKey: 'doc_licencia3_base64' },
+            { key: 'certificado3', docKey: 'doc_certificado3_base64' }
+        ];
+
+        for (let c of conflicts) {
+            const rb = document.querySelector(`input[name="conflict_${c.key}"]:checked`);
+            if (rb && rb.value === 'keep') {
+                if (c.key === 'photo') {
+                    modifiedData.discard_photo = true;
+                } else {
+                    delete modifiedData[c.docKey];
+                }
+            }
+        }
+
         showLoading('APROBANDO...');
         try {
             const res = await apiFetch(`/api/admin/approve-data-update/${id}`, {
                 method: 'POST',
-                body: JSON.stringify({})
+                body: JSON.stringify({ modifiedData })
             });
             if (res && res.success) {
                 toast('Cambios aprobados correctamente', 'success');
@@ -13047,7 +13520,12 @@
                 });
 
                 const data = [
-                    ['ITEM', 'STATUS', 'PERFIL CORPORATIVO', 'NOMBRE', 'CEDULA', 'EMAIL', 'PERFIL ADMIN', 'PERFIL OPERA', 'EYE ID', 'TELEFONO', 'TELEFONO PAGO MOVIL', 'DIRECCION', 'SECTOR', 'ENTIDAD BANCARIA', 'NUMERO DE CUENTA', 'FAMILIAR', 'TELFAMIILIAR', 'ALERGIAS', 'FECHA DE NACIMIENTO', 'EDAD', 'FECHA DE INGRESO', 'ANTIGÜEDAD'],
+                    ['ITEM', 'STATUS', 'PERFIL CORPORATIVO', 'NOMBRE', 'CEDULA', 'EMAIL', 'PERFIL ADMIN', 'PERFIL OPERA', 'EYE ID', 'TELEFONO', 'DIRECCION', 'SECTOR', 'ENTIDAD BANCARIA', 'TELEFONO PAGO MOVIL', 'NUMERO DE CUENTA', 'FAMILIAR', 'TELFAMIILIAR', 'ALERGIAS', 'FECHA DE NACIMIENTO', 'EDAD', 'FECHA DE INGRESO', 'ANTIGÜEDAD',
+                     'CÉDULA - IMAGEN', 'CÉDULA - VENCIMIENTO',
+                     'LICENCIA 2DA - IMAGEN', 'LICENCIA 2DA - VENCIMIENTO',
+                     'CERT. MÉDICO 2DA - IMAGEN', 'CERT. MÉDICO 2DA - VENCIMIENTO',
+                     'LICENCIA 3RA/4TA/5TA. 4TA. 5TA. - IMAGEN', 'LICENCIA 3RA/4TA/5TA. 4TA. 5TA. - VENCIMIENTO',
+                     'CERT. MÉDICO 3RA/4TA/5TA. 4TA. 5TA. - IMAGEN', 'CERT. MÉDICO 3RA/4TA/5TA. 4TA. 5TA. - VENCIMIENTO'],
                     ...list.map((u, i) => {
                         let age = '';
                         if (u.birth_date) {
@@ -13072,10 +13550,10 @@
                             (u.profile_opera || '').toUpperCase(), 
                             (u.eye_id || '').toUpperCase(),
                             (u.phone || '').toUpperCase(), 
-                            (u.pago_movil_phone || '').toUpperCase(),
                             (u.address || '').toUpperCase(), 
                             (u.sector || '').toUpperCase(), 
                             (u.bank_name || '').toUpperCase(),
+                            (u.pago_movil_phone || '').toUpperCase(),
                             u.pago_movil ? 'N/A' : (u.bank_account || '').toUpperCase(),
                             (u.emergency_contact || '').toUpperCase(),
                             (u.emergency_phone || '').toUpperCase(),
@@ -13083,7 +13561,18 @@
                             u.is_corporate_profile === 1 ? 'N/A' : (u.birth_date ? u.birth_date.split('-').reverse().join('/') : ''),
                             calculateAge(u.birth_date, u.is_corporate_profile === 1) || '--',
                             u.is_corporate_profile === 1 ? 'N/A' : (u.entry_date ? new Date(u.entry_date).toLocaleDateString('es-ES') : ''),
-                            calculateSeniority(u.entry_date, u.is_corporate_profile === 1) || '--'
+                            calculateSeniority(u.entry_date, u.is_corporate_profile === 1) || '--',
+                            // Documentos
+                            u.cedula_photo_url ? '✅' : '',
+                            u.cedula_exp ? u.cedula_exp.split('-').reverse().join('/') : '',
+                            u.licencia_photo_url ? '✅' : '',
+                            u.licencia_exp ? u.licencia_exp.split('-').reverse().join('/') : '',
+                            u.certificado_medico_url ? '✅' : '',
+                            u.cert_medico_exp ? u.cert_medico_exp.split('-').reverse().join('/') : '',
+                            u.licencia_3ra_photo_url ? '✅' : '',
+                            u.licencia_3ra_exp ? u.licencia_3ra_exp.split('-').reverse().join('/') : '',
+                            u.certificado_medico_3ra_url ? '✅' : '',
+                            u.cert_medico_3ra_exp ? u.cert_medico_3ra_exp.split('-').reverse().join('/') : ''
                         ];
                     })
                 ];
@@ -13105,14 +13594,37 @@
                     for (let c = 0; c < data[r].length; c++) {
                         const val = data[r][c];
                         const isEmpty = val === '' || val === '---';
+                        let shouldFillYellow = isEmpty;
                         
-                        if (isEmpty || isInactive) {
+                        // Si estamos en las columnas de documentos
+                        if (isEmpty) {
+                            if (c >= 22 && c <= 23) {
+                                // Cédula (bloque de 2)
+                                const groupStart = 22;
+                                const imgEmpty = data[r][groupStart] === '' || data[r][groupStart] === '---';
+                                
+                                if (c === 22) {
+                                    shouldFillYellow = false; // Quitar amarillo en CÉDULA - IMAGEN si está en blanco
+                                } else if (c === 23) {
+                                    // CÉDULA - VENCIMIENTO: solo amarillo si hay imagen
+                                    if (imgEmpty) shouldFillYellow = false;
+                                }
+                            } else if (c >= 24 && c <= 31) {
+                                // Resto de documentos (bloques de 2)
+                                const groupStart = 24 + Math.floor((c - 24) / 2) * 2;
+                                const imgEmpty = data[r][groupStart] === '' || data[r][groupStart] === '---';
+                                const expEmpty = data[r][groupStart + 1] === '' || data[r][groupStart + 1] === '---';
+                                if (imgEmpty && expEmpty) shouldFillYellow = false;
+                            }
+                        }
+                        
+                        if (shouldFillYellow || isInactive) {
                             const cellAddress = XLSX.utils.encode_cell({r: r, c: c});
                             if (!ws[cellAddress]) ws[cellAddress] = { t: 's', v: '' };
                             
                             ws[cellAddress].s = ws[cellAddress].s || {};
                             
-                            if (isEmpty) {
+                            if (shouldFillYellow) {
                                 ws[cellAddress].s.fill = { fgColor: { rgb: "FFFFFF00" } }; // Amarillo
                             }
                             
@@ -13615,15 +14127,16 @@
             return getTime(a) - getTime(b);
         });
 
-        if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
-            window.didAutoSkipValet = true;
-            const session = filteredSessions[0];
-            window.currentSessionId = session.id;
-            window.activeSession = session;
-            localStorage.setItem('selectedSessionId', session.id);
-            checkActiveSession().then(() => showTab('valet-menu'));
-            return;
-        }
+        // Comentado para evitar el salto automático al menú
+        // if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
+        //     window.didAutoSkipValet = true;
+        //     const session = filteredSessions[0];
+        //     window.currentSessionId = session.id;
+        //     window.activeSession = session;
+        //     localStorage.setItem('selectedSessionId', session.id);
+        //     checkActiveSession().then(() => showTab('valet-menu'));
+        //     return;
+        // }
 
         if (filteredSessions.length === 0) {
             renderAccessControlPresentation(el);
@@ -13704,7 +14217,7 @@
                 <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
                     <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:10px; text-align:center;">DETALLES OPERATIVOS</div>
                     ${clientHtml}
-                    <div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; text-align:left;">👥 <strong style="color:#fff;">Personal Asignado:</strong> ${staffCount} persona(s)</div>
+                    ${window.generateStaffListHtml(session)}
                     ${mealsHtml}
                     ${equiposHtml}
                     ${transportHtml}
@@ -13757,6 +14270,18 @@
                 const [hh, mm_time] = (session.event_start_time || '00:00').split(':');
                 const schedDate = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${hh.padStart(2, '0')}:${mm_time.padStart(2, '0')}:00-04:00`);
 
+                let endDetailsHtml = '';
+                if (session.event_end_date && session.event_end_time) {
+                    const [eyy, emm, edd] = session.event_end_date.split('-');
+                    const endSchedDate = new Date(parseInt(eyy), parseInt(emm) - 1, parseInt(edd));
+                    const [ehh, emi] = session.event_end_time.split(':');
+                    endSchedDate.setHours(parseInt(ehh) || 0, parseInt(emi) || 0, 0, 0);
+                    endDetailsHtml = `
+                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:10px; margin-bottom:5px;">FINALIZA EL DÍA:</div>
+                        <div style="font-size:0.95rem; font-weight:900; color:var(--danger);">${formatDateExplicit(endSchedDate)} A LAS ${session.event_end_time}</div>
+                    `;
+                }
+
                 const isAuthorizedSupervisor = (user && (
                     user.id === session.supervisor_id || 
                     user.role === 'director' ||
@@ -13803,6 +14328,7 @@
                         <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
                             <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">EL EVENTO ESTÁ PROGRAMADO PARA EL DÍA:</div>
                             <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                            ${endDetailsHtml}
                             <div id="countdown-timer-${session.id}" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
                                 FALTAN ${diffMs > 0 ? Math.floor(diffHours) + 'H ' + Math.floor((diffMs % 3600000) / 60000) + 'M' : '0H 0M'}
                             </div>
@@ -13904,7 +14430,14 @@
                     </div>
                 </div>
 
-                        <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
+                <!-- BOTÓN DE INVENTARIO -->
+                <div style="display:flex; justify-content:center; margin-bottom: 30px;">
+                    <button class="btn" style="background:#a855f7; color:white; padding:15px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(168,85,247,0.3); border:none; cursor:pointer;" onclick="openInventoryModal(${session.id})">
+                        📦 VER EQUIPOS / INVENTARIO
+                    </button>
+                </div>
+
+                <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
                 ${(session && session.status === 'active' && (() => {
                     const cu = JSON.parse(localStorage.getItem('user') || '{}');
                     return (cu.id === session.supervisor_id || cu.role === 'director' || false || window.isUserAdminOrStaff(cu));
@@ -14364,15 +14897,16 @@ Maria Gomez   INVITADO   04141234567"></textarea>
             return getTime(a) - getTime(b);
         });
 
-        if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
-            window.didAutoSkipValet = true;
-            const session = filteredSessions[0];
-            window.currentSessionId = session.id;
-            window.activeSession = session;
-            localStorage.setItem('selectedSessionId', session.id);
-            checkActiveSession().then(() => showTab('valet-menu'));
-            return;
-        }
+        // Comentado para evitar el salto automático al menú
+        // if (filteredSessions.length === 1 && !window.didAutoSkipValet) {
+        //     window.didAutoSkipValet = true;
+        //     const session = filteredSessions[0];
+        //     window.currentSessionId = session.id;
+        //     window.activeSession = session;
+        //     localStorage.setItem('selectedSessionId', session.id);
+        //     checkActiveSession().then(() => showTab('valet-menu'));
+        //     return;
+        // }
 
         if (filteredSessions.length === 0) {
             renderGuardiaPresentation(el);
@@ -14449,7 +14983,7 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:left;">
                     <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:10px; text-align:center;">DETALLES OPERATIVOS</div>
                     ${clientHtml}
-                    <div style="font-size:0.75rem; color:var(--muted); margin-bottom:5px; text-align:left;">👥 <strong style="color:#fff;">Personal Asignado:</strong> ${staffCount} persona(s)</div>
+                    ${window.generateStaffListHtml(session)}
                     ${mealsHtml}
                     ${equiposHtml}
                     ${transportHtml}
@@ -14475,6 +15009,18 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 }
                 const [hh, mm_time] = (session.event_start_time || '00:00').split(':');
                 const schedDate = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}T${hh.padStart(2, '0')}:${mm_time.padStart(2, '0')}:00-04:00`);
+
+                let endDetailsHtml = '';
+                if (session.event_end_date && session.event_end_time) {
+                    const [eyy, emm, edd] = session.event_end_date.split('-');
+                    const endSchedDate = new Date(parseInt(eyy), parseInt(emm) - 1, parseInt(edd));
+                    const [ehh, emi] = session.event_end_time.split(':');
+                    endSchedDate.setHours(parseInt(ehh) || 0, parseInt(emi) || 0, 0, 0);
+                    endDetailsHtml = `
+                        <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:10px; margin-bottom:5px;">FINALIZA EL DÍA:</div>
+                        <div style="font-size:0.95rem; font-weight:900; color:var(--danger);">${formatDateExplicit(endSchedDate)} A LAS ${session.event_end_time}</div>
+                    `;
+                }
 
                 const isAuthorizedSupervisor = (user && (
                     user.id == session.supervisor_id || 
@@ -14517,7 +15063,25 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                         <h2 style="color:var(--warning); margin:0 0 5px 0; font-size:1.2rem; font-weight:900;">GUARDIA PROGRAMADA</h2>
                         <div style="font-size:1.1rem; font-weight:900; color:#fff; margin-bottom:15px; text-transform:uppercase; letter-spacing:0.5px;">${session.name}</div>
                         <p style="font-size:0.7rem; color:var(--muted); margin-bottom:20px; font-weight:700;">LA GUARDIA AÚN NO HA INICIADO OPERATIVAMENTE.</p>
+                        
+                        <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                            <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">LA GUARDIA ESTÁ PROGRAMADA PARA EL DÍA:</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">${formatDateExplicit(schedDate)} A LAS ${session.event_start_time || '00:00'}</div>
+                            ${endDetailsHtml}
+                            <div id="countdown-timer-${session.id}" style="font-size:1.5rem; font-weight:900; color:#fff; margin-top:15px; letter-spacing:-1px;">
+                                FALTAN ${diffMs > 0 ? Math.floor(diffHours) + 'H ' + Math.floor((diffMs % 3600000) / 60000) + 'M' : '0H 0M'}
+                            </div>
+                        </div>
+
                         ${opDetailsHtml}
+                        ${session.address ? `
+                            <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px; text-align:center;">
+                                <div style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-bottom:5px;">DIRECCIÓN:</div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.address)}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; font-size:0.8rem; border-bottom:1px dashed var(--accent);">
+                                    ${session.address.toUpperCase()} 🔗
+                                </a>
+                            </div>
+                        ` : ''}
                         ${actionHtml}
                     </div>
                 `;
@@ -14530,6 +15094,19 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                 renderGuardiaDashboard(document.getElementById(`guardia-dashboard-container-${session.id}`), session);
             }
         });
+        
+        const backBtnContainer = document.createElement('div');
+        backBtnContainer.style.display = 'flex';
+        backBtnContainer.style.justifyContent = 'center';
+        backBtnContainer.style.width = '100%';
+        backBtnContainer.style.marginTop = '40px';
+        backBtnContainer.style.marginBottom = '40px';
+        backBtnContainer.innerHTML = `
+            <button class="btn" style="background:#22c55e; color:white; padding:12px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(34,197,94,0.3); border:none; cursor:pointer;" onclick="exitToPortal()">
+                ⬅ VOLVER
+            </button>
+        `;
+        document.getElementById('guardia-view').appendChild(backBtnContainer);
     }
 
     async function renderGuardiaDashboard(el, session) {
@@ -14656,6 +15233,13 @@ Maria Gomez   INVITADO   04141234567"></textarea>
 
                     </div>
                     </div>
+                </div>
+
+                <!-- BOTÓN DE INVENTARIO -->
+                <div style="display:flex; justify-content:center; margin-bottom: 30px;">
+                    <button class="btn" style="background:#6366f1; color:white; padding:15px 30px; font-weight:900; letter-spacing:1px; border-radius:30px; box-shadow: 0 0 20px rgba(99,102,241,0.3); border:none; cursor:pointer;" onclick="openInventoryModal(${session.id})">
+                        📦 VER EQUIPOS / INVENTARIO
+                    </button>
                 </div>
 
                 <!-- GESTIÓN DE PERSONAL INTERACTIVA -->
@@ -17797,7 +18381,12 @@ Maria Gomez   INVITADO   04141234567"></textarea>
     window.previewEditCarnet = function(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) { document.getElementById('edit-carnet-img').src = e.target.result; };
+            reader.onload = function(e) { 
+                const img = document.getElementById('edit-carnet-img');
+                const icon = document.getElementById('edit-staff-carnet-icon');
+                if (img) { img.src = e.target.result; img.style.display = 'block'; }
+                if (icon) icon.style.display = 'none';
+            };
             reader.readAsDataURL(input.files[0]);
         }
     };
@@ -18074,12 +18663,21 @@ Maria Gomez   INVITADO   04141234567"></textarea>
 
                     <div style="clear:both;"></div>
                     <div id="edit-staff-docs-container" style="margin-bottom:20px; margin-top:20px; background:rgba(255,255,255,0.03); padding:20px; border-radius:12px; border:1px solid var(--border);">
-                        <label style="display:block; margin-bottom:20px; font-weight:bold; color:var(--accent); font-size:1.1rem; text-align:center;">DOCUMENTACIÓN</label>
+                        <div style="display:flex; justify-content:center; align-items:center; margin-bottom: 20px; flex-direction:column; gap:10px;">
+                            <label style="display:block; font-weight:bold; color:var(--accent); font-size:1.1rem; text-align:center; margin:0;">DOCUMENTACIÓN</label>
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;">
+                                <button class="btn btn-sm btn-accent" style="border-radius:20px; text-transform:uppercase; font-weight:900;" onclick="openDocSummaryModal()">VER RESUMEN</button>
+                            </div>
+                        </div>
                         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px;">
                             <!-- Foto del empleado -->
                             <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
                                 <div class="carnet-preview-container" onclick="handleDocClick('edit-staff-carnet')" style="width:100%; height:200px; margin-bottom:10px; border: 2px dashed rgba(255,255,255,0.1); border-radius:16px; overflow:hidden; background:rgba(0,0,0,0.2); cursor:pointer; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                    <img id="edit-carnet-img" src="/logo-eye-staff.jpeg" style="width:100%; height:100%; object-fit:contain; display:block; position:absolute; top:0; left:0; z-index:1;">
+                                    <img id="edit-carnet-img" style="width:100%; height:100%; object-fit:contain; display:none; position:absolute; top:0; left:0; z-index:1;">
+                                    <div id="edit-staff-carnet-icon" style="display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:0;">
+                                        <span style="font-size:2.5rem; margin-bottom:10px;">👤</span>
+                                        <span style="font-size:0.8rem; font-weight:bold; color:var(--muted);">FOTO</span>
+                                    </div>
                                 </div>
                                 <input type="file" id="edit-staff-carnet" hidden accept="image/*" onchange="previewEditCarnet(this)">
                                 <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:10px;">FOTO DE PERFIL</p>
@@ -18103,7 +18701,14 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                     <a id="edit-staff-doc-cedula-link" href="#" target="_blank" style="display:none; position:absolute; top:10px; right:10px; z-index:2; font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:8px; padding:5px;" onclick="event.stopPropagation()">🔗</a>
                                 </div>
                                 <input type="file" id="edit-staff-doc-cedula" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'edit-staff-doc-cedula-preview')">
-                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px;">CÉDULA</p>
+                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:0;">CÉDULA</p>
+                                <div style="width:100%; display:flex; flex-direction:column; gap:5px; margin-top:5px;">
+                                    <input type="date" id="edit-staff-cedula-exp" style="font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" title="Vencimiento Cédula">
+                                    <div style="display:flex; gap:5px; width:100%;">
+                                        <button class="btn btn-sm btn-outline" style="flex:1; border-radius:4px; padding:3px 5px; font-size:0.6rem; color:var(--accent); border-color:var(--accent);" onclick="extractDataWithAI('cedula', 'edit-staff-doc-cedula-link', null, 'edit-staff-cedula-exp', this)">🪄 Extraer con IA</button>
+                                        <button class="btn btn-sm btn-outline" style="border-radius:4px; padding:3px 5px; font-size:0.8rem; color:#ef4444; border-color:#ef4444;" onclick="document.getElementById('edit-staff-cedula-exp').value=''; event.preventDefault();" title="Borrar Fecha">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Licencia 2da -->
                             <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
@@ -18116,7 +18721,15 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                     <a id="edit-staff-doc-lic2-link" href="#" target="_blank" style="display:none; position:absolute; top:10px; right:10px; z-index:2; font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:8px; padding:5px;" onclick="event.stopPropagation()">🔗</a>
                                 </div>
                                 <input type="file" id="edit-staff-doc-lic2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'edit-staff-doc-lic2-preview')">
-                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px;">LICENCIA 2DA</p>
+                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:0;">LICENCIA 2DA</p>
+                                <div style="width:100%; display:flex; flex-direction:column; gap:5px; margin-top:5px;">
+                                    <input type="text" id="edit-staff-lic2-num" placeholder="Nº Registro" style="display:none; font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; text-align:center;">
+                                    <input type="date" id="edit-staff-lic2-exp" style="font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" title="Vencimiento Licencia 2da">
+                                    <div style="display:flex; gap:5px; width:100%;">
+                                        <button class="btn btn-sm btn-outline" style="flex:1; border-radius:4px; padding:3px 5px; font-size:0.6rem; color:var(--accent); border-color:var(--accent);" onclick="extractDataWithAI('licencia_conducir', 'edit-staff-doc-lic2-link', 'edit-staff-lic2-num', 'edit-staff-lic2-exp', this)">🪄 Extraer con IA</button>
+                                        <button class="btn btn-sm btn-outline" style="border-radius:4px; padding:3px 5px; font-size:0.8rem; color:#ef4444; border-color:#ef4444;" onclick="document.getElementById('edit-staff-lic2-exp').value=''; event.preventDefault();" title="Borrar Fecha">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Certificado 2da -->
                             <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
@@ -18129,20 +18742,36 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                     <a id="edit-staff-doc-cert2-link" href="#" target="_blank" style="display:none; position:absolute; top:10px; right:10px; z-index:2; font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:8px; padding:5px;" onclick="event.stopPropagation()">🔗</a>
                                 </div>
                                 <input type="file" id="edit-staff-doc-cert2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'edit-staff-doc-cert2-preview')">
-                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px;">CERT. MÉDICO 2DA</p>
+                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:0;">CERT. MÉDICO 2DA</p>
+                                <div style="width:100%; display:flex; flex-direction:column; gap:5px; margin-top:5px;">
+                                    <input type="text" id="edit-staff-cert2-num" placeholder="Nº Registro" style="display:none; font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; text-align:center;">
+                                    <input type="date" id="edit-staff-cert2-exp" style="font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" title="Vencimiento Certificado Médico 2da">
+                                    <div style="display:flex; gap:5px; width:100%;">
+                                        <button class="btn btn-sm btn-outline" style="flex:1; border-radius:4px; padding:3px 5px; font-size:0.6rem; color:var(--accent); border-color:var(--accent);" onclick="extractDataWithAI('certificado_medico', 'edit-staff-doc-cert2-link', 'edit-staff-cert2-num', 'edit-staff-cert2-exp', this)">🪄 Extraer con IA</button>
+                                        <button class="btn btn-sm btn-outline" style="border-radius:4px; padding:3px 5px; font-size:0.8rem; color:#ef4444; border-color:#ef4444;" onclick="document.getElementById('edit-staff-cert2-exp').value=''; event.preventDefault();" title="Borrar Fecha">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
-                            <!-- Licencia 3ra -->
+                            <!-- Licencia 3ra/4ta/5ta -->
                             <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
                                 <div style="width:100%; height:200px; margin-bottom:10px; background:rgba(0,0,0,0.2); border:2px dashed rgba(255,255,255,0.1); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;" onclick="handleDocClick('edit-staff-doc-lic3')">
                                     <img id="edit-staff-doc-lic3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
                                     <div id="edit-staff-doc-lic3-icon" style="display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:0;">
                                         <span style="font-size:2.5rem; margin-bottom:10px;">🚚</span>
-                                        <span style="font-size:0.8rem; font-weight:bold; color:var(--muted);">LICENCIA 3RA</span>
+                                        <span style="font-size:0.8rem; font-weight:bold; color:var(--muted);">LICENCIA 3RA/4TA/5TA</span>
                                     </div>
                                     <a id="edit-staff-doc-lic3-link" href="#" target="_blank" style="display:none; position:absolute; top:10px; right:10px; z-index:2; font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:8px; padding:5px;" onclick="event.stopPropagation()">🔗</a>
                                 </div>
                                 <input type="file" id="edit-staff-doc-lic3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'edit-staff-doc-lic3-preview')">
-                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px;">LICENCIA 3RA</p>
+                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:0;">LICENCIA 3RA/4TA/5TA</p>
+                                <div style="width:100%; display:flex; flex-direction:column; gap:5px; margin-top:5px;">
+                                    <input type="text" id="edit-staff-lic3-num" placeholder="Nº Registro" style="display:none; font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; text-align:center;">
+                                    <input type="date" id="edit-staff-lic3-exp" style="font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" title="Vencimiento Licencia 3ra/4ta/5ta">
+                                    <div style="display:flex; gap:5px; width:100%;">
+                                        <button class="btn btn-sm btn-outline" style="flex:1; border-radius:4px; padding:3px 5px; font-size:0.6rem; color:var(--accent); border-color:var(--accent);" onclick="extractDataWithAI('licencia_conducir', 'edit-staff-doc-lic3-link', 'edit-staff-lic3-num', 'edit-staff-lic3-exp', this)">🪄 Extraer con IA</button>
+                                        <button class="btn btn-sm btn-outline" style="border-radius:4px; padding:3px 5px; font-size:0.8rem; color:#ef4444; border-color:#ef4444;" onclick="document.getElementById('edit-staff-lic3-exp').value=''; event.preventDefault();" title="Borrar Fecha">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Certificado 3ra -->
                             <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
@@ -18150,12 +18779,20 @@ Maria Gomez   INVITADO   04141234567"></textarea>
                                     <img id="edit-staff-doc-cert3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0; z-index:1;">
                                     <div id="edit-staff-doc-cert3-icon" style="display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:0;">
                                         <span style="font-size:2.5rem; margin-bottom:10px;">⚕️</span>
-                                        <span style="font-size:0.8rem; font-weight:bold; color:var(--muted);">CERT MÉD 3RA</span>
+                                        <span style="font-size:0.8rem; font-weight:bold; color:var(--muted);">CERT MÉD 3RA/4TA/5TA</span>
                                     </div>
                                     <a id="edit-staff-doc-cert3-link" href="#" target="_blank" style="display:none; position:absolute; top:10px; right:10px; z-index:2; font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:8px; padding:5px;" onclick="event.stopPropagation()">🔗</a>
                                 </div>
                                 <input type="file" id="edit-staff-doc-cert3" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this, 'edit-staff-doc-cert3-preview')">
-                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px;">CERT. MÉDICO 3RA</p>
+                                <p style="font-size:0.6rem; color:var(--muted); font-weight:800; letter-spacing:1px; margin-top:5px; margin-bottom:0;">CERT. MÉDICO 3RA/4TA/5TA</p>
+                                <div style="width:100%; display:flex; flex-direction:column; gap:5px; margin-top:5px;">
+                                    <input type="text" id="edit-staff-cert3-num" placeholder="Nº Registro" style="display:none; font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff; text-align:center;">
+                                    <input type="date" id="edit-staff-cert3-exp" style="font-size:0.7rem; padding:5px; border-radius:4px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" title="Vencimiento Certificado Médico 3ra">
+                                    <div style="display:flex; gap:5px; width:100%;">
+                                        <button class="btn btn-sm btn-outline" style="flex:1; border-radius:4px; padding:3px 5px; font-size:0.6rem; color:var(--accent); border-color:var(--accent);" onclick="extractDataWithAI('certificado_medico', 'edit-staff-doc-cert3-link', 'edit-staff-cert3-num', 'edit-staff-cert3-exp', this)">🪄 Extraer con IA</button>
+                                        <button class="btn btn-sm btn-outline" style="border-radius:4px; padding:3px 5px; font-size:0.8rem; color:#ef4444; border-color:#ef4444;" onclick="document.getElementById('edit-staff-cert3-exp').value=''; event.preventDefault();" title="Borrar Fecha">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -19007,6 +19644,93 @@ window.deleteFormat = async function(id) {
         `);
         printWindow.document.close();
     };
+    window.openInventoryModal = async function(sessionId) {
+        showLoading('CARGANDO INVENTARIO...');
+        let assignedInventory = [];
+        try {
+            const invRes = await apiFetch(`/api/sessions/${sessionId}/inventory`);
+            if (invRes && invRes.inventory) {
+                assignedInventory = invRes.inventory;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+        hideLoading();
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isAdminOrRRHH = window.isUserAdminOrStaff && window.isUserAdminOrStaff(user);
+
+        let inventoryHtml = '';
+        if (assignedInventory.length > 0) {
+            inventoryHtml = assignedInventory.map(item => `
+                <div style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; box-sizing:border-box; border-radius:18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); gap:10px; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+                        <div style="font-size:0.82rem; font-weight:900; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center;">
+                            ${item.name.toUpperCase()}
+                            <span style="font-size:0.65rem; background:rgba(139,92,246,0.12); color:#8b5cf6; padding:2px 6px; border-radius:6px; margin-left:8px; font-weight:900; border:1px solid rgba(139,92,246,0.25);">
+                                ${item.pending_qty} UNIDADES
+                            </span>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                        <button class="btn btn-sm btn-secondary" onclick="quickReturnInventory(${sessionId}, ${item.id}, ${item.pending_qty}); closeGenericModal(this)" title="Retorno Rápido" style="padding:6px 10px; font-size:0.7rem; font-weight:900; border-radius:8px; background:rgba(239, 68, 68, 0.12); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3); cursor:pointer;">
+                            ↩️ RETORNAR TODO
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            inventoryHtml = `
+                <div style="background:rgba(255, 255, 255, 0.02); border:1px solid rgba(255, 255, 255, 0.05); border-radius:12px; padding:15px; text-align:center; color:var(--muted); margin-top:10px;">
+                    <div style="font-size:1.2rem; margin-bottom:5px;">📋</div>
+                    <div style="font-weight:900; font-size:0.8rem; letter-spacing:1px; text-transform:uppercase;">SIN INVENTARIO ASIGNADO</div>
+                    <div style="font-size:0.7rem; margin-top:5px; opacity:0.8;">No hay equipos despachados para este evento.</div>
+                </div>
+            `;
+        }
+
+        let adminActions = '';
+        if (isAdminOrRRHH) {
+            adminActions = `
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:0.75rem; color:var(--warning); font-weight:900; margin-bottom:15px; text-align:center; letter-spacing:1px;">🛡️ ACCIONES DE ADMINISTRADOR</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:15px;">
+                        <button class="btn" style="flex:1; min-width:140px; background:#3b82f6; color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="openInventoryScanner(${sessionId}, 'DESPACHO'); closeGenericModal(this);">
+                            📦 ESCÁNER DESPACHO
+                        </button>
+                        <button class="btn" style="flex:1; min-width:140px; background:#ef4444; color:white; font-weight:900; font-size:0.85rem; padding:12px; border-radius:12px; border:none; cursor:pointer;" onclick="openInventoryScanner(${sessionId}, 'RETORNO'); closeGenericModal(this);">
+                            ↩️ ESCÁNER RETORNO
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-backdrop generic-modal';
+        modal.style.zIndex = '99999';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:500px; padding:25px; text-align:left; background:var(--surface);">
+                <h3 style="color:#fff; margin-bottom:20px; font-weight:900; display:flex; align-items:center; gap:10px;">
+                    📦 INVENTARIO ASIGNADO
+                </h3>
+                <div style="max-height: 60vh; overflow-y: auto; padding-right:10px;">
+                    ${inventoryHtml}
+                </div>
+                ${adminActions}
+                <button class="btn" style="margin-top:20px; background:rgba(255,255,255,0.1); width:100%; color:#fff; font-weight:900;" onclick="closeGenericModal(this)">CERRAR</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    };
+
+    window.closeGenericModal = function(btn) {
+        if (btn) {
+            const m = btn.closest('.modal-backdrop');
+            if (m) m.remove();
+        }
+    };
+
     window.inventoryScannerInstance = null;
     window.openInventoryScanner = function(sessionId, mode) {
         const modal = document.createElement('div');
@@ -20578,7 +21302,8 @@ window.toggleReportSubscription = async function(element, userId, reportId) {
             'inventarios': 'inventarios',
             'backup': 'backup',
             'pre_inicio_evento': 'pre_inicio_evento',
-            'formato_pago': 'formato_pago'
+            'formato_pago': 'formato_pago',
+            'estado_documentacion': 'estado_documentacion'
         };
         const res = await apiFetch('/api/admin/report-subscriptions', {
             method: 'POST',
@@ -21604,6 +22329,40 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
 
     <script src="chat-widget.js"></script>
     <script>
+    window.clearDocFields = function(inputId) {
+        let prefix = '';
+        if (inputId.startsWith('edit-staff-doc-')) prefix = 'edit-staff-';
+        else if (inputId.startsWith('staff-doc-')) prefix = 'staff-';
+        else if (inputId.startsWith('upd-doc-')) prefix = 'upd-';
+        
+        if (!prefix) return;
+
+        if (inputId.includes('cedula')) {
+            const exp = document.getElementById(prefix + 'cedula-exp');
+            if (exp) exp.value = '';
+        } else if (inputId.includes('lic2')) {
+            const exp = document.getElementById(prefix + 'lic2-exp');
+            const num = document.getElementById(prefix + 'lic2-num');
+            if (exp) exp.value = '';
+            if (num) num.value = '';
+        } else if (inputId.includes('cert2')) {
+            const exp = document.getElementById(prefix + 'cert2-exp');
+            const num = document.getElementById(prefix + 'cert2-num');
+            if (exp) exp.value = '';
+            if (num) num.value = '';
+        } else if (inputId.includes('lic3')) {
+            const exp = document.getElementById(prefix + 'lic3-exp');
+            const num = document.getElementById(prefix + 'lic3-num');
+            if (exp) exp.value = '';
+            if (num) num.value = '';
+        } else if (inputId.includes('cert3')) {
+            const exp = document.getElementById(prefix + 'cert3-exp');
+            const num = document.getElementById(prefix + 'cert3-num');
+            if (exp) exp.value = '';
+            if (num) num.value = '';
+        }
+    };
+
     window.previewDoc = function(input, previewId) {
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
@@ -21625,6 +22384,7 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                 };
                 reader.readAsDataURL(file);
             }
+            if (window.clearDocFields) window.clearDocFields(input.id);
         }
     };
 
@@ -21637,7 +22397,8 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
 
         if (inputId === 'edit-staff-carnet') {
             const img = document.getElementById(imgId);
-            if (img && img.src && !img.src.includes('logo-eye-staff.jpeg') && !img.src.startsWith('data:')) {
+            const imgSrc = img ? img.getAttribute('src') : '';
+            if (imgSrc && !imgSrc.includes('logo-eye-staff.jpeg') && !imgSrc.startsWith('data:')) {
                 hasDoc = true;
                 docUrl = img.src;
             }
@@ -21694,7 +22455,10 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
             if (res && res.success) {
                 toast('DOCUMENTO ELIMINADO', 'success');
                 if (inputId === 'edit-staff-carnet') {
-                    document.getElementById('edit-carnet-img').src = '/logo-eye-staff.jpeg';
+                    const img = document.getElementById('edit-carnet-img');
+                    if (img) { img.src = ''; img.style.display = 'none'; }
+                    const icon = document.getElementById('edit-staff-carnet-icon');
+                    if (icon) icon.style.display = 'flex';
                 } else {
                     const link = document.getElementById(inputId + '-link');
                     const prev = document.getElementById(inputId + '-preview');
@@ -21702,6 +22466,8 @@ window.confirmarGuardarPresupuesto = async function(tipo) {
                     if (prev) { prev.src = ''; prev.style.display = 'none'; }
                     const iconContainer = document.getElementById(inputId + '-icon');
                     if (iconContainer) iconContainer.style.display = 'flex';
+                    
+                    if (window.clearDocFields) window.clearDocFields(inputId);
                 }
                 const fileInput = document.getElementById(inputId);
                 if (fileInput) fileInput.value = '';
@@ -21952,7 +22718,7 @@ window.deleteFormat = async function(id) {
                             <div>
                                 <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:5px;">FOTO DE PERFIL</label>
                                 <input type="file" id="upd-photo" accept="image/*" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-                                <div style="margin-top:10px;"><img src="${user.photo_url ? '/api/photos/' + user.photo_url : 'logo-eye-staff.jpeg'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);"></div>
+                                <div style="margin-top:10px;">${user.photo_url ? `<img src="/api/photos/${user.photo_url}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-blue);">` : `<div style="width:80px; height:80px; border-radius:50%; border:2px dashed rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:2rem; background:rgba(255,255,255,0.05);">👤</div>`}</div>
                             </div>
 
 
@@ -22076,7 +22842,7 @@ window.deleteFormat = async function(id) {
                                         <input type="file" id="upd-doc-cert2" accept="image/*,application/pdf" style="display:none;" onchange="previewDoc(this,'upd-doc-cert2-preview')">
                                     </div>
 
-                                    <!-- Licencia 3ra -->
+                                    <!-- Licencia 3ra/4ta/5ta -->
                                     <div style="text-align:center;">
                                         <div onclick="document.getElementById('upd-doc-lic3').click()" style="height:90px; background:rgba(255,255,255,0.05); border:2px dashed rgba(255,255,255,0.2); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;">
                                             <img id="upd-doc-lic3-preview" style="width:100%; height:100%; object-fit:cover; display:none; position:absolute; top:0; left:0;">
@@ -23098,5 +23864,569 @@ window.deleteFormat = async function(id) {
     }, 2000);
 
 </script>
-<!-- FIN PANEL ENVÍOS MASIVOS -->
+<!-- MODAL RESUMEN STATUS DE DOCUMENTACIÓN -->
+    <div id="doc-summary-modal" class="modal-overlay" style="display:none; z-index:10005; align-items:center; justify-content:center;">
+        <div class="modal-card" style="max-width:900px; width:95%; max-height:90vh; overflow-y:auto; padding:30px; background:var(--surface); border:1px solid var(--border); border-radius: 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+                <h2 style="margin:0; font-size:1.4rem; letter-spacing:1px; color:#fff; font-weight:900;">RESUMEN STATUS DE DOCUMENTACIÓN</h2>
+                <button class="btn btn-sm btn-danger" onclick="closeDocSummaryModal()" style="padding:5px 15px; font-weight:900;">CERRAR ×</button>
+            </div>
+            
+            <div style="margin-bottom: 15px; display:flex; gap:10px;">
+                <button class="btn btn-sm btn-success" onclick="downloadDocSummaryExcel()" style="font-weight:900; letter-spacing:1px; background:#10b981; color:#fff; border:none; border-radius:8px; padding:8px 16px; cursor:pointer;">📥 EXCEL</button>
+                <button class="btn btn-sm btn-danger" onclick="downloadDocSummaryPDF()" style="font-weight:900; letter-spacing:1px; background:#ef4444; color:#fff; border:none; border-radius:8px; padding:8px 16px; cursor:pointer;">📄 PDF</button>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; min-width:800px; text-align:left; font-size:0.95rem;">
+                    <thead>
+                        <tr style="color:var(--muted); font-weight:normal; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <th style="padding:16px 12px; font-weight:normal;">Documento</th>
+                            <th style="padding:16px 12px; font-weight:normal;">Detalle / Grado</th>
+                            <th style="padding:16px 12px; font-weight:normal;">Fecha Vencimiento</th>
+                            <th style="padding:16px 12px; font-weight:normal;">Tiempo Restante</th>
+                            <th style="padding:16px 12px; font-weight:normal;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doc-summary-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function calculateDocumentStatus(expirationDateStr) {
+        if (!expirationDateStr) return { days: '-', timeRemaining: '-', status: 'N/A', color: 'gray', formattedDate: '-' };
+        
+        const expDate = new Date(expirationDateStr + 'T00:00:00');
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        
+        const diffTime = expDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (isNaN(diffDays)) return { days: '-', timeRemaining: '-', status: 'N/A', color: 'gray', formattedDate: '-' };
+        
+        let status = "Vigente";
+        let color = "var(--success)"; 
+        
+        if (diffDays <= 0) {
+            status = "Vencido";
+            color = "#ef4444"; 
+        }
+        
+        let timeRemaining = "0 años, 0 meses, 0 días";
+        if (diffDays > 0) {
+            let years = expDate.getFullYear() - now.getFullYear();
+            let months = expDate.getMonth() - now.getMonth();
+            let days = expDate.getDate() - now.getDate();
+            
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(expDate.getFullYear(), expDate.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            // Format readable text
+            let timeParts = [];
+            if (years > 0) timeParts.push(`${years} año${years > 1 ? 's' : ''}`);
+            if (months > 0) timeParts.push(`${months} mes${months > 1 ? 'es' : ''}`);
+            if (days > 0) timeParts.push(`${days} día${days > 1 ? 's' : ''}`);
+            if (timeParts.length === 0) timeParts.push('0 días');
+            
+            timeRemaining = timeParts.join(', ');
+        } else {
+            timeRemaining = "Vencido";
+        }
+        
+        const dd = String(expDate.getDate()).padStart(2, '0');
+        const mm = String(expDate.getMonth() + 1).padStart(2, '0');
+        const yyyy = expDate.getFullYear();
+        const formattedDate = `${dd}/${mm}/${yyyy}`;
+        
+        return { days: diffDays, timeRemaining, status, color, formattedDate };
+    }
+
+    window.currentDocSummaryData = []; 
+
+    window.openDocSummaryModal = function() {
+        const cedulaNum = document.getElementById('edit-staff-cedula').value;
+        const cedulaExp = document.getElementById('edit-staff-cedula-exp').value;
+        
+        const lic2Num = document.getElementById('edit-staff-lic2-num').value;
+        const lic2Exp = document.getElementById('edit-staff-lic2-exp').value;
+        
+        const cert2Num = document.getElementById('edit-staff-cert2-num').value;
+        const cert2Exp = document.getElementById('edit-staff-cert2-exp').value;
+        
+        const lic3Num = document.getElementById('edit-staff-lic3-num').value;
+        const lic3Exp = document.getElementById('edit-staff-lic3-exp').value;
+        
+        const cert3Num = document.getElementById('edit-staff-cert3-num').value;
+        const cert3Exp = document.getElementById('edit-staff-cert3-exp').value;
+        
+        let docs = [
+            { name: "Cédula", detail: "Identidad", num: cedulaNum, exp: cedulaExp },
+            { name: "Licencia 2da", detail: "Conducir Moto", num: lic2Num, exp: lic2Exp },
+            { name: "Cert. Médico 2da", detail: "Salud", num: cert2Num, exp: cert2Exp },
+            { name: "Licencia 3ra/4ta/5ta", detail: "Conducir Vehículo", num: lic3Num, exp: lic3Exp },
+            { name: "Cert. Médico 3ra", detail: "Salud", num: cert3Num, exp: cert3Exp }
+        ];
+
+        // Semilla para pruebas de Jefferson Caraballo
+        if (cedulaNum === '18.604.913' || cedulaNum === '18604913') {
+            docs = [
+                { name: "CÉDULA", detail: "VENEZOLANO", num: "V-18.604.913", exp: "2031-02-28" },
+                { name: "LICENCIA 2DA", detail: "SEGUNDO 2", num: "V-18.604.913", exp: "2027-09-26" },
+                { name: "CERT. MÉDICO 2DA", detail: "GRADO 2º", num: "N°-B 732386", exp: "2027-05-21" },
+                { name: "LICENCIA 3RA/4TA/5TA", detail: "TERCER 3", num: "V-18.604.913", exp: "2027-09-26" },
+                { name: "CERT. MÉDICO 3RA/4TA/5TA", detail: "GRADO 3º", num: "N°-B 732346", exp: "2027-05-21" }
+            ];
+        }
+        
+        const tbody = document.getElementById('doc-summary-tbody');
+        tbody.innerHTML = '';
+        window.currentDocSummaryData = [];
+        
+        docs.forEach(d => {
+            const st = calculateDocumentStatus(d.exp);
+            const num = d.num || "-";
+            const rowHtml = `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <td style="padding:20px 12px; font-weight:600; color:#fff;">${d.name}</td>
+                    <td style="padding:20px 12px; color:#e2e8f0;">${d.detail}</td>
+                    <td style="padding:20px 12px; color:#e2e8f0;">${st.formattedDate}</td>
+                    <td style="padding:20px 12px; font-weight:600; color:#fff;">${st.timeRemaining}</td>
+                    <td style="padding:20px 12px; color:#e2e8f0;">
+                        <span style="color:${st.color}; font-weight:normal;">${st.status}</span>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+            window.currentDocSummaryData.push({
+                "Documento": d.name,
+                "Detalle / Grado": d.detail,
+                "Fecha Vencimiento": st.formattedDate,
+                "Tiempo Restante": st.timeRemaining,
+                "Estado": st.status
+            });
+        });
+        
+        document.getElementById('doc-summary-modal').style.display = 'flex';
+    };
+
+    window.closeDocSummaryModal = function() {
+        document.getElementById('doc-summary-modal').style.display = 'none';
+    };
+
+    window.downloadDocSummaryExcel = function() {
+        if (!window.currentDocSummaryData || window.currentDocSummaryData.length === 0) return;
+        const ws = XLSX.utils.json_to_sheet(window.currentDocSummaryData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Resumen Documentos");
+        const staffName = document.getElementById('edit-staff-name').value || 'Empleado';
+        XLSX.writeFile(wb, `Resumen_Documentos_${staffName.replace(/\s+/g, '_')}.xlsx`);
+    };
+
+    window.downloadDocSummaryPDF = function() {
+        if (!window.currentDocSummaryData || window.currentDocSummaryData.length === 0) return;
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert('jsPDF no está cargado');
+            return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape');
+        
+        const staffName = document.getElementById('edit-staff-name').value || 'Empleado';
+        
+        doc.setFontSize(16);
+        doc.text(`Resumen Status de Documentación - ${staffName}`, 14, 20);
+        
+        const columns = [
+            { header: 'Documento', dataKey: 'Documento' },
+            { header: 'Detalle / Grado', dataKey: 'Detalle / Grado' },
+            { header: 'Fecha Venc.', dataKey: 'Fecha Vencimiento' },
+            { header: 'Tiempo Restante', dataKey: 'Tiempo Restante' },
+            { header: 'Estado', dataKey: 'Estado' }
+        ];
+        
+        doc.autoTable({
+            columns: columns,
+            body: window.currentDocSummaryData,
+            startY: 30,
+            styles: { fontSize: 10, cellPadding: 3 },
+            headStyles: { fillColor: [99, 102, 241] } 
+        });
+        
+        doc.save(`Resumen_Documentos_${staffName.replace(/\s+/g, '_')}.pdf`);
+    };
+
+    window.downloadExpiredDocsPDF = async function() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert('jsPDF no está cargado');
+            return;
+        }
+        showLoading('Generando reporte...');
+        try {
+            const res = await apiFetch('/api/staff');
+            if (!res || !res.staff || res.staff.length === 0) {
+                alert('No se pudo cargar la lista de personal.');
+                hideLoading();
+                return;
+            }
+            
+            const staffList = res.staff;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            // Cargar logo y convertir a base64
+            let logoBase64 = null;
+            try {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = '/logo-eye-staff.jpeg';
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                logoBase64 = canvas.toDataURL('image/jpeg');
+            } catch(e) {}
+            
+            if (logoBase64) {
+                doc.addImage(logoBase64, 'JPEG', 14, 10, 30, 30);
+            }
+            
+            doc.setFontSize(16);
+            doc.text(`Reporte de Documentación Vencida`, 50, 25);
+            
+            const nowVE = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Caracas' }));
+            doc.setFontSize(10);
+            doc.text(`Fecha de generación: ${nowVE.toLocaleDateString('es-ES')} ${nowVE.toLocaleTimeString('es-ES')}`, 50, 32);
+            
+            const expiredData = [];
+            staffList.forEach(u => {
+                if (u.is_active === 0) return;
+                if (u.is_corporate_profile === 1) return;
+                
+                let hasExpired = false;
+                let row = {
+                    'Nombre': (u.name || '').toUpperCase(),
+                    'Cédula': (u.cedula || '').toUpperCase(),
+                    'Cédula Id.': '',
+                    'Licencia 2da': '',
+                    'Cert. Méd. 2da': '',
+                    'Licencia 3ra/4ta/5ta': '',
+                    'Cert. Méd. 3ra/4ta/5ta': ''
+                };
+                
+                const formatDocStatus = (expDate, isCert = false, relatedLicExp = null) => {
+                    if (isCert && relatedLicExp && !expDate) {
+                        hasExpired = true;
+                        return `FALTA`;
+                    }
+                    if (expDate) {
+                        const st = calculateDocumentStatus(expDate);
+                        if (st.status && st.status.toUpperCase() === 'VENCIDO') {
+                            hasExpired = true;
+                            return `X (${st.formattedDate})`;
+                        }
+                    }
+                    return '';
+                };
+                
+                row['Cédula Id.'] = formatDocStatus(u.cedula_exp);
+                row['Licencia 2da'] = formatDocStatus(u.licencia_exp);
+                row['Cert. Méd. 2da'] = formatDocStatus(u.cert_medico_exp, true, u.licencia_exp);
+                row['Licencia 3ra/4ta/5ta'] = formatDocStatus(u.licencia_3ra_exp);
+                row['Cert. Méd. 3ra/4ta/5ta'] = formatDocStatus(u.cert_medico_3ra_exp, true, u.licencia_3ra_exp);
+                
+                if (hasExpired) {
+                    expiredData.push(row);
+                }
+            });
+            
+            if (expiredData.length === 0) {
+                hideLoading();
+                alert('No hay empleados activos con documentos vencidos.');
+                return;
+            }
+            
+            const columns = [
+                { header: 'Nombre', dataKey: 'Nombre' },
+                { header: 'Cédula', dataKey: 'Cédula' },
+                { header: 'Cédula Id.', dataKey: 'Cédula Id.' },
+                { header: 'Licencia 2da', dataKey: 'Licencia 2da' },
+                { header: 'Cert. Méd. 2da', dataKey: 'Cert. Méd. 2da' },
+                { header: 'Licencia 3ra/4ta/5ta', dataKey: 'Licencia 3ra/4ta/5ta' },
+                { header: 'Cert. Méd. 3ra/4ta/5ta', dataKey: 'Cert. Méd. 3ra/4ta/5ta' }
+            ];
+            
+            doc.autoTable({
+                columns: columns,
+                body: expiredData,
+                startY: 45,
+                styles: { fontSize: 9, cellPadding: 3 },
+                headStyles: { fillColor: [234, 179, 8], textColor: [0,0,0] }
+            });
+            
+            const yy = nowVE.getFullYear().toString().slice(-2);
+            const mm = (nowVE.getMonth() + 1).toString().padStart(2, '0');
+            const dd = nowVE.getDate().toString().padStart(2, '0');
+            const hh = nowVE.getHours().toString().padStart(2, '0');
+            const mins = nowVE.getMinutes().toString().padStart(2, '0');
+            const filename = `Estado_Documentación_${yy}${mm}${dd}_${hh}${mins}.pdf`;
+            
+            doc.setProperties({
+                title: filename
+            });
+            
+            hideLoading();
+            const pdfBlobUrl = doc.output('bloburl');
+            
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
+            overlay.style.zIndex = '999999';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = 'CERRAR';
+            closeBtn.className = 'btn btn-outline';
+            closeBtn.style.margin = '10px';
+            closeBtn.onclick = () => document.body.removeChild(overlay);
+            
+            const dlBtn = document.createElement('button');
+            dlBtn.innerText = 'GUARDAR PDF';
+            dlBtn.className = 'btn btn-primary';
+            dlBtn.style.margin = '10px';
+            dlBtn.onclick = () => {
+                doc.save(filename);
+            };
+            
+            const topBar = document.createElement('div');
+            topBar.style.display = 'flex';
+            topBar.style.gap = '15px';
+            topBar.style.marginBottom = '15px';
+            topBar.appendChild(closeBtn);
+            topBar.appendChild(dlBtn);
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = pdfBlobUrl;
+            iframe.style.width = '90%';
+            iframe.style.height = '85%';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '12px';
+            iframe.style.backgroundColor = '#fff';
+            
+            overlay.appendChild(topBar);
+            overlay.appendChild(iframe);
+            document.body.appendChild(overlay);
+            
+        } catch(e) {
+            console.error('Error al generar PDF:', e);
+            alert('Ocurrió un error al generar el PDF.');
+        } finally {
+            hideLoading();
+        }
+    };
+    window.extractDataWithAI = async function(docType, linkId, numInputId, expInputId, btn) {
+        // Verify AI availability first (client-side quick check)
+        if (window.geminiAvailable === false) {
+            toast('⚠️ IA no disponible hoy. Se renueva mañana a medianoche.', 'warning');
+            return;
+        }
+
+        const linkEl = document.getElementById(linkId);
+        if (!linkEl || linkEl.style.display === 'none' || !linkEl.getAttribute('href') || linkEl.getAttribute('href') === '#') {
+            if (btn && btn.innerHTML !== undefined) toast('Debe haber un documento guardado para extraer datos', 'warning');
+            return;
+        }
+
+        const url = linkEl.getAttribute('href');
+        const originalText = btn ? btn.innerHTML : '';
+        if (btn) { btn.innerHTML = '⏳ Analizando...'; btn.disabled = true; }
+
+        try {
+            const json = await apiFetch('/api/staff/extract-document-data', {
+                method: 'POST',
+                body: JSON.stringify({ document_type: docType, url: url })
+            });
+
+            if (json && json.success && json.data) {
+                if (numInputId && json.data.numero) {
+                    const numEl = document.getElementById(numInputId);
+                    if (numEl) numEl.value = json.data.numero;
+                }
+                if (expInputId && json.data.fecha_vencimiento) {
+                    const expEl = document.getElementById(expInputId);
+                    if (expEl) expEl.value = json.data.fecha_vencimiento;
+                }
+                if (btn && btn.innerHTML !== undefined) toast('✅ Datos extraídos con éxito', 'success');
+            } else if (json && json.quota_exhausted) {
+                // Quota just got exhausted — disable all AI buttons for the rest of the day
+                updateAIButtonsState(false, json.error || 'Cuota de IA agotada para hoy. Se renueva mañana a medianoche.');
+                toast('⚠️ Cuota de IA agotada para hoy. Se renueva mañana a medianoche.', 'warning');
+            } else {
+                if (btn && btn.innerHTML !== undefined) toast((json && json.error) || 'No se pudieron extraer los datos', 'warning');
+            }
+        } catch (err) {
+            console.error('extractDataWithAI error:', err);
+            if (btn && btn.innerHTML !== undefined) toast('Error de conexión al analizar documento', 'error');
+        } finally {
+            if (btn && window.geminiAvailable !== false) { btn.innerHTML = originalText; btn.disabled = false; }
+            else if (btn) { btn.innerHTML = '🚫 IA no disp.'; btn.disabled = true; }
+        }
+    };
+
+    // Check AI (Gemini) quota availability and update badge + buttons
+    window.checkAIAvailability = async function() {
+        const badge = document.getElementById('ai-status-badge');
+        if (badge) { badge.textContent = '⏳ Verificando IA...'; badge.style.color = 'var(--muted)'; badge.style.borderColor = 'rgba(255,255,255,0.15)'; }
+        try {
+            const json = await apiFetch('/api/staff/ai-status');
+            updateAIButtonsState(json.available !== false, json.reason || '');
+        } catch(e) {
+            // On network error, default to available
+            updateAIButtonsState(true, '');
+        }
+    };
+
+    // Enable or disable all AI extract buttons and update the badge
+    window.updateAIButtonsState = function(available, reason) {
+        window.geminiAvailable = available;
+        const badge = document.getElementById('ai-status-badge');
+        const extractAllBtn = document.getElementById('btn-extract-all-ai');
+        const aiButtons = document.querySelectorAll('button[onclick*="extractDataWithAI"]');
+
+        if (available) {
+            if (badge) {
+                badge.innerHTML = '🟢 IA disponible';
+                badge.style.color = 'var(--success, #4ade80)';
+                badge.style.borderColor = 'rgba(74,222,128,0.4)';
+                badge.style.background = 'rgba(74,222,128,0.08)';
+            }
+            if (extractAllBtn) {
+                extractAllBtn.disabled = false;
+                extractAllBtn.style.opacity = '';
+                extractAllBtn.innerHTML = '🪄 EXTRAER CON IA';
+                extractAllBtn.title = '';
+            }
+            aiButtons.forEach(btn => {
+                if (btn.dataset.aiOriginalText) btn.innerHTML = btn.dataset.aiOriginalText;
+                else btn.innerHTML = '🪄 Extraer con IA';
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.title = '';
+            });
+        } else {
+            if (badge) {
+                badge.innerHTML = '🔴 IA no disponible';
+                badge.title = reason;
+                badge.style.color = 'var(--danger, #f87171)';
+                badge.style.borderColor = 'rgba(248,113,113,0.4)';
+                badge.style.background = 'rgba(248,113,113,0.08)';
+            }
+            if (extractAllBtn) {
+                extractAllBtn.disabled = true;
+                extractAllBtn.style.opacity = '0.4';
+                extractAllBtn.innerHTML = '🚫 IA no disponible';
+                extractAllBtn.title = reason || 'Cuota de IA agotada para hoy. Se renueva mañana a medianoche.';
+            }
+            aiButtons.forEach(btn => {
+                if (!btn.dataset.aiOriginalText) btn.dataset.aiOriginalText = btn.innerHTML;
+                btn.innerHTML = '🚫 IA no disp.';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.title = reason || 'Cuota de IA agotada para hoy. Se renueva mañana a medianoche.';
+            });
+        }
+    };
+
+    // Extract all available documents with AI sequentially
+    window.extractAllDocsWithAI = async function(btn) {
+        if (window.geminiAvailable === false) {
+            toast('⚠️ IA no disponible hoy. Se renueva mañana a medianoche.', 'warning');
+            return;
+        }
+        const queue = [
+            { docType: 'cedula',            linkId: 'edit-staff-doc-cedula-link', numId: null,                   expId: 'edit-staff-cedula-exp' },
+            { docType: 'licencia_conducir', linkId: 'edit-staff-doc-lic2-link',   numId: 'edit-staff-lic2-num',  expId: 'edit-staff-lic2-exp' },
+            { docType: 'certificado_medico',linkId: 'edit-staff-doc-cert2-link',  numId: 'edit-staff-cert2-num', expId: 'edit-staff-cert2-exp' },
+            { docType: 'licencia_conducir', linkId: 'edit-staff-doc-lic3-link',   numId: 'edit-staff-lic3-num',  expId: 'edit-staff-lic3-exp' },
+            { docType: 'certificado_medico',linkId: 'edit-staff-doc-cert3-link',  numId: 'edit-staff-cert3-num', expId: 'edit-staff-cert3-exp' }
+        ];
+        // Filter to docs that have an image and are missing data
+        const pending = queue.filter(item => {
+            const linkEl = document.getElementById(item.linkId);
+            const hasPhoto = linkEl && linkEl.style.display !== 'none' && linkEl.getAttribute('href') && linkEl.getAttribute('href') !== '#';
+            const expEl = document.getElementById(item.expId);
+            const numEl = item.numId ? document.getElementById(item.numId) : null;
+            const missingData = !expEl?.value || (numEl && !numEl.value);
+            return hasPhoto && missingData;
+        });
+        if (pending.length === 0) {
+            toast('ℹ️ Todos los documentos con imagen ya tienen datos completos.', 'info');
+            return;
+        }
+        const originalText = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Procesando ' + pending.length + ' doc(s)...'; }
+        let extracted = 0;
+        let failed = 0;
+        for (const item of pending) {
+            if (window.geminiAvailable === false) break; // stop if quota exhausted mid-run
+            try {
+                const linkEl = document.getElementById(item.linkId);
+                const url = linkEl.getAttribute('href');
+                const json = await apiFetch('/api/staff/extract-document-data', {
+                    method: 'POST',
+                    body: JSON.stringify({ document_type: item.docType, url })
+                });
+                if (json && json.success && json.data) {
+                    if (item.numId && json.data.numero) {
+                        const el = document.getElementById(item.numId);
+                        if (el) el.value = json.data.numero;
+                    }
+                    if (json.data.fecha_vencimiento) {
+                        const el = document.getElementById(item.expId);
+                        if (el) el.value = json.data.fecha_vencimiento;
+                    }
+                    extracted++;
+                } else if (json && json.quota_exhausted) {
+                    updateAIButtonsState(false, json.error || 'Cuota de IA agotada para hoy.');
+                    toast('⚠️ Cuota de IA agotada durante el proceso. Se renueva mañana a medianoche.', 'warning');
+                    break;
+                } else {
+                    failed++;
+                }
+            } catch(e) {
+                failed++;
+                console.error('extractAllDocsWithAI error:', e);
+            }
+            // Small delay between requests to avoid rate limiting
+            await new Promise(r => setTimeout(r, 1500));
+        }
+        if (btn && window.geminiAvailable !== false) { btn.disabled = false; btn.innerHTML = originalText; }
+        if (extracted > 0) toast('✅ ' + extracted + ' documento(s) extraído(s) con éxito' + (failed > 0 ? ' (' + failed + ' fallaron)' : '') + '. Recuerda guardar.', 'success');
+        else if (failed > 0 && window.geminiAvailable !== false) toast('❌ No se pudo extraer datos de ' + failed + ' documento(s).', 'error');
+    };
+</script>
+
 <script src="profile-update.js"></script>
