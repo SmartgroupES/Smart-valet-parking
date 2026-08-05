@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: whatsapp-bot-valet
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: API_KEY
+        generateValue: true
+      - key: PORT
+        value: 3000
+      - key: NODE_VERSION
+        value: 20.11.1
