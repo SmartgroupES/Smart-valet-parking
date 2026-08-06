@@ -9381,7 +9381,15 @@
 
     window.rsSendNow = function() {
         window.closeReportScheduleModal();
-        window.triggerReportFromMatrix(window.currentScheduleReportId, window.currentScheduleReportTitle);
+        if (window.currentScheduleReportId === 'estado_documentacion') {
+            if (typeof window.triggerDocumentacionReport === 'function') window.triggerDocumentacionReport();
+        } else if (window.currentScheduleReportId === 'cierre_html') {
+            if (typeof window.solicitarReporteCierre === 'function') window.solicitarReporteCierre('ambos');
+        } else if (window.currentScheduleReportId === 'inventarios') {
+            if (typeof window.showInventoryChannelModal === 'function') window.showInventoryChannelModal();
+        } else {
+            window.triggerReportFromMatrix(window.currentScheduleReportId, window.currentScheduleReportTitle);
+        }
     };
 
     window.rsSaveSchedule = async function() {
@@ -10452,7 +10460,7 @@
                             <span style="font-size:1.5rem;">📦</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(139, 92, 246, 0.15); color:#8b5cf6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
                         </div>
-                        <h3 onclick="window.showInventoryChannelModal()" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Inventarios (inventarios)</h3>
+                        <h3 onclick="window.openReportModal('inventarios', 'Reporte de Inventarios')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Inventarios (inventarios)</h3>
                     </div>
                 </div>
 
@@ -10476,7 +10484,7 @@
                             <span style="font-size:1.5rem;">⚠️</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(234, 179, 8, 0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
                         </div>
-                        <h3 onclick="window.triggerDocumentacionReport()" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Estado Documentación (estado_documentacion)</h3>
+                        <h3 onclick="window.openReportModal('estado_documentacion', 'Estado de Documentación')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Estado Documentación (estado_documentacion)</h3>
                     </div>
                 </div>
 
@@ -10488,7 +10496,7 @@
                             <span style="font-size:1.5rem;">📧</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(20, 184, 166, 0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN DE CIERRE</span>
                         </div>
-                        <h3 onclick="window.solicitarReporteCierre('ambos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Cierre de Evento (cierre_html)</h3>
+                        <h3 onclick="window.openReportModal('cierre_html', 'Reporte de Cierre de Evento')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Cierre de Evento (cierre_html)</h3>
                     </div>
                 </div>
 
