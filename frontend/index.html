@@ -1461,7 +1461,7 @@
             </div>
 
             <div class="footer-info" style="margin-top:40px; text-align:center; color:var(--muted)">
-                EYE STAFF — PLATAFORMA INTEGRAL v2.7.65
+                EYE STAFF — PLATAFORMA INTEGRAL v2.7.68
             </div>
         </div>
     </main>
@@ -2236,7 +2236,7 @@
         const displayCount = Math.max(1, onlineCount);
 
         const onlineText = ` | <span style="color:var(--success); font-weight:900;">${displayCount}</span>`;
-        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span><a href="https://eye-staff.com/" target="_blank" style="color:inherit; text-decoration:none;">EYE STAFF 2026</a> - v2.7.65 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
+        const footerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center;"><img src="${mapLogoUrl}" style="width:18px; height:18px; cursor:pointer; margin-right:8px;" onclick="enterModule('liveloc')" title="Geolocalización / Ubicación en Vivo"> <span><a href="https://eye-staff.com/" target="_blank" style="color:inherit; text-decoration:none;">EYE STAFF 2026</a> - v2.7.68 | ${dateStr} | ${timeStr}${onlineText}</span></span>`;
         document.querySelectorAll('.footer-info').forEach(el => {
             el.innerHTML = footerHTML;
             if (window.currentModule === 'portal') {
@@ -6137,7 +6137,7 @@
                 <div style="display: flex; justify-content: center; margin-top: 40px;">
                     ${getVolverBtn('VOLVER AL HOME', 'exitToPortal()')}
                 </div>
-                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.65</div>
+                <div class="footer-info" style="margin-top:60px;">EYE STAFF 2026 - v2.7.68</div>
             `;
 
             el.innerHTML = html;
@@ -9342,6 +9342,98 @@
         });
     };
 
+    
+    window.openReportModal = function(reportId, reportTitle) {
+        window.currentScheduleReportId = reportId;
+        window.currentScheduleReportTitle = reportTitle;
+        document.getElementById('reportScheduleModalTitle').innerText = reportTitle;
+        
+        // Reset form
+        document.getElementById('rs-freq').value = 'weekly';
+        document.getElementById('rs-day-week').value = '1';
+        document.getElementById('rs-time').value = '09:00';
+        document.getElementById('rs-active').checked = true;
+        
+        // Mostrar modal
+        document.getElementById('reportScheduleModalOverlay').style.display = 'flex';
+        
+        // Petición silenciosa para cargar datos si los hay
+        apiFetch('/api/admin/report-schedules/' + reportId).then(res => {
+            if (res && res.schedule) {
+                document.getElementById('rs-freq').value = res.schedule.frequency || 'weekly';
+                if (res.schedule.frequency === 'weekly') {
+                    document.getElementById('rs-day-week').value = res.schedule.day_of_week !== undefined ? res.schedule.day_of_week : 1;
+                } else if (res.schedule.frequency === 'monthly') {
+                    document.getElementById('rs-day-month').value = res.schedule.day_of_month || 1;
+                }
+                document.getElementById('rs-time').value = res.schedule.send_time || '09:00';
+                document.getElementById('rs-active').checked = res.schedule.is_active === 1;
+                window.rsUpdateDaySelector();
+            }
+        }).catch(e => console.error("No se pudo cargar la programación", e));
+        
+        window.rsUpdateDaySelector();
+    };
+
+    window.closeReportScheduleModal = function() {
+        document.getElementById('reportScheduleModalOverlay').style.display = 'none';
+    };
+
+    window.rsSendNow = function() {
+        window.closeReportScheduleModal();
+        window.triggerReportFromMatrix(window.currentScheduleReportId, window.currentScheduleReportTitle);
+    };
+
+    window.rsSaveSchedule = async function() {
+        const freq = document.getElementById('rs-freq').value;
+        let dWeek = 1;
+        let dMonth = 1;
+        if (freq === 'weekly') dWeek = parseInt(document.getElementById('rs-day-week').value);
+        if (freq === 'monthly') dMonth = parseInt(document.getElementById('rs-day-month').value);
+        const time = document.getElementById('rs-time').value;
+        const active = document.getElementById('rs-active').checked ? 1 : 0;
+        
+        showLoading('GUARDANDO...');
+        try {
+            const res = await apiFetch('/api/admin/report-schedules', {
+                method: 'POST',
+                body: JSON.stringify({
+                    report_id: window.currentScheduleReportId,
+                    frequency: freq,
+                    day_of_week: dWeek,
+                    day_of_month: dMonth,
+                    send_time: time,
+                    is_active: active
+                })
+            });
+            hideLoading();
+            if (res && res.success) {
+                toast('Programación guardada con éxito', 'success');
+                window.closeReportScheduleModal();
+            } else {
+                toast('Error al guardar: ' + (res?.error || 'Desconocido'), 'error');
+            }
+        } catch(e) {
+            hideLoading();
+            toast('Error de red al guardar programación', 'error');
+        }
+    };
+
+    window.rsUpdateDaySelector = function() {
+        const freq = document.getElementById('rs-freq').value;
+        if (freq === 'daily') {
+            document.getElementById('rs-day-wrapper').style.display = 'none';
+        } else if (freq === 'weekly') {
+            document.getElementById('rs-day-wrapper').style.display = 'block';
+            document.getElementById('rs-day-week').style.display = 'block';
+            document.getElementById('rs-day-month').style.display = 'none';
+        } else if (freq === 'monthly') {
+            document.getElementById('rs-day-wrapper').style.display = 'block';
+            document.getElementById('rs-day-week').style.display = 'none';
+            document.getElementById('rs-day-month').style.display = 'block';
+        }
+    };
+
     window.triggerReportFromMatrix = async function(reportId, reportTitle) {
         if (!reportId) return;
         
@@ -10288,7 +10380,7 @@
                             <span style="font-size:1.5rem;">🔔</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(245, 158, 11, 0.15); color:#f59e0b; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('convocatoria', 'Notificación de Convocatoria')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Notificación de Convocatoria (convocatoria)</h3>
+                        <h3 onclick="window.openReportModal('convocatoria', 'Notificación de Convocatoria')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Notificación de Convocatoria (convocatoria)</h3>
                     </div>
                 </div>
 
@@ -10300,7 +10392,7 @@
                             <span style="font-size:1.5rem;">🎂</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(14,165,233,0.15); color:#0ea5e9; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('cumpleanos', 'Reporte Semanal de Cumpleañeros')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte Semanal de Cumpleañeros (cumpleanos)</h3>
+                        <h3 onclick="window.openReportModal('cumpleanos', 'Reporte Semanal de Cumpleañeros')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte Semanal de Cumpleañeros (cumpleanos)</h3>
                     </div>
                 </div>
 
@@ -10312,7 +10404,7 @@
                             <span style="font-size:1.5rem;">🎓</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(99,102,241,0.15); color:#6366f1; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('postulacion_empleo', 'Reporte Semanal de Postulaciones')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte Semanal de Postulaciones (postulacion_empleo)</h3>
+                        <h3 onclick="window.openReportModal('postulacion_empleo', 'Reporte Semanal de Postulaciones')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte Semanal de Postulaciones (postulacion_empleo)</h3>
                     </div>
                 </div>
 
@@ -10324,7 +10416,7 @@
                             <span style="font-size:1.5rem;">📝</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(239, 68, 68, 0.15); color:#ef4444; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('actualizacion_datos', 'Solicitud de Actualización de Datos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Solicitud de Actualización de Datos (actualizacion_datos)</h3>
+                        <h3 onclick="window.openReportModal('actualizacion_datos', 'Solicitud de Actualización de Datos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Solicitud de Actualización de Datos (actualizacion_datos)</h3>
                     </div>
                 </div>
 
@@ -10336,7 +10428,7 @@
                             <span style="font-size:1.5rem;">💸</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(249, 115, 22, 0.15); color:#f97316; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ACCIÓN MANUAL</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('formato_pago', 'Envío de Formato de Pago')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Envío de Formato de Pago (formato_pago)</h3>
+                        <h3 onclick="window.openReportModal('formato_pago', 'Envío de Formato de Pago')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Envío de Formato de Pago (formato_pago)</h3>
                     </div>
                 </div>
 
@@ -10348,7 +10440,7 @@
                             <span style="font-size:1.5rem;">🔑</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(234,179,8,0.15); color:#eab308; padding:4px 8px; border-radius:6px; text-transform:uppercase;">ENVÍO MANUAL</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('credenciales', 'Credenciales de Acceso')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Credenciales de Acceso (credenciales)</h3>
+                        <h3 onclick="window.openReportModal('credenciales', 'Credenciales de Acceso')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Credenciales de Acceso (credenciales)</h3>
                     </div>
                 </div>
 
@@ -10372,7 +10464,7 @@
                             <span style="font-size:1.5rem;">🕒</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(20, 184, 166, 0.15); color:#14b8a6; padding:4px 8px; border-radius:6px; text-transform:uppercase;">PROGRAMADO (CRON)</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('horario_eventos', 'Horario Eventos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Horarios (horario_eventos)</h3>
+                        <h3 onclick="window.openReportModal('horario_eventos', 'Horario Eventos')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Reporte de Horarios (horario_eventos)</h3>
                     </div>
                 </div>
 
@@ -10408,7 +10500,7 @@
                             <span style="font-size:1.5rem;">🚀</span>
                             <span style="font-size:0.6rem; font-weight:900; background:rgba(34,197,94,0.15); color:#22c55e; padding:4px 8px; border-radius:6px; text-transform:uppercase;">AUTOMÁTICO</span>
                         </div>
-                        <h3 onclick="window.triggerReportFromMatrix('apertura_evento', 'Confirmación de Inicio de Evento')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Confirmación de Inicio de Evento (apertura_evento)</h3>
+                        <h3 onclick="window.openReportModal('apertura_evento', 'Confirmación de Inicio de Evento')" style="margin:5px 0 5px 0; font-size:0.75rem; font-weight:900; color:#3b82f6; text-transform:uppercase; cursor:pointer; text-decoration:underline;">Confirmación de Inicio de Evento (apertura_evento)</h3>
                     </div>
                 </div>
 
@@ -24428,5 +24520,63 @@ window.deleteFormat = async function(id) {
         else if (failed > 0 && window.geminiAvailable !== false) toast('❌ No se pudo extraer datos de ' + failed + ' documento(s).', 'error');
     };
 </script>
+
+
+<!-- REPORT SCHEDULE MODAL -->
+<div id="reportScheduleModalOverlay" class="modal-overlay" style="display:none; z-index:10010; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center;">
+    <div style="background:var(--surface, #1a1a2e); border:1px solid rgba(59,130,246,0.3); border-radius:16px; width:90%; max-width:500px; padding:25px; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+        <h2 id="reportScheduleModalTitle" style="color:white; font-size:1.2rem; margin:0 0 20px 0; font-weight:900; text-align:center; text-transform:uppercase;">Configurar Reporte</h2>
+        
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <button onclick="window.rsSendNow()" style="flex:1; background:#10b981; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.9rem;">🚀 ENVIAR AHORA MANUALMENTE</button>
+        </div>
+        
+        <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1); margin:20px 0;">
+        
+        <h3 style="color:#94a3b8; font-size:0.9rem; margin:0 0 15px 0;">⏰ PROGRAMAR ENVÍO AUTOMÁTICO (CRON)</h3>
+        
+        <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:25px;">
+            <div>
+                <label style="display:block; color:#64748b; font-size:0.8rem; margin-bottom:5px;">Frecuencia</label>
+                <select id="rs-freq" onchange="window.rsUpdateDaySelector()" style="width:100%; padding:10px; border-radius:8px; background:#0f172a; color:white; border:1px solid rgba(255,255,255,0.1);">
+                    <option value="daily">Diario</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensual</option>
+                </select>
+            </div>
+            
+            <div id="rs-day-wrapper">
+                <label style="display:block; color:#64748b; font-size:0.8rem; margin-bottom:5px;">Día de Ejecución</label>
+                <select id="rs-day-week" style="width:100%; padding:10px; border-radius:8px; background:#0f172a; color:white; border:1px solid rgba(255,255,255,0.1);">
+                    <option value="1">Lunes</option>
+                    <option value="2">Martes</option>
+                    <option value="3">Miércoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sábado</option>
+                    <option value="0">Domingo</option>
+                </select>
+                <select id="rs-day-month" style="display:none; width:100%; padding:10px; border-radius:8px; background:#0f172a; color:white; border:1px solid rgba(255,255,255,0.1);">
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="display:block; color:#64748b; font-size:0.8rem; margin-bottom:5px;">Hora de Envío (Zona Horaria: America/Caracas)</label>
+                <input type="time" id="rs-time" style="width:100%; padding:10px; border-radius:8px; background:#0f172a; color:white; border:1px solid rgba(255,255,255,0.1);" value="09:00">
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+                <input type="checkbox" id="rs-active" style="width:18px; height:18px; cursor:pointer;" checked>
+                <label for="rs-active" style="color:white; font-size:0.9rem; cursor:pointer;">Programación Activa</label>
+            </div>
+        </div>
+        
+        <div style="display:flex; gap:10px;">
+            <button onclick="window.closeReportScheduleModal()" style="flex:1; background:rgba(255,255,255,0.1); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">CANCELAR</button>
+            <button onclick="window.rsSaveSchedule()" style="flex:1; background:#3b82f6; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">💾 GUARDAR PROGRAMACIÓN</button>
+        </div>
+    </div>
+</div>
 
 <script src="profile-update.js"></script>

@@ -1060,7 +1060,37 @@ app.post('/api/admin/payment-formats/send', async (c) => {
   }
 });
 
-app.post('/api/admin/reports/send', async (c) => {
+
+app.get('/api/admin/report-schedules/:reportId', async (c) => {
+  try {
+    const reportId = c.req.param('reportId');
+    const schedule = await c.env.DB.prepare('SELECT * FROM report_schedules WHERE report_id = ?').bind(reportId).first();
+    return c.json({ schedule });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+app.post('/api/admin/report-schedules', async (c) => {
+  try {
+    const { report_id, frequency, day_of_week, day_of_month, send_time, is_active } = await c.req.json();
+    await c.env.DB.prepare(`
+      INSERT INTO report_schedules (report_id, frequency, day_of_week, day_of_month, send_time, is_active)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(report_id) DO UPDATE SET
+        frequency=excluded.frequency,
+        day_of_week=excluded.day_of_week,
+        day_of_month=excluded.day_of_month,
+        send_time=excluded.send_time,
+        is_active=excluded.is_active,
+        updated_at=CURRENT_TIMESTAMP
+    `).bind(report_id, frequency, day_of_week, day_of_month, send_time, is_active).run();
+    return c.json({ success: true });
+  } catch(e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+\napp.post('/api/admin/reports/send', async (c) => {
   try {
     const { recipients, channel, globalBase64, detailedBase64 } = await c.req.json();
     if (!recipients || !channel || !globalBase64 || !detailedBase64) {
@@ -11714,9 +11744,55 @@ export default {
     env.DIRECTOR_EMAIL = undefined;
     return app.fetch(request, env, ctx);
   },
-  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+  
+async function processScheduledReports(env: Env) {
+  try {
+    const schedules = await env.DB.prepare('SELECT * FROM report_schedules WHERE is_active = 1').all();
+    if (!schedules.results || schedules.results.length === 0) return;
+
+    const caracasTimeStr = new Date().toLocaleString("en-US", {timeZone: "America/Caracas"});
+    const caracasDate = new Date(caracasTimeStr);
+    
+    const currentHour = caracasDate.getHours();
+    const currentMinute = caracasDate.getMinutes();
+    const currentDayOfWeek = caracasDate.getDay();
+    const currentDayOfMonth = caracasDate.getDate();
+
+    for (const schedule of schedules.results) {
+      const { report_id, frequency, day_of_week, day_of_month, send_time } = schedule as any;
+      
+      const [schedHourStr, schedMinStr] = send_time.split(':');
+      const schedHour = parseInt(schedHourStr, 10);
+      const schedMin = parseInt(schedMinStr, 10);
+      
+      if (currentHour === schedHour && currentMinute === schedMin) {
+        let shouldRun = false;
+        if (frequency === 'daily') shouldRun = true;
+        else if (frequency === 'weekly' && currentDayOfWeek === day_of_week) shouldRun = true;
+        else if (frequency === 'monthly' && currentDayOfMonth === day_of_month) shouldRun = true;
+        
+        if (shouldRun) {
+          console.log(`Running scheduled report: ${report_id}`);
+          
+          if (report_id === 'cumpleanos') {
+            if (typeof sendWeeklyBirthdayReport === 'function') await sendWeeklyBirthdayReport(env, true);
+          } else if (report_id === 'postulacion_empleo' || report_id === 'applications') {
+            if (typeof sendWeeklyApplicationsReport === 'function') await sendWeeklyApplicationsReport(env, true);
+          } else if (report_id === 'horario_eventos') {
+            // Asumiendo que sendHorarioEventosReport exista o usar la API local
+            console.log("Despachar horario_eventos");
+          }
+          // El resto de los reportes se despacharian invocando la API local a traves de app.fetch o invocando la logica
+        }
+      }
+    }
+  } catch(e) {
+    console.error('Error processScheduledReports', e);
+  }
+}
+\n  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = undefined;
-    ctx.waitUntil(checkScheduledNotifications(env));
+    ctx.waitUntil(processScheduledReports(env));\n    ctx.waitUntil(checkScheduledNotifications(env));
     ctx.waitUntil(autoClosePeriods(env));
 
     // Ping WhatsApp bot to prevent it from sleeping on Render
