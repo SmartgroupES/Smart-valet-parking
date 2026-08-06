@@ -1090,7 +1090,8 @@ app.post('/api/admin/report-schedules', async (c) => {
     return c.json({ error: e.message }, 500);
   }
 });
-\napp.post('/api/admin/reports/send', async (c) => {
+
+app.post('/api/admin/reports/send', async (c) => {
   try {
     const { recipients, channel, globalBase64, detailedBase64 } = await c.req.json();
     if (!recipients || !channel || !globalBase64 || !detailedBase64) {
@@ -11739,12 +11740,6 @@ async function autoClosePeriods(env: Env) {
   }
 }
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    env.DIRECTOR_EMAIL = undefined;
-    return app.fetch(request, env, ctx);
-  },
-  
 async function processScheduledReports(env: Env) {
   try {
     const schedules = await env.DB.prepare('SELECT * FROM report_schedules WHERE is_active = 1').all();
@@ -11790,9 +11785,17 @@ async function processScheduledReports(env: Env) {
     console.error('Error processScheduledReports', e);
   }
 }
-\n  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     env.DIRECTOR_EMAIL = undefined;
-    ctx.waitUntil(processScheduledReports(env));\n    ctx.waitUntil(checkScheduledNotifications(env));
+    return app.fetch(request, env, ctx);
+  },
+  
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    env.DIRECTOR_EMAIL = undefined;
+    ctx.waitUntil(processScheduledReports(env));
+    ctx.waitUntil(checkScheduledNotifications(env));
     ctx.waitUntil(autoClosePeriods(env));
 
     // Ping WhatsApp bot to prevent it from sleeping on Render
